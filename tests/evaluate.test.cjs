@@ -34,6 +34,11 @@ test('CDP evaluation handles results, errors, ambiguity and timeouts', async () 
     await assert.rejects(evaluate('http://example.com', '42'), /local HTTP/);
     pages = [{ ...page, webSocketDebuggerUrl: 'ws://example.com/debug' }];
     await assert.rejects(evaluate('http://localhost', '42'), /WebSocket must be local/);
+    pages = [{ ...page, id: 'custom', title: 'Custom Mod Title' }, { ...page, id: 'standard' }];
+    reply = { id: 1, result: { result: { value: 42 } } };
+    assert.equal(await evaluate('http://localhost', '42', 1000, 'custom'), 42);
+    await assert.rejects(evaluate('http://localhost', '42', 1000, 'missing'), /found 0/);
+    await assert.rejects(evaluate('http://localhost', '42', 1000, '../bad'), /Invalid CDP target ID/);
   } finally {
     global.fetch = oldFetch;
     global.WebSocket = oldSocket;

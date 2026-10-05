@@ -15,6 +15,27 @@
     },
     {
       "$ref": "#/$defs/supportBundle"
+    },
+    {
+      "$ref": "#/$defs/cssContract"
+    },
+    {
+      "$ref": "#/$defs/environmentSnapshot"
+    },
+    {
+      "$ref": "#/$defs/journeyManifest"
+    },
+    {
+      "$ref": "#/$defs/storageSnapshot"
+    },
+    {
+      "$ref": "#/$defs/timeline"
+    },
+    {
+      "$ref": "#/$defs/domInspection"
+    },
+    {
+      "$ref": "#/$defs/selectorHealth"
     }
   ],
   "$defs": {
@@ -271,7 +292,9 @@
             "logcat",
             "record",
             "deep",
-            "bugreport"
+            "bugreport",
+            "environment",
+            "series"
           ]
         },
         "status": {
@@ -571,6 +594,874 @@
       },
       "required": [
         "status"
+      ],
+      "additionalProperties": true
+    },
+    "cssNode": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "pattern": "^0(?:/[0-9]+){0,8}$"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^0(?:/[0-9]+){0,8}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tag": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "class": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "childCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "style": {
+          "type": "object",
+          "properties": {
+            "display": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "visibility": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "position": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "width": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "height": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "margin-top": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "margin-right": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "margin-bottom": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "margin-left": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "padding-top": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "padding-right": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "padding-bottom": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "padding-left": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "background-color": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "background-image": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "color": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-width": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-style": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-color": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-top-width": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-top-style": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-top-color": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-right-width": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-right-style": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-right-color": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-bottom-width": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-bottom-style": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-bottom-color": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-left-width": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-left-style": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "border-left-color": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "opacity": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "filter": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "backdrop-filter": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "z-index": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "transform": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "overflow-x": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "overflow-y": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "font-size": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "font-weight": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "line-height": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "flex-direction": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "gap": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "grid-template-columns": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "pointer-events": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          "additionalProperties": false
+        },
+        "rect": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "width": {
+              "type": "number",
+              "minimum": 0
+            },
+            "height": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "width",
+            "height"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "address",
+        "parent",
+        "tag",
+        "id",
+        "class",
+        "childCount",
+        "style",
+        "rect"
+      ],
+      "additionalProperties": true
+    },
+    "cssContract": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "CSS"
+        },
+        "nodes": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/$defs/cssNode"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "scopeHash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "nodes",
+        "truncated"
+      ],
+      "additionalProperties": true
+    },
+    "environmentSnapshot": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "Environment"
+        },
+        "device": {
+          "type": "object"
+        },
+        "app": {
+          "type": "object"
+        },
+        "provider": {
+          "type": "object"
+        },
+        "webview": {
+          "type": "object"
+        },
+        "runtime": {
+          "type": "object"
+        },
+        "incomplete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "device",
+        "app",
+        "provider",
+        "webview",
+        "runtime",
+        "incomplete"
+      ],
+      "additionalProperties": true
+    },
+    "journeyManifest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "source": {
+          "enum": [
+            "Journey plan",
+            "Journey execution"
+          ]
+        },
+        "toolVersion": {
+          "type": "string"
+        },
+        "captureStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "complete",
+            "partial",
+            "failed"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object"
+          }
+        },
+        "cleanup": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "privacy": {
+          "type": "object"
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120000
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "incidentId",
+        "source",
+        "toolVersion",
+        "captureStart",
+        "status",
+        "steps",
+        "cleanup",
+        "privacy",
+        "timeoutMs"
+      ],
+      "additionalProperties": true
+    },
+    "storageSnapshot": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "storage"
+        },
+        "local": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "available",
+                "partial",
+                "unsupported"
+              ]
+            },
+            "count": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "keys": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "hash": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                },
+                "required": [
+                  "hash"
+                ],
+                "additionalProperties": true
+              },
+              "maxItems": 200
+            },
+            "omitted": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "status",
+            "count",
+            "keys",
+            "omitted"
+          ],
+          "additionalProperties": true
+        },
+        "session": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "available",
+                "partial",
+                "unsupported"
+              ]
+            },
+            "count": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "keys": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "hash": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                },
+                "required": [
+                  "hash"
+                ],
+                "additionalProperties": true
+              },
+              "maxItems": 200
+            },
+            "omitted": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "status",
+            "count",
+            "keys",
+            "omitted"
+          ],
+          "additionalProperties": true
+        },
+        "indexedDB": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "available",
+                "partial",
+                "unsupported"
+              ]
+            },
+            "omitted": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "databases": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "nameHash": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "status": {
+                    "enum": [
+                      "available",
+                      "partial",
+                      "unsupported",
+                      "timeout",
+                      "changed-during-inspection"
+                    ]
+                  },
+                  "stores": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "nameHash": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        },
+                        "count": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "status": {
+                          "enum": [
+                            "available",
+                            "unsupported"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "nameHash",
+                        "count",
+                        "status"
+                      ],
+                      "additionalProperties": true
+                    },
+                    "maxItems": 50
+                  },
+                  "omitted": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "nameHash",
+                  "version",
+                  "status",
+                  "stores",
+                  "omitted"
+                ],
+                "additionalProperties": true
+              },
+              "maxItems": 10
+            }
+          },
+          "required": [
+            "status",
+            "omitted",
+            "databases"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "local",
+        "session",
+        "indexedDB"
+      ],
+      "additionalProperties": true
+    },
+    "timeline": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "timeline"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "order": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 500
+              },
+              "atMs": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "kind": {
+                "enum": [
+                  "event",
+                  "mutation",
+                  "error",
+                  "unhandledrejection",
+                  "longtask",
+                  "observer"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "address": {
+                "type": "string",
+                "pattern": "^0(?:/[0-9]+){0,8}$"
+              }
+            },
+            "required": [
+              "order",
+              "atMs",
+              "kind"
+            ],
+            "additionalProperties": true
+          },
+          "maxItems": 500
+        },
+        "dropped": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "cleanupConflicts": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "omittedInstances": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "cleanupConflicts",
+            "omittedInstances"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "durationMs",
+        "records",
+        "dropped",
+        "truncated",
+        "capabilities"
+      ],
+      "additionalProperties": true
+    },
+    "domInspection": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "enum": [
+            "accessibility",
+            "overlays",
+            "scroll",
+            "ownership",
+            "hitboxes"
+          ]
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "pattern": "^0(?:/[0-9]+){0,8}$"
+              },
+              "parent": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tag": {
+                "type": "string",
+                "maxLength": 32
+              },
+              "rect": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "width": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "height": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "x",
+                  "y",
+                  "width",
+                  "height"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "address",
+              "parent",
+              "tag",
+              "rect"
+            ],
+            "additionalProperties": true
+          },
+          "maxItems": 200
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "intersections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "a": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "b": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "width": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "height": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "required": [
+              "a",
+              "b",
+              "width",
+              "height"
+            ],
+            "additionalProperties": true
+          },
+          "maxItems": 500
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "nodes",
+        "truncated"
+      ],
+      "additionalProperties": true
+    },
+    "selectorHealth": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "selector-health"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unique": {
+          "type": "boolean"
+        },
+        "heuristicOnly": {
+          "const": true
+        },
+        "fragilityReasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "maxItems": 5
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "count",
+        "unique",
+        "heuristicOnly",
+        "fragilityReasons"
       ],
       "additionalProperties": true
     }

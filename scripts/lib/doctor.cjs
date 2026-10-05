@@ -58,12 +58,18 @@ async function doctor(options, run = exec) {
       pid = value; return { uniqueRunningProcess: true };
     });
     await check('webview-socket', async () => {
-      if (!pid || !(await adb('shell','cat','/proc/net/unix')).split('\n').some(line => line.trim().endsWith(`@webview_devtools_remote_${pid}`))) throw new Error('Socket unavailable');
-      return { supportedAppSocket: true, forwardingCreated: false };
+      const sockets = (await adb('shell','cat','/proc/net/unix')).split('\n');
+      const count = pid ? ['webview_devtools_remote_','browser_webview_devtools_remote_'].filter(prefix => sockets.some(line => line.trim().endsWith(`@${prefix}${pid}`))).length : 0;
+      if (!count) throw new Error('Socket unavailable');
+      return { supportedAppSocket: true, socketCount: count, forwardingCreated: false };
     });
     await check('run-as', async () => { await adb('shell','run-as',options.package,'id'); return { available: true, privateDataRead: false }; });
   }
   if (selected) {
+    await check('webview-provider', async () => {
+      const data = require('./environment.cjs').provider(await adb('shell','dumpsys','webviewupdate'));
+      if (data.collectorStatus) throw new Error('Provider unavailable'); return data;
+    });
     await check('perfetto', async () => { await adb('shell','which','perfetto'); return { installed: true, traceStarted: false }; });
     await check('forwards', async () => {
       const output = await adb('forward','--list');

@@ -11,6 +11,8 @@ const profiles = {
   capture: ['device','app','screenshot'], perf: ['device','app','gfxinfo','meminfo'],
   logcat: ['device','app','logcat'], record: ['device','app','record'],
   deep: ['device','app','gfxinfo','meminfo','perfetto'], bugreport: ['device','app','bugreport'],
+  environment: ['device','app','provider','transport','cdp','webview','versions','environment'],
+  series: ['device','app','performance-series'],
 };
 function validate(options) {
   if (!options.serial || !/^[\w.:-]{1,128}$/.test(options.serial)) throw new Error('Provide explicit --serial');
@@ -19,6 +21,15 @@ function validate(options) {
   if (options.scope !== undefined && (typeof options.scope !== 'string' || !options.scope.trim() || options.scope.length > 256)) throw new Error('Invalid --scope');
   if (!Number.isInteger(options.windowMs) || options.windowMs < 0 || options.windowMs > 10000) throw new Error('--window-ms must be 0..10000');
   if (options.profile && !profiles[options.profile]) throw new Error('Unknown collection profile');
+  if (options.css && !options.scope) throw new Error('CSS capture requires --scope');
+  if (options.timelineMs !== undefined && (!options.scope || !Number.isInteger(options.timelineMs) || options.timelineMs < 1 || options.timelineMs > 10000)) throw new Error('Timeline requires scope and 1..10000 ms');
+  if (options.observerInstrumentation !== undefined && (typeof options.observerInstrumentation !== 'boolean' || options.observerInstrumentation && options.timelineMs === undefined)) throw new Error('Observer instrumentation requires timeline');
+  if (options.inspectors !== undefined && (!options.scope || !Array.isArray(options.inspectors) || options.inspectors.length < 1 || options.inspectors.length > 6 || new Set(options.inspectors).size !== options.inspectors.length || options.inspectors.some(mode => !require('./inspectors.cjs').domModes.includes(mode)))) throw Error('Invalid scoped inspectors');
+  if (options.storage !== undefined && typeof options.storage !== 'boolean') throw Error('Invalid storage selection');
+  if (options.profile === 'series' || options.samples !== undefined) require('./performance-series.cjs').validate(options);
+  if (options.seriesWebview !== undefined && typeof options.seriesWebview !== 'boolean') throw Error('Invalid WebView selection');
+  if (options.targetId !== undefined && !/^[A-Za-z0-9._:-]{1,128}$/.test(options.targetId)) throw new Error('Invalid CDP target ID');
+  if (options.webviewSocket !== undefined && !/^(?:browser_)?webview_devtools_remote_[0-9]+$/.test(options.webviewSocket)) throw new Error('Invalid WebView socket');
   if (options.logcatSeconds !== undefined && (!Number.isInteger(options.logcatSeconds) || options.logcatSeconds < 1 || options.logcatSeconds > 300)) throw new Error('Logcat window must be 1..300 seconds');
   if (options.recordSeconds !== undefined && (!Number.isInteger(options.recordSeconds) || options.recordSeconds < 1 || options.recordSeconds > 30)) throw new Error('Recording limit must be 1..30 seconds');
   if (options.deepSeconds !== undefined && (!Number.isInteger(options.deepSeconds) || options.deepSeconds < 1 || options.deepSeconds > 30)) throw new Error('Trace duration must be 1..30 seconds');
@@ -32,6 +43,12 @@ async function evidence(options, overrides = {}) {
   if (options.recordSeconds !== undefined) selected.add('record');
   if (options.deepSeconds !== undefined) selected.add('perfetto');
   if (options.bugreport) selected.add('bugreport');
+  if (options.css) selected.add('css-contract');
+  if (options.environment) { selected.add('provider'); selected.add('environment'); }
+  if (options.timelineMs !== undefined) selected.add('timeline');
+  if (options.storage) selected.add('storage');
+  if (options.samples !== undefined) selected.add('performance-series');
+  if (options.seriesWebview) for(const name of ['provider','transport','cdp','webview']) selected.add(name);
   if (repro) selected.add('repro');
   const output = path.resolve(options.out);
   fs.mkdirSync(output); // Exclusive; parent must already exist. Never overwrite a partial incident.
@@ -46,7 +63,7 @@ async function evidence(options, overrides = {}) {
     } };
   const ctx = { options, output, adb: overrides.adb || collectors.android(options), connect: overrides.connect, runHeavy: overrides.runHeavy };
   const methods = { ...collectors, ...require('./deep.cjs'), logcat: require('./logcat.cjs').collect, record: require('./record.cjs').collect,
-    integration: require('./integration.cjs').collect, ...overrides.collectors };
+    integration: require('./integration.cjs').collect, timeline: require('./timeline.cjs').collect, performanceSeries:require('./performance-series.cjs').collect, ...overrides.collectors };
   let evidenceCount = 0;
   function save(name, source, value) {
     const filename = `${name}.json`;
@@ -62,7 +79,7 @@ async function evidence(options, overrides = {}) {
   }
   async function runStep(name, source, run, required = true, skip = null) {
     const begin = performance.now();
-    const commandTimeoutMs = name === 'record' ? (options.recordSeconds + 5) * 1000 : name === 'perfetto' ? (options.deepSeconds + 30) * 1000 : name === 'bugreport' ? 180000 : 10000;
+    const commandTimeoutMs = name === 'performance-series' ? 60000 : name === 'timeline' ? options.timelineMs + 5000 : name === 'record' ? (options.recordSeconds + 5) * 1000 : name === 'perfetto' ? (options.deepSeconds + 30) * 1000 : name === 'bugreport' ? 180000 : 10000;
     const record = { name, source, required, commandTimeoutMs, captureStart: new Date().toISOString(), status: 'failed' };
     manifest.steps.push(record);
     try {
@@ -100,10 +117,11 @@ async function evidence(options, overrides = {}) {
   checkpoint();
   try {
     await step('device', 'ADB / Android', async () => {
-      const data = await methods.device(ctx); manifest.device = redact(data); return data;
+      const data = await methods.device(ctx); ctx.deviceData = data; manifest.device = redact(data); return data;
     });
     const noDevice = !ctx.deviceReady ? 'device-check-failed' : null;
-    await step('app', 'ADB / Android', async () => { const data = await methods.app(ctx); manifest.app = redact(data); return data; }, true, noDevice);
+    await step('app', 'ADB / Android', async () => { const data = await methods.app(ctx); ctx.appData = data; manifest.app = redact(data); return data; }, true, noDevice);
+    await step('provider', 'Android WebView update service', async () => { const data = await methods.provider(ctx); ctx.providerData = data; return data; }, true, noDevice);
     await step('screenshot', 'ADB current screen', () => methods.screenshot(ctx), true, noDevice);
     await step('record', 'ADB screenrecord', () => methods.record(ctx), true, noDevice);
     await step('logcat', 'PID-scoped Android logcat', () => methods.logcat(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
@@ -115,9 +133,15 @@ async function evidence(options, overrides = {}) {
     const noCdp = !ctx.client ? 'cdp-unavailable' : null;
     await step('console', 'CDP Runtime events', () => methods.consoleSummary(ctx), true, noCdp);
     await step('network', 'CDP Network events', () => methods.networkSummary(ctx), true, noCdp);
-    await step('webview', 'CDP', async () => { const data = await methods.webview(ctx); manifest.webview = redact(data); return data; }, true, noCdp);
+    await step('webview', 'CDP', async () => { const data = await methods.webview(ctx); ctx.webviewData = data; manifest.webview = redact(data); return data; }, true, noCdp);
     await step('versions', 'ModLoader version metadata via CDP', async () => { const data = await methods.versions(ctx); Object.assign(manifest, redact(data)); return data; }, true, noCdp);
     await step('dom-contract', 'DOM via CDP', () => methods.dom(ctx), !!options.scope, noCdp || (!options.scope ? 'no-scope-requested' : null));
+    await step('css-contract', 'Computed Style via CDP', () => methods.css(ctx), true, noCdp);
+    await step('environment', 'Android and public WebView metadata', () => methods.environment(ctx), true, noCdp);
+    await step('timeline', 'Scoped temporary WebView observation', () => methods.timeline(ctx), true, noCdp);
+    await step('storage', 'WebView storage metadata and readonly counts', () => require('./inspectors.cjs').collect(ctx, 'storage'), true, noCdp);
+    for (const mode of options.inspectors || []) await runStep(mode, 'Scoped generic DOM inspection', () => require('./inspectors.cjs').collect(ctx, mode), true, noCdp);
+    await step('performance-series','Sequential Android and selected WebView metrics',()=>methods.performanceSeries(ctx),true,noDevice||(!ctx.appPid?'app-check-failed':null));
     for (const [index, integration] of (overrides.integrations || []).entries()) {
       const info = { index, name: null, status: 'unavailable' };
       manifest.integrations.push(info);

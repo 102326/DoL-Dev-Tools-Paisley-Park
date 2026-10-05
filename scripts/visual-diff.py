@@ -8,7 +8,7 @@ import uuid
 import warnings
 
 
-def compare(golden, current, output, tolerance=8):
+def compare(golden, current, output, tolerance=8, region=None):
     from PIL import Image, ImageChops
     if not isinstance(tolerance, int) or not 0 <= tolerance <= 255:
         raise ValueError('Tolerance must be 0..255')
@@ -27,6 +27,21 @@ def compare(golden, current, output, tolerance=8):
     before, after = load(golden), load(current)
     if before.size != after.size:
         raise ValueError('Image dimensions differ; no implicit resize')
+    source_dimensions = list(before.size)
+    if region is not None:
+        if isinstance(region, str):
+            parts = [part.strip() for part in region.split(',')]
+            if len(parts) != 4 or any(not part.isdecimal() for part in parts):
+                raise ValueError('Region must be x,y,width,height')
+            region = tuple(map(int, parts))
+        if not isinstance(region, (tuple, list)) or len(region) != 4 or any(type(part) is not int for part in region):
+            raise ValueError('Region must be four integers')
+        x, y, width, height = region
+        if x < 0 or y < 0 or width <= 0 or height <= 0 or x + width > before.width or y + height > before.height:
+            raise ValueError('Region outside image')
+        before = before.crop((x, y, x + width, y + height))
+        after = after.crop((x, y, x + width, y + height))
+        region = [x, y, width, height]
     difference = ImageChops.difference(before, after)
     red, green, blue = difference.split()
     maximum = ImageChops.lighter(ImageChops.lighter(red, green), blue)
@@ -36,7 +51,8 @@ def compare(golden, current, output, tolerance=8):
     incident = str(uuid.uuid4())
     report = {'schemaVersion': 1, 'incidentId': incident,
               'source': 'local image comparison', 'capturedAt': datetime.now(timezone.utc).isoformat(),
-              'status': 'partial', 'dimensions': list(before.size), 'tolerance': tolerance,
+              'status': 'partial', 'sourceDimensions': source_dimensions, 'region': region,
+              'dimensions': list(before.size), 'tolerance': tolerance,
               'changedPixels': changed, 'totalPixels': pixels, 'changedRatio': changed / pixels,
               'meanMaxChannelDifference': sum(i * count for i, count in enumerate(histogram)) / pixels,
               'automaticTestVerdict': 'not-inferred', 'conditionsVerified': False,
@@ -63,9 +79,10 @@ def main():
     parser.add_argument('--current', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--tolerance', type=int, default=8)
+    parser.add_argument('--region', help='x,y,width,height within both original images')
     args = parser.parse_args()
     try:
-        report = compare(args.golden, args.current, args.out, args.tolerance)
+        report = compare(args.golden, args.current, args.out, args.tolerance, args.region)
     except ModuleNotFoundError:
         parser.exit(2, 'Optional visual comparison needs Python with Pillow; other tools remain available.\n')
     except Exception:

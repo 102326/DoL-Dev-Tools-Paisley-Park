@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "scoped-inspection-and-rotation",
+  "scope": "#passages",
+  "timeoutMs": 120000,
+  "steps": [
+    { "type": "wait", "selector": "#passages", "condition": "visible", "timeoutMs": 3000 },
+    { "type": "checkpoint", "capture": ["dom", "css", "environment", "console", "network"] },
+    { "type": "rotate", "degrees": 90 },
+    { "type": "wait", "milliseconds": 200 },
+    { "type": "checkpoint", "capture": ["screenshot", "performance"] }
+  ]
+}

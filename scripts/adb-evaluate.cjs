@@ -1,8 +1,8 @@
 const fs = require('node:fs');
 const { connect } = require('./lib/cdp.cjs');
 
-async function evaluate(endpoint, source, timeoutMs = 60000) {
-  const client = await connect(endpoint, timeoutMs);
+async function evaluate(endpoint, source, timeoutMs = 60000, targetId = null) {
+  const client = await connect(endpoint, timeoutMs, undefined, targetId);
   try {
     return await client.evaluate(source);
   } finally { client.close(); }

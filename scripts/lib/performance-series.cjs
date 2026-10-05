@@ -1,0 +1,57 @@
+const {memory,frames}=require('./performance.cjs');
+function system(thermal,battery){
+  const read=(text,key)=>{const m=text.match(new RegExp(`^\\s*${key}:\\s*(-?\\d+)\\s*$`,'m'));return m?Number(m[1]):null};
+  const state=thermal.match(/Thermal Status:\s*([0-6])\b/)?.[1];
+  const level=read(battery,'level'),scale=read(battery,'scale'),temperature=read(battery,'temperature'),voltage=read(battery,'voltage'),status=read(battery,'status');
+  return {thermal:{status:state===undefined?'unsupported':'available',severity:state===undefined?null:Number(state)},
+    battery:{status:level===null?'unsupported':'available',level:level!==null&&level>=0&&level<=1000?level:null,scale:scale>0&&scale<=1000?scale:null,
+      temperatureC:temperature!==null&&temperature>=-1000&&temperature<=2000?temperature/10:null,
+      voltageMv:voltage>0&&voltage<20000?voltage:null,chargingStatus:[1,2,3,4,5].includes(status)?status:null}};
+}
+async function web(client){
+  const result={status:'unsupported',metrics:{},detachedNodes:'not measured',observers:'not measured',leakDiagnosis:'not-inferred'};
+  if(!client)return result;
+  let enabled=false;
+  try{
+    await client.send('Performance.enable');enabled=true;
+    const metrics=await client.send('Performance.getMetrics');
+    const names=['Timestamp','JSHeapUsedSize','JSHeapTotalSize','Nodes','Documents','JSEventListeners','LayoutCount','RecalcStyleCount','LayoutDuration','RecalcStyleDuration','ScriptDuration','TaskDuration'];
+    for(const item of Array.isArray(metrics.metrics)?metrics.metrics.slice(0,100):[])if(names.includes(item.name)&&Number.isFinite(item.value)&&item.value>=0)result.metrics[item.name]=item.value;
+    try{const counters=await client.send('Memory.getDOMCounters');for(const name of ['documents','nodes','jsEventListeners'])if(Number.isSafeInteger(counters[name])&&counters[name]>=0)result[name]=counters[name]}catch{/* Conditional protocol support. */}
+    result.status=Object.keys(result.metrics).length?'available':'unsupported';
+  }catch{/* Raw protocol content omitted. */}
+  finally{if(enabled)try{await client.send('Performance.disable')}catch{result.cleanupWarning=true}}
+  return result;
+}
+function validate(options){
+  if(!Number.isInteger(options.samples)||options.samples<2||options.samples>20||!Number.isInteger(options.intervalMs)||options.intervalMs<0||options.intervalMs>5000||(options.samples-1)*options.intervalMs>50000)throw Error('Invalid sampling window');
+}
+async function collect(ctx){
+  validate(ctx.options);
+  const started=Date.now(),deadline=started+60000,controller=new AbortController();
+  const timer=setTimeout(()=>{controller.abort();if(ctx.options.seriesWebview)try{ctx.client?.close()}catch{/* Final cleanup remains core-owned. */}},60000),samples=[];
+  const active=()=>{if(controller.signal.aborted||Date.now()>=deadline)throw Error('Sampling deadline')};
+  const adb=async(...args)=>{active();const value=ctx.adb.execute?await ctx.adb.execute(args,{timeout:Math.min(10000,Math.max(1,deadline-Date.now())),signal:controller.signal}):await ctx.adb(...args);active();return value.toString()};
+  const result={schemaVersion:1,source:'Performance series',samples,requestedSamples:ctx.options.samples,intervalMs:ctx.options.intervalMs,deadlineMs:60000,truncated:false,
+    observationsAreSequential:true,frameCounters:'accumulated; samples can include the same frames',leakDiagnosis:'not-inferred',webviewOwnership:'CDP selected target only; native renderer subprocess attribution not inferred'};
+  try{
+    for(let i=0;i<ctx.options.samples;i++){
+      active();const entry={index:i,capturedAt:new Date().toISOString(),atMs:Date.now()-started,status:'partial'};samples.push(entry);
+      if((await adb('shell','pidof',ctx.options.package)).trim()!==ctx.appPid)throw Error('App process changed');
+      try{entry.memory=memory(await adb('shell','dumpsys','meminfo',ctx.options.package))}catch{active();entry.memory={status:'unsupported'}}
+      try{entry.frames=frames(await adb('shell','dumpsys','gfxinfo',ctx.options.package,'framestats'))}catch{active();entry.frames={status:'unsupported'}}
+      let thermal='',battery='';
+      try{thermal=await adb('shell','dumpsys','thermalservice')}catch{active()}
+      try{battery=await adb('shell','dumpsys','battery')}catch{active()}
+      Object.assign(entry,system(thermal,battery));
+      if(ctx.options.seriesWebview){active();entry.webview=await web(ctx.client);active()}
+      entry.durationMs=Date.now()-started-entry.atMs;
+      entry.status=entry.memory.status!=='unsupported'&&entry.frames.status!=='unsupported'&&entry.thermal.status==='available'&&entry.battery.status==='available'&&(!ctx.options.seriesWebview||entry.webview.status==='available'&&!entry.webview.cleanupWarning)?'complete':'partial';
+      if(i+1<ctx.options.samples&&ctx.options.intervalMs){active();await new Promise(resolve=>setTimeout(resolve,Math.min(ctx.options.intervalMs,Math.max(1,deadline-Date.now()))));active()}
+    }
+  }catch{result.truncated=true;result.reason='sampling-stopped; target changed, command failed or deadline reached'}
+  finally{clearTimeout(timer);controller.abort()}
+  if(result.truncated||samples.some(s=>s.status!=='complete')){result.collectorStatus='failed';result.reason=result.reason||'requested sampling capabilities incomplete'}
+  result.captureEnd=new Date().toISOString();return result;
+}
+module.exports={system,web,validate,collect};

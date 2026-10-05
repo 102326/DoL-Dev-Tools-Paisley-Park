@@ -25,8 +25,13 @@ async function device(ctx) {
   const start = Date.now();
   const deviceTime = (await ctx.adb('shell', 'date', '+%s')).toString().trim();
   const end = Date.now(), seconds = /^\d{10}$/.test(deviceTime) ? Number(deviceTime) : null;
+  let wakefulness = null;
+  try {
+    const state = (await ctx.adb('shell','dumpsys','power')).toString().match(/^\s*mWakefulness=(Awake|Asleep|Dozing|DozingSuspend)\s*$/m)?.[1];
+    wakefulness = state || null;
+  } catch { /* Device power state is conditional metadata. */ }
   ctx.deviceReady = true;
-  return { model, androidVersion, explicitDevice: true, serial: '[omitted]',
+  return { model, androidVersion, wakefulness, explicitDevice: true, serial: '[omitted]',
     deviceTimestamp: seconds === null ? null : new Date(seconds * 1000).toISOString(),
     clockOffsetMs: seconds === null ? null : seconds * 1000 - (start + end) / 2,
     clockUncertaintyMs: 1000 + (end - start) / 2 };
@@ -54,8 +59,10 @@ async function forward(ctx) {
   if (!ctx.appPid) throw new Error('App identity unavailable');
   if ((await ctx.adb('shell', 'pidof', ctx.options.package)).toString().trim() !== ctx.appPid) throw new Error('App process changed');
   const sockets = (await ctx.adb('shell', 'cat', '/proc/net/unix')).toString();
-  const name = `webview_devtools_remote_${ctx.appPid}`;
-  if (!sockets.split('\n').some(line => line.trim().endsWith(`@${name}`))) throw new Error('App WebView socket unavailable');
+  const candidates = ['webview_devtools_remote_', 'browser_webview_devtools_remote_'].map(prefix => `${prefix}${ctx.appPid}`)
+    .filter(name => sockets.split('\n').some(line => line.trim().endsWith(`@${name}`)));
+  const name = ctx.options.webviewSocket || (candidates.length === 1 ? candidates[0] : null);
+  if (!name || !candidates.includes(name)) throw new Error('App WebView socket unavailable');
   const port = (await ctx.adb('forward', 'tcp:0', `localabstract:${name}`)).toString().trim();
   if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) throw new Error('Invalid forwarding port');
   ctx.forwardPort = port;
@@ -105,7 +112,7 @@ function events() {
 async function cdp(ctx) {
   if (!ctx.endpoint) throw new Error('Verified WebView endpoint unavailable');
   const capture = events();
-  const client = await (ctx.connect || connect)(ctx.endpoint, 10000, capture.onEvent);
+  const client = await (ctx.connect || connect)(ctx.endpoint, Math.max(10000, (ctx.options.timelineMs || 0) + 5000), capture.onEvent, ctx.options.targetId || null);
   ctx.client = client;
   const channels = {};
   const start = new Date().toISOString();
@@ -141,6 +148,10 @@ async function dom(ctx) {
   if (!ctx.client) throw new Error('CDP unavailable');
   return { ...await ctx.client.evaluate(expression(ctx.options.scope)), scopeHash: createHash('sha256').update(ctx.options.scope).digest('hex') };
 }
+async function css(ctx) {
+  return { ...await ctx.client.evaluate(require('./css.cjs').expression(ctx.options.scope)),
+    scopeHash: createHash('sha256').update(ctx.options.scope).digest('hex') };
+}
 async function versions(ctx) {
   if (!ctx.client) throw new Error('CDP unavailable');
   return ctx.client.evaluate(`(() => {
@@ -151,4 +162,5 @@ async function versions(ctx) {
 }
 async function gfx(ctx) { return frames((await ctx.adb('shell', 'dumpsys', 'gfxinfo', ctx.options.package, 'framestats')).toString()); }
 async function mem(ctx) { return memory((await ctx.adb('shell', 'dumpsys', 'meminfo', ctx.options.package)).toString()); }
-module.exports = { android, device, app, screenshot, forward, cdp, consoleSummary, networkSummary, webview, dom, versions, gfx, mem, events };
+module.exports = { android, device, app, screenshot, forward, cdp, consoleSummary, networkSummary, webview, dom, versions, gfx, mem, events,
+  css, provider: require('./environment.cjs').collectProvider, environment: require('./environment.cjs').collect };

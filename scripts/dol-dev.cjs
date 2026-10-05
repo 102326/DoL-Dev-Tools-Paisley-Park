@@ -4,32 +4,53 @@ const { randomUUID, createHash } = require('node:crypto');
 const { evidence } = require('./lib/evidence.cjs');
 const { evaluate } = require('./adb-evaluate.cjs');
 const dom = require('./lib/dom.cjs');
+const css = require('./lib/css.cjs');
+const environment = require('./lib/environment.cjs');
+const timeline = require('./lib/timeline.cjs');
+const inspectors = require('./lib/inspectors.cjs');
 const { redact } = require('./lib/privacy.cjs');
 const { doctor } = require('./lib/doctor.cjs');
 const { support } = require('./lib/support.cjs');
 const { version } = require('../package.json');
-const help = `DoL Dev Tools ${version} (read-only diagnostics)
+const help = `DoL Dev Tools ${version} (local development and diagnostics)
   --version
   evidence --serial SERIAL --package PACKAGE --out NEW_DIR [--scope SELECTOR] [--window-ms 1000] [--integration soft-and-wet]
     Optional: --logcat-seconds 30 --record-seconds 10 --repro NOTE_JSON --integration-file REVIEWED_LOCAL.cjs
+    Optional: --css yes --environment yes --target-id ID --webview-socket VERIFIED_PID_SOCKET
+    Optional: --timeline-ms 1000 --scope SELECTOR [--observer-instrumentation yes]
+    Optional: --inspectors selector-health,accessibility,overlays,scroll,ownership,hitboxes --storage yes
+  inspect --endpoint LOCAL_HTTP_CDP --out NEW_JSON
+  environment --serial SERIAL --package PACKAGE --out NEW_DIR [--target-id ID]
   capture | perf | logcat | record --serial SERIAL --package PACKAGE --out NEW_DIR [--seconds N]
   perf --deep --serial SERIAL --package PACKAGE --out NEW_DIR --seconds 10 --sensitive yes
+  perf-series --serial SERIAL --package PACKAGE --out NEW_DIR --samples 3 --interval-ms 1000 [--webview yes]
   bugreport --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes
   evidence --full --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes [other evidence options]
   doctor --out NEW_JSON [--serial SERIAL --package PACKAGE] [--endpoint LOCAL_CDP_URL]
   support --from EVIDENCE_DIR --out NEW_DIR [--include-screenshot yes]
-  visual-diff --golden PNG --current PNG --out NEW_DIR [--tolerance 8]
+  evidence-compare --before EVIDENCE_DIR --after EVIDENCE_DIR --out NEW_DIR
+  issue-report --from EVIDENCE_DIR --out NEW_DIR
+  known-good --from COMPLETE_EVIDENCE_DIR --out NEW_DIR [--label SLUG] [--snapshots dom-contract,css-contract,environment,storage]
+  visual-diff --golden PNG --current PNG --out NEW_DIR [--tolerance 8] [--region x,y,width,height]
   dom-snapshot --endpoint http://127.0.0.1:PORT --scope SELECTOR --out NEW_JSON
   dom-diff --before JSON --after JSON --out NEW_JSON
+  css-snapshot --endpoint LOCAL_HTTP_CDP --scope SELECTOR --out NEW_JSON [--target-id ID]
+  css-diff | environment-diff --before JSON --after JSON --out NEW_JSON
+  timeline --endpoint LOCAL_HTTP_CDP --scope SELECTOR --milliseconds 1000 --out NEW_JSON [--observer-instrumentation yes]
+  dom-inspect --mode selector-health|accessibility|overlays|scroll|ownership|hitboxes --endpoint LOCAL_HTTP_CDP --scope SELECTOR --out NEW_JSON
+  storage-snapshot --endpoint LOCAL_HTTP_CDP --out NEW_JSON
+  storage-diff --before JSON --after JSON --out NEW_JSON
+  action | journey --file REVIEWED_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
+    --plan creates a static plan only; --target-id and --webview-socket are optional explicit target overrides
 Evidence creates and removes a temporary ADB forward for the explicit app process.
-Built-in collectors do not install APKs, act in-game, access saves or repair the environment. Parent directory must exist.
+Evidence collectors do not install APKs, perform business actions, read save bodies or repair the environment. Action/Journey are separate explicit operations. Parent directory must exist.
 Integration files execute reviewed local code with Node permissions; worker isolation is not a security sandbox.
 Screenshot is private; review before sharing. Console text and network bodies/paths are omitted.`;
 function parse(args, allowed) {
   const options = Object.create(null);
   while (args.length) {
     const flag = args.shift();
-    if (['--deep','--full'].includes(flag) && allowed.includes(flag) && !Object.hasOwn(options,flag.slice(2))) { options[flag.slice(2)] = true; continue; }
+    if (['--deep','--full','--plan'].includes(flag) && allowed.includes(flag) && !Object.hasOwn(options,flag.slice(2))) { options[flag.slice(2)] = true; continue; }
     if (!allowed.includes(flag) || Object.hasOwn(options, flag.slice(2)) || !args.length) throw new Error('Unknown, duplicate or incomplete option');
     options[flag.slice(2)] = args.shift();
   }
@@ -43,14 +64,30 @@ async function main(args = process.argv.slice(2)) {
   const command = args.shift();
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
-  if (['evidence','capture','perf','logcat','record','bugreport'].includes(command)) {
-    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive']
+  if (['evidence','capture','perf','logcat','record','bugreport','environment','perf-series'].includes(command)) {
+    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive','--css','--environment','--target-id','--webview-socket','--timeline-ms','--observer-instrumentation','--inspectors','--storage']
       : ['--serial','--package','--out', ...(command === 'logcat' || command === 'record' ? ['--seconds'] : []),
+        ...(command === 'environment' ? ['--target-id','--webview-socket','--window-ms'] : []),
+        ...(command === 'perf-series' ? ['--samples','--interval-ms','--webview','--target-id','--webview-socket'] : []),
         ...(command === 'perf' ? ['--deep','--seconds','--sensitive'] : command === 'bugreport' ? ['--sensitive'] : [])];
     const options = parse(args, allowed);
     if (options.integration && options.integration !== 'soft-and-wet') throw new Error('Unsupported integration');
     options.windowMs = options['window-ms'] === undefined ? 1000 : Number(options['window-ms']);
-    options.profile = command === 'perf' && options.deep ? 'deep' : command;
+    options.profile = command === 'perf-series' ? 'series' : command === 'perf' && options.deep ? 'deep' : command;
+    if(command==='perf-series'){
+      options.samples=Number(options.samples??3);options.intervalMs=Number(options['interval-ms']??1000);
+      if(options.webview!==undefined&&options.webview!=='yes')throw Error('WebView selection must be yes');options.seriesWebview=options.webview==='yes';options.windowMs=0;
+    }
+    for (const name of ['css','environment','storage']) if (options[name] !== undefined) {
+      if (options[name] !== 'yes') throw new Error('Explicit selection must be yes'); options[name] = true;
+    }
+    options.targetId = options['target-id']; options.webviewSocket = options['webview-socket'];
+    if (options.inspectors !== undefined) options.inspectors = options.inspectors.split(',');
+    if (options['timeline-ms'] !== undefined) options.timelineMs = Number(options['timeline-ms']);
+    if (options['observer-instrumentation'] !== undefined) {
+      if (options['observer-instrumentation'] !== 'yes') throw Error('Instrumentation selection must be yes');
+      options.observerInstrumentation = true;
+    }
     if (options.sensitive !== undefined && options.sensitive !== 'yes') throw new Error('Sensitive selection must be yes');
     options.sensitive = options.sensitive === 'yes';
     if (options.deep || options.full) options.deepSeconds = Number(options.seconds ?? 10);
@@ -63,6 +100,24 @@ async function main(args = process.argv.slice(2)) {
     const manifest = await evidence(options, { integrations });
     console.log(`Evidence ${manifest.status}; manifest: ${path.resolve(options.out, 'manifest.json')}`);
     if (manifest.status !== 'complete') process.exitCode = 1;
+  } else if (['action','journey'].includes(command)) {
+    const options=parse(args,['--file','--serial','--package','--out','--plan','--test-environment','--target-id','--webview-socket']);
+    if(!options.file || options['test-environment']!==undefined && options['test-environment']!=='yes')throw Error('Invalid execution options');
+    options.testEnvironment=options['test-environment']==='yes';options.targetId=options['target-id'];options.webviewSocket=options['webview-socket'];
+    const journey=require('./lib/journey.cjs'), loaded=journey.read(options.file,command==='action');
+    const report=await journey.run(options,loaded);
+    console.log(`Journey ${report.status}; inspect local manifest and checkpoints.`);
+    if(!['planned','complete'].includes(report.status))process.exitCode=1;
+  } else if (command === 'inspect') {
+    const options = parse(args, ['--endpoint','--out']);
+    if (!options.endpoint || !options.out || fs.existsSync(options.out)) throw new Error('Provide endpoint and new output');
+    const list = await require('./lib/cdp.cjs').targets(options.endpoint);
+    write(options.out, 'caller-specified CDP target inventory; app association unverified', { targets: list.filter(t => t?.type === 'page').map(t => ({
+      id: typeof t.id === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(t.id) ? t.id : null,
+      standardDoLTitle: t.title === 'Degrees of Lewdity',
+      titleHash: typeof t.title === 'string' ? createHash('sha256').update(t.title).digest('hex') : null,
+      debuggerAvailable: typeof t.webSocketDebuggerUrl === 'string', titleAndUrl: 'omitted' })) });
+    console.log('Target inventory saved; select an explicit ID when the default game title is ambiguous.');
   } else if (command === 'doctor') {
     const options = parse(args, ['--out','--serial','--package','--endpoint']);
     if (!options.out || fs.existsSync(options.out)) throw new Error('Provide a new --out file');
@@ -76,13 +131,19 @@ async function main(args = process.argv.slice(2)) {
     const report = support(options.from, options.out, options['include-screenshot'] === 'yes');
     console.log(`Support ${report.status}; inspect before sharing.`);
     if (report.status !== 'complete') process.exitCode = 1;
+  } else if (['evidence-compare','issue-report','known-good'].includes(command)) {
+    const options=parse(args,command==='evidence-compare'?['--before','--after','--out']:['--from','--out',...(command==='known-good'?['--label','--snapshots']:[])]);
+    if(!options.out||command==='evidence-compare'&&(!options.before||!options.after)||command!=='evidence-compare'&&!options.from)throw Error('Provide source and new output');
+    const helpers=require('./lib/evidence-tools.cjs');
+    const result=command==='evidence-compare'?helpers.compare(options.before,options.after,options.out):command==='issue-report'?helpers.report(options.from,options.out):helpers.knownGood(options.from,options.out,{...(options.label?{label:options.label}:{}),...(options.snapshots!==undefined?{snapshots:options.snapshots.split(',')}:{})});
+    console.log(`Local ${command} ${result.status}; no upload or automatic compatibility verdict.`);if(result.status!=='complete')process.exitCode=1;
   } else if (command === 'visual-diff') {
-    const options = parse(args, ['--golden','--current','--out','--tolerance']);
+    const options = parse(args, ['--golden','--current','--out','--tolerance','--region']);
     if (!options.golden || !options.current || !options.out) throw new Error('Provide images and --out');
     const { promisify } = require('node:util');
     const execute = promisify(require('node:child_process').execFile);
     try {
-      const result = await execute(process.env.DOL_PYTHON || 'python', [path.join(__dirname,'visual-diff.py'), '--golden',options.golden,'--current',options.current,'--out',options.out,'--tolerance',options.tolerance ?? '8'],
+      const result = await execute(process.env.DOL_PYTHON || 'python', [path.join(__dirname,'visual-diff.py'), '--golden',options.golden,'--current',options.current,'--out',options.out,'--tolerance',options.tolerance ?? '8',...(options.region!==undefined?['--region',options.region]:[])],
         { timeout: 30000, maxBuffer: 65536, windowsHide: true });
       console.log(result.stdout.trim());
     } catch (error) {
@@ -90,20 +151,39 @@ async function main(args = process.argv.slice(2)) {
       else console.error('Visual comparison failed; check image dimensions, limits and output protection.');
       process.exitCode = 1;
     }
-  } else if (command === 'dom-snapshot') {
-    const options = parse(args, ['--endpoint','--scope','--out']);
+  } else if (['dom-inspect','storage-snapshot'].includes(command)) {
+    const options = parse(args, ['--endpoint','--scope','--mode','--out','--target-id']);
+    if (!options.endpoint || !options.out || fs.existsSync(options.out)) throw Error('Provide endpoint and new output');
+    const mode = command === 'storage-snapshot' ? 'storage' : options.mode;
+    if (command === 'storage-snapshot' && (options.mode !== undefined || options.scope !== undefined) || command === 'dom-inspect' && !inspectors.domModes.includes(mode)) throw Error('Invalid inspector selection');
+    const data = await evaluate(options.endpoint, inspectors.expression(mode,options.scope), 12000,options['target-id']||null);
+    write(options.out, `${mode} via caller-specified CDP endpoint; app association unverified`, { ...data, ...(mode === 'storage' ? {} : {scopeHash:createHash('sha256').update(options.scope).digest('hex')}) });
+    console.log('Inspection saved; descriptive observations require project interpretation.');
+  } else if (command === 'timeline') {
+    const options = parse(args, ['--endpoint','--scope','--milliseconds','--out','--target-id','--observer-instrumentation']);
+    if (!options.endpoint || !options.out || fs.existsSync(options.out) || options['observer-instrumentation'] !== undefined && options['observer-instrumentation'] !== 'yes') throw Error('Invalid timeline options');
+    const duration = Number(options.milliseconds ?? 1000);
+    const source = timeline.expression(options.scope, duration, options['observer-instrumentation'] === 'yes');
+    const data = await evaluate(options.endpoint, source, duration + 5000, options['target-id'] || null);
+    write(options.out, 'temporary scoped timeline via caller-specified CDP endpoint; app association unverified', { ...data, scopeHash: createHash('sha256').update(options.scope).digest('hex') });
+    console.log('Timeline saved; ordering within this window does not prove causation.');
+    if (data?.capabilities?.cleanupConflicts > 0) process.exitCode = 1;
+  } else if (['dom-snapshot','css-snapshot'].includes(command)) {
+    const module = command === 'dom-snapshot' ? dom : css;
+    const options = parse(args, ['--endpoint','--scope','--out','--target-id']);
     if (!options.endpoint || !options.scope || options.scope.length > 256 || !options.out) throw new Error('Provide --endpoint, --scope and --out');
     if (fs.existsSync(options.out)) throw new Error('Output already exists');
-    const data = await evaluate(options.endpoint, dom.expression(options.scope), 10000);
-    write(options.out, 'DOM via caller-specified CDP endpoint; app association unverified', { ...dom.contract(data), scopeHash: createHash('sha256').update(options.scope).digest('hex') });
-    console.log('DOM contract saved.');
-  } else if (command === 'dom-diff') {
+    const data = await evaluate(options.endpoint, module.expression(options.scope), 10000, options['target-id'] || null);
+    write(options.out, `${command} via caller-specified CDP endpoint; app association unverified`, { ...module.contract(data), scopeHash: createHash('sha256').update(options.scope).digest('hex') });
+    console.log('Scoped contract saved.');
+  } else if (['dom-diff','css-diff','environment-diff','storage-diff'].includes(command)) {
+    const module = command === 'dom-diff' ? dom : command === 'css-diff' ? css : command === 'storage-diff' ? {diff:inspectors.storageDiff} : environment;
     const options = parse(args, ['--before','--after','--out']);
     if (!options.before || !options.after || !options.out) throw new Error('Provide --before, --after and --out');
-    const read = file => { if (fs.statSync(file).size > 1024 * 1024) throw new Error('DOM contract too large'); return JSON.parse(fs.readFileSync(file, 'utf8')); };
+    const read = file => { if (fs.statSync(file).size > 1024 * 1024) throw new Error('Contract too large'); return JSON.parse(fs.readFileSync(file, 'utf8')); };
     const before = read(options.before), after = read(options.after);
-    write(options.out, 'DOM comparison', { ...dom.diff(before, after), inputIncidents: [before.incidentId ?? null, after.incidentId ?? null] });
-    console.log('DOM diff saved; structural differences do not prove compatibility failure.');
+    write(options.out, `${command} comparison`, { ...module.diff(before, after), inputIncidents: [before.incidentId ?? null, after.incidentId ?? null] });
+    console.log('Diff saved; observed differences do not prove compatibility failure.');
   } else throw new Error('Unknown command; use --help');
 }
 module.exports = { main, parse };

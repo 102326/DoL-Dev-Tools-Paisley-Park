@@ -33,7 +33,7 @@ async function main() {
     let calls = 0;
     const ctx = { client: { async evaluate(expression) {
       if (++calls > 16 || typeof expression !== 'string' || Buffer.byteLength(expression) > 32768) throw new Error('Probe limit');
-      connection ||= connect(workerData.endpoint, 3000);
+      connection ||= connect(workerData.endpoint, 3000, undefined, workerData.targetId || null);
       client = await connection;
       return client.evaluate(expression);
     } } };

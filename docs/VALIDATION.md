@@ -1,5 +1,26 @@
 # DoL Dev Tools 验证记录
 
+## 完整能力开发工作区：2026-10-05（未重新封装）
+
+在现有目录继续开发，package 仍为 1.1.0 基线；按用户要求暂不新建 ZIP、版本 tag 或推送。已明确当前连接 App 可用于普通测试动作，真实存档/云数据删除覆盖仍排除。
+
+- CSS/Environment：限定 CSS styles/矩形、scopeHash、环境与公开 Mod metadata；真机 Evidence complete，CSS 154 节点、公开 runtime list 37 项。列表顺序是 reportedIndex，不证明实际执行顺序；未知 enabled/loadOrder 为 null。
+- Action/Journey：完整计划先验证、静态 plan 零设备调用、当前用户安装与精确 foreground/focus、准备后再校验、派发后失败结果未知、总截止后不继续下一动作、独立恢复预算、未知动态 forward 端口不猜删。独立审查发现并修正准备后前台竞态与断链结果标记，已复核覆盖。
+- 真机六步 Journey：等待页面、web-focus（activeElement 验证）、DOM/CSS/Environment/Console/Network checkpoint、旋转设置实验、短等待、截图。complete / exit 0；原旋转设置和既有 ADB forwarding 清单逐项一致，自己的传输清理完成。没有购买/输入/剧情推进/存档操作；此处未做真实 tap/input/restart，旋转设置成功不证明 App 实际转向。
+- DOM Inspector/Storage：真机限定范围记录 154 节点，深度截断如实标记；所有权 unknown。local/session 数量 43/1，9 个数据库的只读结构/count 均 available；不读取键值或记录正文。Selector Health 对零/多匹配输出数量，不强行报唯一；半透明背景不报已知对比，色彩对比是 computed color-only 估计。
+- Timeline：独立审查用 VM 复现 setup 异常泄漏、setter/冻结实例恢复失败、方法 getter 改变构造行为；外层 finally、独立资源清理、完整描述符复核与无 getter 探测修复，7 项模块回归及独立复核通过。真机 500ms 显式 instrumentation 窗口正常结束，3 类构造器可观察，cleanupConflicts=0；records=0，不能宣称捕获到了动作/Mutation 或 callback 执行。已有 Observer 与 callback 不跟踪，不主动 disconnect 项目实例。
+- Storage 只读独立审查确认 upgrade race abort、截止关闭自有句柄/事务、迟到 count callback 不改返回结果；补充 hash 后 deadline 再核对及局部 incomplete 对比 unobserved，避免虚构删除。相关新增回归通过。
+- Schema：隔离于忽略目录的可选开发 jsonschema 4.25.1 + rfc3339-validator 0.1.4 实际验证 Draft 2020-12 Schema、56 份当前真机 JSON 和 12 份对应 Collector payload；date-time/UUID/version 负例回归 1 passed。首次只有 jsonschema 时未启用 date-time format checker，负例失败；查明可选 RFC3339 检查器缺失后补到同一隔离目录，并断言检查器存在。未添加 Node 运行依赖、未改全局 Python 环境；CI 使用显式开发依赖。
+
+上述模块测试、现场采集与普通复现实验分别记录，不代表最终能力、兼容矩阵或完整游戏验收已经完成。现场资料保存在忽略的 artifacts/complete-development-*，不打入源码交付包。
+
+本轮后续验收：
+
+- `npm test` 全仓 64 passed / 0 failed / 0 skipped。系统 Python（隔离 schema 开发依赖）4 项：3 passed / Visual 1 skipped；现有 Pillow Python 的区域比较 1 passed。统一 CLI 实际比较同一截图的 10×10 区域，complete；不证明跨版本视觉条件一致。Skill quick_validate valid，未全局安装。
+- 增加 perf-series：先在休眠设备取得 3 组 native 内存/帧/thermal/battery，CDP unavailable，保留 partial。观察到 power Asleep、黑色截图和 NotificationShade 焦点；显式 wake Journey complete 后同一 PID/socket 恢复 HTTP。未重启 App。新的 3 组 native 与 WebView heap/DOM/listener/时间指标全部 complete；没有把首次失败删掉或隐藏，内存变化不作泄漏结论。Device 采集新增可用时的 wakefulness 元信息。
+- Evidence Compare/Report/Known Good：离线 7 项行为检查覆盖 SHA、路径、缺失/未知、固定投影、Journey 任意字段/数组限额、防覆盖与选择参考。真实小范围 DOM/CSS/Environment Reference 建立后与原来源比较，三类 changes=0；参考新分配 incidentId，SHA 校验通过。首次默认包含 Storage 的基线因键名遗漏而拒绝；后来明确只选完整三类，没有虚构完整 Storage。失败的性能 Evidence 生成 Issue Report 为 partial，保留原始失败说明范围。
+- 后续标准 Schema 验证累计 97 份真实 Manifest/Envelope 与 17 份对应 payload，包括新的 series profile 与 Known Good manifest；Schema 仍不证明跨文件真实性或业务正确。新增所选类型缺失回归首次命中通用错误文字；调整检查顺序以给出明确 missing 原因后定向与全仓检查通过，未放宽拒绝条件。
+
 ## 1.1.0 公共接入：2026-10-05
 
 原目录继续更新，无新增 Node 运行依赖；证据 schema 仍为 1。1.0 源码包、tag 与替换前备份保留，未推送 GitHub 或上传真实资料。

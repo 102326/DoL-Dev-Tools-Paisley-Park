@@ -37,6 +37,16 @@ test('Evidence is complete without optional Soft & Wet integration', async t => 
   assert.equal(manifest.steps.some(step => step.name.startsWith('integration-')), false);
 });
 
+test('explicit timeline failures preserve their artifact and reject invalid options before output', async t => {
+  const root=fixture(t),out=path.join(root,'timeline');
+  await assert.rejects(evidence({...options(out),scope:undefined,timelineMs:20},{collectors:stubs()}));
+  assert.equal(fs.existsSync(out),false);
+  const manifest=await evidence({...options(out),timelineMs:20},{adb:async()=>Buffer.alloc(0),collectors:stubs({timeline:async()=>({schemaVersion:1,source:'timeline',records:[],collectorStatus:'failed',reason:'timeline-cleanup-conflict'})})});
+  assert.equal(manifest.status,'partial');
+  assert.equal(manifest.steps.find(s=>s.name==='timeline').status,'failed');
+  assert.equal(fs.existsSync(path.join(out,'timeline.json')),true);
+});
+
 test('optional integration errors do not block Generic evidence', async t => {
   const root = fixture(t);
   const broken = { describe: () => { throw Error('secret input'); }, detect: async () => { throw Error('secret input'); }, collect: async () => ({}), redact: x => x };
@@ -73,7 +83,7 @@ test('Soft & Wet probe reports only supported safe summaries', async () => {
 });
 
 test('WebView forwarding verifies the current PID socket and requests a dynamic port', async () => {
-  async function invoke({ pid = '123', socket = 'webview_devtools_remote_123', forwarded = '54321' } = {}) {
+  async function invoke({ pid = '123', socket = 'webview_devtools_remote_123', forwarded = '54321', webviewSocket } = {}) {
     const calls = [];
     const adb = async (...args) => {
       calls.push(args);
@@ -82,11 +92,15 @@ test('WebView forwarding verifies the current PID socket and requests a dynamic 
       if (args[0] === 'forward') return Buffer.from(forwarded);
       throw Error(`unexpected adb call: ${args.join(' ')}`);
     };
-    const ctx = { adb, appPid: '123', options: { package: 'com.example.game' } };
+    const ctx = { adb, appPid: '123', options: { package: 'com.example.game', webviewSocket } };
     try { await collectors.forward(ctx); return { ctx, calls }; } catch (error) { return { error, calls }; }
   }
   assert.equal((await invoke({ pid: '456' })).error.message, 'App process changed');
   assert.equal((await invoke({ socket: 'webview_devtools_remote_456' })).error.message, 'App WebView socket unavailable');
+  assert.ok((await invoke({ socket: 'browser_webview_devtools_remote_123' })).ctx);
+  const both = 'webview_devtools_remote_123\n@browser_webview_devtools_remote_123';
+  assert.equal((await invoke({ socket: both })).error.message, 'App WebView socket unavailable');
+  assert.ok((await invoke({ socket: both, webviewSocket: 'browser_webview_devtools_remote_123' })).ctx);
   const { ctx, calls } = await invoke();
   assert.equal(ctx.endpoint, 'http://127.0.0.1:54321');
   assert.ok(calls.some(args => args[0] === 'forward' && args[1] === 'tcp:0' && args[2] === 'localabstract:webview_devtools_remote_123'));

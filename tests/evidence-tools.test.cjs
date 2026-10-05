@@ -1,0 +1,191 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { createHash } = require('node:crypto');
+const { compare, report, readManifest, knownGood } = require('../scripts/lib/evidence-tools.cjs');
+
+const incident = '123e4567-e89b-42d3-a456-426614174000';
+const hash = value => createHash('sha256').update(value).digest('hex');
+function fixture(t) {
+  const base = fs.mkdtempSync(path.join(os.tmpdir(), 'dol-compare-'));
+  t.after(() => fs.rmSync(base, { recursive: true, force: true }));
+  return base;
+}
+function incidentDir(base, folder, steps, extras = {}) {
+  const dir = path.join(base, folder);
+  fs.mkdirSync(dir);
+  const manifest = { schemaVersion: 1, incidentId: incident, status: 'complete',
+    captureStart: '2026-10-05T00:00:00.000Z', captureEnd: '2026-10-05T00:00:01.000Z',
+    toolVersion: '1.0.0', steps: [], ...extras };
+  for (const [name, data] of Object.entries(steps)) {
+    const filename = `${name}.json`;
+    const body = JSON.stringify({ schemaVersion: 1, incidentId: incident, source: name,
+      capturedAt: '2026-10-05T00:00:00.000Z', data });
+    fs.writeFileSync(path.join(dir, filename), body);
+    manifest.steps.push({ name, status: 'completed', artifact: { filename, sha256: hash(body) },
+      captureStart: manifest.captureStart, captureEnd: manifest.captureEnd });
+  }
+  fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest));
+  return { dir, manifest };
+}
+const domNode = id => ({ address: '0', parent: null, tag: 'div', id, class: [], data: [], hidden: false, childCount: 0 });
+const cssNode = display => ({ address: '0', parent: null, tag: 'div', id: '', class: [], childCount: 0,
+  style: { display }, rect: { x: 0, y: 0, width: 10, height: 10 } });
+
+test('compare emits validated DOM/CSS fields and hashes without exporting unknown payload', t => {
+  const base = fixture(t);
+  const before = incidentDir(base, 'before', {
+    'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('old')], truncated: false, scopeHash: 'a'.repeat(64) },
+    'css-contract': { schemaVersion: 1, source: 'CSS', nodes: [cssNode('block')], truncated: false, scopeHash: 'a'.repeat(64) },
+    network: { privatePayload: 'SECRET_BODY' },
+  }, { serial: 'SECRET_SERIAL', unknown: 'SECRET_MANIFEST' });
+  const after = incidentDir(base, 'after', {
+    'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('new')], truncated: false, scopeHash: 'a'.repeat(64) },
+    'css-contract': { schemaVersion: 1, source: 'CSS', nodes: [cssNode('flex')], truncated: false, scopeHash: 'a'.repeat(64) },
+    network: { privatePayload: 'DIFFERENT_SECRET_BODY' },
+  });
+  const out = path.join(base, 'out');
+  const result = compare(before.dir, after.dir, out);
+  assert.equal(result.status, 'complete');
+  assert.ok(result.comparisons.find(item => item.step === 'dom-contract').changes[0].fields.includes('id'));
+  assert.ok(result.comparisons.find(item => item.step === 'css-contract').changes[0].fields.includes('style.display'));
+  assert.ok(result.artifacts.some(item => item.step === 'network'));
+  const saved = fs.readFileSync(path.join(out, 'compare.json'), 'utf8');
+  assert.equal(saved.includes('SECRET_'), false);
+  assert.equal(saved.includes(before.dir), false);
+});
+
+test('tampered, missing and escaping artifacts yield partial without reading payloads', t => {
+  const base = fixture(t);
+  const good = incidentDir(base, 'good', { 'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('x')] } });
+  const tampered = incidentDir(base, 'tampered', { 'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('x')] } });
+  fs.appendFileSync(path.join(tampered.dir, 'dom-contract.json'), 'private-extra');
+  const loaded = readManifest(tampered.dir);
+  assert.equal(loaded.status, 'partial');
+  assert.equal(loaded.reasons[0].code, 'artifact-checksum');
+  const missing = incidentDir(base, 'missing', { 'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('x')] } });
+  fs.rmSync(path.join(missing.dir, 'dom-contract.json'));
+  assert.equal(readManifest(missing.dir).reasons[0].code, 'artifact-missing');
+  const escaped = incidentDir(base, 'escaped', { 'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('x')] } });
+  escaped.manifest.steps[0].artifact.filename = '../outside.json';
+  fs.writeFileSync(path.join(escaped.dir, 'manifest.json'), JSON.stringify(escaped.manifest));
+  assert.equal(readManifest(escaped.dir).reasons[0].code, 'artifact-invalid');
+  const result = compare(good.dir, tampered.dir, path.join(base, 'out'));
+  assert.equal(result.status, 'partial');
+  assert.equal(result.comparisons.find(item => item.step === 'dom-contract').status, 'unknown');
+});
+
+test('report uses fixed Markdown and version grammar; exclusive output preserves existing files', t => {
+  const base = fixture(t);
+  const source = incidentDir(base, 'source', { repro: { summary: '<script>private</script>' },
+    console: { body: 'SECRET_CONSOLE' } }, { gameVersion: '0.5.1', loaderVersion: '<unsafe>', package: 'SECRET_PACKAGE' });
+  source.manifest.steps.push({ name: 'network', status: 'failed', reason: '<script>bad</script>' });
+  fs.writeFileSync(path.join(source.dir, 'manifest.json'), JSON.stringify(source.manifest));
+  const out = path.join(base, 'report');
+  const result = report(source.dir, out);
+  assert.equal(result.repro, 'completed');
+  assert.equal(result.versions.gameVersion, '0.5.1');
+  assert.equal(result.versions.loaderVersion, undefined);
+  assert.equal(result.steps.at(-1).reason, 'generic');
+  const markdown = fs.readFileSync(path.join(out, 'report.md'), 'utf8');
+  assert.equal(markdown.includes('<script>'), false);
+  assert.equal(markdown.includes('SECRET_'), false);
+  fs.writeFileSync(path.join(out, 'sentinel'), 'keep');
+  assert.throws(() => report(source.dir, out), { code: 'EEXIST' });
+  assert.equal(fs.readFileSync(path.join(out, 'sentinel'), 'utf8'), 'keep');
+});
+
+test('knownGood keeps only projected snapshots, compares with source, and never overwrites', t => {
+  const base = fixture(t), privateNode = { ...domNode('SECRET_ID'), class: ['SECRET_CLASS'] };
+  const source = incidentDir(base, 'source', {
+    'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [privateNode], truncated: false, scopeHash: 'a'.repeat(64) },
+    'css-contract': { schemaVersion: 1, source: 'CSS', nodes: [cssNode('block')], truncated: false, scopeHash: 'a'.repeat(64) },
+    network: { privatePayload: 'SECRET_BODY' }, repro: { note: 'SECRET_NOTE' },
+  }, { serial: 'SECRET_SERIAL' });
+  const out = path.join(base, 'reference');
+  const manifest = knownGood(source.dir, out, { label: 'known-ui' });
+  assert.notEqual(manifest.incidentId, incident);
+  assert.equal(manifest.originIncidentId, incident);
+  assert.equal(manifest.claim, 'caller-selected reference; business acceptance unverified');
+  assert.deepEqual(manifest.steps.map(step => step.name), ['dom-contract', 'css-contract']);
+  assert.equal(readManifest(out).status, 'complete');
+  const text = fs.readdirSync(out).map(file => fs.readFileSync(path.join(out, file), 'utf8')).join('\n');
+  assert.equal(/SECRET_|privatePayload|serial|network|repro/.test(text), false);
+  const result = compare(out, source.dir, path.join(base, 'comparison'));
+  assert.equal(result.status, 'complete');
+  assert.equal(result.comparisons.every(item => item.status === 'available' && item.changes.length === 0), true);
+  fs.writeFileSync(path.join(out, 'sentinel'), 'keep');
+  assert.throws(() => knownGood(source.dir, out), { code: 'EEXIST' });
+  assert.equal(fs.readFileSync(path.join(out, 'sentinel'), 'utf8'), 'keep');
+});
+
+test('knownGood rejects partial and truncated sources before creating output', t => {
+  const base = fixture(t);
+  const truncated = incidentDir(base, 'truncated', {
+    'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('x')], truncated: true, scopeHash: 'a'.repeat(64) },
+  });
+  const first = path.join(base, 'first');
+  assert.throws(() => knownGood(truncated.dir, first), /reference snapshot/);
+  assert.equal(fs.existsSync(first), false);
+  const selected=incidentDir(base,'selected',{'dom-contract':{schemaVersion:1,source:'DOM',nodes:[domNode('x')],truncated:false,scopeHash:'a'.repeat(64)},storage:{schemaVersion:1,source:'storage'}});
+  assert.equal(knownGood(selected.dir,path.join(base,'selected-reference'),{snapshots:['dom-contract']}).status,'complete');
+  assert.throws(()=>knownGood(selected.dir,path.join(base,'missing-reference'),{snapshots:['environment']}),/missing/);
+  assert.equal(fs.existsSync(path.join(base,'missing-reference')),false);
+  const partial = incidentDir(base, 'partial', {
+    'dom-contract': { schemaVersion: 1, source: 'DOM', nodes: [domNode('x')], truncated: false, scopeHash: 'a'.repeat(64) },
+  }, { status: 'partial' });
+  const second = path.join(base, 'second');
+  assert.throws(() => knownGood(partial.dir, second), /Incomplete reference incident/);
+  assert.equal(fs.existsSync(second), false);
+});
+
+test('knownGood projects complete environment and storage metadata without extra fields', t => {
+  const base = fixture(t);
+  const environment = { schemaVersion: 1, source: 'Environment',
+    device: { model: 'SECRET_MODEL', androidVersion: '16' },
+    app: { package: 'com.example.game', versionName: '1', versionCode: '1', foregroundMatches: true },
+    provider: { status: 'available', package: 'com.android.webview', version: '1' },
+    webview: { product: 'WebView/1', protocolVersion: '1', jsVersion: '1' },
+    runtime: { gameVersion: '1', loaderVersion: '1', viewport: { width: 100, height: 100, devicePixelRatio: 1 },
+      capabilities: { modList: true, performanceObserver: true, mutationObserver: true, indexedDB: true },
+      mods: { status: 'available', items: [{ name: 'SECRET_MOD', version: '1', reportedIndex: 0,
+        enabled: null, loadOrder: null }], truncated: false, unreadable: 0 } },
+    incomplete: false, unknownPrivateField: 'SECRET_EXTRA' };
+  const storage = { schemaVersion: 1, source: 'storage',
+    local: { status: 'available', count: 1, omitted: 0, keys: [{ hash: 'a'.repeat(64) }] },
+    session: { status: 'available', count: 0, omitted: 0, keys: [] },
+    indexedDB: { status: 'available', omitted: 0, databases: [{ nameHash: 'b'.repeat(64), version: 1,
+      status: 'available', omitted: 0, stores: [{ nameHash: 'c'.repeat(64), status: 'available', count: 2 }] }] },
+    unknownPrivateField: 'SECRET_STORAGE' };
+  const source = incidentDir(base, 'source', { environment, storage });
+  const out = path.join(base, 'reference');
+  source.manifest.steps.push({name:'integration-0',required:false,status:'failed'});
+  fs.writeFileSync(path.join(source.dir,'manifest.json'),JSON.stringify(source.manifest));
+  knownGood(source.dir, out);
+  const saved = fs.readdirSync(out).map(file => fs.readFileSync(path.join(out, file), 'utf8')).join('\n');
+  assert.equal(saved.includes('SECRET_'), false);
+  assert.equal(saved.includes('unknownPrivateField'), false);
+  const comparison = compare(out, source.dir, path.join(base, 'comparison'));
+  assert.equal(comparison.status, 'complete');
+  assert.equal(comparison.comparisons.every(item => item.status === 'available' && item.changes.length === 0), true);
+  storage.local.status = 'unsupported';
+  const incomplete = incidentDir(base, 'incomplete', { storage });
+  assert.throws(() => knownGood(incomplete.dir, path.join(base, 'refused')), /reference snapshot/);
+});
+
+test('Journey labels ignore arbitrary step names and excessive artifacts stay bounded', t => {
+  const base = fixture(t), dir = path.join(base, 'journey');
+  fs.mkdirSync(dir);
+  const manifest = { schemaVersion: 1, incidentId: incident, toolVersion: '1.0.0', source: 'Journey execution',
+    status: 'complete', captureStart: '2026-10-05T00:00:00.000Z', captureEnd: '2026-10-05T00:00:01.000Z',
+    steps: [{ type: 'checkpoint', name: 'SECRET_PRIVATE_NAME', status: 'completed', artifacts: Array(33).fill({ filename: 'x.json', sha256: 'a'.repeat(64) }) }] };
+  fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest));
+  assert.equal(readManifest(dir).reasons[0].code, 'artifact-invalid');
+  const compared = compare(dir, dir, path.join(base, 'out'));
+  assert.equal(compared.status, 'partial');
+  assert.equal(JSON.stringify(compared).includes('SECRET_PRIVATE_NAME'), false);
+  const issue = report(dir, path.join(base, 'issue'));
+  assert.equal(JSON.stringify(issue).includes('SECRET_PRIVATE_NAME'), false);
+});

@@ -6,6 +6,8 @@
 
 1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
 
+工作区正在完成最终能力，暂不另发版本包。开发入口已增加 CSS/Environment Snapshot/Diff、target/socket 选择、Action/Journey、事件时间线、通用 DOM Inspector、Storage 元数据 Snapshot/Diff、区域视觉比较、性能重复采样与离线证据工具。以当前 `--help`、[操作说明](docs/ACTIONS.md)、[检查器说明](docs/INSPECTORS.md)、[性能说明](docs/PERFORMANCE.md)、[证据比较](docs/EVIDENCE_TOOLS.md)和验证记录为准；包版本仍保留 1.1.0 基线，完整闭环结束后统一封装。
+
 ## 开始使用
 
 必需 Node.js 22.12+；Android 采集需要已有 ADB、USB 调试和明确的设备/App。CDP 采集还需要 App 开启 WebView 调试。无需 `npm install`。

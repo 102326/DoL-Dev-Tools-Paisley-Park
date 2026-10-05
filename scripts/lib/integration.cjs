@@ -16,7 +16,7 @@ function collect(ctx, modulePath, timeoutMs = 10000) {
     const timer = setTimeout(() => finish(failed('integration-timeout')), timeoutMs);
     try {
       worker = new Worker(path.join(__dirname, 'integration-worker.cjs'), {
-        workerData: { modulePath: path.resolve(modulePath), endpoint: ctx.endpoint },
+        workerData: { modulePath: path.resolve(modulePath), endpoint: ctx.endpoint, targetId: ctx.options?.targetId || null },
         stdout: true, stderr: true, resourceLimits: { maxOldGenerationSizeMb: 32 },
       });
       worker.stdout.resume(); worker.stderr.resume();
