@@ -1,4 +1,4 @@
-# 短录像的离线取帧
+# DoL Dev Tools: Paisley Park — 短录像的离线取帧
 
 ```powershell
 node scripts/dol-dev.cjs animation-frames --input LOCAL_VIDEO.mp4 --out artifacts/frames-001 --interval-ms 250 --max-frames 30

@@ -1,4 +1,4 @@
-# Native Layout
+# DoL Dev Tools: Paisley Park — Native Layout
 
 用于系统弹窗、原生 App 外壳和当前窗口结构。与 DOM Contract 分开，不读取 Soft & Wet。复用已有 Android CLI 的 flat JSON 输出，不增加另一套 UIAutomator/XML 实现。
 

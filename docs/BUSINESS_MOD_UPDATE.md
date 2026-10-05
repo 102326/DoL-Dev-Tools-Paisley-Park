@@ -1,4 +1,4 @@
-# 真实业务 Mod 的持久更新复验
+# DoL Dev Tools: Paisley Park — 真实业务 Mod 的持久更新复验
 
 [verify-business-mod.cjs](../examples/android-native/verify-business-mod.cjs) 是 DoLGameUI 已审阅发行制品的目标配方，复用公开 ModLoader API、Action 的目标检查、CSS Contract 和 optional Integration；不新增业务 DSL，不修改 UI 项目的源码或制品。
 

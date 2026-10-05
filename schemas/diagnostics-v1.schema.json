@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:dol-dev-tools:diagnostics:v1",
-  "title": "DoL Dev Tools public diagnostics schema 1",
+  "title": "DoL Dev Tools: Paisley Park public diagnostics schema 1",
   "description": "Structural format only; not privacy, authenticity, capture completeness or test acceptance validation. Unknown fields may extend the format. Select a $defs target for collector-specific data.",
   "oneOf": [
     {

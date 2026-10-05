@@ -1,4 +1,4 @@
-name: Check tools
+name: Paisley Park checks
 on: [push, pull_request]
 jobs:
   check:

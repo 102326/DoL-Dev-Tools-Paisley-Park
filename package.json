@@ -1,6 +1,7 @@
 {
-  "name": "dol-dev-tools",
-  "version": "1.5.2",
+  "name": "dol-dev-tools-paisley-park",
+  "displayName": "DoL Dev Tools: Paisley Park",
+  "version": "2.0.0",
   "private": true,
   "license": "MIT",
   "engines": { "node": ">=22.12.0" },

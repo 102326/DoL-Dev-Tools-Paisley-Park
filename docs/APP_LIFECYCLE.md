@@ -1,4 +1,4 @@
-# Android 生命周期元信息
+# DoL Dev Tools: Paisley Park — Android 生命周期元信息
 
 ```powershell
 node scripts/dol-dev.cjs app-lifecycle --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/lifecycle-001

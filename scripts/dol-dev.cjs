@@ -11,8 +11,8 @@ const inspectors = require('./lib/inspectors.cjs');
 const { redact } = require('./lib/privacy.cjs');
 const { doctor } = require('./lib/doctor.cjs');
 const { support } = require('./lib/support.cjs');
-const { version } = require('../package.json');
-const help = `DoL Dev Tools ${version} (local development and diagnostics)
+const { version, displayName } = require('../package.json');
+const help = `${displayName} ${version} (local development and diagnostics)
   --version
   evidence --serial SERIAL --package PACKAGE --out NEW_DIR [--scope SELECTOR] [--window-ms 1000] [--integration soft-and-wet]
     Optional: --logcat-seconds 30 --record-seconds 10 --repro NOTE_JSON --integration-file REVIEWED_LOCAL.cjs
@@ -54,7 +54,7 @@ const help = `DoL Dev Tools ${version} (local development and diagnostics)
   leak-probe --endpoint LOCAL_CDP --out NEW_JSON [--detached yes] [--target-id ID]
   viewport-matrix --file REVIEWED_JSON --endpoint LOCAL_CDP --out NEW_DIR --test-environment yes --exclusive-metrics yes [--plan]
   hitbox-overlay --input HITBOX_JSON --out NEW_SVG [--minimum-css-px 44]
-  install-skill --out NEW_SKILL_DIRECTORY_NAMED_dol-dev-tools
+  install-skill --out NEW_SKILL_DIRECTORY_NAMED_dol-dev-tools-paisley-park
 Evidence creates and removes a temporary ADB forward for the explicit app process.
 Default evidence collectors do not install APKs, perform business actions, read save bodies or repair the environment. Native layout requires explicit --allow-helper yes and may run/install the existing Android CLI helper. Action/Journey are separate explicit operations. Parent directory must exist.
 Integration files execute reviewed local code with Node permissions; worker isolation is not a security sandbox.

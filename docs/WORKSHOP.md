@@ -1,4 +1,4 @@
-# 修改、构建、部署与复验
+# DoL Dev Tools: Paisley Park — 修改、构建、部署与复验
 
 Workshop 是 Skill 的开发闭环：用 Tools 观察现场，用目标项目自己的源码和构建/部署命令修改，最后回到同一问题复验。Tools 不新增通用 shell/业务脚本执行框架，也不接管 ModLoader 或项目 Runtime。
 

@@ -1,4 +1,4 @@
-# 目标自有原生重建与 APK 更新验收
+# DoL Dev Tools: Paisley Park — 目标自有原生重建与 APK 更新验收
 
 Generic 工具不能从 PID、CDP target、Page.reload 或旋转推断原生对象重建。目标作者可以提供明确的原生入口与只读实例契约；缺少契约时保持 unknown。独立 [native-lifecycle Integration](../integrations/examples/native-lifecycle.cjs) 复用 Contract 1，不成为 Generic 或 Soft & Wet 的依赖。
 

@@ -1,4 +1,4 @@
-# 1.2：通用开发闭环交付
+# DoL Dev Tools: Paisley Park — 历史：1.2：通用开发闭环交付
 
 这是1.0重置后的加法版本；通用能力、可选Integration和Skill职责保持独立，Evidence schema仍为1。旧1.0/1.1源码包及替换前备份保留。源码目录原地更新，真实artifacts/backups不迁移或清理。
 

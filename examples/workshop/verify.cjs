@@ -26,7 +26,7 @@ async function main(){
  if(spawnError||!fs.existsSync(active))throw Error('Owned browser startup unavailable');
  const port=fs.readFileSync(active,'utf8').split('\n')[0];if(!/^\d+$/.test(port))throw Error('Invalid browser port');const endpoint='http://127.0.0.1:'+port;
  // Only the owned fixture target is eligible; startup observation may wait, actions are never retried.
- let page;for(let i=0;i<50;i++){page=(await targets(endpoint)).filter(p=>p.type==='page'&&p.title==='DoL Dev Tools Workshop Fixture');if(page.length===1)break;await pause(100)}
+ let page;for(let i=0;i<50;i++){page=(await targets(endpoint)).filter(p=>p.type==='page'&&p.title==='DoL Dev Tools: Paisley Park Workshop Fixture');if(page.length===1)break;await pause(100)}
  if(page?.length!==1)throw Error('Fixture page unavailable');client=await connect(endpoint,5000,()=>{},page[0].id);
  async function capture(label){
   const dir=path.join(out,label);fs.mkdirSync(dir);const m={schemaVersion:1,incidentId:randomUUID(),toolVersion:require('../../package.json').version,profile:'evidence',captureStart:new Date().toISOString(),status:'failed',steps:[],integrations:[],privacy:{requiresManualReview:true,content:'owned fixture only'},appAssociation:'controlled browser fixture; no Android App'};

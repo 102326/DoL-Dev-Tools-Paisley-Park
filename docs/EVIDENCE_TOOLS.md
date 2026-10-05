@@ -1,4 +1,4 @@
-# 离线比较、参考基线与报告
+# DoL Dev Tools: Paisley Park — 离线比较、参考基线与报告
 
 开发入口，无网络调用、自动上传或 Issue 发布。读取 manifest ≤1MiB、≤100 steps；制品必须为同一真实目录内普通文件、≤8MiB，单次验证总量 ≤32MiB、≤200 个引用。先校验 SHA 与 JSON incidentId；异常、缺失或不完整来源形成 partial，不导出原始异常。重型文件超限时只能标为未验证，不能报告完整比较。
 

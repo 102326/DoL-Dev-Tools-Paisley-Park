@@ -1,4 +1,4 @@
-# 最终蓝图覆盖与验收边界
+# DoL Dev Tools: Paisley Park — 历史：最终蓝图覆盖与验收边界
 
 对照 [原文](proposals/CAPABILITY_BLUEPRINT.md) 第0..88节，按能力组登记。实现、依赖可用、采集完整和业务验收分别判断。外部路径复用已有工具；条件能力缺少目标接口/权限时必须 unsupported/unknown，不能编造证据。
 

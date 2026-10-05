@@ -1,4 +1,4 @@
-# DoL Dev Tools 1.5
+# DoL Dev Tools: Paisley Park
 
 面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。王牌是让Agent / 开发者直接进入真实Android、WebView和运行现场，形成Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence闭环。
 
@@ -10,24 +10,26 @@
 
 Generic Diagnostics不依赖Soft & Wet、MapleBirch、ModHub或任何特定Runtime；Integration只作可选增强。内置采集遵守限定范围与脱敏策略，现场观察和项目解释分别记录。
 
-**1.5已正式收口：核心能力与约定场景已经完成并验收。** 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
+**当前版本：2.0.0（Paisley Park 重置版）。** 核心能力沿用已完成并验收的1.5路线。 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
 
-当前补丁为[1.5.2](docs/RELEASE_1.5.2.md)：打包实战反馈后的Skill路由指引，标准能力优先并保留直接工具出口；运行时行为沿用[1.5.1](docs/RELEASE_1.5.1.md)，保留既有验收及旧版制品。
+本次统一产品名、CLI、Skill与交付包，标准能力优先并保留直接工具出口。见[2.0.0发布与迁移](docs/RELEASE_2.0.0.md)。[GitHub仓库](https://github.com/102326/DoL-Dev-Tools-Paisley-Park)提供源码与发布包；旧版tag与验收记录保留。
 
 ## 最快开始
+
+从[Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/latest)下载源码ZIP并解压；目录名使用`DoL-Dev-Tools-Paisley-Park`，Windows路径不使用产品名中的冒号。旧`DoL-Dev.cmd`是同一CLI的保留别名。Skill调用名为`$dol-dev-tools-paisley-park`，安装步骤见[SKILL_INSTALL](docs/SKILL_INSTALL.md)。
 
 必需 Node.js 22.12+；Android 采集需要已有 ADB、USB 调试和明确的设备/App。CDP 采集还需要 App 开启 WebView 调试。无需 `npm install`。
 
 ```powershell
 New-Item -ItemType Directory -Path artifacts -Force
-.\DoL-Dev.cmd --version
-.\DoL-Dev.cmd --help
-.\DoL-Dev.cmd doctor --out artifacts/doctor.json
+.\Paisley-Park.cmd --version
+.\Paisley-Park.cmd --help
+.\Paisley-Park.cmd doctor --out artifacts/doctor.json
 # 已建立本地CDP连接时，核对页面与target ID：
-.\DoL-Dev.cmd inspect --endpoint http://127.0.0.1:CDP_PORT --out artifacts/targets.json
+.\Paisley-Park.cmd inspect --endpoint http://127.0.0.1:CDP_PORT --out artifacts/targets.json
 adb devices -l
-.\DoL-Dev.cmd evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages'
-.\DoL-Dev.cmd support --from artifacts/evidence-001 --out artifacts/support-001
+.\Paisley-Park.cmd evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages'
+.\Paisley-Park.cmd support --from artifacts/evidence-001 --out artifacts/support-001
 ```
 
 请替换端口、设备与包名占位符，并先手动打开目标 App；工具不会自动选择设备或启动游戏。所有输出目标必须尚不存在，父目录须已创建。ADB 不在 PATH 时，将进程内 `DOL_ADB` 指向已有 `adb.exe`；不自动安装或修改全局配置。
@@ -37,7 +39,7 @@ adb devices -l
 ```powershell
 $env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'
 & $env:DOL_ADB version
-.\DoL-Dev.cmd doctor --out artifacts/doctor-adb.json
+.\Paisley-Park.cmd doctor --out artifacts/doctor-adb.json
 ```
 
 `complete`表示请求步骤完成。DOM仍可能因节点数/深度等限制截断，Console接收窗口也可能包含Runtime缓存事件；摘要不能直接证明全DOM、实时日志速率或业务通过。游戏核心版本未知时保持unknown，包装App的ADB版本另列来源。
@@ -63,7 +65,7 @@ $env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'
 | 反馈与复现 | `support`、`evidence-compare`、`evidence-timeline`、`known-good`、`issue-report`、Evidence `--repro` |
 | 可选 Integration | `--integration soft-and-wet` 或 `--integration-file REVIEWED_LOCAL.cjs`；缺失或失败独立记录 |
 | 公共接入与格式 | [Contract 1](docs/INTEGRATIONS.md)、[格式说明](docs/FORMATS.md)、[JSON Schema](schemas/diagnostics-v1.schema.json) |
-| Agent 诊断流程 | [.agents/skills/dol-dev-tools](.agents/skills/dol-dev-tools/SKILL.md)，可[独立安装](docs/SKILL_INSTALL.md)，复用同一份Tools |
+| Agent 诊断流程 | [.agents/skills/dol-dev-tools-paisley-park](.agents/skills/dol-dev-tools-paisley-park/SKILL.md)，可[独立安装](docs/SKILL_INSTALL.md)，复用同一份Tools |
 
 Python、Pillow、Android CLI、scrcpy 与官方 Perfetto recorder 按能力选用，缺失不影响其它入口。`visual-diff` 需要已有 Python + Pillow；`perf --deep` 需要经检查的本地官方 recorder。详细命令及依赖见 [诊断工作流](docs/DIAGNOSTICS.md)。
 
@@ -75,11 +77,13 @@ Evidence 每一步独立记录状态、来源、时间和制品 SHA；请求范�
 
 1.0 的交付与迁移说明见 [重置版说明](docs/RELEASE_1.0.md)，实际验收与已知限制见 [验证记录](docs/VALIDATION.md)。长期规划见 [架构约束](docs/ARCHITECTURE.md)，其中未交付的路线不代表现有能力。
 
-## 版本与验收记录
+## 历史版本与验收记录
+
+以下保留重置前版本及其证明边界，不表示当前发行版本。[历史索引](docs/HISTORY.md)标明旧名称、tag与文档归属；原始需求提案保留当时措辞。
 
 1.2在1.0重置版和1.1公共接入基础上交付通用诊断、有限复现实验、证据比较与Skill开发闭环。完整蓝图按能力组登记在[能力覆盖](docs/CAPABILITY_COVERAGE.md)。通用核心不依赖Soft & Wet、不要求目标Mod使用某个Runtime或相邻源码；各项目Integration都是平级可选增强。附带Soft & Wet桥和独立通用DOM示例。
 
-1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
+1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；当时统一诊断入口为 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是此前版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
 
 提供CSS/Environment/Storage Snapshot/Diff、显式target/socket、Action/Journey/Recorder候选、时间线、通用DOM Inspector、区域视觉比较、性能重复采样和离线证据工具。使用当前`--help`、[操作说明](docs/ACTIONS.md)、[检查器](docs/INSPECTORS.md)、[性能](docs/PERFORMANCE.md)和[证据比较](docs/EVIDENCE_TOOLS.md)。
 
@@ -89,7 +93,7 @@ Evidence 每一步独立记录状态、来源、时间和制品 SHA；请求范�
 
 1.4统一汇总最终清单及[原生重建与真实游戏APK更新](docs/NATIVE_RECREATE.md)、[主游戏真实业务Mod更新](docs/BUSINESS_MOD_UPDATE.md)：原生对象身份、同签名版本更新、自有sentinel保留、DoLGameUI 2.0.3→2.1.0持久加载/源SHA/设置行为及重启后复验均经实机验证，91项检查通过。通用核心、可选Integration、Skill和目标自有配方分层保持独立；覆盖与条件范围见[1.4说明](docs/RELEASE_1.4.md)。旧1.3 ZIP/tag冻结，不回填新结果。
 
-1.5补齐后续[完整验收](docs/FINAL_ACCEPTANCE.md)：独立WebView-only、实际Perfetto/bugreport/helper、detached基线/重复动作/复采Journey及锁屏生命周期；96项Node检查通过。Skill第一原则是[复用成熟能力](.agents/skills/dol-dev-tools/SKILL.md)，优先组合Android CLI、Android Profiler、Chrome DevTools与目标项目构建部署，只做必要DoL适配。完整交付与条件范围见[1.5说明](docs/RELEASE_1.5.md)；旧1.4及更早包保持冻结。
+1.5补齐后续[完整验收](docs/FINAL_ACCEPTANCE.md)：独立WebView-only、实际Perfetto/bugreport/helper、detached基线/重复动作/复采Journey及锁屏生命周期；96项Node检查通过。Skill第一原则是[复用成熟能力](.agents/skills/dol-dev-tools-paisley-park/SKILL.md)，优先组合Android CLI、Android Profiler、Chrome DevTools与目标项目构建部署，只做必要DoL适配。完整交付与条件范围见[1.5说明](docs/RELEASE_1.5.md)；旧1.4及更早包保持冻结。
 
 ## 可选：DoL Game UI 构建与桌面测试
 

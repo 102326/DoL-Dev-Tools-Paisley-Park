@@ -1,6 +1,6 @@
-# DoL Dev Tools project rules
+# DoL Dev Tools: Paisley Park project rules
 
-- Read [.agents/skills/dol-dev-tools/SKILL.md](.agents/skills/dol-dev-tools/SKILL.md) and only the relevant command/architecture documents before work. Keep this file short; the Skill owns detailed workflows.
+- Read [.agents/skills/dol-dev-tools-paisley-park/SKILL.md](.agents/skills/dol-dev-tools-paisley-park/SKILL.md) and only the relevant command/architecture documents before work. Keep this file short; the Skill owns detailed workflows.
 - Define scoped Done from the task: deliverables, required behavior, acceptance environments, material risks and completion conditions. Do not add exhaustive ecosystem acceptance at the end.
 - Match validation to actual risk. Documentation-only changes need link, instruction-consistency and format checks; behavior changes need affected tests and representative integration/device evidence as warranted. Explain the unresolved risk before escalating. Reuse valid unaffected evidence; do not test more merely because more tests are possible.
 - Distinguish Completed, Implemented/coverage limited and Not implemented. Untested environments do not mean unfinished implementation. Optional/Future coverage belongs in the [Coverage Ledger](docs/CLOSEOUT_1_5.md), not automatically in Remaining work; promote only for explicit user/release requirements, risk evidence or a real issue.

@@ -1,4 +1,4 @@
-# Public Integration Contract 1
+# DoL Dev Tools: Paisley Park — Public Integration Contract 1
 
 1.1.0 提供显式本地 `.cjs` 接入。Soft & Wet 与外置集成使用同一执行路径；不依赖 UI 源码、自动下载、插件扫描或某个 Mod 的内部对象。
 

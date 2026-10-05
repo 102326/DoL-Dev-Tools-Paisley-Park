@@ -1,9 +1,9 @@
-# DoL Dev Tools 1.5：诊断工作流
+# DoL Dev Tools: Paisley Park 2.0.0：诊断工作流
 
-基于 1.0 重置版继续增强。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
+2.0.0统一主题与入口，复用1.5既有能力和证据。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
 
-仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。
+仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools-paisley-park`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。
 
 ## 快速入口
 
@@ -18,7 +18,7 @@ node scripts/dol-dev.cjs logcat --serial DEVICE_SERIAL --package YOUR.APP.PACKAG
 node scripts/dol-dev.cjs record --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/video-001 --seconds 5
 ```
 
-Windows 可用 `DoL-Dev.cmd` 替换 `node scripts/dol-dev.cjs`。先创建输出父目录；目标目录或 JSON 文件必须不存在。
+Windows 可用 `Paisley-Park.cmd` 替换 `node scripts/dol-dev.cjs`。先创建输出父目录；目标目录或 JSON 文件必须不存在。
 Node.js 22.12+ 为必需。ADB 不在 PATH 时设 `DOL_ADB`，其值是已有 adb 可执行文件；不自动安装或修改系统 PATH。
 Doctor的ADB `unavailable / ENOENT`优先检查已有SDK/platform-tools位置；仅当前进程设`$env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'`，用`& $env:DOL_ADB version`核对后重新采集到新输出，不覆盖初次partial。不要把可选scrcpy缺失当作ADB缺失。
 其他可选工具环境变量为 `DOL_ANDROID_CLI / DOL_PYTHON / DOL_SCRCPY`。所有设备命令绑定显式 serial 和 package，不猜目标。
@@ -126,7 +126,7 @@ bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、
 
 ## Skill 与当前边界
 
-仓库内 [.agents/skills/dol-dev-tools/SKILL.md](../.agents/skills/dol-dev-tools/SKILL.md) 路由诊断、复现和开发闭环，支持[独立安装](SKILL_INSTALL.md)。本机已有安装及独立任务使用证明，自动发现仍取决于宿主和实际请求。
+仓库内 [.agents/skills/dol-dev-tools-paisley-park/SKILL.md](../.agents/skills/dol-dev-tools-paisley-park/SKILL.md) 路由诊断、复现和开发闭环，支持[独立安装](SKILL_INSTALL.md)。本机已有安装及独立任务使用证明，自动发现仍取决于宿主和实际请求。
 Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live Site First、证据先行、来源分离、最小充分诊断；测试环境允许任务范围内的主动复现，具体操作边界见 [架构](ARCHITECTURE.md)。
 1.2提供独立有限Action/Journey，不自动遍历控件或抓取网络正文。保留Android CLI独立入口，原始布局不直接进入脱敏包；helper运行/安装需明确选择。
 独立Action/Journey可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect/Doctor/Evidence保持观察语义。真实存档、正式用户数据和凭据的破坏性操作需对应显式授权。范围见[BLUEPRINT](BLUEPRINT.md)，无后台服务、数据库或云端遥测。

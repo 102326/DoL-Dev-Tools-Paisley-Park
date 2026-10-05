@@ -1,4 +1,4 @@
-# DoL Dev Tools 1.5 正式收口
+# DoL Dev Tools: Paisley Park — 历史：DoL Dev Tools 1.5 正式收口
 
 2026-10-06，按用户确认的完成标准：**核心能力与约定场景已经完成并验收，剩余项目属于后续覆盖扩展、专项 Integration 或条件性验证。**
 

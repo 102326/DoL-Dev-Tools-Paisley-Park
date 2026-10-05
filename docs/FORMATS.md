@@ -1,4 +1,4 @@
-# 公共诊断格式：schema 1
+# DoL Dev Tools: Paisley Park — 公共诊断格式：schema 1
 
 适用于所有 DoL Mod。1.0 与 1.1 的结构版本保持 1；工具版本与证据 schema 分别演进。JSON Schema 文件见 [diagnostics-v1.schema.json](../schemas/diagnostics-v1.schema.json)（Draft 2020-12，单文件本地 `$defs` 引用，无外部 schema 依赖）。
 

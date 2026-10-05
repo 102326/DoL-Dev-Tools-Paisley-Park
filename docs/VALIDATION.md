@@ -1,4 +1,12 @@
-# DoL Dev Tools 验证记录
+# DoL Dev Tools: Paisley Park — 验证记录
+
+## 2.0.0命名与发布一致性：2026-10-06
+
+本轮范围见[重置版说明](RELEASE_2.0.0.md)：统一显示名、包/Skill标识、主启动器、当前文档和公开仓库/资产；保留历史tag及旧验收记录。历史条目与原始提案保留当时名称，见[HISTORY](HISTORY.md)。Schema稳定URN、环境变量和夹具内部标识保留语义。
+
+源Skill quick_validate通过。`node --test tests/install-skill.test.cjs tests/evidence.test.cjs tests/evidence-tools.test.cjs tests/workshop-origin.test.cjs`的27项中26通过；安装测试发现新增RELEASE_2.0.0.md含点号，旧文档链接改写正则不支持，已在共用安装器修复。针对安装测试复验通过，复用其余26项结果；没有以重跑掩盖失败。检查涵盖新身份/显示名、工作区外解析、安装元数据、拒绝覆盖/旧包误绑定、CLI名称，以及Schema 1证据的离线消费和Generic/Optional分离。
+
+最终交付还核对Git原文/CRC/链接/资料排除、历史ZIP/tag保留、独立包安装、仓库说明与现有CI；实际提交、SHA和发布回执另存本地。复用此前真机证明，不重新连接设备或扩大业务验收。提示收益和更多生态覆盖未验证，原unknown/采集限制继续保留。
 
 ## 1.5.2指引打包与安装：2026-10-06
 

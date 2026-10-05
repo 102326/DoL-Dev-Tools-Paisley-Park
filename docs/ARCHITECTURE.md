@@ -1,4 +1,4 @@
-# DoL Dev Tools：公共开发工具架构约束
+# DoL Dev Tools: Paisley Park：公共开发工具架构约束
 
 2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](BLUEPRINT.md)；当前可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
 目标是面向整个 DoL Mod 生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP、ADB 构成 Live Device Access，支撑 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
@@ -11,7 +11,7 @@ Android CLI看到真机画面；Chrome Inspect/CDP是Agent进入真实WebView内
 
 | 部分 | 职责 | 边界 |
 | --- | --- | --- |
-| DoL Dev Tools | 进入 Android/WebView 现场，采证与比较；独立执行有限复现实验 | 面向所有 DoL Mod 作者，不依赖某个 Mod、Runtime 或源码目录 |
+| DoL Dev Tools: Paisley Park | 进入 Android/WebView 现场，采证与比较；独立执行有限复现实验 | 面向所有 DoL Mod 作者，不依赖某个 Mod、Runtime 或源码目录 |
 | 目标项目 / Runtime Integration | 提供自身版本、模块、能力与运行状态解释 | 自愿接入、平级可选；项目保有自己的业务模型与状态，Tools 不复制 Runtime |
 | DoL Development Skill | 选择诊断与复现路径，解释证据，按任务完成修改/部署/复验 | 调用实际工具与目标项目既有命令，不复制实现，不虚构蓝图中的命令 |
 
@@ -20,7 +20,7 @@ Soft & Wet 是最早的重度使用案例之一和一个可选 Integration。其
 工具包继续独立维护。已有可用脚本保留，统一 CLI 逐步包装它们，不为统一入口重写全部脚本。
 第一原则是不重复造轮子：优先组合已验证、可靠且边界清楚的Skill与工具。Android CLI承担原生屏幕/布局/交互，Android Profiler承担官方录制与trace/SQL分析，Chrome Inspect/DevTools承担深入WebView诊断，项目自身负责build/deploy。Tools只补DoL目标绑定、脱敏证据与实际缺失的有限能力；复用方法而不照搬项目假设，不另建UIAutomator、Trace Processor、Viewer或游戏Runtime。外部能力缺失时保留明确条件，不自动安装替代系统。
 候选不限于上述官方Skill；搜索发现的第三方Skill也可参考。先审实际源码、来源与维护、复制许可、依赖/权限和数据处理，再做最小代表性验证。能直接复用就直接用，需要项目适配才做薄封装，也可只吸收诊断方法；搜索排名/流行度不代表可靠，不把发现动作当作安装或外部操作授权。
-Skill随源码放在`.agents/skills/dol-dev-tools/`，1.2提供显式[独立安装](SKILL_INSTALL.md)，复用同一份Tools。
+Skill随源码放在`.agents/skills/dol-dev-tools-paisley-park/`，1.2提供显式[独立安装](SKILL_INSTALL.md)，复用同一份Tools。
 
 ## 通用核心与可选 Integration
 

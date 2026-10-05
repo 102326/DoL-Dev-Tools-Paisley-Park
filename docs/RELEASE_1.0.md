@@ -1,4 +1,4 @@
-# 1.0.0 重置版
+# DoL Dev Tools: Paisley Park — 历史：1.0.0 重置版
 
 2026-10-05。从原有独立脚本工具包重置为“通用诊断 + Evidence + 可选 Integration + 诊断 Skill”。此版本在原目录更新；不修改 Soft & Wet Runtime 或目标 Mod。
 

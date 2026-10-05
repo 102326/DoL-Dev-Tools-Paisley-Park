@@ -1,4 +1,4 @@
-# 增强工具包 0.3.0：首批实现
+# DoL Dev Tools: Paisley Park — 增强工具包 0.3.0：首批实现
 
 状态：本地开发版本，未发布。离线检查与真机验收分别记录，不把规划中的所有能力列为已实现。
 
@@ -12,7 +12,7 @@ New-Item -ItemType Directory -Path artifacts -Force
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/incident-001 --scope '#customOverlay'
 ```
 
-Windows 可将 `node scripts/dol-dev.cjs` 换成 `DoL-Dev.cmd`。
+Windows 可将 `node scripts/dol-dev.cjs` 换成 `Paisley-Park.cmd`。
 ADB 不在 PATH 时指定 `DOL_ADB`。不能省略 serial 或 package，也不会自动换设备。
 指定 scope 后，必须恰好命中一个元素；不存在或歧义记录采集失败，其他制品仍保留。不指定 scope 则 DOM 明确跳过，不扫描全页。
 

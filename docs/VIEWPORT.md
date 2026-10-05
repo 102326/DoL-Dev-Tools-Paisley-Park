@@ -1,4 +1,4 @@
-# Viewport Matrix
+# DoL Dev Tools: Paisley Park — Viewport Matrix
 
 `viewport-matrix` 在调用者选定的本地 CDP page 上执行 1..6 个视口配置，逐例保存 scoped DOM、CSS 和私有 PNG。它检查浏览器布局，不模拟完整实体设备、系统字体、触摸、GPU 或 Android 生命周期。
 

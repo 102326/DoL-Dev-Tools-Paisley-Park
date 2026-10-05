@@ -1,4 +1,4 @@
-# Action / Journey：固定动作与复现实验
+# DoL Dev Tools: Paisley Park — Action / Journey：固定动作与复现实验
 
 这些入口已包含在1.2.0封装中。后续开发修改与实机验收另行记录，不按每批修改发布。
 

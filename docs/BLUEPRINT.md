@@ -1,4 +1,4 @@
-# 公共开发工具定位与能力蓝图
+# DoL Dev Tools: Paisley Park — 公共开发工具定位与能力蓝图
 
 2026-10-05。本文登记后续需求与落地状态；当前可执行命令见 [DIAGNOSTICS](DIAGNOSTICS.md)，实际验收见 [VALIDATION](VALIDATION.md)。
 
@@ -6,7 +6,7 @@
 
 ## 定位
 
-DoL Dev Tools 是面向整个 DoL Mod 生态的公共、本地开发执行工具链。原版、内容 Mod、框架 Mod、UI Mod、管理器、整合包与 Android 包装环境都可以使用。Soft & Wet 是早期重度用户和一个可选 Integration，与其它项目平级。
+DoL Dev Tools: Paisley Park 是面向整个 DoL Mod 生态的公共、本地开发执行工具链。原版、内容 Mod、框架 Mod、UI Mod、管理器、整合包与 Android 包装环境都可以使用。Soft & Wet 是早期重度用户和一个可选 Integration，与其它项目平级。
 
 Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设备画面、WebView 内部事实、Android / App 系统现场。Skill 选择路径，Tools 执行，目标项目的 Runtime / Integration 提供自己的解释。
 
