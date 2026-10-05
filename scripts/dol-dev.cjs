@@ -25,11 +25,14 @@ const help = `DoL Dev Tools ${version} (local development and diagnostics)
   perf --deep --serial SERIAL --package PACKAGE --out NEW_DIR --seconds 10 --sensitive yes
   perf-series --serial SERIAL --package PACKAGE --out NEW_DIR --samples 3 --interval-ms 1000 [--webview yes]
   bugreport --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes
+  native-layout --serial SERIAL --package PACKAGE --out NEW_DIR --allow-helper yes
+  process-memory --serial SERIAL --package PACKAGE --out NEW_DIR
   evidence --full --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes [other evidence options]
   doctor --out NEW_JSON [--serial SERIAL --package PACKAGE] [--endpoint LOCAL_CDP_URL]
   support --from EVIDENCE_DIR --out NEW_DIR [--include-screenshot yes]
   evidence-compare --before EVIDENCE_DIR --after EVIDENCE_DIR --out NEW_DIR
   issue-report --from EVIDENCE_DIR --out NEW_DIR
+  evidence-timeline --from EVIDENCE_OR_JOURNEY_DIR --out NEW_DIR
   known-good --from COMPLETE_EVIDENCE_DIR --out NEW_DIR [--label SLUG] [--snapshots dom-contract,css-contract,environment,storage]
   visual-diff --golden PNG --current PNG --out NEW_DIR [--tolerance 8] [--region x,y,width,height]
   dom-snapshot --endpoint http://127.0.0.1:PORT --scope SELECTOR --out NEW_JSON
@@ -42,8 +45,15 @@ const help = `DoL Dev Tools ${version} (local development and diagnostics)
   storage-diff --before JSON --after JSON --out NEW_JSON
   action | journey --file REVIEWED_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     --plan creates a static plan only; --target-id and --webview-socket are optional explicit target overrides
+  journey-record --endpoint LOCAL_HTTP_CDP --scope SELECTOR --milliseconds 1000 --out NEW_JSON
+  matrix --file REVIEWED_JSON --out NEW_DIR --test-environment yes [--plan]
+  animation-frames --input LOCAL_MP4_OR_WEBM --out NEW_DIR [--interval-ms 250] [--max-frames 30]
+  network-scenario --file REVIEWED_JSON --endpoint LOCAL_CDP --out NEW_DIR --test-environment yes --exclusive-network yes [--plan]
+  leak-probe --endpoint LOCAL_CDP --out NEW_JSON [--detached yes] [--target-id ID]
+  viewport-matrix --file REVIEWED_JSON --endpoint LOCAL_CDP --out NEW_DIR --test-environment yes --exclusive-metrics yes [--plan]
+  hitbox-overlay --input HITBOX_JSON --out NEW_SVG [--minimum-css-px 44]
 Evidence creates and removes a temporary ADB forward for the explicit app process.
-Evidence collectors do not install APKs, perform business actions, read save bodies or repair the environment. Action/Journey are separate explicit operations. Parent directory must exist.
+Default evidence collectors do not install APKs, perform business actions, read save bodies or repair the environment. Native layout requires explicit --allow-helper yes and may run/install the existing Android CLI helper. Action/Journey are separate explicit operations. Parent directory must exist.
 Integration files execute reviewed local code with Node permissions; worker isolation is not a security sandbox.
 Screenshot is private; review before sharing. Console text and network bodies/paths are omitted.`;
 function parse(args, allowed) {
@@ -64,24 +74,26 @@ async function main(args = process.argv.slice(2)) {
   const command = args.shift();
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
-  if (['evidence','capture','perf','logcat','record','bugreport','environment','perf-series'].includes(command)) {
-    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive','--css','--environment','--target-id','--webview-socket','--timeline-ms','--observer-instrumentation','--inspectors','--storage']
+  if (['evidence','capture','perf','logcat','record','bugreport','environment','perf-series','native-layout','process-memory'].includes(command)) {
+    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive','--css','--environment','--target-id','--webview-socket','--timeline-ms','--observer-instrumentation','--inspectors','--storage','--layout','--allow-helper','--processes']
       : ['--serial','--package','--out', ...(command === 'logcat' || command === 'record' ? ['--seconds'] : []),
         ...(command === 'environment' ? ['--target-id','--webview-socket','--window-ms'] : []),
         ...(command === 'perf-series' ? ['--samples','--interval-ms','--webview','--target-id','--webview-socket'] : []),
+        ...(command === 'native-layout' ? ['--allow-helper'] : []),
         ...(command === 'perf' ? ['--deep','--seconds','--sensitive'] : command === 'bugreport' ? ['--sensitive'] : [])];
     const options = parse(args, allowed);
     if (options.integration && options.integration !== 'soft-and-wet') throw new Error('Unsupported integration');
     options.windowMs = options['window-ms'] === undefined ? 1000 : Number(options['window-ms']);
-    options.profile = command === 'perf-series' ? 'series' : command === 'perf' && options.deep ? 'deep' : command;
+    options.profile = command==='process-memory'?'processes':command==='native-layout'?'layout':command === 'perf-series' ? 'series' : command === 'perf' && options.deep ? 'deep' : command;
     if(command==='perf-series'){
       options.samples=Number(options.samples??3);options.intervalMs=Number(options['interval-ms']??1000);
       if(options.webview!==undefined&&options.webview!=='yes')throw Error('WebView selection must be yes');options.seriesWebview=options.webview==='yes';options.windowMs=0;
     }
-    for (const name of ['css','environment','storage']) if (options[name] !== undefined) {
+    for (const name of ['css','environment','storage','layout','processes']) if (options[name] !== undefined) {
       if (options[name] !== 'yes') throw new Error('Explicit selection must be yes'); options[name] = true;
     }
     options.targetId = options['target-id']; options.webviewSocket = options['webview-socket'];
+    if(options['allow-helper']!==undefined){if(options['allow-helper']!=='yes')throw Error('Helper selection must be yes');options.allowHelper=true}
     if (options.inspectors !== undefined) options.inspectors = options.inspectors.split(',');
     if (options['timeline-ms'] !== undefined) options.timelineMs = Number(options['timeline-ms']);
     if (options['observer-instrumentation'] !== undefined) {
@@ -100,6 +112,41 @@ async function main(args = process.argv.slice(2)) {
     const manifest = await evidence(options, { integrations });
     console.log(`Evidence ${manifest.status}; manifest: ${path.resolve(options.out, 'manifest.json')}`);
     if (manifest.status !== 'complete') process.exitCode = 1;
+  } else if(command==='hitbox-overlay'){
+    const options=parse(args,['--input','--out','--minimum-css-px']);require('./lib/hitbox-overlay.cjs').write(options.input,options.out,options['minimum-css-px']===undefined?44:Number(options['minimum-css-px']));console.log('Hitbox bounds SVG created; center hit and size hints do not prove click behavior.');
+  } else if (command==='viewport-matrix') {
+    const options=parse(args,['--file','--endpoint','--out','--test-environment','--exclusive-metrics','--target-id','--plan']);
+    if(!options.file||['test-environment','exclusive-metrics'].some(k=>options[k]!==undefined&&options[k]!=='yes'))throw Error('Invalid viewport options');options.testEnvironment=options['test-environment']==='yes';options.exclusiveMetrics=options['exclusive-metrics']==='yes';options.targetId=options['target-id'];
+    const vp=require('./lib/viewport.cjs'),result=await vp.run(options,vp.read(options.file));console.log(`Viewport matrix ${result.status}; browser metrics do not prove physical device equivalence.`);if(!['complete','planned'].includes(result.status))process.exitCode=1;
+  } else if (command==='leak-probe') {
+    const options=parse(args,['--endpoint','--out','--detached','--target-id']);
+    if(!options.endpoint||!options.out||fs.existsSync(options.out)||options.detached!==undefined&&options.detached!=='yes')throw Error('Invalid leak probe options');
+    const client=await require('./lib/cdp.cjs').connect(options.endpoint,5000,()=>{},options['target-id']||null);let data;
+    try{data=await require('./lib/performance-series.cjs').web(client,{detached:options.detached==='yes'});write(options.out,'caller-selected WebView heap/DOM/listener and optional detached metadata; app association unverified',data)}finally{client.close()}
+    console.log('Probe saved; growth and detached wrappers do not establish a leak.');if(data.status!=='available'||data.cleanupWarning||options.detached==='yes'&&data.detachedNodes.status!=='available')process.exitCode=1;
+  } else if (command==='network-scenario') {
+    const options=parse(args,['--file','--endpoint','--out','--test-environment','--exclusive-network','--target-id','--plan']);
+    if(!options.file||['test-environment','exclusive-network'].some(k=>options[k]!==undefined&&options[k]!=='yes'))throw Error('Invalid network experiment options');
+    options.testEnvironment=options['test-environment']==='yes';options.exclusiveNetwork=options['exclusive-network']==='yes';options.targetId=options['target-id'];
+    const lab=require('./lib/network-lab.cjs'),result=await lab.run(options,lab.read(options.file));
+    console.log(`Network experiment ${result.status}; inspect declared-baseline cleanup.`);if(!['complete','planned'].includes(result.status))process.exitCode=1;
+  } else if (command==='animation-frames') {
+    const options=parse(args,['--input','--out','--interval-ms','--max-frames']);
+    if(!options.input||!options.out)throw Error('Provide local video and new output');
+    const result=await require('./lib/animation.cjs').extract(options.input,options.out,{intervalMs:Number(options['interval-ms']??250),maxFrames:Number(options['max-frames']??30)});
+    console.log(`Animation frames ${result.status}; review private pixels before sharing.`);if(result.status!=='complete')process.exitCode=1;
+  } else if (command==='matrix') {
+    const options=parse(args,['--file','--out','--plan','--test-environment']);
+    if(!options.file||options['test-environment']!==undefined&&options['test-environment']!=='yes')throw Error('Invalid matrix options');
+    options.testEnvironment=options['test-environment']==='yes';const matrix=require('./lib/matrix.cjs');
+    const result=await matrix.run(options,matrix.read(options.file));console.log(`Selected matrix ${result.status}; labels do not prove configuration or device equivalence.`);if(!['complete','planned'].includes(result.status))process.exitCode=1;
+  } else if (command==='journey-record') {
+    const options=parse(args,['--endpoint','--scope','--milliseconds','--out','--target-id']);
+    if(!options.endpoint||!options.out||fs.existsSync(options.out))throw Error('Provide endpoint and new recorder output');
+    const recorder=require('./lib/recorder.cjs'),duration=Number(options.milliseconds??1000);
+    const data=await evaluate(options.endpoint,recorder.expression(options.scope,duration),duration+5000,options['target-id']||null);
+    write(options.out,'bounded WebView manual recorder; native actions and input content omitted',{recording:data,candidate:recorder.candidate(data,options.scope)});
+    console.log('Review-required candidates saved; input placeholders cannot be executed as Journey steps.');if(data.cleanupConflicts>0)process.exitCode=1;
   } else if (['action','journey'].includes(command)) {
     const options=parse(args,['--file','--serial','--package','--out','--plan','--test-environment','--target-id','--webview-socket']);
     if(!options.file || options['test-environment']!==undefined && options['test-environment']!=='yes')throw Error('Invalid execution options');
@@ -131,11 +178,11 @@ async function main(args = process.argv.slice(2)) {
     const report = support(options.from, options.out, options['include-screenshot'] === 'yes');
     console.log(`Support ${report.status}; inspect before sharing.`);
     if (report.status !== 'complete') process.exitCode = 1;
-  } else if (['evidence-compare','issue-report','known-good'].includes(command)) {
+  } else if (['evidence-compare','issue-report','known-good','evidence-timeline'].includes(command)) {
     const options=parse(args,command==='evidence-compare'?['--before','--after','--out']:['--from','--out',...(command==='known-good'?['--label','--snapshots']:[])]);
     if(!options.out||command==='evidence-compare'&&(!options.before||!options.after)||command!=='evidence-compare'&&!options.from)throw Error('Provide source and new output');
     const helpers=require('./lib/evidence-tools.cjs');
-    const result=command==='evidence-compare'?helpers.compare(options.before,options.after,options.out):command==='issue-report'?helpers.report(options.from,options.out):helpers.knownGood(options.from,options.out,{...(options.label?{label:options.label}:{}),...(options.snapshots!==undefined?{snapshots:options.snapshots.split(',')}:{})});
+    const result=command==='evidence-compare'?helpers.compare(options.before,options.after,options.out):command==='issue-report'?helpers.report(options.from,options.out):command==='evidence-timeline'?helpers.timelineReport(options.from,options.out):helpers.knownGood(options.from,options.out,{...(options.label?{label:options.label}:{}),...(options.snapshots!==undefined?{snapshots:options.snapshots.split(',')}:{})});
     console.log(`Local ${command} ${result.status}; no upload or automatic compatibility verdict.`);if(result.status!=='complete')process.exitCode=1;
   } else if (command === 'visual-diff') {
     const options = parse(args, ['--golden','--current','--out','--tolerance','--region']);

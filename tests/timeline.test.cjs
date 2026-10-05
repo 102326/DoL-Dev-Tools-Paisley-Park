@@ -98,6 +98,8 @@ test('timeline caps records, validates host options, and leaves project observer
   assert.equal(f.window.MutationObserver, Original);
   assert.equal(project.observe, originalObserve);
   assert.equal(project.disconnected, undefined);
+  assert.equal(result.capabilities.observerInstances.createdAndInstrumented,1);
+  assert.equal(result.capabilities.observerInstances.aliveAtEnd,1);
   assert.equal(result.capabilities.callbackTracking, 'unsupported without persistent callback replacement');
   assert.ok(result.records.some(record => record.kind === 'observer' && record.method === 'observe'));
   assert.ok(JSON.stringify(result).length < 128 * 1024);

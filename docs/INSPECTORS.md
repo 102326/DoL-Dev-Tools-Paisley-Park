@@ -22,6 +22,8 @@ node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACK
 
 除 selector-health 外，scope 必须唯一。最多 200 个节点、8 层，使用结构地址；不读 text/value/HTML。到达限额时标 truncated，不能把遗漏视作不存在。
 
+Hitboxes 还记录语义控件提示、pointer-events、disabled/hidden，以及可观察时 `elementFromPoint` 中心点是否命中节点/后代。中心在视口外、无公开能力或无法确定时为 null；一次中心命中不能证明全部区域或 handler 有效。离线 `hitbox-overlay --input HITBOX_JSON --out NEW_SVG [--minimum-css-px 44]` 绘制数值矩形与结构地址，不含截图/标签原文；橙色仅表示语义控件低于所选 CSS 像素阈值，红色表示中心命中其它节点。新图不修改现场 DOM，输出独占。旧 JSON 没有 semanticControl 字段时重新按需采集，不猜测它的含义。
+
 Storage 只读 local/session 键集合与数量，名称使用 SHA-256；不调用 getItem。每区最多 200 个键、名称最多 128 字符。哈希是可关联标识，不能当作匿名化证明。IndexedDB 只枚举最多 10 个数据库、每库最多 50 个 store，记录名称哈希/版本/只读 count；不读取记录、游标或包体。枚举能力不可用时不猜库名。打开后发生升级竞态会 abort，结束或 8 秒截止时中止自有事务、关闭自有句柄。局部快照不完整时 Diff 标为 unobserved，不推断删除；不同时间的 count 变化也不能解释记录内容。
 
 Timeline 为 1..10000ms 窗口，最多 500 条结构记录：click/pointer/input/change/focus/blur/submit，Mutation 种类/数量/属性名，Error 类别/行列，以及支持时的 Long Task。默认不保存事件正文、输入、文本、URL、错误消息或 rejection 正文。顺序是该页面窗口内的观察顺序，不证明因果。

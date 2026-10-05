@@ -8,6 +8,8 @@
 
 工作区正在完成最终能力，暂不另发版本包。开发入口已增加 CSS/Environment Snapshot/Diff、target/socket 选择、Action/Journey、事件时间线、通用 DOM Inspector、Storage 元数据 Snapshot/Diff、区域视觉比较、性能重复采样与离线证据工具。以当前 `--help`、[操作说明](docs/ACTIONS.md)、[检查器说明](docs/INSPECTORS.md)、[性能说明](docs/PERFORMANCE.md)、[证据比较](docs/EVIDENCE_TOOLS.md)和验证记录为准；包版本仍保留 1.1.0 基线，完整闭环结束后统一封装。
 
+后续开发已补 [Network 实验](docs/NETWORK.md)、[动画取帧](docs/ANIMATION.md)、[Viewport Matrix](docs/VIEWPORT.md)、[原生布局](docs/NATIVE_LAYOUT.md)、[关联进程内存](docs/PROCESS_MEMORY.md) 和 [Workshop 开发闭环](docs/WORKSHOP.md)。全部命令的存在与设备/业务验收分别记录；不会自动上传或安装缺失依赖。
+
 ## 开始使用
 
 必需 Node.js 22.12+；Android 采集需要已有 ADB、USB 调试和明确的设备/App。CDP 采集还需要 App 开启 WebView 调试。无需 `npm install`。

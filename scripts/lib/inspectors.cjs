@@ -85,6 +85,16 @@ function inspect(mode, scope) {
       entry.scrollable = (entry.scrollWidth > entry.clientWidth && ['auto', 'scroll'].includes(entry.overflowX)) ||
         (entry.scrollHeight > entry.clientHeight && ['auto', 'scroll'].includes(entry.overflowY));
     } else if (mode === 'ownership') entry.owner = 'unknown';
+    else if(mode==='hitboxes'){
+      entry.semanticControl=['button','input','select','textarea','a'].includes(entry.tag)||['button','link','checkbox','radio','switch','tab'].includes(node.getAttribute('role'));
+      entry.pointerEvents=['auto','none'].includes(style.pointerEvents)?style.pointerEvents:'other';
+      entry.disabled=!!node.disabled;entry.hidden=!!node.hidden||style.display==='none'||style.visibility==='hidden';
+      entry.centerHitWithinNode=null;
+      const x=box.x+box.width/2,y=box.y+box.height/2;
+      if(box.width>0&&box.height>0&&typeof innerWidth==='number'&&typeof innerHeight==='number'&&x>=0&&y>=0&&x<innerWidth&&y<innerHeight&&typeof document.elementFromPoint==='function'){
+        const hit=document.elementFromPoint(x,y);entry.centerHitWithinNode=hit?hit===node||typeof node.contains==='function'&&node.contains(hit):null;
+      }
+    }
     nodes.push(entry);
     for (let i = 0; i < node.children.length; i++) {
       if (nodes.length >= maxNodes) { truncated = true; break; }

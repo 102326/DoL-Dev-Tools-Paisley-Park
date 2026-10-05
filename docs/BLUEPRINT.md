@@ -34,9 +34,11 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 当前开发中已补 CSS Snapshot/Diff、Environment/Mod Snapshot/Diff、Provider、显式 CDP target/socket 选择，以及固定 Action primitives 和 Journey plan/replay/checkpoint。原版页面结构/Mod 元信息保持中立；已明确当前连接 App 可作为测试环境，普通复现动作可主动执行，真实存档和云数据删除/覆盖仍排除。
 
-开发中也已接入短时 Event/Mutation/Error/Long Task 与可选 Observer 创建/方法时间线、六种通用 DOM Inspector、Storage 元数据 Snapshot/Diff、Region Visual Diff、native/WebView 性能重复采样与 Thermal/Battery 元信息、Evidence Compare/Known Good/Markdown Report。后续仍须补 Recorder、生命周期/设备矩阵、Network 实验、Animation Capture、深入 Leak Probe 与构建部署复验。每类缺失能力登记与验收；不要把基础 replay 视作完整 Journey 产品，也不要将矩阵模拟结果作为实体设备证明。
+开发中也已接入短时 Event/Mutation/Error/Long Task 与可选 Observer 创建/方法时间线、六种通用 DOM Inspector、Storage 元数据 Snapshot/Diff、Region Visual Diff、native/WebView 性能重复采样与 Thermal/Battery 元信息、Evidence Compare/Known Good/Markdown Report。后续增补限定WebView Recorder候选、选定矩阵与后台返回/重启实验、声明中性基线的Network实验和离线Animation取帧，见[ACTIONS](ACTIONS.md)、[NETWORK](NETWORK.md)、[ANIMATION](ANIMATION.md)。现已补数值/可选detached Leak Probe、证据时间对齐、[Viewport Matrix](VIEWPORT.md) 和显式选择的 [Native Layout](NATIVE_LAYOUT.md)。renderer进程归属、完整原生帧时间还原、目标项目构建部署复验与最终Skill安装仍需各自验收。每类缺失能力登记与验收；候选录制不等于自动生成正确Journey，浏览器/矩阵标签结果不等于实体设备证明。
 
 ## 后续实施顺序
+
+后续 [关联进程内存](PROCESS_MEMORY.md) 已在真机验收主进程和一个准确关联的isolated进程，不推断renderer角色；Hitbox补中心命中与离线SVG；[Workshop](WORKSHOP.md) 受控浏览器源码构建部署复验通过。原文章节、外部/条件路径和未验收部分见 [能力覆盖](CAPABILITY_COVERAGE.md)。
 
 以下是结合当前缺口的分批顺序，不要求一次实现全部，也不预建框架。
 

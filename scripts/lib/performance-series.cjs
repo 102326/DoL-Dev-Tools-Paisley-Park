@@ -8,19 +8,37 @@ function system(thermal,battery){
       temperatureC:temperature!==null&&temperature>=-1000&&temperature<=2000?temperature/10:null,
       voltageMv:voltage>0&&voltage<20000?voltage:null,chargingStatus:[1,2,3,4,5].includes(status)?status:null}};
 }
-async function web(client){
+async function web(client,options={}){
+  if(Object.keys(options).some(k=>k!=='detached')||options.detached!==undefined&&typeof options.detached!=='boolean')throw Error('Invalid WebView probe options');
   const result={status:'unsupported',metrics:{},detachedNodes:'not measured',observers:'not measured',leakDiagnosis:'not-inferred'};
   if(!client)return result;
   let enabled=false;
   try{
-    await client.send('Performance.enable');enabled=true;
+    enabled=true;await client.send('Performance.enable');
     const metrics=await client.send('Performance.getMetrics');
     const names=['Timestamp','JSHeapUsedSize','JSHeapTotalSize','Nodes','Documents','JSEventListeners','LayoutCount','RecalcStyleCount','LayoutDuration','RecalcStyleDuration','ScriptDuration','TaskDuration'];
     for(const item of Array.isArray(metrics.metrics)?metrics.metrics.slice(0,100):[])if(names.includes(item.name)&&Number.isFinite(item.value)&&item.value>=0)result.metrics[item.name]=item.value;
     try{const counters=await client.send('Memory.getDOMCounters');for(const name of ['documents','nodes','jsEventListeners'])if(Number.isSafeInteger(counters[name])&&counters[name]>=0)result[name]=counters[name]}catch{/* Conditional protocol support. */}
-    result.status=Object.keys(result.metrics).length?'available':'unsupported';
+    const observed=value=>Number.isFinite(value)&&value>=0;
+    result.capabilities={heap:observed(result.metrics.JSHeapUsedSize),domNodes:observed(result.nodes)||observed(result.metrics.Nodes),listeners:observed(result.jsEventListeners)||observed(result.metrics.JSEventListeners)};
+    result.status=Object.values(result.capabilities).every(Boolean)?'available':Object.values(result.capabilities).some(Boolean)?'partial':'unsupported';
   }catch{/* Raw protocol content omitted. */}
   finally{if(enabled)try{await client.send('Performance.disable')}catch{result.cleanupWarning=true}}
+  if(options.detached){
+    let enabled=false;result.detachedNodes={status:'unsupported',countsAreProtocolObservations:true,treeContent:'omitted',explicitCollectGarbage:'not called; internal protocol effects unspecified'};
+    try{
+      enabled=true;await client.send('DOM.enable');
+      const data=await client.send('DOM.getDetachedDomNodes');
+      if(!Array.isArray(data.detachedNodes))throw Error('Invalid detached metadata');
+      let retainedNodeIdsObserved=0,truncated=data.detachedNodes.length>200;
+      for(const item of data.detachedNodes.slice(0,200)){
+        if(!Array.isArray(item.retainedNodeIds)||item.retainedNodeIds.slice(0,1000).some(id=>!Number.isSafeInteger(id)||id<0))throw Error('Invalid retained ids');
+        retainedNodeIdsObserved+=Math.min(1000,item.retainedNodeIds.length);truncated ||= item.retainedNodeIds.length>1000;
+      }
+      Object.assign(result.detachedNodes,{status:'available',treesReported:data.detachedNodes.length,retainedNodeIdsObserved,truncated,countsMayBeLowerBound:truncated,countBasis:'retainedNodeIds entries; not JS wrapper object count'});
+    }catch{/* Experimental protocol availability and oversized raw response are conditional. */}
+    finally{if(enabled)try{await client.send('DOM.disable')}catch{result.cleanupWarning=true}}
+  }
   return result;
 }
 function validate(options){

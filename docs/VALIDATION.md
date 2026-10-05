@@ -1,5 +1,20 @@
 # DoL Dev Tools 验证记录
 
+## 后续完整能力增补：2026-10-05（未封装）
+
+- 当前完整 `npm test`：79 passed / 0 failed / 0 skipped；覆盖Recorder隐私/候选、matrix全计划校验与失败停止、Network原session恢复、Animation界限/失败保留、Viewport授权/恢复/共享脱敏、Native Layout固定投影、Leak/Timeline清理与未知状态、Hitbox中心命中/SVG及关联进程身份/user/isolated UID。最后user/isolated支持的定向测试1 passed；没有隐藏设备partial或夹具错误。
+- 受控已有浏览器：trusted Recorder 3条、输入未落盘、cleanup0；离线实验观察到5个请求失败，声明中性基线恢复后请求继续；phone/tablet/desktop三视口DOM/CSS/PNG完成且恢复观测匹配。独立detached数字可读，不能作为Android协议通过。2秒受控64×64视频抽取8帧complete，非游戏动画验收。
+- 真机选定matrix：baseline与background-resume complete；restart动作后等待未完成，矩阵partial并停止；不将动作确认解释成后续业务页面通过。普通heap/DOM/listener采样available；detached与DOM清理确认不完整，Journey停止后续复采并保留partial。没有自动重试让失败变通过。
+- `native-layout`未执行helper；现有CLI帮助与flat字段核对，离线runner/边界/脱敏测试通过。Viewport仅桌面受控现场；其它实体设备未模拟或安装。
+- 时间对齐已验证源端遗漏传播、未知envelope/格式/锚点、时钟误差与Long Task实际起点；离线源SHA/incident先校验。统一轴不重建native逐帧语义。独立审查指出Viewport共享脱敏与Timeline丢源/错位问题，均修复并补回归；相应定向19 passed。
+- [Workshop](WORKSHOP.md) 自有夹具实际完成源码→项目build/deploy→CDP重载→48×48复验，源码/dist/deployed SHA一致，前后Evidence/Diff/Report保留。首次最终断言误用comparison.name而非step，partial保留；修正夹具后新目录通过。Hitbox扩展后的夹具再次通过，前后私有截图人工查看与矩形一致，SVG现场输入导出通过。
+- 真机 `process-memory` 读取主进程及一个准确关联的独立进程PSS/RSS。增加user过滤时首次漏支持ISOLATED双UID行而partial；核对实际公开行后修复，加入isolated/foreign-user回归，新目录complete。其它未精确匹配packageList的候选排除；不从名称/UID推断JS renderer。独立只读审查未发现阻断；未证明进程世代的限制保留。
+- 已用标准Draft2020-12/RFC3339验证57份stage2 Manifest/Envelope与trusted Recorder payload；格式测试1 passed。Schema不证明SHA关联、隐私、原设置恢复或业务正确。没有新增Node运行依赖，版本仍1.1.0基线，未制作新ZIP/tag或推送。
+
+Stage3标准验证进一步发现Workshop夹具漏写Evidence必需的privacy与step source/required/captureStart；宽松消费器能比较，但不能据此宣称公共Schema合格。修复夹具的实际采集元信息并新目录重跑闭环，38份stage3 Manifest/Envelope和最新user/isolated进程payload通过；6份旧夹具manifest按预期拒绝，旧资料不回填或冒充有效公共格式。最新Skill quick_validate valid，仍未全局安装；格式修复没有放宽Schema。
+
+完整蓝图的实现/外部/条件路径与剩余验收见 [CAPABILITY_COVERAGE](CAPABILITY_COVERAGE.md)。真实目标项目制品部署与真机业务复验、最终Skill安装/独立任务与独立解压包检查仍未宣称完成。
+
 ## 完整能力开发工作区：2026-10-05（未重新封装）
 
 在现有目录继续开发，package 仍为 1.1.0 基线；按用户要求暂不新建 ZIP、版本 tag 或推送。已明确当前连接 App 可用于普通测试动作，真实存档/云数据删除覆盖仍排除。

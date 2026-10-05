@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
-const { compare, report, readManifest, knownGood } = require('../scripts/lib/evidence-tools.cjs');
+const { compare, report, readManifest, knownGood, timelineReport } = require('../scripts/lib/evidence-tools.cjs');
 
 const incident = '123e4567-e89b-42d3-a456-426614174000';
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -30,6 +30,16 @@ function incidentDir(base, folder, steps, extras = {}) {
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest));
   return { dir, manifest };
 }
+test('time alignment preserves clock uncertainty and unknown anchors without exporting event bodies',t=>{
+ const base=fixture(t),start=Date.parse('2026-10-05T00:00:00.000Z');
+ const source=incidentDir(base,'aligned',{timeline:{source:'timeline',durationMs:100,dropped:0,truncated:false,clock:{targetStartUnixMs:start+1000},records:[{kind:'event',atMs:10,type:'click',text:'PRIVATE_EVENT'},{kind:'error',atMs:20,errorBody:'PRIVATE_ERROR'},{kind:'longtask',atMs:80,startMs:10,durationMs:50}]},network:{omitted:0,requests:[{timestampSeconds:(start+1030)/1000,durationMs:50,failed:false,url:'PRIVATE_URL'}]}},{device:{clockOffsetMs:1000,clockUncertaintyMs:100}});
+ const result=timelineReport(source.dir,path.join(base,'timeline'));assert.equal(result.status,'complete');assert.equal(result.entries.find(e=>e.kind==='event').atMs,10);assert.equal(result.entries.find(e=>e.kind==='event').uncertaintyMs,100);assert.equal(JSON.stringify(result).includes('PRIVATE'),false);
+ assert.equal(result.entries.find(e=>e.kind==='longtask').atMs,10);assert.equal(result.entries.find(e=>e.kind==='longtask').observedRelativeToCaptureMs,80);
+ const truncated=incidentDir(base,'truncated-time',{timeline:{source:'timeline',durationMs:100,dropped:500,truncated:true,clock:{targetStartUnixMs:start+1000},records:[]},console:{omitted:5,events:[]}},{device:{clockOffsetMs:1000,clockUncertaintyMs:100}});const incomplete=timelineReport(truncated.dir,path.join(base,'truncated-report'));assert.equal(incomplete.status,'partial');assert.equal(incomplete.sourceOmitted,505);
+ const empty=incidentDir(base,'empty-source',{timeline:null});const missing=timelineReport(empty.dir,path.join(base,'empty-report'));assert.equal(missing.status,'partial');assert.equal(missing.unmapped[0].reason,'source-envelope-unavailable');
+ const bad=incidentDir(base,'malformed-sources',{console:{events:null},network:{omitted:0,requests:[null]}});const invalid=timelineReport(bad.dir,path.join(base,'malformed-report'));assert.equal(invalid.status,'partial');assert.equal(invalid.unmapped[0].reason,'source-format-unavailable');assert.equal(invalid.projectionOmitted,1);
+ source.manifest.device={};fs.writeFileSync(path.join(source.dir,'manifest.json'),JSON.stringify(source.manifest));const unknown=timelineReport(source.dir,path.join(base,'unmapped'));assert.equal(unknown.status,'partial');assert.equal(unknown.entries.some(e=>e.kind==='event'),false);assert.equal(unknown.unmapped[0].relativeToCaptureMs,10);
+});
 const domNode = id => ({ address: '0', parent: null, tag: 'div', id, class: [], data: [], hidden: false, childCount: 0 });
 const cssNode = display => ({ address: '0', parent: null, tag: 'div', id: '', class: [], childCount: 0,
   style: { display }, rect: { x: 0, y: 0, width: 10, height: 10 } });

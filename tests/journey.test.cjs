@@ -41,6 +41,12 @@ test('Journey preserves successful checkpoint files and stops after a later fail
   assert.ok(f.calls.some(a=>a.join(' ')==='forward --remove tcp:55555'));
   assert.equal(JSON.stringify(report).includes('private exception'),false);
 });
+
+test('Journey preserves incomplete requested timeline and stops subsequent actions',async t=>{
+ const root=fixture(t),f=adbFixture();let actions=0;
+ const report=await journey.run(options(path.join(root,'timeline-failure')),load([{type:'checkpoint',scope:'#x',capture:['timeline'],timelineMs:20},{type:'home'}]),{adb:f.adb,connect:async()=>({close(){},send:async()=>({}),evaluate:async()=>({capabilities:{cleanupConflicts:1}})}),executeAction:async()=>actions++});
+ assert.equal(report.status,'partial');assert.equal(report.steps[0].status,'failed');assert.equal(actions,0);assert.ok(fs.existsSync(path.join(root,'timeline-failure/step-0-timeline.json')));
+});
 test('Journey deadline prevents subsequent side effects and marks the dispatched result unknown',async t=>{
   const root=fixture(t),f=adbFixture();let count=0;
   const loaded=load([{type:'home'},{type:'home'}]);loaded.plan.timeoutMs=30;

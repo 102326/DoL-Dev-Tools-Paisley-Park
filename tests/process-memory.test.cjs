@@ -1,0 +1,10 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),{records,collect}=require('../scripts/lib/process-memory.cjs');
+test('process sampling uses exact public membership and rechecks identity without guessing renderer ownership',async()=>{
+ const block=(pid,name,packages,uid=1000,userId=0,hostingUid=null)=>`  *APP* UID ${uid} ProcessRecord{abc ${pid}:${name}/u${userId}a1}\n    user #${userId} uid=${hostingUid??uid}${hostingUid===null?'':` ISOLATED uid=${uid}`}\n    packageList={${packages}}\n`,main=block(1,'com.example.game','com.example.game'),child=block(2,'PRIVATE_SANDBOX','com.example.game',99500,0,1000),other=block(3,'other','com.example.game.extension'),foreign=block(4,'PRIVATE_OTHER_USER','com.example.game',1001000,10);
+ assert.equal(records(main+child+other,'com.example.game').length,2);assert.throws(()=>records(main+main,'com.example.game'));
+ async function run(changed){let listings=0;return collect({appPid:'1',options:{package:'com.example.game'},adb:async(...args)=>args[1]==='pidof'?Buffer.from('1'):args[2]==='activity'?Buffer.from(++listings===1||!changed?main+child+other+foreign:main):Buffer.from(`** MEMINFO in pid ${args[3]} [${args[3]==='1'?'com.example.game':'PRIVATE_SANDBOX'}] **\nTOTAL PSS: 123 kB\nTOTAL RSS: 234 kB`)})}
+ const good=await run(false);assert.equal(good.collectorStatus,undefined);assert.equal(good.processes.length,2);assert.equal(good.processes[1].memory.pssKb,123);assert.equal(JSON.stringify(good).includes('PRIVATE_SANDBOX'),false);assert.match(good.rendererRole,/not inferred/);
+ assert.equal(good.otherUserAssociatedExcluded,1);assert.equal(good.selectedUserId,0);assert.equal(good.processes.some(p=>p.pid==='4'),false);
+ assert.equal(good.processes[1].isolated,true);assert.equal(good.processes[1].uid,99500);assert.equal(good.processes[1].hostingUid,1000);
+ const changed=await run(true);assert.equal(changed.collectorStatus,'failed');assert.equal(changed.processes[1].status,'unknown');assert.equal(changed.processes[1].memory,undefined);
+});

@@ -37,6 +37,16 @@ test('Evidence is complete without optional Soft & Wet integration', async t => 
   assert.equal(manifest.steps.some(step => step.name.startsWith('integration-')), false);
 });
 
+test('native layout helper selection is required before output or collector side effects',async t=>{
+ const root=fixture(t);let calls=0;
+ for(const selection of [{profile:'layout'},{layout:true}]){
+  const out=path.join(root,selection.profile||'selected');
+  await assert.rejects(evidence({...options(out),...selection},{collectors:stubs({device:async()=>{calls++;return {}}})}),/helper/);
+  assert.equal(fs.existsSync(out),false);
+ }
+ assert.equal(calls,0);
+});
+
 test('explicit timeline failures preserve their artifact and reject invalid options before output', async t => {
   const root=fixture(t),out=path.join(root,'timeline');
   await assert.rejects(evidence({...options(out),scope:undefined,timelineMs:20},{collectors:stubs()}));
@@ -160,4 +170,5 @@ test('performance parsers read memory totals and frame timing percentiles', () =
   assert.equal(result.medianMs, 0.2);
   assert.equal(result.p95Ms, 0.6);
   assert.throws(() => memory('unrecognized'), /Unrecognized/);
+  assert.throws(()=>memory('TOTAL PSS: 999999999999999999999 kB'),/Unrecognized/);
 });

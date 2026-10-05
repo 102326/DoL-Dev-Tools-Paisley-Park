@@ -1,8 +1,9 @@
 function memory(text) {
-  const read = label => { const match = text.match(new RegExp(`${label}:\\s*(\\d+)`)); return match ? Number(match[1]) : null; };
+  const numeric=value=>{const n=Number(value);return Number.isSafeInteger(n)&&n>=0?n:null};
+  const read = label => { const match = text.match(new RegExp(`${label}:\\s*(\\d+)`)); return match ? numeric(match[1]) : null; };
   const pssKb = read('TOTAL PSS'), rssKb = read('TOTAL RSS');
   const total = text.match(/^\s*TOTAL\s+(\d+)\s+/m);
-  const result = { pssKb: pssKb ?? (total ? Number(total[1]) : null), rssKb, leakDiagnosis: 'not-inferred' };
+  const result = { pssKb: pssKb ?? (total ? numeric(total[1]) : null), rssKb, leakDiagnosis: 'not-inferred' };
   if (result.pssKb === null && rssKb === null) throw new Error('Unrecognized meminfo format');
   return result;
 }

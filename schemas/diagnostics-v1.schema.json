@@ -36,6 +36,30 @@
     },
     {
       "$ref": "#/$defs/selectorHealth"
+    },
+    {
+      "$ref": "#/$defs/recorderRecording"
+    },
+    {
+      "$ref": "#/$defs/matrixManifest"
+    },
+    {
+      "$ref": "#/$defs/animationManifest"
+    },
+    {
+      "$ref": "#/$defs/networkManifest"
+    },
+    {
+      "$ref": "#/$defs/viewportManifest"
+    },
+    {
+      "$ref": "#/$defs/timeAlignment"
+    },
+    {
+      "$ref": "#/$defs/nativeLayout"
+    },
+    {
+      "$ref": "#/$defs/processMemory"
     }
   ],
   "$defs": {
@@ -294,7 +318,9 @@
             "deep",
             "bugreport",
             "environment",
-            "series"
+            "series",
+            "layout",
+            "processes"
           ]
         },
         "status": {
@@ -1464,6 +1490,1056 @@
         "fragilityReasons"
       ],
       "additionalProperties": true
+    },
+    "recorderRecording": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "durationMs",
+        "records",
+        "dropped",
+        "truncated",
+        "cleanupConflicts",
+        "inputContent",
+        "nativeActions"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "WebView user recorder"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30000
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "order",
+              "atMs",
+              "kind",
+              "address",
+              "tag",
+              "replayable",
+              "reason"
+            ],
+            "properties": {
+              "order": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "atMs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 30000
+              },
+              "kind": {
+                "enum": [
+                  "click",
+                  "input",
+                  "change"
+                ]
+              },
+              "address": {
+                "type": "string",
+                "pattern": "^0(?:/(?:0|[1-9][0-9]{0,5})){0,8}$"
+              },
+              "tag": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]{0,31}$"
+              },
+              "replayable": {
+                "type": "boolean"
+              },
+              "reason": {
+                "enum": [
+                  null,
+                  "unsupported-input-target",
+                  "unsupported-click-target"
+                ]
+              }
+            }
+          }
+        },
+        "dropped": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "cleanupConflicts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inputContent": {
+          "const": "omitted"
+        },
+        "nativeActions": {
+          "const": "not recorded"
+        }
+      }
+    },
+    "matrixManifest": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "incidentId",
+        "matrixSha256",
+        "captureStart",
+        "status",
+        "cases"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "captureStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed",
+            "planned"
+          ]
+        },
+        "source": {
+          "const": "Selected Journey matrix"
+        },
+        "matrixSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "cases": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "status",
+              "preconditions"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+              },
+              "status": {
+                "enum": [
+                  "complete",
+                  "partial",
+                  "failed",
+                  "planned",
+                  "skipped"
+                ]
+              },
+              "preconditions": {
+                "type": "string",
+                "maxLength": 256
+              },
+              "incidentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "directory": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 256
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "planned"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "cases": {
+                "items": {
+                  "properties": {
+                    "status": {
+                      "const": "planned"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "complete"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "cases": {
+                "items": {
+                  "properties": {
+                    "status": {
+                      "const": "complete"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "animationManifest": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "incidentId",
+        "sourceSha256",
+        "capturedAt",
+        "status",
+        "durationSeconds",
+        "dimensions",
+        "intervalMs",
+        "maxFrames",
+        "minimumExpectedFrames",
+        "truncated",
+        "artifacts"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "captureStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed"
+          ]
+        },
+        "source": {
+          "const": "Animation frames"
+        },
+        "sourceSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "durationSeconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 30
+        },
+        "dimensions": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8000000
+          }
+        },
+        "intervalMs": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 5000
+        },
+        "maxFrames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "minimumExpectedFrames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "artifacts": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "required": [
+              "filename",
+              "sha256",
+              "bytes",
+              "frameAtSeconds"
+            ],
+            "properties": {
+              "filename": {
+                "type": "string",
+                "pattern": "^frame-0(?:0[1-9]|[12][0-9]|30)\\.png$"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 24,
+                "maximum": 67108864
+              },
+              "frameAtSeconds": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 150
+              }
+            }
+          }
+        }
+      }
+    },
+    "networkManifest": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "incidentId",
+        "planSha256",
+        "captureStart",
+        "status",
+        "milliseconds",
+        "baseline",
+        "scenario",
+        "cleanup"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "captureStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed",
+            "planned"
+          ]
+        },
+        "source": {
+          "const": "Bounded CDP network experiment"
+        },
+        "planSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "milliseconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "baseline": {
+          "type": "object",
+          "required": [
+            "offline",
+            "latency",
+            "downloadThroughput",
+            "uploadThroughput",
+            "blockedURLs"
+          ],
+          "properties": {
+            "offline": {
+              "type": "boolean"
+            },
+            "latency": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "downloadThroughput": {
+              "anyOf": [
+                {
+                  "const": -1
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000000
+                }
+              ]
+            },
+            "uploadThroughput": {
+              "anyOf": [
+                {
+                  "const": -1
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000000
+                }
+              ]
+            },
+            "blockedURLs": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "scenario": {
+          "type": "object",
+          "required": [
+            "offline",
+            "latency",
+            "downloadThroughput",
+            "uploadThroughput",
+            "blockedURLs"
+          ],
+          "properties": {
+            "offline": {
+              "type": "boolean"
+            },
+            "latency": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "downloadThroughput": {
+              "anyOf": [
+                {
+                  "const": -1
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000000
+                }
+              ]
+            },
+            "uploadThroughput": {
+              "anyOf": [
+                {
+                  "const": -1
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000000
+                }
+              ]
+            },
+            "blockedURLs": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "cleanup": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "command": {
+                "enum": [
+                  "Network.emulateNetworkConditions",
+                  "Network.setBlockedURLs"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "acknowledged",
+                  "unknown"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 256
+              }
+            }
+          }
+        },
+        "network": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object"
+          }
+        },
+        "omitted": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "viewportManifest": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "incidentId",
+        "planSha256",
+        "scopeHash",
+        "captureStart",
+        "status",
+        "profiles",
+        "cleanup"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "captureStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed",
+            "planned"
+          ]
+        },
+        "source": {
+          "const": "CDP viewport matrix"
+        },
+        "planSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "scopeHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "profiles": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "width",
+              "height",
+              "deviceScaleFactor",
+              "mobile",
+              "status"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "width": {
+                "type": "integer",
+                "minimum": 240,
+                "maximum": 2560
+              },
+              "height": {
+                "type": "integer",
+                "minimum": 240,
+                "maximum": 2560
+              },
+              "deviceScaleFactor": {
+                "type": "number",
+                "minimum": 0.5,
+                "maximum": 3
+              },
+              "mobile": {
+                "type": "boolean"
+              },
+              "status": {
+                "enum": [
+                  "complete",
+                  "partial",
+                  "failed",
+                  "planned"
+                ]
+              },
+              "artifacts": {
+                "type": "array",
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "filename",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "filename": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cleanup": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "acknowledged",
+                  "unknown"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "timeAlignment": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "incidentId",
+        "status",
+        "hostOrigin",
+        "entries",
+        "unmapped",
+        "orderingDoesNotProveCausation"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "Evidence time alignment"
+        },
+        "incidentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed"
+          ]
+        },
+        "hostOrigin": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "entries": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "atMs",
+              "clockBasis",
+              "uncertaintyMs"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "journey-step",
+                  "collector",
+                  "event",
+                  "mutation",
+                  "observer",
+                  "error",
+                  "unhandledrejection",
+                  "longtask",
+                  "console",
+                  "network",
+                  "performance-observation"
+                ]
+              },
+              "atMs": {
+                "type": "number",
+                "minimum": -86400000,
+                "maximum": 86400000
+              },
+              "clockBasis": {
+                "type": "string",
+                "maxLength": 256
+              },
+              "uncertaintyMs": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "unmapped": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object"
+          }
+        },
+        "orderingDoesNotProveCausation": {
+          "const": true
+        },
+        "omitted": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "nativeLayout": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "nodes",
+        "totalReported",
+        "truncated",
+        "relationships",
+        "content",
+        "appAssociation"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "Native layout"
+        },
+        "nodes": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "required": [
+              "index",
+              "class",
+              "resourceIdHash",
+              "textPresent",
+              "contentDescriptionPresent",
+              "bounds",
+              "interactions",
+              "state",
+              "offScreen"
+            ],
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 199
+              },
+              "class": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 128
+              },
+              "resourceIdHash": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "textPresent": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "contentDescriptionPresent": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "bounds": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "minItems": 4,
+                    "maxItems": 4,
+                    "items": {
+                      "type": "integer",
+                      "minimum": -16384,
+                      "maximum": 16384
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "interactions": {
+                "type": "array",
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "maxLength": 32
+                }
+              },
+              "state": {
+                "type": "array",
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "maxLength": 32
+                }
+              },
+              "offScreen": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "totalReported": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20000
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "relationships": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "appAssociation": {
+          "type": "string",
+          "maxLength": 256
+        }
+      }
+    },
+    "processMemory": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "processes",
+        "truncated",
+        "rendererRole",
+        "identityBasis",
+        "sampleOrder",
+        "captureEnd"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "Associated process memory"
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "rendererRole": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "identityBasis": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "sampleOrder": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "processes": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "pid",
+              "uid",
+              "nameHash",
+              "association",
+              "mainNameMatches",
+              "role",
+              "capturedAt",
+              "status",
+              "userId",
+              "hostingUid",
+              "isolated"
+            ],
+            "properties": {
+              "pid": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,7}$"
+              },
+              "uid": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              },
+              "nameHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "association": {
+                "type": "string",
+                "maxLength": 256
+              },
+              "mainNameMatches": {
+                "type": "boolean"
+              },
+              "role": {
+                "type": "string",
+                "maxLength": 256
+              },
+              "capturedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status": {
+                "enum": [
+                  "available",
+                  "observed",
+                  "unsupported",
+                  "unknown"
+                ]
+              },
+              "memory": {
+                "type": "object",
+                "required": [
+                  "pssKb",
+                  "rssKb",
+                  "leakDiagnosis"
+                ],
+                "properties": {
+                  "pssKb": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "rssKb": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "leakDiagnosis": {
+                    "const": "not-inferred"
+                  }
+                }
+              },
+              "userId": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999
+              },
+              "hostingUid": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              },
+              "isolated": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

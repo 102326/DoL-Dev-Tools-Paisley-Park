@@ -7,6 +7,10 @@ test('performance probes allowlist numeric metadata and leave no Performance dom
   const data=await web({send:async(method)=>{calls.push(method);if(method==='Performance.getMetrics')return{metrics:[{name:'JSHeapUsedSize',value:10},{name:'Nodes',value:NaN},{name:'SECRET_BODY',value:15}]};if(method==='Memory.getDOMCounters')return{nodes:20,documents:2,jsEventListeners:4,secret:'private'};return{}}});
   assert.equal(data.status,'available');assert.equal(data.metrics.JSHeapUsedSize,10);assert.equal(data.nodes,20);assert.equal(calls.at(-1),'Performance.disable');assert.equal(JSON.stringify(data).includes('private'),false);
   assert.throws(()=>validate({samples:20,intervalMs:5000}));
+  const detachedCalls=[];const detached=await web({send:async method=>{detachedCalls.push(method);if(method==='Performance.getMetrics')return{metrics:[{name:'JSHeapUsedSize',value:10}]};if(method==='Memory.getDOMCounters')return{nodes:20};if(method==='DOM.getDetachedDomNodes')return{detachedNodes:[{retainedNodeIds:[1,2],get treeNode(){throw Error('private tree content')}}]};return{}}},{detached:true});
+  assert.equal(detached.detachedNodes.retainedNodeIdsObserved,2);assert.equal(detached.detachedNodes.treesReported,1);assert.equal(detachedCalls.at(-1),'DOM.disable');assert.equal(JSON.stringify(detached).includes('private'),false);
+  const failedEnable=[];const uncertain=await web({send:async method=>{failedEnable.push(method);if(method.endsWith('.enable'))throw Error('enable response lost');if(method==='DOM.disable')throw Error('connection lost');return{}}},{detached:true});assert.ok(failedEnable.includes('Performance.disable'));assert.ok(failedEnable.includes('DOM.disable'));assert.equal(uncertain.cleanupWarning,true);
+  const clockOnly=await web({send:async method=>method==='Performance.getMetrics'?{metrics:[{name:'Timestamp',value:10}]}:{}});assert.equal(clockOnly.status,'unsupported');assert.equal(clockOnly.capabilities.heap,false);
 });
 test('native repeated samples stop on changed process and retain successful samples',async()=>{
   let pids=0;

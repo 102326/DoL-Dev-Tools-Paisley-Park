@@ -9,7 +9,7 @@ const { version } = require('../../package.json');
 const hash = value => createHash('sha256').update(value).digest('hex');
 const selector = value => typeof value === 'string' && !!value.trim() && value.length <= 256;
 const inspectors = require('./inspectors.cjs');
-const captureKinds = ['screenshot','dom','css','environment','console','network','performance','timeline','storage',...inspectors.domModes];
+const captureKinds = ['screenshot','dom','css','environment','console','network','performance','web-performance','leak-probe','timeline','storage',...inspectors.domModes];
 function validate(plan) {
   if (!plan || typeof plan !== 'object' || Array.isArray(plan) || plan.schemaVersion !== 1
     || Object.keys(plan).some(k => !['schemaVersion','name','scope','timeoutMs','steps'].includes(k))
@@ -135,13 +135,18 @@ async function run(options, loaded, overrides = {}) {
       } else {
         await ctx.ensureWebview();
         let value;
-        if(kind==='timeline') value=await require('./timeline.cjs').collect(ctx);
+        if(kind==='web-performance'||kind==='leak-probe'){
+          value=await require('./performance-series.cjs').web(ctx.client,{detached:kind==='leak-probe'});
+          if(value.status!=='available'||value.cleanupWarning||kind==='leak-probe'&&value.detachedNodes.status!=='available')value.collectorStatus='failed';
+        }
+        else if(kind==='timeline') value=await require('./timeline.cjs').collect(ctx);
         else if(kind==='storage'||inspectors.domModes.includes(kind)) value=await inspectors.collect(ctx,kind);
         else if(kind==='dom'||kind==='css') value=await collectors[kind](ctx);
         else if(kind==='environment') {
           ctx.deviceData=await collectors.device(ctx);ctx.appData=await collectors.app(ctx);ctx.webviewData=await collectors.webview(ctx);ctx.providerData=await collectors.provider(ctx);value=await collectors.environment(ctx);
         } else {ctx.cdpWindow={captureStart:report.captureStart,captureEnd:new Date().toISOString()};value=await collectors[kind==='console'?'consoleSummary':'networkSummary'](ctx)}
         entry.artifacts.push(save(name,`Journey ${kind} checkpoint`,value));
+        if(['failed','unsupported'].includes(value?.collectorStatus))throw Error('Requested checkpoint capability incomplete');
       }
       checkpoint();
     }

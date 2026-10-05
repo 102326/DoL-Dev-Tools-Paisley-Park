@@ -37,6 +37,8 @@ Wait 支持 `milliseconds=1..2000`，或 selector + condition（exists/visible/h
 
 Checkpoint 显式选择 screenshot/dom/css/environment/console/network/performance，以及 storage/timeline 和六种 DOM Inspector mode（见 [INSPECTORS](INSPECTORS.md)）；DOM/CSS/Timeline/Inspector 必须给本步 scope 或顶层 scope。Timeline 额外要求 timelineMs=1..10000，可选择布尔 observerInstrumentation。Screenshot 是当前设备屏幕，不承诺一定是目标 App；Android performance 不依赖 CDP。其余来源要求重新核对目标 PID/socket/target，失效则停止并保留此前制品。
 
+后续新增web-performance（heap/DOM/listener数值）与leak-probe（显式加experimental detached元信息），见[PERFORMANCE](PERFORMANCE.md)。任何请求的collectorStatus failed/unsupported会先保存制品再停止Journey，不把清理失败记为检查点成功。
+
 最多 50 步、4 次旋转实验、120 秒执行期限；每条 ADB/CDP 命令也有时限。执行链每次 await 后与下一次副作用前检查停止状态，不用 Promise.race 后遗留继续点击的后台流程。普通失败/超时停止后续步骤，不自动重试。
 
 已派发的动作在断链或超时后记 outcome unknown；本地停止不能保证取消或回滚远端动作。等待条件与执行总预算分别记录；远端查询返回慢时不会生成迟到的成功判断。
@@ -47,4 +49,27 @@ Manifest 使用 schema 1、incidentId、planSha256、工具版本、时间、步
 
 旋转恢复使用独立短预算，原始不存在的设置恢复为删除键；当前值已经等于原值则不再写入。发现外部改变时不覆盖，记录清理失败/冲突。只移除自己已知的 ADB forward；若创建后超时丢失端口，记录 ownership unknown，不猜测删除其他人的转发。
 
-当前完成固定动作、plan/replay/wait/checkpoint 基础。Recorder、矩阵、更多生命周期实验和构建部署闭环仍在后续开发清单，不将基础 replay 当作全部最终能力。
+## 手动 Recorder
+
+```powershell
+node scripts/dol-dev.cjs journey-record --endpoint http://127.0.0.1:PORT --scope '#your-test-panel' --milliseconds 5000 --out artifacts/recording.json
+```
+
+这是限定 WebView 范围的短时被动记录：只接受真实 trusted click/input/change，最多30秒、50条、结构深度8；不读取输入值、文本、HTML、原生触摸或历史事件。结束后移除自己的监听器；清理冲突会返回失败退出码。输出 recording 与 candidate；输入保持 unresolved-input，SVG等非HTMLElement点击保持 unresolved-click。所有候选都不可直接执行，结构地址不证明稳定控件身份。作者核对现场业务含义后，提取固定动作字段、重新选择目标、显式填写测试输入与等待条件，才能形成 Journey；不自动填充真实密码或业务输入。
+
+独立 endpoint 不证明目标 App 关联。候选保留调用者选择的 scope 派生 selector 以便审阅，原计划/候选不自动投影到 Support，也不默认公开。
+
+## 选定矩阵与生命周期
+
+```powershell
+node scripts/dol-dev.cjs matrix --file reviewed-matrix.json --out artifacts/matrix-plan --plan
+node scripts/dol-dev.cjs matrix --file reviewed-matrix.json --out artifacts/matrix-run --test-environment yes
+```
+
+矩阵文件为 `{"schemaVersion":1,"cases":[{"name":"resume","serial":"DEVICE_SERIAL","package":"YOUR.APP.PACKAGE","journey":{"schemaVersion":1,"steps":[{"type":"home"},{"type":"wait","milliseconds":300},{"type":"launch"}]}}]}`。最多12个不同slug用例、文件64KiB；全部计划在创建输出/操作前验证。每例明确设备/App，按顺序执行；失败或不完整停止后续用例，保留各例制品，不重试，不自动安装/切换Mod或清空数据。
+
+可选 preconditions 包括 androidVersion/appVersion 与 requiredMods 名称数组，执行前用通用 Environment 检查。公开 reported Mod 列表只证明该列表报告了名称，不能证明全部导入库存、enabled 或实际执行顺序。原输入包含 serial，保持本地；结果省略 serial。plan不连接设备、不检查现场前提，任一计划生成失败不会报告planned成功。
+
+home→launch表达后台返回；restart表达强制停止后重新启动，不清数据。用例必须按实际加载时间明确安排等待/检查点。launch结果只证明Android启动命令成功；页面就绪和业务状态另外验证。当前已实测后台返回；重启命令完成后的页面等待未在所选时限通过，保留为partial，不自动重试制造通过。
+
+更多实体设备/版本/组合须逐个明确选择；标签、单设备运行或浏览器模拟均不代表完整兼容矩阵。构建部署闭环仍在开发清单。

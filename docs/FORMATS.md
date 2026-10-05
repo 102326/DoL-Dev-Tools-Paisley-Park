@@ -61,3 +61,9 @@ Generic 采集字段保持中立，目标 Runtime / Integration 的解释单独�
 开发验证使用标准jsonschema与RFC3339 date-time检查器；它们仅为可选开发检查依赖，不成为Node运行依赖或自动安装功能。JSON Schema仍不能证明脱敏、真实性、跨文件SHA关联或业务验收。
 
 Known Good 使用 Evidence-compatible manifest/envelope，额外保存 originIncidentId、selectedSnapshots 和明确未验证业务正确的 claim。所选结构和部分字符串为哈希投影，只能通过 reference-aware compare 路径与普通证据比较。Compare/Issue Report 是独立分析格式，不因 schemaVersion=1 就视作 Evidence；字段与限额见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。perf-series 使用 series profile，数值采样格式与限制见 [PERFORMANCE](PERFORMANCE.md)。Visual Diff 的 region/sourceDimensions/dimensions 记录裁剪选择，不自动核实比较条件。
+
+后续开发格式新增 `$defs.recorderRecording/matrixManifest/animationManifest/networkManifest`，根Schema也接受这四类独立数据。Recorder CLI使用artifactEnvelope，data中有recording/candidate；只有recording单独对应recorderRecording，候选不是可执行Journey。矩阵complete/planned要求每例相应成功状态；Schema不证明前提被读取、操作发生或失败停止。Animation帧时间是理论采样值，截断独立于采集成功；Network清理acknowledged不是原状态/持久恢复证明。详见[ACTIONS](ACTIONS.md)、[ANIMATION](ANIMATION.md)、[NETWORK](NETWORK.md)。
+
+新增 `$defs.viewportManifest/timeAlignment/nativeLayout`；Evidence profile 也接受 layout。Viewport 的原设置是调用者声明，截图须审查；Time Alignment 记录 mapped/unmapped、时钟误差和源端/projection遗漏，部分观察不能推断因果；Native Layout 是有数量上限的 flat 固定投影，不含文字正文。Leak Probe 通过 artifactEnvelope 保存性能数值，unsupported 与清理未知独立呈现。Schema不证明命令恢复了真实原状态或测量得到了真实泄漏。
+
+`$defs.processMemory` 对应 Associated process memory，最多8个准确所属记录、PID/UID/名称哈希、普通/isolated及user信息和数值状态；Evidence profile新增processes，见 [PROCESS_MEMORY](PROCESS_MEMORY.md)。public关联仍不证明进程世代或JS renderer角色。Hitboxes新增 semanticControl/pointerEvents/disabled/hidden/centerHitWithinNode，SVG是结构地址与数值的离线表现，不是Evidence JSON。Workshop记录关联两个Evidence incident和目标自有构建部署SHA，独立于普通manifest。

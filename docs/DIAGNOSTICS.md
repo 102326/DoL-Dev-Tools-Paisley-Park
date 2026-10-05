@@ -149,3 +149,9 @@ CSS 最多 200 节点/深度8，只读样式白名单与矩形，URL 值整体�
 默认 CDP 仍要求唯一标准 DoL 标题；可用 inspect 的 ID 通过 --target-id 显式选择 page，缺失/歧义不自动回退到另一页。ADB 转发支持当前唯一 PID 的标准/browser WebView socket；多候选时须 --webview-socket 指定当前 PID 的已核对名称。独立 endpoint 入口不自动证明 App 关联。
 
 Action/Journey 当前开发入口与边界见 [ACTIONS](ACTIONS.md)。Inspect/Doctor/Evidence 仍保持观察语义，操作属于独立命令。
+
+后续开发入口：`journey-record`记录短时WebView trusted元信息并输出待审阅候选；`matrix`按明确设备/App执行有限Journey用例；`network-scenario`仅用于声明中性网络原状态且无竞争设置客户端的测试目标；`animation-frames`离线使用已有ffmpeg/ffprobe。用法及证明范围见[ACTIONS](ACTIONS.md)、[NETWORK](NETWORK.md)、[ANIMATION](ANIMATION.md)。这些新增入口未制作新版本包。
+
+`viewport-matrix` 用声明无原 override 的测试 page 做有限宽度采集，见 [VIEWPORT](VIEWPORT.md)；`native-layout`/`evidence --layout yes` 显式选择现有 Android CLI helper，见 [NATIVE_LAYOUT](NATIVE_LAYOUT.md)。`leak-probe` 的数值与可选 detached 能力、清理未知的限制见 [PERFORMANCE](PERFORMANCE.md)。`evidence-timeline` 离线对齐有有效时钟锚的证据，不隐藏源端截断、缺失锚或无法投影的时间源，见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
+
+`process-memory`/`evidence --processes yes` 使用 Android 公开 packageList 关联与逐PID内存，不猜 JS renderer，见 [PROCESS_MEMORY](PROCESS_MEMORY.md)。`hitbox-overlay` 把新的 Hitboxes JSON 投影为无正文 SVG，见 [INSPECTORS](INSPECTORS.md)。目标项目自身 Build→Deploy→Verify 流程和独立可运行夹具见 [WORKSHOP](WORKSHOP.md)。

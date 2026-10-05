@@ -20,6 +20,12 @@ class PublicFormats(unittest.TestCase):
         validator.validate(envelope)
         for key, value in [("schemaVersion", 99), ("incidentId", "bad-id"), ("capturedAt", "bad-date")]:
             self.assertFalse(validator.is_valid({**envelope, key: value}), key)
+        matrix = {"schemaVersion": 1, "source": "Selected Journey matrix", "incidentId": envelope["incidentId"],
+                  "matrixSha256": "a" * 64, "captureStart": envelope["capturedAt"], "status": "planned",
+                  "cases": [{"name": "first", "status": "planned", "preconditions": "not evaluated"}]}
+        validator.validate(matrix)
+        matrix["cases"][0]["status"] = "failed"
+        self.assertFalse(validator.is_valid(matrix), "failed plan cannot be a planned success")
 
 
 if __name__ == "__main__":

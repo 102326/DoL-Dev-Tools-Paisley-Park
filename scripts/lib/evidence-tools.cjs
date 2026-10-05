@@ -313,4 +313,68 @@ function knownGood(fromDir, outDir, options = {}) {
   return manifest;
 }
 
-module.exports = { compare, report, readManifest, knownGood };
+function timelineReport(fromDir,outDir){
+  const loaded=readManifest(fromDir),m=loaded.manifest,origin=Date.parse(m.captureStart),entries=[],unmapped=[];let omitted=0,sourceOmitted=0,sourceIncomplete=false;
+  const result={schemaVersion:1,source:'Evidence time alignment',incidentId:m.incidentId,status:loaded.status==='complete'&&m.captureEnd?'complete':'partial',hostOrigin:m.captureStart,entries,unmapped,
+    orderingDoesNotProveCausation:true,deviceClockMapping:'estimated only; native frame timestamps not reconstructed',reasons:loaded.reasons};
+  const numeric=n=>Number.isFinite(n)&&n>=0;
+  const offset=Number.isFinite(m.device?.clockOffsetMs)&&Math.abs(m.device.clockOffsetMs)<=86400000?m.device.clockOffsetMs:null;
+  const uncertainty=numeric(m.device?.clockUncertaintyMs)?m.device.clockUncertaintyMs:null;
+  function unknown(value){if(unmapped.length<100)unmapped.push(value);else omitted++}
+  function sourceLoss(count,truncated=false){if(Number.isSafeInteger(count)&&count>=0)sourceOmitted=Math.min(Number.MAX_SAFE_INTEGER,sourceOmitted+count);else sourceIncomplete=true;if(truncated)sourceIncomplete=true}
+  function put(kind,unixMs,fields={},basis='host',errorMs=0){
+    if(entries.length>=1000){omitted++;return}
+    if(!Number.isFinite(unixMs)||Math.abs(unixMs-origin)>86400000){unknown({kind,...fields,reason:'clock-unavailable-or-out-of-window'});return}
+    entries.push({kind,atMs:unixMs-origin,clockBasis:basis,uncertaintyMs:errorMs,...fields});
+  }
+  const types=['web-click','web-input','web-focus','tap','input','back','home','launch','restart','wake','rotate','wait','checkpoint'];
+  for(const [index,step]of m.steps.entries()){
+    if(step.captureStart)put(loaded.journey?'journey-step':'collector',Date.parse(step.captureStart),{stepIndex:index,type:loaded.journey&&types.includes(step.type)?step.type:'collection',phase:'start',status:step.status});
+    if(step.captureEnd)put(loaded.journey?'journey-step':'collector',Date.parse(step.captureEnd),{stepIndex:index,type:loaded.journey&&types.includes(step.type)?step.type:'collection',phase:'end',status:step.status});
+    const count=loaded.journey?Math.min(32,step.artifacts?.length||0):step.artifact?1:0;
+    for(let slot=0;slot<count;slot++){
+      const artifact=loaded.artifacts.get(`${index}:${slot}`);
+      const name=loaded.journey?(artifact?.filename||step.artifacts[slot]?.filename||'').replace(/^step-\d+-/,'').replace(/\.json$/,''):step.name;
+      const value=envelope(loaded,index,slot);
+      if(!value){if(['timeline','console','network','gfxinfo','meminfo','performance','web-performance','leak-probe','performance-series','process-memory'].includes(name))unknown({stepIndex:index,slot,reason:'source-envelope-unavailable'});continue;}
+      const data=value.data;
+      if(name==='timeline'){
+        if(data.source!=='timeline'||!Number.isInteger(data.durationMs)||data.durationMs<1||data.durationMs>10000||!Array.isArray(data.records)||data.records.length>500){unknown({stepIndex:index,reason:'timeline-format-unavailable'});continue}
+        sourceLoss(data.dropped,data.truncated!==false);
+        const start=data.clock?.targetStartUnixMs;
+        for(const event of data.records){
+          if(!['event','mutation','observer','error','unhandledrejection','longtask'].includes(event?.kind)||!numeric(event.atMs)||event.atMs>data.durationMs){omitted++;continue;}
+          const fields={stepIndex:index,slot};let relative=event.atMs;
+          if(event.kind==='longtask'){
+            if(Number.isFinite(event.startMs)&&event.startMs>=-60000&&event.startMs<=data.durationMs&&numeric(event.durationMs)&&event.durationMs<=60000){relative=event.startMs;fields.durationMs=event.durationMs;fields.observedRelativeToCaptureMs=event.atMs;fields.timingBasis='reported task start; callback observation time separately'}
+            else {if(numeric(event.durationMs)&&event.durationMs<=60000)fields.reportedDurationMs=event.durationMs;fields.timingBasis='callback observation only; task interval unavailable'}
+          }
+          if(['click','pointerdown','pointerup','input','change','focus','blur','submit'].includes(event.type))fields.eventType=event.type;
+          if(numeric(start)&&offset!==null)put(event.kind,start+relative-offset,fields,'target clock adjusted by Android estimate',uncertainty);
+          else unknown({kind:event.kind,...fields,relativeToCaptureMs:relative,reason:'target-clock-anchor-unavailable'});
+        }
+      }else if(name==='console'&&Array.isArray(data.events)){
+        sourceLoss(data.omitted);
+        omitted+=Math.max(0,data.events.length-200);
+        for(const event of data.events.slice(0,200))if(['console','exception'].includes(event?.kind)){
+          if(numeric(event.timestampMs)&&offset!==null)put('console',event.timestampMs-offset,{stepIndex:index,slot,eventKind:event.kind},'target clock adjusted by Android estimate',uncertainty);
+          else unknown({kind:'console',stepIndex:index,slot,reason:'target-clock-anchor-unavailable'});
+        }else omitted++;
+      }else if(name==='network'&&Array.isArray(data.requests)){
+        sourceLoss(data.omitted);
+        omitted+=Math.max(0,data.requests.length-200);
+        for(const event of data.requests.slice(0,200))if(event&&typeof event==='object'&&!Array.isArray(event)){
+          const fields={stepIndex:index,slot};if(typeof event.failed==='boolean')fields.failed=event.failed;if(numeric(event.durationMs))fields.durationMs=event.durationMs;
+          if(numeric(event.timestampSeconds)&&offset!==null)put('network',event.timestampSeconds*1000-offset,fields,'target clock adjusted by Android estimate',uncertainty);
+          else unknown({kind:'network',stepIndex:index,slot,reason:'target-clock-anchor-unavailable'});
+        }else omitted++;
+      }else if(['gfxinfo','meminfo','performance','web-performance','leak-probe','performance-series','process-memory'].includes(name)){
+        put('performance-observation',Date.parse(value.capturedAt),{stepIndex:index,slot,sampleType:name,basis:'capture time; accumulated metrics are not instantaneous events'});
+      }else if(['console','network'].includes(name))unknown({stepIndex:index,slot,reason:'source-format-unavailable'});
+    }
+  }
+  entries.sort((a,b)=>a.atMs-b.atMs);result.projectionOmitted=omitted;result.sourceOmitted=sourceOmitted;result.sourceCompletenessUnverified=sourceIncomplete;result.omitted=Math.min(Number.MAX_SAFE_INTEGER,omitted+sourceOmitted);
+  if(omitted||sourceOmitted||sourceIncomplete||unmapped.length)result.status='partial';
+  const out=path.resolve(outDir);fs.mkdirSync(out);fs.writeFileSync(path.join(out,'timeline.json'),JSON.stringify(result,null,2),{flag:'wx'});return result;
+}
+module.exports = { compare, report, readManifest, knownGood, timelineReport };

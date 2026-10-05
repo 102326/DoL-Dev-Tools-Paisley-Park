@@ -13,6 +13,8 @@ const profiles = {
   deep: ['device','app','gfxinfo','meminfo','perfetto'], bugreport: ['device','app','bugreport'],
   environment: ['device','app','provider','transport','cdp','webview','versions','environment'],
   series: ['device','app','performance-series'],
+  layout: ['device','app','native-layout'],
+  processes: ['device','app','process-memory'],
 };
 function validate(options) {
   if (!options.serial || !/^[\w.:-]{1,128}$/.test(options.serial)) throw new Error('Provide explicit --serial');
@@ -26,6 +28,9 @@ function validate(options) {
   if (options.observerInstrumentation !== undefined && (typeof options.observerInstrumentation !== 'boolean' || options.observerInstrumentation && options.timelineMs === undefined)) throw new Error('Observer instrumentation requires timeline');
   if (options.inspectors !== undefined && (!options.scope || !Array.isArray(options.inspectors) || options.inspectors.length < 1 || options.inspectors.length > 6 || new Set(options.inspectors).size !== options.inspectors.length || options.inspectors.some(mode => !require('./inspectors.cjs').domModes.includes(mode)))) throw Error('Invalid scoped inspectors');
   if (options.storage !== undefined && typeof options.storage !== 'boolean') throw Error('Invalid storage selection');
+  if(options.processes!==undefined&&typeof options.processes!=='boolean')throw Error('Invalid process selection');
+  if(options.layout!==undefined&&typeof options.layout!=='boolean'||options.allowHelper!==undefined&&typeof options.allowHelper!=='boolean')throw Error('Invalid native layout selection');
+  if((options.layout||options.profile==='layout')&&options.allowHelper!==true)throw Error('Native layout requires explicit helper side effects selection');
   if (options.profile === 'series' || options.samples !== undefined) require('./performance-series.cjs').validate(options);
   if (options.seriesWebview !== undefined && typeof options.seriesWebview !== 'boolean') throw Error('Invalid WebView selection');
   if (options.targetId !== undefined && !/^[A-Za-z0-9._:-]{1,128}$/.test(options.targetId)) throw new Error('Invalid CDP target ID');
@@ -47,6 +52,8 @@ async function evidence(options, overrides = {}) {
   if (options.environment) { selected.add('provider'); selected.add('environment'); }
   if (options.timelineMs !== undefined) selected.add('timeline');
   if (options.storage) selected.add('storage');
+  if (options.layout) selected.add('native-layout');
+  if(options.processes)selected.add('process-memory');
   if (options.samples !== undefined) selected.add('performance-series');
   if (options.seriesWebview) for(const name of ['provider','transport','cdp','webview']) selected.add(name);
   if (repro) selected.add('repro');
@@ -79,7 +86,7 @@ async function evidence(options, overrides = {}) {
   }
   async function runStep(name, source, run, required = true, skip = null) {
     const begin = performance.now();
-    const commandTimeoutMs = name === 'performance-series' ? 60000 : name === 'timeline' ? options.timelineMs + 5000 : name === 'record' ? (options.recordSeconds + 5) * 1000 : name === 'perfetto' ? (options.deepSeconds + 30) * 1000 : name === 'bugreport' ? 180000 : 10000;
+    const commandTimeoutMs = name === 'native-layout'?15000:['performance-series','process-memory'].includes(name) ? 60000 : name === 'timeline' ? options.timelineMs + 5000 : name === 'record' ? (options.recordSeconds + 5) * 1000 : name === 'perfetto' ? (options.deepSeconds + 30) * 1000 : name === 'bugreport' ? 180000 : 10000;
     const record = { name, source, required, commandTimeoutMs, captureStart: new Date().toISOString(), status: 'failed' };
     manifest.steps.push(record);
     try {
@@ -123,11 +130,13 @@ async function evidence(options, overrides = {}) {
     await step('app', 'ADB / Android', async () => { const data = await methods.app(ctx); ctx.appData = data; manifest.app = redact(data); return data; }, true, noDevice);
     await step('provider', 'Android WebView update service', async () => { const data = await methods.provider(ctx); ctx.providerData = data; return data; }, true, noDevice);
     await step('screenshot', 'ADB current screen', () => methods.screenshot(ctx), true, noDevice);
+    await step('native-layout','Android CLI current native windows',()=>require('./native-layout.cjs').collect(ctx),true,noDevice);
     await step('record', 'ADB screenrecord', () => methods.record(ctx), true, noDevice);
     await step('logcat', 'PID-scoped Android logcat', () => methods.logcat(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('repro', 'User note', async () => repro);
     await step('gfxinfo', 'Android gfxinfo', () => methods.gfx(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('meminfo', 'Android meminfo', () => methods.mem(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
+    await step('process-memory','ActivityManager membership / PID meminfo',()=>require('./process-memory.cjs').collect(ctx),true,noDevice||(!ctx.appPid?'app-check-failed':null));
     await step('transport', 'ADB forwarding', () => methods.forward(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('cdp', 'CDP event window', () => methods.cdp(ctx), true, !ctx.endpoint ? 'verified-webview-unavailable' : null);
     const noCdp = !ctx.client ? 'cdp-unavailable' : null;

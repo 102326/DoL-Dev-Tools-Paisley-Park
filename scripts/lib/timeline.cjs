@@ -173,12 +173,14 @@ async function snapshot(scopeSelector, durationMs, observerInstrumentation = fal
   } finally {
     instrument.active = false;
     instrument.emit = null;
+    if(observerInstrumentation)capabilities.observerInstances={createdAndInstrumented:refs.length,aliveAtEnd:0,notAliveAtEnd:0,instrumentationMayRetainInstances:true,basis:'new instrumented only; original method references may retain instances; no forced GC; existing observers and retained callbacks unmeasured'};
     try { clearTimeout(timer); } catch { capabilities.cleanupConflicts++; }
     for (const { name, before, after } of wrappers) restore(window, name, before, after);
     for (const { ref, saved } of refs) {
       let instance;
       try { instance = ref.deref(); } catch { capabilities.cleanupConflicts++; continue; }
-      if (!instance) continue;
+      if (!instance) {if(observerInstrumentation)capabilities.observerInstances.notAliveAtEnd++;continue;}
+      if(observerInstrumentation)capabilities.observerInstances.aliveAtEnd++;
       for (const { method, previous, after } of saved) restore(instance, method, previous, after);
     }
     try { mutation?.disconnect(); } catch { capabilities.cleanupConflicts++; }
@@ -191,7 +193,9 @@ async function snapshot(scopeSelector, durationMs, observerInstrumentation = fal
     }
     if (!completed) { root = null; records = null; }
   }
-  const result = { schemaVersion: 1, source: 'timeline', durationMs, records, dropped, truncated, capabilities };
+  const targetStartUnixMs=Number.isFinite(performance.timeOrigin)&&performance.timeOrigin>0?performance.timeOrigin+started:null;
+  const result = { schemaVersion: 1, source: 'timeline', durationMs, records, dropped, truncated, capabilities,
+    clock:{targetStartUnixMs,basis:'performance.timeOrigin + performance.now; target clock; not host time'} };
   root = null; records = null;
   return result;
 }
