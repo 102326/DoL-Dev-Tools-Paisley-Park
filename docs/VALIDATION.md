@@ -2,6 +2,8 @@
 
 ## 1.3 功能收口：2026-10-06
 
+后续范围纠正：以下是已完成的通用产品阶段验收。1.3提前封装，不能代表用户要求的全部最终任务完成；原生Activity/WebView重建及真实业务Mod/APK更新仍待实际接入、操作和复验，系统退出元信息与隔离夹具不能替代。已发行1.3包/tag保持原样，不回填通过；源码后续继续推进。
+
 - 对照原始蓝图的独立只读审查确认两处产品内格式断点：整包生命周期仅比SHA，以及Support不能直接生成Issue Report；均已复用既有契约补齐。未将其它设备、重型采集或专有生命周期的条件验收扩大成必需框架。
 - 生命周期整包比较含普通Evidence与声明的Journey checkpoint，后者按固定类型文件名配对；不同boot/身份、缺失、格式错误或incomplete传播unknown/partial。未加入Known Good，不保存PID/UID、本地退出时间或任意扩展正文。
 - Support报告固定验证身份/状态/版本/步骤，只读support.json；不复制复现正文、媒体、Console/Network或私有字段。投影时间单独标记，原Evidence时间保持unknown、originalEvidenceVerified=false。新Support保留required三态；独立复核发现必需步骤失败被complete掩盖的反例，补齐降级与可选DOM/Integration边界后复审无剩余阻断。

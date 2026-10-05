@@ -12,6 +12,8 @@
 
 1.3统一汇总后续增补：Android隔离origin内的持久Mod重载、完整转发归属清理、只读生命周期与checkpoint、整包生命周期比较，以及Support直接生成Issue Report。89项检查通过；原1.2 ZIP保留。交付与条件范围见[1.3说明](docs/RELEASE_1.3.md)和[验证记录](docs/VALIDATION.md)。
 
+1.3是阶段交付，不表示用户要求的完整最终能力已验收。原生Activity/WebView重建、真实业务Mod/APK更新闭环仍是待推进任务；当前证据止于系统元信息和自有隔离Mod夹具。继续核对目标接口/源码、签名与保留数据的更新路径，完成实际操作与同场景复验后再统一封装；不以“条件项”代替完成这些任务。
+
 ## 开始使用
 
 必需 Node.js 22.12+；Android 采集需要已有 ADB、USB 调试和明确的设备/App。CDP 采集还需要 App 开启 WebView 调试。无需 `npm install`。

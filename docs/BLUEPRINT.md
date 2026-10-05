@@ -32,6 +32,8 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 用户已明确以完整最终能力为目标：功能分批实现、测试和提交，再统一封装。1.0/1.1/1.2交付包保留作基线；[1.3](RELEASE_1.3.md)统一汇总后续能力收口，仍保留目标业务接入的条件验收。VALIDATION记录源码检查、发行包和现场证明。
 
+2026-10-06范围纠正：1.3仅为通用工具阶段包，提前封装不代表完整任务结束。原生Activity/WebView重建和真实业务Mod/APK更新尚未完成，仍按用户原目标推进；先核对目标自有接口、源码/制品与签名、保留数据和恢复方法，再执行更新/重建、确认实例或实际加载身份、完成同场景复验。缺接口/材料时说明具体缺口，不直接移出任务范围；全部任务完成前不再按通用范围宣布最终完成或新增发行包。
+
 当前开发中已补 CSS Snapshot/Diff、Environment/Mod Snapshot/Diff、Provider、显式 CDP target/socket 选择，以及固定 Action primitives 和 Journey plan/replay/checkpoint。原版页面结构/Mod 元信息保持中立；已明确当前连接 App 可作为测试环境，普通复现动作可主动执行，真实存档和云数据删除/覆盖仍排除。
 
 1.2也包含短时事件/Mutation/Error/Long Task与可选Observer时间线、六类Inspector、Storage结构、区域视觉、重复性能/热电采样、离线Compare/参考/报告、Recorder候选、矩阵、Network实验和动画取帧；数值/可选detached Leak Probe、证据时间对齐、Viewport Matrix与显式Native Layout见对应文档。独立Skill安装/前向任务与固定Workshop通过；renderer归属、完整原生帧时间、目标业务部署和其它设备仍分别判断。候选录制不等于正确Journey，浏览器/矩阵标签不等于实体设备证明。
