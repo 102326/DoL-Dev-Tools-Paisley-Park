@@ -9,7 +9,7 @@ const { version } = require('../../package.json');
 const hash = value => createHash('sha256').update(value).digest('hex');
 const selector = value => typeof value === 'string' && !!value.trim() && value.length <= 256;
 const inspectors = require('./inspectors.cjs');
-const captureKinds = ['screenshot','dom','css','environment','console','network','performance','web-performance','leak-probe','timeline','storage',...inspectors.domModes];
+const captureKinds = ['screenshot','dom','css','environment','console','network','performance','app-lifecycle','web-performance','leak-probe','timeline','storage',...inspectors.domModes];
 function validate(plan) {
   if (!plan || typeof plan !== 'object' || Array.isArray(plan) || plan.schemaVersion !== 1
     || Object.keys(plan).some(k => !['schemaVersion','name','scope','timeoutMs','steps'].includes(k))
@@ -85,7 +85,8 @@ async function run(options, loaded, overrides = {}) {
   const execute = async (args, settings = {}) => {
     assertActive();
     if(args[0]==='forward'&&args[1]==='tcp:0')forwardAllocationUncertain=true;
-    const result = baseAdb.execute ? await baseAdb.execute(args,{...settings,timeout:Math.min(10000,Math.max(1,deadline-Date.now())),signal:controller.signal}) : await baseAdb(...args);
+    const signal=settings.signal?AbortSignal.any([settings.signal,controller.signal]):controller.signal;
+    const result = baseAdb.execute ? await baseAdb.execute(args,{...settings,timeout:Math.min(settings.timeout??10000,10000,Math.max(1,deadline-Date.now())),signal}) : await baseAdb(...args);
     // Keep a successful dynamic port result so its owner can register cleanup even at the deadline.
     if (!(args[0] === 'forward' && args[1] === 'tcp:0')) assertActive(); return result;
   };
@@ -132,6 +133,10 @@ async function run(options, loaded, overrides = {}) {
         entry.artifacts.push({filename,sha256:hash(value.binary),...value.metadata,requiresPrivacyReview:true});
       } else if(kind==='performance') {
         entry.artifacts.push(save(name,'Journey Android performance checkpoint',{gfxinfo:await collectors.gfx(ctx),meminfo:await collectors.mem(ctx)}));
+      } else if(kind==='app-lifecycle') {
+        ctx.appData=await collectors.app(ctx);const value=await require('./app-lifecycle.cjs').collect(ctx);
+        entry.artifacts.push(save(name,'Journey Android lifecycle checkpoint',value));
+        if(value.collectorStatus)throw Error('Requested lifecycle capability incomplete');
       } else {
         await ctx.ensureWebview();
         let value;

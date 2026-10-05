@@ -37,7 +37,7 @@ adb devices -l
 | DOM / CSS / Visual | `dom-snapshot/diff`、`css-snapshot/diff`、`dom-inspect`、`hitbox-overlay`、`visual-diff`、`animation-frames` |
 | Environment / Storage / Events | `environment`、`environment-diff`、`storage-snapshot/diff`、`timeline` |
 | 复现与实验 | `action`、`journey`、`journey-record`、`matrix`、`network-scenario`、`viewport-matrix` |
-| Android 日志与性能 | `logcat`、`perf`、`perf-series`、`process-memory`、`leak-probe`、`native-layout`、`record` |
+| Android 日志与性能 | `logcat`、`perf`、`perf-series`、`process-memory`、`leak-probe`、`native-layout`、`record`；开发源码增加[app-lifecycle/diff](docs/APP_LIFECYCLE.md) |
 | 明确选择的重型采集 | `perf --deep`、`bugreport`、`evidence --full`，须 `--sensitive yes` |
 | 反馈与复现 | `support`、`evidence-compare`、`evidence-timeline`、`known-good`、`issue-report`、Evidence `--repro` |
 | 可选 Integration | `--integration soft-and-wet` 或 `--integration-file REVIEWED_LOCAL.cjs`；缺失或失败独立记录 |

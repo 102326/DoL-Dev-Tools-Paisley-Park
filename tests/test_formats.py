@@ -26,6 +26,12 @@ class PublicFormats(unittest.TestCase):
         validator.validate(matrix)
         matrix["cases"][0]["status"] = "failed"
         self.assertFalse(validator.is_valid(matrix), "failed plan cannot be a planned success")
+        lifecycle = {"schemaVersion": 1, "incidentId": envelope["incidentId"], "toolVersion": "1.2.0",
+                     "profile": "lifecycle", "status": "complete", "privacy": {}, "integrations": [], "steps": [],
+                     "captureStart": envelope["capturedAt"], "captureEnd": envelope["capturedAt"]}
+        validator.validate(lifecycle)
+        lifecycle["profile"] = "invented-profile"
+        self.assertFalse(validator.is_valid(lifecycle), "unknown profiles remain invalid")
 
 
 if __name__ == "__main__":

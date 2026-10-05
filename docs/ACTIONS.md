@@ -39,6 +39,8 @@ Checkpoint 显式选择 screenshot/dom/css/environment/console/network/performan
 
 后续新增web-performance（heap/DOM/listener数值）与leak-probe（显式加experimental detached元信息），见[PERFORMANCE](PERFORMANCE.md)。任何请求的collectorStatus failed/unsupported会先保存制品再停止Journey，不把清理失败记为检查点成功。
 
+1.2发布后增加原生`app-lifecycle` checkpoint，采系统退出元信息而不连接CDP；见[生命周期](APP_LIFECYCLE.md)。它会重新绑定当前user/UID/主PID，格式或身份未确认时保留partial并停止后续步骤。已有restart动作确认不代替后续页面或业务就绪条件。
+
 最多 50 步、4 次旋转实验、120 秒执行期限；每条 ADB/CDP 命令也有时限。执行链每次 await 后与下一次副作用前检查停止状态，不用 Promise.race 后遗留继续点击的后台流程。普通失败/超时停止后续步骤，不自动重试。
 
 已派发的动作在断链或超时后记 outcome unknown；本地停止不能保证取消或回滚远端动作。等待条件与执行总预算分别记录；远端查询返回慢时不会生成迟到的成功判断。

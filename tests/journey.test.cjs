@@ -73,3 +73,14 @@ test('Journey reports uncertain forwarding ownership and never guesses a removal
   assert.ok(report.cleanup.some(c=>c.reason?.startsWith('ownership-unknown')));
   assert.equal(f.calls.some(a=>a[0]==='forward'&&a[1]==='--remove'),false);
 });
+
+test('Journey preserves a collector command budget and cancellation without dispatching later steps',async t=>{
+ const root=fixture(t),f=adbFixture(),child=new AbortController(),settings=[];
+ f.adb.execute=async(args,options)=>{settings.push(options);if(options.signal.aborted)throw Error('cancelled command');return f.adb(...args)};
+ let actions=0;
+ const result=await journey.run(options(path.join(root,'collector-budget')),load([{type:'home'},{type:'home'}]),{adb:f.adb,executeAction:async ctx=>{
+  actions++;child.abort();await ctx.adb.execute(['get-state'],{timeout:123,signal:child.signal});
+ }});
+ assert.equal(actions,1);assert.equal(result.steps.length,1);assert.equal(result.status,'failed');
+ assert.equal(settings.at(-1).timeout,123);assert.equal(settings.at(-1).signal.aborted,true);
+});

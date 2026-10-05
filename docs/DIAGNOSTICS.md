@@ -157,3 +157,5 @@ Action/Journey 当前开发入口与边界见 [ACTIONS](ACTIONS.md)。Inspect/Do
 `viewport-matrix` 用声明无原 override 的测试 page 做有限宽度采集，见 [VIEWPORT](VIEWPORT.md)；`native-layout`/`evidence --layout yes` 显式选择现有 Android CLI helper，见 [NATIVE_LAYOUT](NATIVE_LAYOUT.md)。`leak-probe` 的数值与可选 detached 能力、清理未知的限制见 [PERFORMANCE](PERFORMANCE.md)。`evidence-timeline` 离线对齐有有效时钟锚的证据，不隐藏源端截断、缺失锚或无法投影的时间源，见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
 
 `process-memory`/`evidence --processes yes` 使用 Android 公开 packageList 关联与逐PID内存，不猜 JS renderer，见 [PROCESS_MEMORY](PROCESS_MEMORY.md)。`hitbox-overlay` 把新的 Hitboxes JSON 投影为无正文 SVG，见 [INSPECTORS](INSPECTORS.md)。目标项目自身 Build→Deploy→Verify 流程和独立可运行夹具见 [WORKSHOP](WORKSHOP.md)。
+
+1.2发布后开发源码提供 `app-lifecycle`、`app-lifecycle-diff`、`evidence --lifecycle yes` 和 Journey 原生checkpoint；仅采当前user/UID绑定的系统退出元信息，见 [APP_LIFECYCLE](APP_LIFECYCLE.md)。观察与重启动作分开，不访问Mod内部对象、栈正文或存档。

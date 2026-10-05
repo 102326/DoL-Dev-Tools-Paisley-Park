@@ -1,5 +1,14 @@
 # DoL Dev Tools 验证记录
 
+## Android 生命周期元信息：2026-10-06（1.2发布后开发）
+
+- 新增`app-lifecycle`、`app-lifecycle-diff`、`evidence --lifecycle yes`与Journey原生checkpoint，复用已有ADB、精确ProcessRecord/packageList解析与公共Envelope/Manifest；无新依赖、截图、CDP、Mod内部对象或动作。字段与API依据见[APP_LIFECYCLE](APP_LIFECYCLE.md)。
+- 独立审查发现全用户pidof误归属和inputIncidents对象正文透传；前后绑定当前user、package UID、主进程名、hosting UID及非isolated记录，任何失败清空mainPid；五种CLI Diff共享UUID-only来源ID投影。回归覆盖另一用户唯一同名进程、UID/boot/PID变化、未知reason、截断/重复/格式、正文/trace不保留及对象注入。复审未发现剩余阻断。
+- Journey现在保留collector更短的ADB命令预算，并合并collector/整体取消信号；已取消命令不会继续后续步骤。最新`npm test` 86 passed / 0 failed / 0 skipped；`node --check`与`git diff --check`通过。没有通过重跑掩盖失败。
+- 当前授权App的独立profile只读采集complete / exit0；系统报告当前用户12条保留退出记录，当前主PID归属前后确认。仅观察的单checkpoint Journey随后complete / exit0，离线两次观察Diff targetComparable=true、pidChanged=false、newlyReportedExits为空。未唤醒、重启、杀进程、安装、创建转发或采正文；此观察不能证明过去没有崩溃。
+- 8份公共Manifest/Envelope与2份生命周期payload通过Draft2020-12/RFC3339标准验证，所有采集SHA关联一致。初次标准检查拒绝新profile，原因是Schema枚举漏加lifecycle；补充固定枚举及valid/unknown-profile回归后原采集记录通过，没有修改采集数据或放宽未知profile。现有Python格式测试1 passed。更新资料60个本地链接存在。
+- 历史保留/延迟、设备本地时间无UTC偏移、主PID世代与Activity/WebView实例未知均明确登记；没有把旧restart partial改成通过。原1.2 ZIP/tag与真实业务Mod/APK保持原状态，源码增补仅本地保存，未上传。
+
 ## Android 隔离持久 Mod 与传输清理：2026-10-05（1.2发布后开发）
 
 - `npm test`：81 passed / 0 failed / 0 skipped。共享Forward记录完整远端socket；Evidence、Journey和两类Android Workshop统一精确核对后清理并确认不存在。回归覆盖同PID无关socket替换拒绝、独立清理通道、删除未确认保留unknown及无归属不猜删。

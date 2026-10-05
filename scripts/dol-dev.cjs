@@ -27,6 +27,8 @@ const help = `DoL Dev Tools ${version} (local development and diagnostics)
   bugreport --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes
   native-layout --serial SERIAL --package PACKAGE --out NEW_DIR --allow-helper yes
   process-memory --serial SERIAL --package PACKAGE --out NEW_DIR
+  app-lifecycle --serial SERIAL --package PACKAGE --out NEW_DIR
+  app-lifecycle-diff --before SNAPSHOT_JSON --after SNAPSHOT_JSON --out NEW_JSON
   evidence --full --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes [other evidence options]
   doctor --out NEW_JSON [--serial SERIAL --package PACKAGE] [--endpoint LOCAL_CDP_URL]
   support --from EVIDENCE_DIR --out NEW_DIR [--include-screenshot yes]
@@ -75,8 +77,8 @@ async function main(args = process.argv.slice(2)) {
   const command = args.shift();
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
-  if (['evidence','capture','perf','logcat','record','bugreport','environment','perf-series','native-layout','process-memory'].includes(command)) {
-    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive','--css','--environment','--target-id','--webview-socket','--timeline-ms','--observer-instrumentation','--inspectors','--storage','--layout','--allow-helper','--processes']
+  if (['evidence','capture','perf','logcat','record','bugreport','environment','perf-series','native-layout','process-memory','app-lifecycle'].includes(command)) {
+    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive','--css','--environment','--target-id','--webview-socket','--timeline-ms','--observer-instrumentation','--inspectors','--storage','--layout','--allow-helper','--processes','--lifecycle']
       : ['--serial','--package','--out', ...(command === 'logcat' || command === 'record' ? ['--seconds'] : []),
         ...(command === 'environment' ? ['--target-id','--webview-socket','--window-ms'] : []),
         ...(command === 'perf-series' ? ['--samples','--interval-ms','--webview','--target-id','--webview-socket'] : []),
@@ -85,12 +87,12 @@ async function main(args = process.argv.slice(2)) {
     const options = parse(args, allowed);
     if (options.integration && options.integration !== 'soft-and-wet') throw new Error('Unsupported integration');
     options.windowMs = options['window-ms'] === undefined ? 1000 : Number(options['window-ms']);
-    options.profile = command==='process-memory'?'processes':command==='native-layout'?'layout':command === 'perf-series' ? 'series' : command === 'perf' && options.deep ? 'deep' : command;
+    options.profile = command==='app-lifecycle'?'lifecycle':command==='process-memory'?'processes':command==='native-layout'?'layout':command === 'perf-series' ? 'series' : command === 'perf' && options.deep ? 'deep' : command;
     if(command==='perf-series'){
       options.samples=Number(options.samples??3);options.intervalMs=Number(options['interval-ms']??1000);
       if(options.webview!==undefined&&options.webview!=='yes')throw Error('WebView selection must be yes');options.seriesWebview=options.webview==='yes';options.windowMs=0;
     }
-    for (const name of ['css','environment','storage','layout','processes']) if (options[name] !== undefined) {
+    for (const name of ['css','environment','storage','layout','processes','lifecycle']) if (options[name] !== undefined) {
       if (options[name] !== 'yes') throw new Error('Explicit selection must be yes'); options[name] = true;
     }
     options.targetId = options['target-id']; options.webviewSocket = options['webview-socket'];
@@ -226,13 +228,16 @@ async function main(args = process.argv.slice(2)) {
     const data = await evaluate(options.endpoint, module.expression(options.scope), 10000, options['target-id'] || null);
     write(options.out, `${command} via caller-specified CDP endpoint; app association unverified`, { ...module.contract(data), scopeHash: createHash('sha256').update(options.scope).digest('hex') });
     console.log('Scoped contract saved.');
-  } else if (['dom-diff','css-diff','environment-diff','storage-diff'].includes(command)) {
-    const module = command === 'dom-diff' ? dom : command === 'css-diff' ? css : command === 'storage-diff' ? {diff:inspectors.storageDiff} : environment;
+  } else if (['dom-diff','css-diff','environment-diff','storage-diff','app-lifecycle-diff'].includes(command)) {
+    const module = command==='app-lifecycle-diff'?require('./lib/app-lifecycle.cjs'):command === 'dom-diff' ? dom : command === 'css-diff' ? css : command === 'storage-diff' ? {diff:inspectors.storageDiff} : environment;
     const options = parse(args, ['--before','--after','--out']);
     if (!options.before || !options.after || !options.out) throw new Error('Provide --before, --after and --out');
     const read = file => { if (fs.statSync(file).size > 1024 * 1024) throw new Error('Contract too large'); return JSON.parse(fs.readFileSync(file, 'utf8')); };
     const before = read(options.before), after = read(options.after);
-    write(options.out, `${command} comparison`, { ...module.diff(before, after), inputIncidents: [before.incidentId ?? null, after.incidentId ?? null] });
+    const comparison=module.diff(before, after);
+    const inputIncidents=[before.incidentId,after.incidentId].map(id=>typeof id==='string'&&/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(id)?id:null);
+    write(options.out, `${command} comparison`, { ...comparison, inputIncidents });
+    if(command==='app-lifecycle-diff'&&comparison.incomplete)process.exitCode=1;
     console.log('Diff saved; observed differences do not prove compatibility failure.');
   } else throw new Error('Unknown command; use --help');
 }

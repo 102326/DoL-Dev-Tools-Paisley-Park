@@ -9,7 +9,7 @@
 | 8..9 Generic/CDP Automation | evidence/inspect；保留审阅后使用的evaluator | 显式page ID/唯一标准title；歧义不换目标；通用evaluator不冒充只读约束 |
 | 10..12 截图/录像/动画 | capture/record/animation-frames；visual-diff逐帧比较 | 真机静态与短录屏已有资料；受控取帧通过；完整DoL动画仍按场景验收 |
 | 13..17 Action/Recorder/Replay/Plan | action/journey/journey-record；有限动作/等待/checkpoint | 离线与选定真机场景证明；Recorder输入省略、候选需审阅补全；非自动生成业务测试 |
-| 18..19 原生/生命周期 | Android CLI既有交互；native-layout；launch/restart/home/back/wake/rotate | wake/后台返回通过；重启后的等待失败保留partial；凭据解锁与Activity/WebView原生recreate需目标自有接口；Page.reload不能替代 |
+| 18..19 原生/生命周期 | Android CLI既有交互；native-layout；app-lifecycle/diff；launch/restart/home/back/wake/rotate | 系统退出元信息已只读真机验证，固定user/UID/boot/PID归属；wake/后台返回通过；旧重启等待partial保留；凭据解锁与Activity/WebView原生recreate需目标自有接口；Page.reload不能替代 |
 | 20..24 DOM/CSS | scoped snapshot/diff、白名单computed style | scoped/截断/结构地址已验证；不是稳定DOM身份或全局镜像 |
 | 25..27 Golden/Visual/Region | 明确参考文件与visual-diff可选region | 比较可运行；同尺寸不足以证明字体/场景/平台等条件一致；不自动更新Golden |
 | 28..32 Event/Mutation/Observer/Ownership/Selector | timeline、可选instrumentation、dom-inspect | 有限窗口/新Observer创建与方法/清理；已有实例与callback闭包未知；作者归属需公开Integration |
@@ -28,6 +28,8 @@
 | 85..88 排除项/CLI/开发闭环 | 复用工具；[Workshop](WORKSHOP.md) | 桌面源码→build→deploy→复验，以及桌面/Android隔离origin真实ModLoader ZIP持久安装/来源/源SHA/版本/尺寸复验通过；Android主游戏业务Mod/APK仍需目标项目证明；不增加业务Runtime/任意执行DSL |
 
 [关联进程内存](PROCESS_MEMORY.md) 已使用系统公开packageList、user/UID和PID meminfo在真机验证。它补多进程观察，但不能将关联进程自动指定为某个page的renderer。
+
+[生命周期元信息](APP_LIFECYCLE.md)提供系统保留的进程退出记录及固定投影比较，不保存堆栈或description，也不将新增报告误当成新发生事件。它没有为旧重启用例回填通过，不能证明Activity/WebView原生重建。
 
 固定自有WebView夹具还在授权App跑通真实源码→build/deploy→矩形复验与节点/转发清理；制品加载为临时自有DOM，不等于持久业务Mod/APK部署。只采自有scope CSS，不采页面正文或业务状态。
 

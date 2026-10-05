@@ -15,6 +15,7 @@ const profiles = {
   series: ['device','app','performance-series'],
   layout: ['device','app','native-layout'],
   processes: ['device','app','process-memory'],
+  lifecycle: ['device','app','app-lifecycle'],
 };
 function validate(options) {
   if (!options.serial || !/^[\w.:-]{1,128}$/.test(options.serial)) throw new Error('Provide explicit --serial');
@@ -29,6 +30,7 @@ function validate(options) {
   if (options.inspectors !== undefined && (!options.scope || !Array.isArray(options.inspectors) || options.inspectors.length < 1 || options.inspectors.length > 6 || new Set(options.inspectors).size !== options.inspectors.length || options.inspectors.some(mode => !require('./inspectors.cjs').domModes.includes(mode)))) throw Error('Invalid scoped inspectors');
   if (options.storage !== undefined && typeof options.storage !== 'boolean') throw Error('Invalid storage selection');
   if(options.processes!==undefined&&typeof options.processes!=='boolean')throw Error('Invalid process selection');
+  if(options.lifecycle!==undefined&&typeof options.lifecycle!=='boolean')throw Error('Invalid lifecycle selection');
   if(options.layout!==undefined&&typeof options.layout!=='boolean'||options.allowHelper!==undefined&&typeof options.allowHelper!=='boolean')throw Error('Invalid native layout selection');
   if((options.layout||options.profile==='layout')&&options.allowHelper!==true)throw Error('Native layout requires explicit helper side effects selection');
   if (options.profile === 'series' || options.samples !== undefined) require('./performance-series.cjs').validate(options);
@@ -54,6 +56,7 @@ async function evidence(options, overrides = {}) {
   if (options.storage) selected.add('storage');
   if (options.layout) selected.add('native-layout');
   if(options.processes)selected.add('process-memory');
+  if(options.lifecycle)selected.add('app-lifecycle');
   if (options.samples !== undefined) selected.add('performance-series');
   if (options.seriesWebview) for(const name of ['provider','transport','cdp','webview']) selected.add(name);
   if (repro) selected.add('repro');
@@ -137,6 +140,7 @@ async function evidence(options, overrides = {}) {
     await step('gfxinfo', 'Android gfxinfo', () => methods.gfx(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('meminfo', 'Android meminfo', () => methods.mem(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('process-memory','ActivityManager membership / PID meminfo',()=>require('./process-memory.cjs').collect(ctx),true,noDevice||(!ctx.appPid?'app-check-failed':null));
+    await step('app-lifecycle','Android retained process exit metadata',()=>require('./app-lifecycle.cjs').collect(ctx),true,noDevice||(!ctx.appData?'app-check-failed':null));
     await step('transport', 'ADB forwarding', () => methods.forward(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('cdp', 'CDP event window', () => methods.cdp(ctx), true, !ctx.endpoint ? 'verified-webview-unavailable' : null);
     const noCdp = !ctx.client ? 'cdp-unavailable' : null;

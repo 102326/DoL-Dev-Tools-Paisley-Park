@@ -60,6 +60,9 @@
     },
     {
       "$ref": "#/$defs/processMemory"
+    },
+    {
+      "$ref": "#/$defs/appLifecycle"
     }
   ],
   "$defs": {
@@ -320,7 +323,8 @@
             "environment",
             "series",
             "layout",
-            "processes"
+            "processes",
+            "lifecycle"
           ]
         },
         "status": {
@@ -2540,6 +2544,187 @@
           }
         }
       }
+    },
+    "appLifecycle": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "source",
+        "package",
+        "userId",
+        "packageUid",
+        "bootIdHash",
+        "mainPid",
+        "incomplete",
+        "exitHistory",
+        "limits",
+        "privacy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "Android lifecycle"
+        },
+        "package": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*(?:\\.[A-Za-z0-9_]+)+$"
+        },
+        "userId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 99999
+        },
+        "packageUid": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "bootIdHash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "mainPid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[1-9][0-9]{0,9}$"
+        },
+        "incomplete": {
+          "type": "boolean"
+        },
+        "exitHistory": {
+          "type": "object",
+          "required": [
+            "status",
+            "entries",
+            "totalReported",
+            "otherUserExcluded",
+            "truncated"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "available",
+                "unsupported"
+              ]
+            },
+            "entries": {
+              "type": "array",
+              "maxItems": 32,
+              "items": {
+                "type": "object",
+                "required": [
+                  "realUid",
+                  "packageUid",
+                  "userId",
+                  "pid",
+                  "deviceLocalTimestamp",
+                  "reasonCode",
+                  "reason",
+                  "status",
+                  "processNameHash",
+                  "exitId",
+                  "role"
+                ],
+                "properties": {
+                  "realUid": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647
+                  },
+                  "packageUid": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647
+                  },
+                  "userId": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647
+                  },
+                  "pid": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "deviceLocalTimestamp": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}$"
+                  },
+                  "reasonCode": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 65535
+                  },
+                  "reason": {
+                    "type": "string",
+                    "pattern": "^[A-Z_]{1,32}$"
+                  },
+                  "status": {
+                    "type": "integer",
+                    "minimum": -2147483648,
+                    "maximum": 2147483647
+                  },
+                  "processNameHash": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "exitId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "role": {
+                    "enum": [
+                      "main",
+                      "associated; purpose unknown"
+                    ]
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "totalReported": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 2147483647
+            },
+            "otherUserExcluded": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 2147483647
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": true
+        },
+        "limits": {
+          "type": "string"
+        },
+        "privacy": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
     }
   }
 }
