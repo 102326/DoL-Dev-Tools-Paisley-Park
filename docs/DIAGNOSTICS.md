@@ -120,6 +120,6 @@ bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、
 ## Skill 与当前边界
 
 仓库内 [.agents/skills/dol-dev-tools/SKILL.md](../.agents/skills/dol-dev-tools/SKILL.md) 提供五种诊断模式和升级条件；未安装到全局，不宣称本会话已经自动发现它。
-Skill 只路由实际命令，不复制 Tools。默认观察、证据先行、来源分离、最小充分验证；重型动作必须有具体未解决问题。
+Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live Site First、证据先行、来源分离、最小充分诊断；测试环境允许任务范围内的主动复现，具体操作边界见 [架构](ARCHITECTURE.md)。
 当前未提供原生 action / journey、自动遍历控件、先进网络正文抓取、Helper APK 自动安装或全局 DOM 镜像。保留已有 Android CLI 独立采集入口，不将其原始布局直接塞进脱敏包。
-这些选择保持初始任务的游戏动作/存档禁区，不为了完整体系新增自动化框架、后台服务、数据库或云端遥测。
+这是 1.0 的交付范围。后续独立 Action / Journey 可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect / Doctor / Evidence 的现有观察语义保持不变。真实存档、正式用户数据和凭据的破坏性操作仍需对应显式授权。长期范围见 [BLUEPRINT](BLUEPRINT.md)，不新增后台服务、数据库或云端遥测。

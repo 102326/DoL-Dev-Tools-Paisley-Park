@@ -1,6 +1,8 @@
 # DoL Dev Tools 1.0 重置版
 
-面向整个 DoL Mod 开发生态的本地诊断工具包：通过 Android / WebView / CDP 获取现场证据，生成可追溯的 Evidence 与轻量 Support Bundle。通用核心不依赖 Soft & Wet、不要求目标 Mod 使用我们的 Runtime，也不需要相邻的 UI 源码仓库。
+面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP 与 ADB 构成 Live Device Access；长期开发闭环是 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
+
+当前 1.0 实现诊断与采证基础，尚未交付统一 Action / Journey、CSS Contract 或构建部署编排。完整蓝图与能力状态见 [BLUEPRINT](docs/BLUEPRINT.md)。通用核心不依赖 Soft & Wet、不要求目标 Mod 使用某个 Runtime，也不需要相邻源码仓库。Soft & Wet、MapleBirch、ModHub 和其它项目的 Integration 都是平级可选增强；目前仅附带 Soft & Wet 桥。
 
 1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
 

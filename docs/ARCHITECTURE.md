@@ -1,26 +1,28 @@
-# DoL Dev Tools：增强路线与架构约束
+# DoL Dev Tools：公共开发工具架构约束
 
-2026-10-05。长期架构与原始分批路线；1.0 当前交付以 README、DIAGNOSTICS 和 VALIDATION 为准。
-本文整合完整增强路线、通用核心与专属集成边界、通用诊断补充约束和 Tools + Runtime + Skill 定位。
-本文不是当前功能清单；当前命令与验证范围见 README。开工前核对实际脚本和接口，不把路线中的能力视为已经可用。
+2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](BLUEPRINT.md)；1.0 可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
+目标是面向整个 DoL Mod 生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP、ADB 构成 Live Device Access，支撑 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
+本文不是已完成功能清单。1.0 交付诊断和证据基础，后续 Action / Journey 等能力不能因写入蓝图就视为可用。
 
 ## 三者职责
 
 | 部分 | 职责 | 边界 |
 | --- | --- | --- |
-| DoL Dev Tools | 获取 Android、WebView、DOM、性能和日志现场，形成本地证据 | 面向所有 DoL Mod 作者，不依赖 Soft & Wet 或其源码目录 |
-| Soft & Wet UI Runtime | 理解与适配 UI，提供自己的只读诊断解释 | 留在 DoL-Game-UI；只管 UI，不拥有游戏状态、Mod 生命周期、存档、云事务、依赖解析或包管理 |
-| DoL Development Skill | 选择工具、诊断顺序、升级条件、风险与证据解释 | 调用 Tools，不复制实现，不成为工具执行器或第四个框架 |
+| DoL Dev Tools | 进入 Android/WebView 现场，采证与比较；后续独立执行复现实验 | 面向所有 DoL Mod 作者，不依赖某个 Mod、Runtime 或源码目录 |
+| 目标项目 / Runtime Integration | 提供自身版本、模块、能力与运行状态解释 | 自愿接入、平级可选；项目保有自己的业务模型与状态，Tools 不复制 Runtime |
+| DoL Development Skill | 选择诊断与复现路径，解释证据，按任务完成修改/部署/复验 | 调用实际工具与目标项目既有命令，不复制实现，不虚构蓝图中的命令 |
+
+Soft & Wet 是最早的重度使用案例之一和一个可选 Integration。其 UI Runtime 留在 DoL-Game-UI，只管 UI；不成为 Tools 的核心假设。MapleBirch、ModHub 和其它项目享有相同接入地位。
 
 工具包继续独立维护。已有可用脚本保留，统一 CLI 逐步包装它们，不为统一入口重写全部脚本。
 Skill 已随 1.0 放在 `.agents/skills/dol-dev-tools/`，不自动全局安装。
 
 ## 通用核心与可选 Integration
 
-Generic Diagnostics 包含 Android CLI、ADB、CDP、Chrome Inspect 辅助、视觉采集、Console / Network、Logcat、性能、DOM、Visual Diff、Device / App / WebView、Doctor 与 Evidence。
+Generic Diagnostics 面向 Android、WebView、DOM/CSS、Console/Network、Storage、Performance、Visual、Environment 与 Evidence；具体 1.0 已有入口见当前命令说明。Action / Journey 独立于 Inspect，供后续明确的测试复现实验使用。
 即使完全没有安装 Soft & Wet，通用层仍可独立工作。某个设备或工具能力不可用时如实报告；“通用”不意味着所有采集必然成功。
 
-`integrations/soft-and-wet/` 后续只放诊断桥、采集器和证据格式，不搬入 Runtime 实现。通过公开接口读取 Runtime Inspector、Adapter、Fingerprint、Selector fallback、Role Mapping、Adaptation Level、Degrade Reason、Surface 与 Compatibility Events。
+`integrations/soft-and-wet/` 只放自己的诊断桥，不搬入 Runtime 实现。它按公开 API 的实际能力读取 Runtime/Adapter 摘要；Fingerprint、Selector fallback、Role Mapping、Adaptation Level、Degrade Reason、Surface 与 Compatibility Events 的完整导出按实际支持范围处理。
 在建接口按实际版本、方法和能力检测；不能仅凭 UI 版本号假设所有增量接口存在或已经验收。不得访问内部 Vue store 或维护第二套诊断状态。
 
 薄 Integration 契约只需表达：
@@ -31,7 +33,7 @@ Generic Diagnostics 包含 Android CLI、ADB、CDP、Chrome Inspect 辅助、视
 - `redact`：集成字段的脱敏规则或处理，仍须经过聚合层策略。
 
 状态区分 `available / unavailable / unsupported / failed`。未知版本明确说明支持范围，不猜测内部接口。
-缺失或异常的 Integration 不阻断 Generic Evidence。未来第三方可自维护或外置 Integration；首版不做插件市场、自动发现或依赖解析。
+缺失或异常的 Integration 不阻断 Generic Evidence。公开契约与格式应允许第三方自维护或外置接入；当前 1.0 CLI 仅选择内置 Soft & Wet 桥，薄机制还不是稳定的外置加载 API。后续支持已知契约的可选检测，不建立插件市场、依赖解析或未知模块自动执行。
 
 ## Evidence、Manifest 与现场身份
 
@@ -130,12 +132,20 @@ Evidence 编排先搭可运行的薄版本，随 collector 逐步增加内容，
 离线测试、真实设备采集、视觉判断、游戏业务验收分别报告；静态通过不等于真机或游戏结果。
 工具开发不修改 DoL-Game-UI。设备采证按用户授权执行；游戏业务与存档操作不因诊断被隐式授权。
 
+新的公共接入、CSS/Environment、复现实验和专项时间线批次见 [BLUEPRINT](BLUEPRINT.md)。上面的首批路线保留作已有实现背景，不能限制最新授权的测试操作。
+
+## Inspect 与测试操作
+
+观察入口保持观察语义；点击、输入、导航、设置、启动/重启、横竖屏和生命周期实验属于独立 Action / Journey。明确测试档、测试账号、隔离 App 或临时数据环境后，按任务范围主动执行普通操作，不要求每步重新确认。
+plan/dry-run 显示动作、目标、输入、等待、采证点和风险，不执行动作。执行时重新核对 selector 唯一性/节点与 App 身份，设置时限；失败保留证据并清理自身资源，不自动换设备。
+真实存档/云端数据的删除或覆盖、真实 Mod 删除、正式用户数据清空和凭据修改仍需要对应显式授权。测试环境未明确时先核对，不自行把用户日常 App 当作隔离环境。
+
 ## 长期禁区
 
-默认只观察，不购买、换装、加载或删除存档、推进剧情、点击危险控件、写游戏变量或修改第三方状态。
+Inspect 默认只观察；明确测试环境中的任务相关普通游戏操作可以用于复现。不得不可逆破坏未授权的真实数据，也不得自动修改未知第三方 Mod。
 不接管加载顺序、包管理、依赖解析或第三方生命周期，不恢复已停止的自有 Mod 管理器。
-不做通用业务 DSL、全页自动遍历、自动测试生成、自动修复、任意脚本执行器、全局 DOM 镜像或第二个 E2E 框架。
+允许有限、可计划和可追溯的 Action / Journey；不因此构建通用业务 DSL、全页自动遍历、自动测试生成、自动修复、全局 DOM 镜像或另一套完整 E2E 平台。
 不做中央数据库、云诊断平台、遥测、自动 Issue 上传或常驻后台服务。
 现有通用 CDP evaluator 可执行指定脚本，不能因此宣称工具从技术上禁止所有写入；增强采集只运行经过检查的只读探针，不扩大为新的脚本执行产品。
 
-目标：通用工具服务整个 DoL Mod 生态，项目专属诊断按需插入；Tools 获取证据，Runtime 解释 UI，Skill 选择最便宜且充分的诊断路径。
+目标：通用工具服务整个 DoL Mod 生态，项目专属诊断按需插入；Tools 获取现场并执行明确实验，Integration 提供自身解释，Skill 选择最便宜且充分的开发与验证路径。
