@@ -1,5 +1,13 @@
 # DoL Dev Tools 验证记录
 
+## 1.5.1试用反馈修正：2026-10-06
+
+本轮范围见[1.5.1说明](RELEASE_1.5.1.md)。只修改说明、CLI提示与可选采集元数据；原UI项目现场证据用于核对反馈，未修改目标项目、连接设备、重复采集或上传资料。旧1.5验收继续有效，不重跑全量Node/Python/真机。
+
+`node --test tests/evidence.test.cjs tests/diagnostics.test.cjs tests/evidence-tools.test.cjs`：30项中29通过；新增CLI测试脚本的箭头函数对象返回缺少括号导致1项SyntaxError，已修正测试脚本，针对该项重跑通过，非产品错误。随后新增Support来源/投影省略计数与旧格式unknown断言，`node --test --test-name-pattern='Support projects' tests/diagnostics.test.cjs`通过1项；其余未受影响的结果复用。验证了缓存事件时间保留、200条上限/省略、正文省略、DOM节点/深度原因、complete与范围分离、未知核心版本与包装版本分列及Support兼容旧包。
+
+源Skill的UTF-8 quick_validate通过。交付采用Git原文源码包，另外核对包内文件、链接、私有资料排除、安装定位及工作区外启动器。未新增真机或生态覆盖；缓存逐条分类与未知核心来源仍如实保留，见[已知限制](RELEASE_1.5.1.md)。
+
 ## 终审文档与本机试用：2026-10-06
 
 本轮仅固化短项目AGENTS、README首次使用入口、Live Device Access定位与Integration/Evaluator安全措辞，并同步Skill。运行时、Collector、CLI、Schema与版本号不变；检查文档链接、AGENTS/Skill口径及格式，复用此前功能与真机证明，不重跑完整Node/Python/设备验收。

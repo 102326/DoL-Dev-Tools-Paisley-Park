@@ -20,6 +20,7 @@ node scripts/dol-dev.cjs record --serial DEVICE_SERIAL --package YOUR.APP.PACKAG
 
 Windows 可用 `DoL-Dev.cmd` 替换 `node scripts/dol-dev.cjs`。先创建输出父目录；目标目录或 JSON 文件必须不存在。
 Node.js 22.12+ 为必需。ADB 不在 PATH 时设 `DOL_ADB`，其值是已有 adb 可执行文件；不自动安装或修改系统 PATH。
+Doctor的ADB `unavailable / ENOENT`优先检查已有SDK/platform-tools位置；仅当前进程设`$env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'`，用`& $env:DOL_ADB version`核对后重新采集到新输出，不覆盖初次partial。不要把可选scrcpy缺失当作ADB缺失。
 其他可选工具环境变量为 `DOL_ANDROID_CLI / DOL_PYTHON / DOL_SCRCPY`。所有设备命令绑定显式 serial 和 package，不猜目标。
 Doctor 检查可选工具缺失不阻断必需环境；没有设备或显式设备不匹配会标记 partial，不自动选另一台设备。
 Doctor 只查询工具版本、设备、App、socket、run-as 可用性、已有转发、Perfetto 与输出目录权限；run-as 只执行 id，不读取私有数据。不创建转发、不修环境、不安装辅助 APK。
@@ -32,6 +33,8 @@ capture / perf / logcat / record 复用同一 Manifest 和失败策略，但只�
 Screenshot / Record 是当前屏幕，可能包含系统栏、用户资料或其他 App；`complete` 不保证它是目标页面。分享前检查隐私。
 
 ## 常规 Evidence、复现说明与 Support
+
+CLI会区分采集状态与内容覆盖：DOM截断在manifest步骤coverage与dom-contract.json中显示，已判定的原因见truncationReasons。Console的captureStart/End是主机接收窗口，Runtime.enable可能回放缓存事件；timestampMs是目标事件时间，两端时钟可能不同。events保留最多200条，omitted/truncated表示遗漏，不是“窗口内新增错误数”。游戏版本来自CDP GameVersion查询，包装App版本来自ADB package versionName；前者unknown时不以后者替代。
 
 ```powershell
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages' --logcat-seconds 30

@@ -30,9 +30,12 @@ Manifest 初始/中途 checkpoint 可能尚无 captureEnd 和最终状态数组�
 
 每个 node 包含 address、parent、tag、id、class、data、hidden、childCount。address 为根 `0` 及最多八层 `/索引`；parent 是父结构地址或 null。childCount/节点顺序/地址表达关系，不承诺稳定节点身份。
 最多 500 个节点、深度 8、每节点最多 32 个 class/data 名；id/class 有长度上限。data 保存属性名，值/正文/HTML/input 值不采集。截断时 truncated=true。scopeHash 对选择器做 SHA，两个明确不同 scope 拒绝比较。
+1.5.1增补可选truncationReasons：max-nodes、max-depth、class-count、data-count、id-length，记录本次已触发的限制。旧证据没有原因字段时保持未知；不能仅凭节点少于500就宣称未截断。Manifest对应步骤coverage只投影截断标记和固定原因，不改变complete/partial判定。
 项目自己的语义字段属于可选扩展，不能作为基础契约必填项。插入节点可能移动地址，Diff 不自动判兼容失败。
 
 ## Support
+
+Console的captureStart/End是主机接收窗口，timestampMs为CDP Runtime目标Unix毫秒事件时间；Runtime.enable可能发送缓存消息，缺少时钟对齐不能判定每条是实时或回放。history/windowMeaning/timestampOrigin/liveVersusReplay声明这一限制，limit=200与omitted/truncated声明采样上限。Support最多保留50条，并分别列sourceOmitted和projectionOmitted（旧源遗漏未知为null），不能把保留条数当作新错误速率。此增补不采正文、不清空缓存，也不恢复完整历史。
 
 Support 默认投影版本、Android 版本、Console 类型/时间摘要、Logcat 计数、可选集成身份/状态及历史兼容摘要、用户复现说明。默认不含 screenshot、DOM、Network、原始性能资料或自定义 Integration 诊断。
 截图需要显式 include-screenshot；录屏/trace/bugreport 不投影。每份被投影制品先校验 SHA 与 incidentId；不一致时保留其它输出，标记 partial。repro.json 是独立的 schema 1 包装与明确标注的用户说明，不能当作实际事件证据。

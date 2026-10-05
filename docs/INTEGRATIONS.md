@@ -9,6 +9,7 @@ node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACK
 ```
 
 `--integration-file` 接受一个已审阅的本地模块；相对路径相对于调用者当前目录。可同时给 `--integration soft-and-wet`，分别记录两个结果；同一选项不接受重复。没有这些选项时不导入任何集成模块。
+内置Soft & Wet入口为[integrations/soft-and-wet/index.cjs](../integrations/soft-and-wet/index.cjs)，无需猜测`integrations/soft-and-wet.cjs`。通常使用命名选项即可，外置模块才需显式文件路径。
 文件缺失、导入报错、契约不支持或执行失败作为该可选集成的状态记录，通用采集继续。若没有可用 CDP，则跳过，不导入模块；Generic 因自身必需步骤缺失而 partial 与集成失败无关。
 
 ## 模块接口

@@ -84,7 +84,7 @@ test('Support projects the allowlist only and rejects mismatched evidence withou
     device: { androidVersion: '15', model: 'private-model', serial: 'private-serial' },
     app: { versionName: '1.0', package: 'private-package', inputValue: 'private-input' },
     versions: { gameVersion: '1.2', loaderVersion: '3.4', token: 'private-token' },
-    console: { events: [{ kind: 'console', level: 'error', timestampMs: 2, content: 'private-console' }] },
+    console: { events: Array.from({ length: 55 }, () => ({ kind: 'console', level: 'error', timestampMs: 2, content: 'private-console' })), omitted: 800 },
     network: { requests: [{ host: 'private-host', path: '/private' }] },
     'dom-contract': { nodes: [{ id: 'private-dom-id' }] },
   })) {
@@ -105,6 +105,17 @@ test('Support projects the allowlist only and rejects mismatched evidence withou
   const serialized = fs.readFileSync(path.join(out, 'support.json'), 'utf8');
   for (const secret of ['private-model','private-serial','private-package','private-input','private-token','private-console','private-host','private-dom-id']) assert.equal(serialized.includes(secret), false);
   assert.equal(JSON.parse(serialized).console.events[0].content, undefined);
+  assert.equal(report.console.events.length, 50);
+  assert.equal(report.console.sourceOmitted, 800);
+  assert.equal(report.console.projectionOmitted, 5);
+  const legacyConsole = envelope(incidentId, { events: [{ kind: 'console', timestampMs: 2 }] });
+  fs.writeFileSync(path.join(from, 'console.json'), legacyConsole);
+  const legacyManifest = { ...manifest, steps: [{ name: 'console', status: 'completed', artifact: { sha256: require('node:crypto').createHash('sha256').update(legacyConsole).digest('hex') } }] };
+  fs.writeFileSync(path.join(from, 'manifest.json'), JSON.stringify(legacyManifest));
+  const legacy = support(from, path.join(root, 'support-legacy'));
+  assert.equal(legacy.status, 'complete');
+  assert.equal(legacy.console.sourceOmitted, null);
+  assert.equal(legacy.console.projectionOmitted, 0);
 
   const badOut = path.join(root, 'support-bad');
   const bad = { ...manifest, steps: [{ name: 'versions', status: 'completed', artifact: { sha256: '0'.repeat(64) } }] };

@@ -12,6 +12,8 @@ Generic Diagnostics不依赖Soft & Wet、MapleBirch、ModHub或任何特定Runti
 
 **1.5已正式收口：核心能力与约定场景已经完成并验收。** 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
 
+当前补丁为[1.5.1](docs/RELEASE_1.5.1.md)：改善首次试用的ADB/Integration指引、Console缓存与省略提示、DOM截断原因和版本来源显示；保留1.5既有验收及旧版制品。
+
 ## 最快开始
 
 必需 Node.js 22.12+；Android 采集需要已有 ADB、USB 调试和明确的设备/App。CDP 采集还需要 App 开启 WebView 调试。无需 `npm install`。
@@ -29,6 +31,16 @@ adb devices -l
 ```
 
 请替换端口、设备与包名占位符，并先手动打开目标 App；工具不会自动选择设备或启动游戏。所有输出目标必须尚不存在，父目录须已创建。ADB 不在 PATH 时，将进程内 `DOL_ADB` 指向已有 `adb.exe`；不自动安装或修改全局配置。
+
+若Doctor提示ADB `unavailable / ENOENT`，先核对自己已有SDK的platform-tools路径，再仅在当前PowerShell配置并重跑到新输出：
+
+```powershell
+$env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'
+& $env:DOL_ADB version
+.\DoL-Dev.cmd doctor --out artifacts/doctor-adb.json
+```
+
+`complete`表示请求步骤完成。DOM仍可能因节点数/深度等限制截断，Console接收窗口也可能包含Runtime缓存事件；摘要不能直接证明全DOM、实时日志速率或业务通过。游戏核心版本未知时保持unknown，包装App的ADB版本另列来源。
 
 ## 典型使用场景
 

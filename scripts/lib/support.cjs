@@ -59,7 +59,11 @@ function support(from, out, includeScreenshot = false) {
         if (step.name === 'versions') Object.assign(report.versions, { gameVersion: versionField(data.gameVersion), loaderVersion: versionField(data.loaderVersion) });
         if (step.name === 'console') report.console = { events: (data.events || []).slice(0,50).map(e => ({
           kind: ['console','exception'].includes(e.kind) ? e.kind : 'other', level: ['error','warning','log','info','debug'].includes(e.level) ? e.level : 'other',
-          timestampMs: typeof e.timestampMs === 'number' ? e.timestampMs : null })), content: 'omitted' };
+          timestampMs: typeof e.timestampMs === 'number' ? e.timestampMs : null })), content: 'omitted',
+          history: 'may include cached Runtime events; not a live-event rate',
+          timestampOrigin: 'target event time; not receipt time; clocks may differ',
+          sourceOmitted: Number.isSafeInteger(data.omitted) && data.omitted >= 0 ? data.omitted : null,
+          projectionOmitted: Array.isArray(data.events) ? Math.max(0, data.events.length - 50) : null };
         if (step.name === 'logcat') report.logcat = { count: typeof data.count === 'number' ? data.count : null, content: 'omitted' };
         if (step.name === 'repro') write('repro.json', { schemaVersion: 1, incidentId: report.incidentId, data: reproductionData(data) });
         if (step.name.startsWith('integration-')) {

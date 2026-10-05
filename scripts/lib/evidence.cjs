@@ -106,6 +106,8 @@ async function evidence(options, overrides = {}) {
         record.artifact = { filename, sha256: createHash('sha256').update(result.binary).digest('hex'), ...redact(result.metadata) };
       } else record.artifact = save(name, source, result);
       record.status = result?.collectorStatus === 'failed' ? 'failed' : 'completed';
+      if (name === 'dom-contract' && result?.truncated === true) record.coverage = { truncated: true,
+        reasons: Array.isArray(result.truncationReasons) ? result.truncationReasons.filter(r => ['max-nodes','max-depth','class-count','data-count','id-length'].includes(r)).slice(0,5) : [] };
       if (result?.reason) record.reason = result.reason;
       if (record.status === 'completed' && !name.startsWith('integration-') && !name.startsWith('transport')) evidenceCount++;
     } catch (error) {

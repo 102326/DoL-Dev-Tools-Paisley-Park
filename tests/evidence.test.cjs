@@ -177,6 +177,45 @@ test('DOM snapshot stays scoped, avoids text/value getters, and diff reports cha
   const limited = run(many);
   assert.equal(limited.nodes.length, 500);
   assert.equal(limited.truncated, true);
+  assert.deepEqual(Array.from(limited.truncationReasons), ['max-nodes']);
+  let deep = node('SPAN');
+  for (let i = 0; i < 10; i++) deep = node('DIV', '', [], [], [deep]);
+  const depthLimited = run(deep);
+  assert.equal(depthLimited.nodes.length, 9);
+  assert.deepEqual(Array.from(depthLimited.truncationReasons), ['max-depth']);
+  assert.deepEqual(Array.from(before.truncationReasons), []);
+});
+
+test('Console preserves cached timestamps and received counts without claiming live events', async () => {
+  const sent = [];
+  const ctx = {endpoint:'http://127.0.0.1:1',options:{windowMs:0},connect:async (_endpoint,_timeout,onEvent)=>({
+    send:async method=>{sent.push(method);if(method==='Runtime.enable')for(let i=0;i<202;i++)onEvent('Runtime.consoleAPICalled',{type:'error',timestamp:i===201?Date.now():100,args:[{value:'PRIVATE_CACHED_BODY'}]});},isOpen:()=>true
+  })};
+  const transport = await collectors.cdp(ctx), result = await collectors.consoleSummary(ctx);
+  assert.deepEqual(sent,['Runtime.enable','Network.enable']);
+  assert.equal(result.events.length,200);assert.equal(result.omitted,2);assert.equal(result.truncated,true);assert.equal(result.limit,200);
+  assert.equal(result.events[0].timestampMs,100);assert.equal(result.liveVersusReplay,'unknown');
+  assert.match(result.history,/cached events/);assert.match(result.windowMeaning,/receive window/);
+  assert.match(transport.history,/not complete history or a live-event rate/);
+  assert.equal(JSON.stringify(result).includes('PRIVATE_CACHED_BODY'),false);
+});
+
+test('complete Evidence keeps truncated DOM coverage and unknown game version separate from App version', async t => {
+  const root=fixture(t),out=path.join(root,'coverage');
+  const manifest=await evidence(options(out),{collectors:stubs({app:async ctx=>{ctx.appPid='123';return {versionName:'0.5.12.13'};},versions:async()=>({gameVersion:null,loaderVersion:'2.101.1'}),dom:async()=>({schemaVersion:1,source:'DOM',nodes:[],truncated:true,truncationReasons:['max-depth','PRIVATE_CAUSE']})}),adb:async()=>Buffer.alloc(0)});
+  assert.equal(manifest.status,'complete');assert.equal(manifest.gameVersion,null);assert.equal(manifest.app.versionName,'0.5.12.13');
+  assert.deepEqual(manifest.steps.find(s=>s.name==='dom-contract').coverage,{truncated:true,reasons:['max-depth']});
+});
+
+test('CLI states collection coverage, cached Console timing and separate version sources', () => {
+  const {execFileSync}=require('node:child_process');
+  const evidenceFile=require.resolve('../scripts/lib/evidence.cjs'),cliFile=require.resolve('../scripts/dol-dev.cjs');
+  const manifest={status:'complete',gameVersion:null,app:{versionName:'0.5.12.13'},completed:['console','versions'],steps:[{name:'dom-contract',coverage:{truncated:true,reasons:['max-depth']}}]};
+  const source=`require(${JSON.stringify(evidenceFile)});require.cache[${JSON.stringify(evidenceFile)}].exports.evidence=async()=>(${JSON.stringify(manifest)});require(${JSON.stringify(cliFile)}).main(['evidence','--serial','offline-device','--package','com.example.game','--out','unused-output']);`;
+  const output=execFileSync(process.execPath,['-e',source],{encoding:'utf8',windowsHide:true});
+  assert.match(output,/Evidence complete/);assert.match(output,/not complete content coverage or a functional test verdict/);
+  assert.match(output,/DOM coverage truncated: max-depth/);assert.match(output,/cached Runtime events/);
+  assert.match(output,/Game version: unknown \(CDP GameVersion\); wrapper App version: 0\.5\.12\.13 \(ADB package versionName\)/);
 });
 
 test('performance parsers read memory totals and frame timing percentiles', () => {

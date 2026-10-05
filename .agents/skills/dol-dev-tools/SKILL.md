@@ -20,6 +20,8 @@ The [capability blueprint](../../../docs/BLUEPRINT.md) distinguishes implemented
 
 Use the user's selected device and package. Verify current state before reusing a port, PID, path, screenshot or historical evidence. Never select a different device to make a failed command pass. If a live capture has no explicit target, inspect available environment information without selecting a target, then obtain the missing target before capture.
 
+If Doctor reports adb unavailable/ENOENT, first verify an existing caller-selected SDK/platform-tools adb executable. Set DOL_ADB to that absolute file path in the current process, check its version, then rerun Doctor to a new output. Do not install tools, change system PATH or guess a different device. An unavailable optional tool is separate from a required ADB prerequisite.
+
 ## Modes
 
 | Mode | Cheapest useful path | Escalation |
@@ -38,7 +40,7 @@ Use the user's selected device and package. Verify current state before reusing 
 
 For motion evidence, use a short existing recording and optional offline `animation-frames`; see [ANIMATION](../../../docs/ANIMATION.md). Do not call sampled frame indices exact source timestamps or treat synthetic/browser proof as Android animation acceptance.
 
-For optional diagnostics, use the builtin `--integration soft-and-wet` or explicit `--integration-file REVIEWED_LOCAL.cjs`; review the local module before executing it. Modules run with Node permissions in a bounded worker, not a security sandbox. Missing/unsupported/failed integrations do not invalidate Generic completeness. See [Contract 1](../../../docs/INTEGRATIONS.md) and [public evidence formats](../../../docs/FORMATS.md). Do not guess another Mod's private API or copy custom diagnostic payloads into Support.
+For optional diagnostics, use the builtin `--integration soft-and-wet` or explicit `--integration-file REVIEWED_LOCAL.cjs`; the builtin entry is `integrations/soft-and-wet/index.cjs` under the resolved Tools root. Review the local module before executing it. Modules run with Node permissions in a bounded worker, not a security sandbox. Missing/unsupported/failed integrations do not invalidate Generic completeness. See [Contract 1](../../../docs/INTEGRATIONS.md) and [public evidence formats](../../../docs/FORMATS.md). Do not guess another Mod's private API or copy custom diagnostic payloads into Support.
 
 For an ordinary user's issue, project a local Evidence Bundle using `support`; screenshot is excluded unless explicitly selected. Check the resulting files before sharing. Do not upload them or create an Issue without authorization.
 `issue-report --from` accepts Evidence or projected Support directories. A Support report does not verify the original artifacts; its projection time is not the original capture time. See [EVIDENCE_TOOLS](../../../docs/EVIDENCE_TOOLS.md).
@@ -50,6 +52,7 @@ For an ordinary user's issue, project a local Evidence Bundle using `support`; s
 - Deleting/overwriting real saves or cloud data, clearing production user data, deleting real Mods or changing real credentials requires corresponding explicit authorization. Establish the target/environment before dependent actions when unclear; meanwhile continue useful observation. Existing general evaluator executes supplied JavaScript: review it and use read-only probes for inspection, separately scoped operations for reproduction.
 - Evidence/record create temporary transport or capture resources; acknowledge their scope. `doctor` checks environment and must not repair it. Original Android CLI layout may install a helper APK; do not silently substitute it for a failed read-only collector.
 - Read manifest first: incident ID, requested profile, capture times, completion status, source, failed/skipped/unsupported steps and privacy limits. A `complete` package is collection completeness, not a test verdict.
+- Check content coverage separately: DOM truncated/limits/reasons and Console omitted/projection counts. CDP Runtime.enable may deliver cached events; captureStart/End describe reception, while event timestamps use the target clock. Do not infer live versus replay or a new-error rate without aligned timing evidence. Keep unknown gameVersion separate from an ADB wrapper App version; never substitute one for the other.
 - Android/CDP/DOM are observations from those sources; Runtime/Adapter are interpretations; repro notes are user context. Different sample times or truncated data can explain disagreement. Do not invent past events or infer hidden state from a screenshot.
 - A scoped DOM Diff uses structural addresses, not proven node identity. Insertions can shift addresses. It does not freeze third-party DOM or decide compatibility by itself.
 - Console/Logcat omit message content by default; Network omits private bodies/paths. Say when these summaries cannot establish a root cause. Screenshots, recordings and reproduction notes need manual privacy review.

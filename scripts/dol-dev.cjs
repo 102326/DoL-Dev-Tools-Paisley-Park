@@ -114,6 +114,14 @@ async function main(args = process.argv.slice(2)) {
     if (options['integration-file']) integrations.push({ modulePath: path.resolve(options['integration-file']) });
     const manifest = await evidence(options, { integrations });
     console.log(`Evidence ${manifest.status}; manifest: ${path.resolve(options.out, 'manifest.json')}`);
+    console.log('Status describes requested collection steps, not complete content coverage or a functional test verdict.');
+    const domCoverage = manifest.steps.find(step => step.name === 'dom-contract')?.coverage;
+    if (domCoverage?.truncated) console.log(`DOM coverage truncated: ${domCoverage.reasons.length ? domCoverage.reasons.join(', ') : 'reason unknown'}; inspect dom-contract.json limits.`);
+    if (manifest.completed.includes('console')) console.log('Console receive window may include cached Runtime events; timestamps are target event time, not receipt time or a live-event rate. Inspect console.json omitted/truncated counts.');
+    if (manifest.completed.includes('versions')) {
+      const display = value => typeof value === 'string' && /^[0-9A-Za-z._()+-]{1,64}$/.test(value) ? value : 'unknown';
+      console.log(`Game version: ${display(manifest.gameVersion)} (CDP GameVersion); wrapper App version: ${display(manifest.app?.versionName)} (ADB package versionName).`);
+    }
     if (manifest.status !== 'complete') process.exitCode = 1;
   } else if(command==='install-skill'){
     const options=parse(args,['--out']);const result=require('./lib/install-skill.cjs').install(options.out);console.log('Skill installed at '+result.skillDir+'; available on the next turn. Tools location will be reverified before use.');

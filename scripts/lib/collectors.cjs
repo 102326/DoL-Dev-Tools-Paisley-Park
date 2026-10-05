@@ -121,7 +121,7 @@ function events() {
     }
   }
   return { onEvent, stop: () => { stopped = true; }, snapshot: () => ({ console: consoleEvents, network, omittedConsole, omittedNetwork,
-    contentPolicy: 'no console text, headers, bodies, URL paths or query; hostname hashed', history: 'only events received during this connection' }) };
+    contentPolicy: 'no console text, headers, bodies, URL paths or query; hostname hashed', history: 'received during this connection; Runtime may replay cached events; live versus replay unknown' }) };
 }
 async function cdp(ctx) {
   if (!ctx.endpoint) throw new Error('Verified WebView endpoint unavailable');
@@ -140,12 +140,15 @@ async function cdp(ctx) {
   ctx.capture = capture;
   ctx.channels = channels;
   ctx.cdpWindow = { captureStart: start, captureEnd: new Date().toISOString() };
-  return { channels, ...ctx.cdpWindow, history: 'events received after domain enable; no historical recovery' };
+  return { channels, ...ctx.cdpWindow, history: 'receive window includes domain enable; Runtime may replay cached events; not complete history or a live-event rate' };
 }
 async function consoleSummary(ctx) {
   if (ctx.channels?.Runtime !== 'available') return { collectorStatus: 'unsupported', reason: 'runtime-events-unavailable' };
   const data = ctx.capture.snapshot();
-  return { ...ctx.cdpWindow, events: data.console, omitted: data.omittedConsole, content: 'omitted' };
+  return { ...ctx.cdpWindow, events: data.console, omitted: data.omittedConsole, content: 'omitted',
+    history: data.history, windowMeaning: 'host receive window, not event occurrence window',
+    timestampOrigin: 'CDP Runtime target Unix milliseconds; not host receipt time; clocks may differ',
+    liveVersusReplay: 'unknown', limit: 200, truncated: data.omittedConsole > 0 };
 }
 async function networkSummary(ctx) {
   if (ctx.channels?.Network !== 'available') return { collectorStatus: 'unsupported', reason: 'network-events-unavailable' };
