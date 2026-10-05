@@ -20,3 +20,5 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools/scripts/resolve.cjs
 1.4独立前向任务使用安装副本完成真实业务设置CSS的两次比较和重启后Evidence报告，三条CLI均complete/exit0。它将“采集完整”“CSS无差异”和“业务/存档正确”区分，未连接设备或把目录名当作重启证明。
 
 1.5安装已保留旧副本备份，UTF-8 quick_validate与resolve通过，定位1.5.0。新增“不重复造轮子”路由，优先复用可用android-cli/android-profiler、Chrome DevTools与目标项目既有流程；不把这些Skill装进Tools、不复制工具实现、不要求缺失时自动安装。独立前向验证使用已有trace与现有分析工具，结果见[VALIDATION](VALIDATION.md)。
+
+[1.5.2](RELEASE_1.5.2.md)将实战后的标准能力优先、点击失败诊断、范围收窄和直接探针/Journey边界纳入同一源码包。更新时保留旧Tools与Skill，将新包解压到新的稳定目录，再按上方既有安装命令生成指向新包的Skill；不是只改旧安装的文字。解析器版本、说明链接和生成指引应同时匹配新目录，避免重装回退。

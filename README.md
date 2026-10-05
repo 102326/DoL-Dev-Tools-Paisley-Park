@@ -12,7 +12,7 @@ Generic Diagnostics不依赖Soft & Wet、MapleBirch、ModHub或任何特定Runti
 
 **1.5已正式收口：核心能力与约定场景已经完成并验收。** 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
 
-当前补丁为[1.5.1](docs/RELEASE_1.5.1.md)：改善首次试用的ADB/Integration指引、Console缓存与省略提示、DOM截断原因和版本来源显示；保留1.5既有验收及旧版制品。
+当前补丁为[1.5.2](docs/RELEASE_1.5.2.md)：打包实战反馈后的Skill路由指引，标准能力优先并保留直接工具出口；运行时行为沿用[1.5.1](docs/RELEASE_1.5.1.md)，保留既有验收及旧版制品。
 
 ## 最快开始
 
