@@ -9,7 +9,14 @@
 - 复用既有真实只读生命周期Evidence及Journey，两条整包自对比均complete / exit0，语义比较targetComparable=true、pidChanged=false、新报告为空；从真实Evidence新建Support后直接生成Issue Report complete，两条CLI也exit0。自对比不证明跨场景条件一致；实际新事件差异由受控回归验证。
 - Draft2020-12/RFC3339检查器验证Schema及实际新Support，required对象反例按预期拒绝；实际两个Compare/Support Report的固定结果和时间限制另有断言通过，不冒充这些离线报告已受未定义的根Schema验证。源码版本升级为1.3.0，schema仍为1；复用有效的产品测试，版本入口与仓库Skill quick_validate另验通过。
 
-统一交付检查另登记在本节后续记录；真实Evidence留在忽略目录，不打入源码包。历史1.2与更早证明保留，当前Android隔离持久Mod和生命周期证明分别见以下记录。
+### 1.3 统一交付检查
+
+- 候选包117个源码文件逐项SHA与Git规范字节一致，ZIP可读，129个本地Markdown链接存在并限定包内；不含artifacts/backups/Git/node_modules、机器位置记录、游戏/APK、真实媒体或存档。复用1.2已验证的`core.autocrlf=false`归档进程参数，未改全局Git配置。
+- 独立含空格路径解压，从工作区外运行`DoL-Dev.cmd --version`返回1.3.0，`--help`可用；解压包Integration/Skill行为5 passed / 0 failed / 0 skipped。解压包实际安装独立Skill，解析指向该解压根/version1.3.0，quick_validate通过；没有相邻UI源码或Node依赖。
+- 本机正式Skill更新前先将旧副本移至独立备份目录，再用公开安装器生成新副本；位置解析与quick_validate通过。独立前向任务只使用新隔离Skill和一个既有真实Support包，解析/help/报告均exit0；报告complete，正确保留未知原采集时间与originalEvidenceVerified=false，未将完成采集解释成App/WebView重建。主线程核对输出和来源；未再连设备或上传。
+- 原1.2 ZIP的SHA复核不变，旧包与本地证据保留。正式1.3包须从记录本验收的最终Git revision生成并再次逐文件核对，旁边保存SHA256；归档注释记录源commit。产品代码与已验候选一致，只补本节交付记录，不为文档变动重复设备动作或全仓测试。
+
+通用产品开发与交付范围收口，外部/条件场景按能力覆盖独立判断。真实Evidence留在忽略目录，不打入源码包。历史1.2与更早证明保留，当前Android隔离持久Mod和生命周期证明分别见以下记录。
 
 ## Android 生命周期元信息：2026-10-06（1.2发布后开发）
 
