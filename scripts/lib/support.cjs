@@ -39,7 +39,8 @@ function support(from, out, includeScreenshot = false) {
     for (const step of manifest.steps) {
       if (typeof step.name !== 'string') continue;
       report.steps.push({ name: /^[a-z0-9-]{1,64}$/.test(step.name) ? step.name : 'unknown',
-        status: ['completed','failed','skipped','unsupported'].includes(step.status) ? step.status : 'unknown' });
+        status: ['completed','failed','skipped','unsupported'].includes(step.status) ? step.status : 'unknown',
+        required: typeof step.required === 'boolean' ? step.required : null });
       if (step.status !== 'completed' || !['device','app','versions','console','repro','logcat','screenshot'].includes(step.name) && !/^integration-\d+$/.test(step.name)) continue;
       try {
         const file = step.name === 'screenshot' ? 'screenshot.png' : `${step.name}.json`;

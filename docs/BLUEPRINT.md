@@ -30,7 +30,7 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 ## 当前开发与交付方式
 
-用户已明确以完整最终能力为目标：功能分批实现、测试和提交，再统一封装。1.0/1.1交付包保留作基线；1.2统一交付已实现能力和固定自有开发闭环，仍保留目标业务接入的条件验收。[发布说明](RELEASE_1.2.md)与VALIDATION记录发行包和现场证明。
+用户已明确以完整最终能力为目标：功能分批实现、测试和提交，再统一封装。1.0/1.1/1.2交付包保留作基线；[1.3](RELEASE_1.3.md)统一汇总后续能力收口，仍保留目标业务接入的条件验收。VALIDATION记录源码检查、发行包和现场证明。
 
 当前开发中已补 CSS Snapshot/Diff、Environment/Mod Snapshot/Diff、Provider、显式 CDP target/socket 选择，以及固定 Action primitives 和 Journey plan/replay/checkpoint。原版页面结构/Mod 元信息保持中立；已明确当前连接 App 可作为测试环境，普通复现动作可主动执行，真实存档和云数据删除/覆盖仍排除。
 

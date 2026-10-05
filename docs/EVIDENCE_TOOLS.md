@@ -5,15 +5,20 @@
 ```powershell
 node scripts/dol-dev.cjs evidence-compare --before artifacts/before --after artifacts/after --out artifacts/compare
 node scripts/dol-dev.cjs issue-report --from artifacts/after --out artifacts/issue
+node scripts/dol-dev.cjs issue-report --from artifacts/support-001 --out artifacts/support-issue
 node scripts/dol-dev.cjs known-good --from artifacts/after --out artifacts/reference --label checked-control --snapshots dom-contract,css-contract,environment
 node scripts/dol-dev.cjs evidence-compare --before artifacts/reference --after artifacts/later --out artifacts/reference-diff
 ```
 
 比较目录中的结构化结果是`compare.json`；Issue Report目录保存`report.json`与`report.md`。
 
-Compare 输出步骤状态、制品 SHA 变化，以及有效完整 DOM/CSS/Environment/Storage 的描述性变化；不完整来源为 unknown。Android 性能只比较已知非负数值。时间/incidentId变化也改变 JSON 文件 SHA，不能把文件变化当作业务变化。Journey 只比较步骤结构和制品哈希；Integration 只比较状态，不解释私有正文。conditionsVerified=false、automaticTestVerdict=not-inferred，不自动判断兼容回归、性能提升或根因。
+Compare 输出步骤状态、制品 SHA 变化，以及有效完整 DOM/CSS/Environment/Storage 的描述性变化；不完整来源为 unknown。Android 性能只比较已知非负数值。时间/incidentId变化也改变 JSON 文件 SHA，不能把文件变化当作业务变化。Journey 比较步骤结构和制品哈希；Integration 只比较状态，不解释私有正文。conditionsVerified=false、automaticTestVerdict=not-inferred，不自动判断兼容回归、性能提升或根因。
+
+`app-lifecycle` 在普通Evidence中另有语义比较，复用[生命周期Diff](APP_LIFECYCLE.md)：输出目标可比性、PID是否变化、新增报告的退出摘要和不再报告的数量，不复制PID/UID、本地时间、原进程名或任意扩展。不同目标/boot、缺失、无效或不完整输入形成unknown/partial。Journey的同序号checkpoint也只对双方显式声明的生命周期类型比较，按固定文件名配对，capture顺序变化不会误配。序号和完整状态不证明两次业务条件相同。生命周期不加入Known Good。
 
 Issue Report 保存 report.json 和 Markdown，包含 incident/time、有限版本、步骤状态和固定失败类别。默认不带截图、输入、Console/Network/Storage 正文、Integration 诊断或复现自由文本。复现说明只记录采集状态；需要正文或图片时由调用者审阅后手动补充。生成报告不表示已提交 Issue。
+
+输入目录有manifest时只读取Evidence；损坏或悬空manifest不回退到Support。无manifest时读取同一真实目录内≤1MiB的support.json，验证schema/身份/状态/有限步骤，固定投影版本和采集状态；不读取旁边的repro或图片。Support报告带supportId、projectedAt和originalEvidenceVerified=false；原采集起止时间为null/unknown，不能拿投影时间补造。新Support保留步骤required三态，必需步骤失败形成partial；旧Support缺此字段时，device/app/app-lifecycle的失败也保守处理，可选DOM跳过和Integration失败不降低Generic完整性。完整Support报告只证明其固定元信息可投影，不证明原始证据真实、完整或业务通过。
 
 Known Good 是调用者选定的本地参考候选，不是工具证明的业务正确性。输入必须完整，所选 DOM/CSS 不截断、Environment 不 incomplete、Storage 不遗漏或 unsupported。`--snapshots` 明确选择最多四类；缺失/不完整的所选类型在创建输出前拒绝，未选择的类别不混入基线。可选 Integration 的 failed/skipped 不阻断通用参考。
 

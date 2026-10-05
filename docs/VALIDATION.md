@@ -1,5 +1,16 @@
 # DoL Dev Tools 验证记录
 
+## 1.3 功能收口：2026-10-06
+
+- 对照原始蓝图的独立只读审查确认两处产品内格式断点：整包生命周期仅比SHA，以及Support不能直接生成Issue Report；均已复用既有契约补齐。未将其它设备、重型采集或专有生命周期的条件验收扩大成必需框架。
+- 生命周期整包比较含普通Evidence与声明的Journey checkpoint，后者按固定类型文件名配对；不同boot/身份、缺失、格式错误或incomplete传播unknown/partial。未加入Known Good，不保存PID/UID、本地退出时间或任意扩展正文。
+- Support报告固定验证身份/状态/版本/步骤，只读support.json；不复制复现正文、媒体、Console/Network或私有字段。投影时间单独标记，原Evidence时间保持unknown、originalEvidenceVerified=false。新Support保留required三态；独立复核发现必需步骤失败被complete掩盖的反例，补齐降级与可选DOM/Integration边界后复审无剩余阻断。
+- `npm test`：89 passed / 0 failed / 0 skipped。定向回归覆盖来源冲突、损坏manifest拒绝回退、未知required兼容、必需失败、任意对象注入与capture顺序不同；`node --check`及`git diff --check`通过。没有设备动作、自动重试或上传。
+- 复用既有真实只读生命周期Evidence及Journey，两条整包自对比均complete / exit0，语义比较targetComparable=true、pidChanged=false、新报告为空；从真实Evidence新建Support后直接生成Issue Report complete，两条CLI也exit0。自对比不证明跨场景条件一致；实际新事件差异由受控回归验证。
+- Draft2020-12/RFC3339检查器验证Schema及实际新Support，required对象反例按预期拒绝；实际两个Compare/Support Report的固定结果和时间限制另有断言通过，不冒充这些离线报告已受未定义的根Schema验证。源码版本升级为1.3.0，schema仍为1；复用有效的产品测试，版本入口与仓库Skill quick_validate另验通过。
+
+统一交付检查另登记在本节后续记录；真实Evidence留在忽略目录，不打入源码包。历史1.2与更早证明保留，当前Android隔离持久Mod和生命周期证明分别见以下记录。
+
 ## Android 生命周期元信息：2026-10-06（1.2发布后开发）
 
 - 新增`app-lifecycle`、`app-lifecycle-diff`、`evidence --lifecycle yes`与Journey原生checkpoint，复用已有ADB、精确ProcessRecord/packageList解析与公共Envelope/Manifest；无新依赖、截图、CDP、Mod内部对象或动作。字段与API依据见[APP_LIFECYCLE](APP_LIFECYCLE.md)。

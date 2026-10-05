@@ -44,6 +44,97 @@ const domNode = id => ({ address: '0', parent: null, tag: 'div', id, class: [], 
 const cssNode = display => ({ address: '0', parent: null, tag: 'div', id: '', class: [], childCount: 0,
   style: { display }, rect: { x: 0, y: 0, width: 10, height: 10 } });
 
+function lifecycleSnapshot(pid = '123', reason = 5) {
+  const pkg = 'com.example.game';
+  const history = require('../scripts/lib/app-lifecycle.cjs').history;
+  return { schemaVersion: 1, source: 'Android lifecycle', package: pkg, userId: 0, packageUid: 10331,
+    bootIdHash: 'a'.repeat(64), mainPid: pid, incomplete: false,
+    exitHistory: history(`ACTIVITY MANAGER PROCESS EXIT INFO (dumpsys activity exit-info)\n package: ${pkg}\n ApplicationExitInfo #0:\n timestamp=2026-10-06 10:00:00.000 pid=100 realUid=10331 packageUid=10331 definingUid=10331 user=0\n process=${pkg} reason=${reason} (IGNORED) status=0\n description=SECRET_BODY\n`, pkg, 0, 10331),
+    arbitrary: 'SECRET_BODY' };
+}
+
+test('Evidence lifecycle comparison uses semantic metadata and preserves unknown target/coverage', t => {
+  const base = fixture(t), before = incidentDir(base, 'life-before', { 'app-lifecycle': lifecycleSnapshot() });
+  const next = lifecycleSnapshot('456', 6), after = incidentDir(base, 'life-after', { 'app-lifecycle': next });
+  const compared = compare(before.dir, after.dir, path.join(base, 'life-out'));
+  assert.equal(compared.status, 'complete');
+  assert.equal(compared.comparisons[0].pidChanged, true);
+  assert.equal(compared.comparisons[0].newlyReportedExits[0].reason, 'ANR');
+  const serialized = JSON.stringify(compared);
+  for (const privateField of ['SECRET_BODY','com.example.game','packageUid','2026-10-06 10:00']) assert.equal(serialized.includes(privateField), false);
+  for (const [folder, data] of [['foreign', { ...next, bootIdHash: 'b'.repeat(64) }], ['incomplete', { ...next, incomplete: true }], ['malformed', { ...next, packageUid: 0 }]]) {
+    const source = incidentDir(base, folder, { 'app-lifecycle': data });
+    const result = compare(before.dir, source.dir, path.join(base, folder + '-out'));
+    assert.equal(result.status, 'partial'); assert.equal(result.comparisons[0].status, 'unknown');
+  }
+  const missing = incidentDir(base, 'missing-lifecycle', {});
+  assert.equal(compare(before.dir, missing.dir, path.join(base, 'missing-lifecycle-out')).status, 'partial');
+  assert.throws(() => knownGood(before.dir, path.join(base, 'lifecycle-reference')), /complete snapshot/);
+});
+
+test('Journey lifecycle checkpoints pair their declared kind rather than artifact position', t => {
+  const base = fixture(t);
+  function journeyDir(folder, reversed, capture = ['app-lifecycle','console']) {
+    const source = incidentDir(base, folder, { 'step-0-app-lifecycle': lifecycleSnapshot(), 'step-0-console': { body: 'SECRET_CONSOLE' } }, { source: 'Journey execution' });
+    const artifacts = source.manifest.steps.map(step => step.artifact);
+    source.manifest.steps = [{ type: 'checkpoint', status: 'completed', capture, artifacts: reversed ? artifacts.reverse() : artifacts }];
+    fs.writeFileSync(path.join(source.dir, 'manifest.json'), JSON.stringify(source.manifest));
+    return source;
+  }
+  const before = journeyDir('journey-before', false), after = journeyDir('journey-after', true);
+  const compared = compare(before.dir, after.dir, path.join(base, 'journey-life-out'));
+  assert.equal(compared.status, 'complete'); assert.equal(compared.comparisons[0].stepIndex, 0);
+  assert.equal(compared.comparisons[0].pidChanged, false);
+  assert.deepEqual(compared.comparisons[0].newlyReportedExits, []);
+  const undeclared = journeyDir('journey-undeclared', false, ['console']);
+  assert.equal(compare(before.dir, undeclared.dir, path.join(base, 'journey-undeclared-out')).status, 'partial');
+  after.manifest.steps[0].artifacts = after.manifest.steps[0].artifacts.filter(item => item.filename.includes('console'));
+  fs.writeFileSync(path.join(after.dir, 'manifest.json'), JSON.stringify(after.manifest));
+  assert.equal(compare(before.dir, after.dir, path.join(base, 'journey-missing-out')).status, 'partial');
+});
+
+test('Issue Report consumes projected Support without exporting private fields or inventing Evidence time', t => {
+  const base = fixture(t), source = incidentDir(base, 'support-source', { app: { versionName: '0.5.12', versionCode: '512' } });
+  const supportDir = path.join(base, 'support');
+  const data = require('../scripts/lib/support.cjs').support(source.dir, supportDir);
+  data.privateBody = 'SECRET_BODY'; data.console = { events: [{ body: 'SECRET_CONSOLE' }] };
+  data.versions.extra = { body: 'SECRET_VERSION' };
+  fs.writeFileSync(path.join(supportDir, 'support.json'), JSON.stringify(data));
+  fs.writeFileSync(path.join(supportDir, 'repro.json'), 'SECRET_REPRO');
+  const out = path.join(base, 'support-report'), result = report(supportDir, out);
+  assert.equal(result.status, 'complete'); assert.equal(result.inputKind, 'support');
+  assert.equal(result.versions.appVersion, '0.5.12'); assert.equal(result.incident.incidentId, incident);
+  assert.equal(result.support.supportId, data.supportId); assert.equal(result.support.originalEvidenceVerified, false);
+  assert.equal(result.incident.captureStart, null); assert.equal(result.incident.captureEnd, null);
+  for (const file of ['report.json','report.md']) assert.equal(fs.readFileSync(path.join(out, file), 'utf8').includes('SECRET_'), false);
+  data.steps[0].supportProjection = 'failed';
+  fs.writeFileSync(path.join(supportDir, 'support.json'), JSON.stringify(data));
+  const failed = report(supportDir, path.join(base, 'support-partial'));
+  assert.equal(failed.status, 'partial'); assert.equal(failed.steps[0].reason, 'support-projection-failed');
+  delete data.steps[0].supportProjection;
+  data.steps.push({ name: 'app-lifecycle', status: 'failed' });
+  fs.writeFileSync(path.join(supportDir, 'support.json'), JSON.stringify(data));
+  assert.equal(report(supportDir, path.join(base, 'support-conflict')).status, 'partial');
+  data.steps.pop();
+  data.steps.push({ name: 'dom-contract', status: 'skipped', required: false }, { name: 'integration-0', status: 'failed' });
+  fs.writeFileSync(path.join(supportDir, 'support.json'), JSON.stringify(data));
+  assert.equal(report(supportDir, path.join(base, 'support-optional')).status, 'complete');
+  data.steps.push({ name: 'network', status: 'failed', required: true });
+  fs.writeFileSync(path.join(supportDir, 'support.json'), JSON.stringify(data));
+  assert.equal(report(supportDir, path.join(base, 'support-required')).status, 'partial');
+  for (const [field, value] of [['incidentId', { body: 'SECRET_ID' }], ['steps', Array(101).fill(data.steps[0])], ['versions', { app: { versionName: { body: 'SECRET_VERSION' } } }]]) {
+    const badDir = path.join(base, 'bad-' + field); fs.mkdirSync(badDir);
+    fs.writeFileSync(path.join(badDir, 'support.json'), JSON.stringify({ ...data, [field]: value }));
+    const bad = report(badDir, path.join(base, 'bad-' + field + '-report'));
+    assert.equal(bad.status, 'partial'); assert.deepEqual(bad.reasons, ['support-invalid']);
+    assert.equal(JSON.stringify(bad).includes('SECRET_'), false);
+  }
+  fs.writeFileSync(path.join(supportDir, 'manifest.json'), '{}');
+  const noFallback = report(supportDir, path.join(base, 'support-no-fallback'));
+  assert.deepEqual(noFallback.reasons, ['manifest-invalid']); assert.equal(noFallback.support, undefined);
+  assert.throws(() => report(supportDir, out), { code: 'EEXIST' });
+});
+
 test('compare emits validated DOM/CSS fields and hashes without exporting unknown payload', t => {
   const base = fixture(t);
   const before = incidentDir(base, 'before', {

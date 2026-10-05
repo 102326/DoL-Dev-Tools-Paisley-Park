@@ -568,6 +568,9 @@
               },
               "supportProjection": {
                 "const": "failed"
+              },
+              "required": {
+                "type": ["boolean", "null"]
               }
             },
             "required": [

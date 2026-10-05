@@ -33,7 +33,7 @@ const help = `DoL Dev Tools ${version} (local development and diagnostics)
   doctor --out NEW_JSON [--serial SERIAL --package PACKAGE] [--endpoint LOCAL_CDP_URL]
   support --from EVIDENCE_DIR --out NEW_DIR [--include-screenshot yes]
   evidence-compare --before EVIDENCE_DIR --after EVIDENCE_DIR --out NEW_DIR
-  issue-report --from EVIDENCE_DIR --out NEW_DIR
+  issue-report --from EVIDENCE_OR_SUPPORT_DIR --out NEW_DIR
   evidence-timeline --from EVIDENCE_OR_JOURNEY_DIR --out NEW_DIR
   known-good --from COMPLETE_EVIDENCE_DIR --out NEW_DIR [--label SLUG] [--snapshots dom-contract,css-contract,environment,storage]
   visual-diff --golden PNG --current PNG --out NEW_DIR [--tolerance 8] [--region x,y,width,height]

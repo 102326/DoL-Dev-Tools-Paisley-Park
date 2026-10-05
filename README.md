@@ -1,4 +1,4 @@
-# DoL Dev Tools 1.2
+# DoL Dev Tools 1.3
 
 面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP 与 ADB 构成 Live Device Access；长期开发闭环是 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 
@@ -10,7 +10,7 @@
 
 还包含[Network实验](docs/NETWORK.md)、[动画取帧](docs/ANIMATION.md)、[Viewport Matrix](docs/VIEWPORT.md)、[原生布局](docs/NATIVE_LAYOUT.md)、[关联进程内存](docs/PROCESS_MEMORY.md)、[Workshop闭环](docs/WORKSHOP.md)和[独立Skill安装](docs/SKILL_INSTALL.md)。80项自动检查通过；桌面持久Mod制品与Android临时WebView夹具分别验收。Android持久业务Mod/APK、重型trace/helper、其它设备和专有生命周期仍按目标条件验收；不会自动上传或安装缺失依赖。迁移与交付范围见[1.2说明](docs/RELEASE_1.2.md)。
 
-1.2发布后的开发源码进一步验收Android隔离origin内的持久Mod重载，并统一完整转发归属清理；不访问主游戏存储。当前增补与检查见[验证记录](docs/VALIDATION.md)，尚未更新原1.2 ZIP。
+1.3统一汇总后续增补：Android隔离origin内的持久Mod重载、完整转发归属清理、只读生命周期与checkpoint、整包生命周期比较，以及Support直接生成Issue Report。89项检查通过；原1.2 ZIP保留。交付与条件范围见[1.3说明](docs/RELEASE_1.3.md)和[验证记录](docs/VALIDATION.md)。
 
 ## 开始使用
 

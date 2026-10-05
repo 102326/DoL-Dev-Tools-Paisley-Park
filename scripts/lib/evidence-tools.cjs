@@ -5,6 +5,7 @@ const dom = require('./dom.cjs');
 const css = require('./css.cjs');
 const environment = require('./environment.cjs');
 const { storageDiff } = require('./inspectors.cjs');
+const lifecycle = require('./app-lifecycle.cjs');
 
 const sha = value => createHash('sha256').update(value).digest('hex');
 const uuid = value => typeof value === 'string' && /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(value);
@@ -162,6 +163,14 @@ function projected(loaded) {
     status: loaded.status };
 }
 
+function compareLifecycle(x, y, fields = {}) {
+  try {
+    if (!x || !y) throw Error('Lifecycle evidence unavailable');
+    const diff = lifecycle.diff(x, y);
+    return { step: 'app-lifecycle', ...fields, status: diff.incomplete ? 'unknown' : 'available', ...diff };
+  } catch { return { step: 'app-lifecycle', ...fields, status: 'unknown' }; }
+}
+
 function compare(beforeDir, afterDir, outDir) {
   fs.mkdirSync(path.resolve(outDir));
   const result = { schemaVersion: 1, source: 'Evidence comparison', status: 'partial', before: null, after: null,
@@ -189,6 +198,22 @@ function compare(beforeDir, afterDir, outDir) {
         const a = left && before.artifacts.get(`${left.i}:${slot}`);
         const b = right && after.artifacts.get(`${right.i}:${slot}`);
         if (a?.sha256 !== b?.sha256) result.artifacts.push({ step: label, slot, beforeSha256: a?.sha256 || null, afterSha256: b?.sha256 || null });
+      }
+      if (before.journey && after.journey) {
+        const requested = entry => entry?.step.type === 'checkpoint' && Array.isArray(entry.step.capture) && entry.step.capture.includes('app-lifecycle');
+        if (requested(left) || requested(right)) {
+          const snapshot = (loaded, entry) => {
+            if (!requested(entry) || entry.step.status !== 'completed') return null;
+            const slot = entry.step.artifacts?.findIndex(item => item?.filename === `step-${entry.i}-app-lifecycle.json`);
+            return Number.isInteger(slot) && slot >= 0 && slot < 32 ? envelope(loaded, entry.i, slot) : null;
+          };
+          result.comparisons.push(compareLifecycle(snapshot(before, left), snapshot(after, right), { stepIndex: left?.i ?? right.i }));
+        }
+      }
+      if (!before.journey && !after.journey && key === 'app-lifecycle') {
+        result.comparisons.push(compareLifecycle(left?.step.status === 'completed' ? envelope(before, left.i) : null,
+          right?.step.status === 'completed' ? envelope(after, right.i) : null));
+        continue;
       }
       if (before.journey || after.journey || !left || !right || left.step.status !== 'completed' || right.step.status !== 'completed') continue;
       if (snapshotNames.includes(key)) {
@@ -231,13 +256,66 @@ function compare(beforeDir, afterDir, outDir) {
   return result;
 }
 
+function readSupport(fromDir) {
+  let data;
+  try {
+    const base = fs.realpathSync(fromDir), file = fs.realpathSync(path.join(base, 'support.json'));
+    const stat = fs.statSync(file);
+    if (path.dirname(file) !== base || !stat.isFile() || stat.size > 1024 * 1024) throw Error();
+    data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch { throw Error('Invalid support bundle'); }
+  const object = value => value && typeof value === 'object' && !Array.isArray(value);
+  if (!object(data) || data.schemaVersion !== 1 || !uuid(data.incidentId) || !uuid(data.supportId) ||
+      !version(data.toolVersion) || data.source !== 'projected local Evidence Bundle' || !timestamp(data.capturedAt) ||
+      !['complete','partial'].includes(data.status) || !object(data.versions) || !object(data.device) ||
+      !Array.isArray(data.compatibility) || data.compatibility.length > 100 || !Array.isArray(data.steps) || data.steps.length > 100 ||
+      !object(data.privacy) || typeof data.privacy.screenshotIncluded !== 'boolean' || data.privacy.requiresManualReview !== true)
+    throw Error('Invalid support bundle');
+  const versions = { toolVersion: data.toolVersion }, seen = new Set();
+  const addVersion = (field, value) => {
+    if (value !== undefined && value !== null && (typeof value !== 'string' || value.length > 64)) throw Error('Invalid support version');
+    if (version(value)) versions[field] = value;
+  };
+  for (const field of ['gameVersion','loaderVersion']) addVersion(field, data.versions[field]);
+  if (data.versions.app !== undefined) {
+    if (!object(data.versions.app)) throw Error('Invalid support version');
+    addVersion('appVersion', data.versions.app.versionName);
+    addVersion('appVersionCode', data.versions.app.versionCode);
+  }
+  const steps = data.steps.map(step => {
+    if (!object(step) || !name(step.name) || seen.has(step.name) ||
+        !['completed','failed','skipped','unsupported','unknown'].includes(step.status) ||
+        step.required !== undefined && step.required !== null && typeof step.required !== 'boolean' ||
+        step.supportProjection !== undefined && step.supportProjection !== 'failed') throw Error('Invalid support step');
+    seen.add(step.name);
+    return { step: step.name, status: step.status, required: step.required ?? null,
+      ...(step.supportProjection === 'failed' ? { reason: 'support-projection-failed' } : step.status !== 'completed' ? { reason: 'generic' } : {}) };
+  });
+  const incomplete = step => step.reason === 'support-projection-failed' ||
+    !/^integration-\d+$/.test(step.step) && step.status !== 'completed' &&
+    (step.required === true || step.required !== false && (step.status === 'unknown' || ['device','app','app-lifecycle'].includes(step.step)));
+  return { incidentId: data.incidentId, supportId: data.supportId, projectedAt: data.capturedAt, versions, steps,
+    status: data.status === 'partial' || steps.some(incomplete) ? 'partial' : 'complete' };
+}
+
 function report(fromDir, outDir) {
   fs.mkdirSync(path.resolve(outDir));
   const result = { schemaVersion: 1, source: 'Evidence issue report', status: 'partial', incident: null,
     versions: {}, steps: [], repro: 'unknown', reasons: [] };
-  let loaded;
-  try { loaded = readManifest(fromDir); }
-  catch { result.reasons.push('manifest-invalid'); }
+  let loaded, support, supportInput = false;
+  try {
+    // An invalid or dangling manifest must not fall back to a different source.
+    try { fs.lstatSync(path.join(fromDir, 'manifest.json')); }
+    catch (error) { if (error.code === 'ENOENT') supportInput = true; else throw error; }
+    if (supportInput) support = readSupport(fromDir); else loaded = readManifest(fromDir);
+  } catch { result.reasons.push(supportInput ? 'support-invalid' : 'manifest-invalid'); }
+  if (support) {
+    result.inputKind = 'support';
+    result.support = { supportId: support.supportId, projectedAt: support.projectedAt, originalEvidenceVerified: false };
+    result.incident = { incidentId: support.incidentId, captureStart: null, captureEnd: null, status: support.status };
+    result.status = support.status; result.versions = support.versions; result.steps = support.steps;
+    result.repro = support.steps.find(step => step.step === 'repro')?.status || 'unknown';
+  }
   if (loaded) {
     const m = loaded.manifest;
     result.incident = projected(loaded);
@@ -259,6 +337,8 @@ function report(fromDir, outDir) {
     `Incident: ${result.incident?.incidentId || 'unknown'}`,
     `Capture start: ${result.incident?.captureStart || 'unknown'}`,
     `Capture end: ${result.incident?.captureEnd || 'unknown'}`, '', '## Versions', ''];
+  if (support) lines.splice(4, 0, 'Input: projected Support Bundle; original Evidence artifacts were not verified.',
+    `Support projection time: ${support.projectedAt}`, '');
   for (const [field, value] of Object.entries(result.versions)) lines.push(`- ${field}: ${value}`);
   lines.push('', '## Steps', '');
   for (const step of result.steps) lines.push(`- ${step.step}: ${step.status}${step.reason ? ` (${step.reason})` : ''}`);
