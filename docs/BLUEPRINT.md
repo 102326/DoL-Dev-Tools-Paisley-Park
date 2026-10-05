@@ -2,6 +2,8 @@
 
 2026-10-05。本文登记后续需求与落地状态；当前可执行命令见 [DIAGNOSTICS](DIAGNOSTICS.md)，实际验收见 [VALIDATION](VALIDATION.md)。
 
+2026-10-06正式收口：1.5核心能力与约定场景已完成并验收，后续覆盖扩展/专项Integration/条件性验证单独登记。使用[三类状态及复用工作流](CLOSEOUT_1_5.md)，工具完成标准为能力闭环成立，更多设备或项目全量业务回归不构成当前产品阻塞。
+
 ## 定位
 
 DoL Dev Tools 是面向整个 DoL Mod 生态的公共、本地开发执行工具链。原版、内容 Mod、框架 Mod、UI Mod、管理器、整合包与 Android 包装环境都可以使用。Soft & Wet 是早期重度用户和一个可选 Integration，与其它项目平级。

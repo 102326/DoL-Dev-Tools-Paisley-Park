@@ -2,6 +2,8 @@
 
 面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP 与 ADB 构成 Live Device Access；长期开发闭环是 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 
+**1.5已正式收口：核心能力与约定场景已经完成并验收。** 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
+
 1.2在1.0重置版和1.1公共接入基础上交付通用诊断、有限复现实验、证据比较与Skill开发闭环。完整蓝图按能力组登记在[能力覆盖](docs/CAPABILITY_COVERAGE.md)。通用核心不依赖Soft & Wet、不要求目标Mod使用某个Runtime或相邻源码；各项目Integration都是平级可选增强。附带Soft & Wet桥和独立通用DOM示例。
 
 1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。

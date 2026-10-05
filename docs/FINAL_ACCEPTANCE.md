@@ -1,5 +1,7 @@
 # 完整能力验收：2026-10-06
 
+**1.5核心能力与约定场景已完成并验收。** 以下证明范围保持原样；更多环境/业务/专属Integration按[正式收口三类状态](CLOSEOUT_1_5.md)登记，覆盖有限不作为当前产品完成阻塞项。
+
 以[原始蓝图](proposals/CAPABILITY_BLUEPRINT.md)0..88节和[能力覆盖](CAPABILITY_COVERAGE.md)为清单。通用核心、目标作者Runtime、可选Integration与公共Skill分层；优先复用成熟工具和Skill，只对DoL目标绑定、脱敏格式及实际缺口做薄封装。外部能力的条件不会被改写成默认通过。
 
 | 新增验收 | 实际证明 |

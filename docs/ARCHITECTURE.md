@@ -4,6 +4,8 @@
 目标是面向整个 DoL Mod 生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP、ADB 构成 Live Device Access，支撑 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 本文是能力边界。1.0交付诊断和证据基础，1.2能力实现与条件验收见[覆盖](CAPABILITY_COVERAGE.md)；蓝图、命令存在和业务通过分别判断。
 
+完成标准是能力闭环成立。1.5核心能力与约定场景已完成并验收；已实现但部分环境验证、可选Integration和后续按需覆盖不是当前产品未完成。Tools支持项目调查/验证问题，完整业务与存档回归由对应项目承担；状态定义见[正式收口](CLOSEOUT_1_5.md)。
+
 ## 三者职责
 
 | 部分 | 职责 | 边界 |

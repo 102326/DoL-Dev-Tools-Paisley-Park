@@ -1,5 +1,7 @@
 # 1.5：完整能力验收与Skill复用
 
+正式产品状态：**核心能力与约定场景已经完成并验收，剩余项目属于后续覆盖扩展、专项Integration或条件性验证。** 按[正式收口](CLOSEOUT_1_5.md)区分三类状态；部分环境验证与可选扩展不统一描述成产品未完成。Tools具备调查/验证业务问题的路径，全量游戏业务/存档/云数据回归由对应项目承担。
+
 在1.0重置版路线基础上补齐后续能力清单：同Activity/PID内真实WebView替换、实际Perfetto/bugreport/Android CLI helper、detached基线/三次真实设置开关/复采Journey及lock/unlock生命周期。原生目标与业务Mod更新的已有证明继续保留，新的范围见[最终验收](FINAL_ACCEPTANCE.md)。
 
 Skill优先复用成熟、已验证、边界清楚的能力与诊断方法：Android CLI管原生屏幕/布局/交互，Android Profiler管官方录制和trace/SQL，Chrome DevTools管深入WebView检查，目标项目负责build/deploy。DoL只补目标绑定、脱敏证据、有限复现与必要Integration。复用不继承其它项目假设，不自动安装依赖或扩大权限；Generic不依赖Soft & Wet。
