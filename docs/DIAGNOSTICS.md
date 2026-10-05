@@ -1,6 +1,6 @@
-# DoL Dev Tools 1.0：诊断工作流
+# DoL Dev Tools 1.1：诊断工作流
 
-1.0 重置版。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
+基于 1.0 重置版继续增强。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
 
 ## 快速入口
@@ -34,6 +34,7 @@ Screenshot / Record 是当前屏幕，可能包含系统栏、用户资料或其
 ```powershell
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages' --logcat-seconds 30
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-002 --scope '#customOverlay' --integration soft-and-wet --record-seconds 5 --repro repro.json
+node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-external --scope '#passages' --integration-file integrations/examples/dom-summary.cjs
 node scripts/dol-dev.cjs support --from artifacts/evidence-001 --out artifacts/support-001
 node scripts/dol-dev.cjs support --from artifacts/evidence-001 --out artifacts/support-with-image --include-screenshot yes
 ```
@@ -122,4 +123,10 @@ bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、
 仓库内 [.agents/skills/dol-dev-tools/SKILL.md](../.agents/skills/dol-dev-tools/SKILL.md) 提供五种诊断模式和升级条件；未安装到全局，不宣称本会话已经自动发现它。
 Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live Site First、证据先行、来源分离、最小充分诊断；测试环境允许任务范围内的主动复现，具体操作边界见 [架构](ARCHITECTURE.md)。
 当前未提供原生 action / journey、自动遍历控件、先进网络正文抓取、Helper APK 自动安装或全局 DOM 镜像。保留已有 Android CLI 独立采集入口，不将其原始布局直接塞进脱敏包。
-这是 1.0 的交付范围。后续独立 Action / Journey 可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect / Doctor / Evidence 的现有观察语义保持不变。真实存档、正式用户数据和凭据的破坏性操作仍需对应显式授权。长期范围见 [BLUEPRINT](BLUEPRINT.md)，不新增后台服务、数据库或云端遥测。
+这是当前的交付范围。后续独立 Action / Journey 可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect / Doctor / Evidence 的现有观察语义保持不变。真实存档、正式用户数据和凭据的破坏性操作仍需对应显式授权。长期范围见 [BLUEPRINT](BLUEPRINT.md)，不新增后台服务、数据库或云端遥测。
+
+## 公共格式与第三方 Integration
+
+1.1 的 `--integration-file` 显式执行一个已审阅的本地 `.cjs`；相对路径按调用目录解析，可与内置 Soft & Wet 选项组合。没有 CDP 时直接跳过，模块缺失/不支持/失败不影响 Generic 完整性。10 秒 Worker 总时限并非安全沙箱或远端副作用回滚。完整限制、作者隐私责任与独立 DOM 示例见 [Contract 1](INTEGRATIONS.md)。
+
+现有 Evidence / DOM / Support 的公共结构见 [FORMATS](FORMATS.md) 与 [JSON Schema](../schemas/diagnostics-v1.schema.json)。Support 不复制第三方自定义诊断正文；截图仍需单独选择。

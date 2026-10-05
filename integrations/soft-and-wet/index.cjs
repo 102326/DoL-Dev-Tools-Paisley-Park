@@ -33,4 +33,4 @@ async function detect(ctx) {
 }
 function describe() { return { name: 'soft-and-wet', version: '0.1.0', supportedApiVersion: 1, source: 'Soft & Wet Runtime interpretation' }; }
 async function collect(ctx) { return ctx.client.evaluate(`(${probe.toString()})()`); }
-module.exports = { detect, describe, collect, redact };
+module.exports = { contractVersion: 1, detect, describe, collect, redact };

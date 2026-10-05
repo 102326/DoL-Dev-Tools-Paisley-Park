@@ -8,7 +8,7 @@ description: Investigate and reproduce live DoL Mod issues using Android, WebVie
 Tools provide live-site access and evidence; optional integrations expose a project's interpretation; this skill chooses the cheapest sufficient development path. Soft & Wet, MapleBirch, ModHub and other integrations are peers. Do not implement collectors inside the skill or copy another project's Runtime into Tools.
 
 Find this repository from the skill location: three parents above the skill directory. Run `node scripts/dol-dev.cjs --help` from that repository before using a command whose availability is unclear. See [current commands and limitations](../../../docs/DIAGNOSTICS.md) only for the relevant mode.
-The [capability blueprint](../../../docs/BLUEPRINT.md) is a roadmap, not an executable command list: 1.0 has no unified Action/Journey, CSS Contract, Environment Diff or build/deploy orchestrator. Use verified available tools and the target project's own commands; never invent a planned CLI command.
+The [capability blueprint](../../../docs/BLUEPRINT.md) is a roadmap, not an executable command list: 1.1 has no unified Action/Journey, CSS Contract, Environment Diff or build/deploy orchestrator. Use verified available tools and the target project's own commands; never invent a planned CLI command.
 
 Use the user's selected device and package. Verify current state before reusing a port, PID, path, screenshot or historical evidence. Never select a different device to make a failed command pass. If a live capture has no explicit target, inspect available environment information without selecting a target, then obtain the missing target before capture.
 
@@ -21,6 +21,8 @@ Use the user's selected device and package. Verify current state before reusing 
 | visual-diagnose | Capture affected screen → `visual-diff` with a comparable Golden → DOM/CSS investigation | Check viewport, fonts, platform, game state and optional visual tier before attributing differences to a regression |
 | performance-diagnose | `perf` for gfxinfo/meminfo → Chrome Performance if needed | A concrete unresolved scheduling/rendering question can justify Perfetto, separately scoped |
 | full-evidence | `evidence` with an explicit DOM scope, short `--logcat-seconds`, optional integration and user reproduction note | Add short `--record-seconds` if motion matters; `--full --sensitive yes` requests system trace and bugreport only for a concrete unresolved problem |
+
+For optional diagnostics, use the builtin `--integration soft-and-wet` or explicit `--integration-file REVIEWED_LOCAL.cjs`; review the local module before executing it. Modules run with Node permissions in a bounded worker, not a security sandbox. Missing/unsupported/failed integrations do not invalidate Generic completeness. See [Contract 1](../../../docs/INTEGRATIONS.md) and [public evidence formats](../../../docs/FORMATS.md). Do not guess another Mod's private API or copy custom diagnostic payloads into Support.
 
 For an ordinary user's issue, project a local Evidence Bundle using `support`; screenshot is excluded unless explicitly selected. Check the resulting files before sharing. Do not upload them or create an Issue without authorization.
 

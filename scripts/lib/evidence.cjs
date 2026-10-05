@@ -42,9 +42,11 @@ async function evidence(options, overrides = {}) {
     profile: options.profile || 'evidence', status: 'failed', steps: [], integrations: [], privacy: {
       structured: 'allowlisted metadata plus aggregation redaction; no game state or control values',
       screenshot: 'requires manual privacy review; not automatically safe to share',
+      integrations: 'reviewed module-specific allowlists plus heuristic core filtering; privacy not guaranteed',
     } };
   const ctx = { options, output, adb: overrides.adb || collectors.android(options), connect: overrides.connect, runHeavy: overrides.runHeavy };
-  const methods = { ...collectors, ...require('./deep.cjs'), logcat: require('./logcat.cjs').collect, record: require('./record.cjs').collect, ...overrides.collectors };
+  const methods = { ...collectors, ...require('./deep.cjs'), logcat: require('./logcat.cjs').collect, record: require('./record.cjs').collect,
+    integration: require('./integration.cjs').collect, ...overrides.collectors };
   let evidenceCount = 0;
   function save(name, source, value) {
     const filename = `${name}.json`;
@@ -67,7 +69,8 @@ async function evidence(options, overrides = {}) {
       if (skip) { record.status = 'skipped'; record.reason = skip; return; }
       const result = await run();
       if (result?.collectorStatus === 'unsupported') { record.status = 'unsupported'; record.reason = result.reason; return; }
-      if (result?.file) {
+      if (result && Object.hasOwn(result, 'json')) record.artifact = save(name, source, result.json);
+      else if (result?.file) {
         if (fs.realpathSync(path.dirname(result.file)) !== fs.realpathSync(output)) throw new Error('Artifact outside incident');
         record.artifact = { filename: path.basename(result.file), sha256: result.sha256, bytes: result.bytes, ...redact(result.metadata) };
       } else if (result?.binary) {
@@ -117,22 +120,33 @@ async function evidence(options, overrides = {}) {
     await step('dom-contract', 'DOM via CDP', () => methods.dom(ctx), !!options.scope, noCdp || (!options.scope ? 'no-scope-requested' : null));
     for (const [index, integration] of (overrides.integrations || []).entries()) {
       const info = { index, name: null, status: 'unavailable' };
-      let descriptionFailed = false;
-      try {
-        const description = integration.describe();
-        Object.assign(info, redact({ name: description.name, version: description.version, source: description.source, supportedApiVersion: description.supportedApiVersion }));
-      } catch { descriptionFailed = true; }
       manifest.integrations.push(info);
-      await runStep(`integration-${index}`, 'Optional Integration interpretation', async () => {
-        if (descriptionFailed) throw new Error('Integration description unavailable');
-        if (await integration.detect(ctx) !== 'available') { info.status = 'unavailable'; return { status: info.status }; }
-        const result = await integration.collect(ctx);
-        info.status = ['available','unavailable','unsupported','failed'].includes(result?.status) ? result.status : 'failed';
-        return integration.redact(result);
-      }, false, descriptionFailed ? null : noCdp);
+      if (integration.modulePath) {
+        await runStep(`integration-${index}`, 'Optional Integration interpretation', async () => {
+          const result = await methods.integration(ctx, integration.modulePath);
+          Object.assign(info, result.description, { status: result.status });
+          if (result.moduleSha256) info.moduleSha256 = result.moduleSha256;
+          if (result.reason) info.reason = result.reason;
+          return { json: result.data };
+        }, false, noCdp);
+      } else {
+        // Internal test hook; public CLI modules always use the bounded worker above.
+        let descriptionFailed = false;
+        try {
+          const description = integration.describe();
+          Object.assign(info, redact({ name: description.name, version: description.version, source: description.source, supportedApiVersion: description.supportedApiVersion }));
+        } catch { descriptionFailed = true; }
+        await runStep(`integration-${index}`, 'Optional Integration interpretation', async () => {
+          if (descriptionFailed) throw new Error('Integration description unavailable');
+          if (await integration.detect(ctx) !== 'available') { info.status = 'unavailable'; return { status: info.status }; }
+          const result = await integration.collect(ctx);
+          info.status = ['available','unavailable','unsupported','failed'].includes(result?.status) ? result.status : 'failed';
+          return { json: integration.redact(result) };
+        }, false, descriptionFailed ? null : noCdp);
+      }
       const record = manifest.steps.at(-1);
       if (record.status === 'failed') info.status = 'failed';
-      if (record.status === 'completed' && info.status !== 'available') { record.status = info.status === 'failed' ? 'failed' : info.status === 'unsupported' ? 'unsupported' : 'skipped'; record.reason = info.status; }
+      if (record.status === 'completed' && info.status !== 'available') { record.status = info.status === 'failed' ? 'failed' : info.status === 'unsupported' ? 'unsupported' : 'skipped'; record.reason = info.reason || info.status; }
     }
     await step('perfetto', 'Perfetto system trace', () => methods.perfetto(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('bugreport', 'Android system bugreport', () => methods.bugreport(ctx), true, noDevice);

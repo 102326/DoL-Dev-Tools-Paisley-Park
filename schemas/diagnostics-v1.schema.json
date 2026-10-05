@@ -1,0 +1,578 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dol-dev-tools:diagnostics:v1",
+  "title": "DoL Dev Tools public diagnostics schema 1",
+  "description": "Structural format only; not privacy, authenticity, capture completeness or test acceptance validation. Unknown fields may extend the format. Select a $defs target for collector-specific data.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/artifactEnvelope"
+    },
+    {
+      "$ref": "#/$defs/evidenceManifest"
+    },
+    {
+      "$ref": "#/$defs/domContract"
+    },
+    {
+      "$ref": "#/$defs/supportBundle"
+    }
+  ],
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "filename",
+        "sha256"
+      ],
+      "additionalProperties": true
+    },
+    "step": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,64}$"
+        },
+        "source": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "failed",
+            "skipped",
+            "unsupported"
+          ]
+        },
+        "captureStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "commandTimeoutMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string"
+        },
+        "artifact": {
+          "$ref": "#/$defs/artifact"
+        }
+      },
+      "required": [
+        "name",
+        "source",
+        "required",
+        "status",
+        "captureStart"
+      ],
+      "additionalProperties": true
+    },
+    "integration": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "available",
+            "unavailable",
+            "unsupported",
+            "failed"
+          ]
+        },
+        "supportedApiVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "moduleSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "index",
+        "name",
+        "status"
+      ],
+      "additionalProperties": true
+    },
+    "domNode": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "pattern": "^0(?:/[0-9]+){0,8}$"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^0(?:/[0-9]+){0,8}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tag": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "class": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "data": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "string"
+          }
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "childCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "address",
+        "parent",
+        "tag",
+        "id",
+        "class",
+        "data",
+        "hidden",
+        "childCount"
+      ],
+      "additionalProperties": true
+    },
+    "artifactEnvelope": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "source": {
+          "type": "string"
+        },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {}
+      },
+      "required": [
+        "schemaVersion",
+        "incidentId",
+        "source",
+        "capturedAt",
+        "data"
+      ],
+      "additionalProperties": true
+    },
+    "evidenceManifest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "toolVersion": {
+          "type": "string"
+        },
+        "captureStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "captureEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "localTimezone": {
+          "type": "string"
+        },
+        "package": {
+          "type": "string"
+        },
+        "selectedDevice": {
+          "type": "string"
+        },
+        "observationsAreSequential": {
+          "const": true
+        },
+        "profile": {
+          "enum": [
+            "evidence",
+            "capture",
+            "perf",
+            "logcat",
+            "record",
+            "deep",
+            "bugreport"
+          ]
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "failed"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        },
+        "integrations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/integration"
+          }
+        },
+        "privacy": {
+          "type": "object"
+        },
+        "completed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,64}$"
+          }
+        },
+        "failed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,64}$"
+          }
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,64}$"
+          }
+        },
+        "unsupported": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,64}$"
+          }
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "incidentId",
+        "toolVersion",
+        "captureStart",
+        "status",
+        "steps",
+        "integrations",
+        "privacy"
+      ],
+      "additionalProperties": true
+    },
+    "domContract": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "const": "DOM"
+        },
+        "nodes": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "#/$defs/domNode"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "scopeHash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "viewport": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "number",
+              "minimum": 0
+            },
+            "height": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "width",
+            "height"
+          ],
+          "additionalProperties": true
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "maxNodes": {
+              "const": 500
+            },
+            "maxDepth": {
+              "const": 8
+            }
+          },
+          "required": [
+            "maxNodes",
+            "maxDepth"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "source",
+        "nodes",
+        "truncated"
+      ],
+      "additionalProperties": true
+    },
+    "supportBundle": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "incidentId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "supportId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "toolVersion": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial"
+          ]
+        },
+        "versions": {
+          "type": "object"
+        },
+        "device": {
+          "type": "object"
+        },
+        "compatibility": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "available",
+                  "unavailable",
+                  "unsupported",
+                  "failed",
+                  "unknown"
+                ]
+              },
+              "adapters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "match": {
+                      "enum": [
+                        "full",
+                        "partial",
+                        "none",
+                        "unknown"
+                      ]
+                    },
+                    "degraded": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "match",
+                    "degraded"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "failed",
+                  "skipped",
+                  "unsupported",
+                  "unknown"
+                ]
+              },
+              "supportProjection": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "name",
+              "status"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "privacy": {
+          "type": "object",
+          "properties": {
+            "screenshotIncluded": {
+              "type": "boolean"
+            },
+            "requiresManualReview": {
+              "const": true
+            }
+          },
+          "required": [
+            "screenshotIncluded",
+            "requiresManualReview"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "incidentId",
+        "supportId",
+        "toolVersion",
+        "source",
+        "capturedAt",
+        "status",
+        "versions",
+        "device",
+        "compatibility",
+        "steps",
+        "privacy"
+      ],
+      "additionalProperties": true
+    },
+    "integrationResult": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "available",
+            "unavailable",
+            "unsupported",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

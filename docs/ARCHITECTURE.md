@@ -1,6 +1,6 @@
 # DoL Dev Tools：公共开发工具架构约束
 
-2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](BLUEPRINT.md)；1.0 可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
+2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](BLUEPRINT.md)；当前可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
 目标是面向整个 DoL Mod 生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP、ADB 构成 Live Device Access，支撑 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 本文不是已完成功能清单。1.0 交付诊断和证据基础，后续 Action / Journey 等能力不能因写入蓝图就视为可用。
 
@@ -19,7 +19,7 @@ Skill 已随 1.0 放在 `.agents/skills/dol-dev-tools/`，不自动全局安装�
 
 ## 通用核心与可选 Integration
 
-Generic Diagnostics 面向 Android、WebView、DOM/CSS、Console/Network、Storage、Performance、Visual、Environment 与 Evidence；具体 1.0 已有入口见当前命令说明。Action / Journey 独立于 Inspect，供后续明确的测试复现实验使用。
+Generic Diagnostics 面向 Android、WebView、DOM/CSS、Console/Network、Storage、Performance、Visual、Environment 与 Evidence；具体当前已有入口见当前命令说明。Action / Journey 独立于 Inspect，供后续明确的测试复现实验使用。
 即使完全没有安装 Soft & Wet，通用层仍可独立工作。某个设备或工具能力不可用时如实报告；“通用”不意味着所有采集必然成功。
 
 `integrations/soft-and-wet/` 只放自己的诊断桥，不搬入 Runtime 实现。它按公开 API 的实际能力读取 Runtime/Adapter 摘要；Fingerprint、Selector fallback、Role Mapping、Adaptation Level、Degrade Reason、Surface 与 Compatibility Events 的完整导出按实际支持范围处理。
@@ -33,7 +33,7 @@ Generic Diagnostics 面向 Android、WebView、DOM/CSS、Console/Network、Stora
 - `redact`：集成字段的脱敏规则或处理，仍须经过聚合层策略。
 
 状态区分 `available / unavailable / unsupported / failed`。未知版本明确说明支持范围，不猜测内部接口。
-缺失或异常的 Integration 不阻断 Generic Evidence。公开契约与格式应允许第三方自维护或外置接入；当前 1.0 CLI 仅选择内置 Soft & Wet 桥，薄机制还不是稳定的外置加载 API。后续支持已知契约的可选检测，不建立插件市场、依赖解析或未知模块自动执行。
+缺失或异常的 Integration 不阻断 Generic Evidence。1.1 公开 [Contract 1](INTEGRATIONS.md) 和 [格式/Schema](FORMATS.md)，允许第三方自维护显式本地 `.cjs` 接入；内置与外置桥同样执行限时 Worker 和 JSON-only 保存。Worker 不是权限沙箱；仅运行已审阅模块。不建立插件市场、依赖解析或未知模块自动执行。
 
 ## Evidence、Manifest 与现场身份
 

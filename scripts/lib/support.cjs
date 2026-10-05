@@ -61,8 +61,13 @@ function support(from, out, includeScreenshot = false) {
           timestampMs: typeof e.timestampMs === 'number' ? e.timestampMs : null })), content: 'omitted' };
         if (step.name === 'logcat') report.logcat = { count: typeof data.count === 'number' ? data.count : null, content: 'omitted' };
         if (step.name === 'repro') write('repro.json', { schemaVersion: 1, incidentId: report.incidentId, data: reproductionData(data) });
-        if (step.name.startsWith('integration-')) report.compatibility.push({ status: ['available','unavailable','unsupported','failed'].includes(data.status) ? data.status : 'unknown',
-          adapters: Array.isArray(data.adapters) ? data.adapters.slice(0,32).map(a => ({ match: ['full','partial','none'].includes(a.match) ? a.match : 'unknown', degraded: !!a.degraded })) : [] });
+        if (step.name.startsWith('integration-')) {
+          const index = Number(step.name.slice('integration-'.length));
+          const meta = Array.isArray(manifest.integrations) ? manifest.integrations.find(item => item?.index === index) : null;
+          report.compatibility.push({ name: typeof meta?.name === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(meta.name) ? meta.name : null,
+            version: versionField(meta?.version), status: ['available','unavailable','unsupported','failed'].includes(data.status) ? data.status : 'unknown',
+            adapters: Array.isArray(data.adapters) ? data.adapters.slice(0,32).map(a => ({ match: ['full','partial','none'].includes(a.match) ? a.match : 'unknown', degraded: !!a.degraded })) : [] });
+        }
       } catch { report.steps.at(-1).supportProjection = 'failed'; }
     }
     report.status = report.steps.some(s => s.supportProjection === 'failed') || manifest.status !== 'complete' ? 'partial' : 'complete';

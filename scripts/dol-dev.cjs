@@ -11,7 +11,7 @@ const { version } = require('../package.json');
 const help = `DoL Dev Tools ${version} (read-only diagnostics)
   --version
   evidence --serial SERIAL --package PACKAGE --out NEW_DIR [--scope SELECTOR] [--window-ms 1000] [--integration soft-and-wet]
-    Optional: --logcat-seconds 30 --record-seconds 10 --repro NOTE_JSON
+    Optional: --logcat-seconds 30 --record-seconds 10 --repro NOTE_JSON --integration-file REVIEWED_LOCAL.cjs
   capture | perf | logcat | record --serial SERIAL --package PACKAGE --out NEW_DIR [--seconds N]
   perf --deep --serial SERIAL --package PACKAGE --out NEW_DIR --seconds 10 --sensitive yes
   bugreport --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes
@@ -22,7 +22,8 @@ const help = `DoL Dev Tools ${version} (read-only diagnostics)
   dom-snapshot --endpoint http://127.0.0.1:PORT --scope SELECTOR --out NEW_JSON
   dom-diff --before JSON --after JSON --out NEW_JSON
 Evidence creates and removes a temporary ADB forward for the explicit app process.
-No APK installation, game actions, save access or environment repair. Parent directory must exist.
+Built-in collectors do not install APKs, act in-game, access saves or repair the environment. Parent directory must exist.
+Integration files execute reviewed local code with Node permissions; worker isolation is not a security sandbox.
 Screenshot is private; review before sharing. Console text and network bodies/paths are omitted.`;
 function parse(args, allowed) {
   const options = Object.create(null);
@@ -43,7 +44,7 @@ async function main(args = process.argv.slice(2)) {
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
   if (['evidence','capture','perf','logcat','record','bugreport'].includes(command)) {
-    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--logcat-seconds','--record-seconds','--repro','--full','--sensitive']
+    const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive']
       : ['--serial','--package','--out', ...(command === 'logcat' || command === 'record' ? ['--seconds'] : []),
         ...(command === 'perf' ? ['--deep','--seconds','--sensitive'] : command === 'bugreport' ? ['--sensitive'] : [])];
     const options = parse(args, allowed);
@@ -57,7 +58,8 @@ async function main(args = process.argv.slice(2)) {
     if (options.full) { options.bugreport = true; options.logcatSeconds = 30; options.recordSeconds = 10; }
     if (command === 'logcat' || options['logcat-seconds'] !== undefined) options.logcatSeconds = Number(options['logcat-seconds'] ?? options.seconds ?? 30);
     if (command === 'record' || options['record-seconds'] !== undefined) options.recordSeconds = Number(options['record-seconds'] ?? options.seconds ?? 10);
-    const integrations = options.integration ? [require('../integrations/soft-and-wet/index.cjs')] : [];
+    const integrations = options.integration ? [{ modulePath: path.join(__dirname, '../integrations/soft-and-wet/index.cjs') }] : [];
+    if (options['integration-file']) integrations.push({ modulePath: path.resolve(options['integration-file']) });
     const manifest = await evidence(options, { integrations });
     console.log(`Evidence ${manifest.status}; manifest: ${path.resolve(options.out, 'manifest.json')}`);
     if (manifest.status !== 'complete') process.exitCode = 1;

@@ -12,7 +12,7 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 ## 能力状态
 
-| 能力组 | 1.0 当前状态 | 后续蓝图 |
+| 能力组 | 1.1 当前状态 | 后续蓝图 |
 | --- | --- | --- |
 | Live Device Access | Android CLI 独立截图/标注/layout；ADB 与 CDP 采集；Doctor 和人工 Chrome Inspect 流程；scrcpy 检测 | 独立 inspect/session、可选启动辅助；更多 WebView provider / socket / target 情况 |
 | DOM / CSS | 限定 DOM Contract Snapshot/Diff | Computed Style/CSS Contract、Selector Health、DOM Ownership、z-index、Scroll、Hitbox 与 Accessibility |
@@ -22,8 +22,8 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 | Performance | gfxinfo/framestats、PSS/RSS；Perfetto/bugreport 可选包装，重型入口尚未真机验收 | repeated sample、WebView 子进程、thermal/battery、JS heap/DOM leak probe、统一时间线；不重做 Trace Viewer |
 | Environment | Device/App/游戏与 Loader 版本/Chromium/viewport 摘要 | WebView Provider、Mod Environment Snapshot、Environment Diff；版本/启用状态/load order，不复制包体或接管加载 |
 | Action / Journey | 未提供统一命令 | 显式 Android/WebView Action、生命周期、Recorder/Replay、plan/dry-run、等待条件/checkpoint、选定兼容与设备矩阵 |
-| Evidence / Support | schema 1、incidentId、时间/来源/SHA、失败保留、脱敏、复现说明、轻量投影 | 公共格式文档/Schema、Evidence Compare、Known Good、Markdown Issue Report；不自动上传 |
-| Integrations | 薄 detect/describe/collect/redact 机制与内置 Soft & Wet 桥；CLI 仅识别该桥 | 公开 Integration Contract、第三方可自维护接入、受支持系统的可选检测；当前没有外置加载器或插件自动发现 |
+| Evidence / Support | schema 1、incidentId、时间/来源/SHA、失败保留、脱敏、复现说明、轻量投影；公共格式与 JSON Schema | Evidence Compare、Known Good、Markdown Issue Report；不自动上传 |
+| Integrations | Public Contract 1；内置 Soft & Wet 与显式外置 `.cjs` 同路径；通用 DOM 示例；时限/JSON-only/故障隔离 | 其它作者自维护专属桥；不自动发现或执行未知模块 |
 | Skill / Workshop | 仓库内五种诊断模式；未全局安装、未验证自动发现 | 按现场证据定位源码，再使用目标项目自身构建/部署/验收命令；工具不接管项目业务 Runtime |
 
 1.0 的 Support 默认不带截图、DOM 或 WebView 全量资料。蓝图中的更丰富反馈格式需要后续实现与单独隐私选择，不能直接扩大旧版分享范围。
@@ -32,7 +32,7 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 以下是结合当前缺口的分批顺序，不要求一次实现全部，也不预建框架。
 
-1. **公共接入基础**：公开已有 Evidence/DOM/Support 格式与 Collector 约定；定义可验收的 Integration Contract 和第三方例子。证明无 Soft & Wet 可用、未知/缺失/异常集成不阻断 Generic、第三方不需要 UI 源码。
+1. **公共接入基础（1.1 已交付）**：公开已有 Evidence/DOM/Support 格式与 Collector 约定；定义可验收的 Integration Contract 和第三方例子。证明无 Soft & Wet 可用、未知/缺失/异常集成不阻断 Generic、第三方不需要 UI 源码。
 2. **WebView 事实与比较**：Scoped Computed Style/CSS Snapshot/Diff、Environment/Mod Snapshot/Diff；补目标选择与 WebView Provider 情况。默认结构化元信息，敏感状态/正文独立选择。
 3. **复现实验**：独立有限 Action primitives；Journey plan、显式执行、唯一 selector/目标重新核对、等待/超时/checkpoint、失败保留与资源复原。先覆盖小的明确复现，不实现任意业务 DSL。
 4. **问题时间线与专项检查**：按实际问题补 Event/Mutation/Error/Performance、Storage、动画/Region、Selector/Overlay/Scroll；Observer/heap 只在具体问题需要时升级，不全量常驻 hook。

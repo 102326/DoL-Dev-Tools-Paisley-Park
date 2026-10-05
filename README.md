@@ -1,8 +1,8 @@
-# DoL Dev Tools 1.0 重置版
+# DoL Dev Tools 1.1
 
 面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP 与 ADB 构成 Live Device Access；长期开发闭环是 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 
-当前 1.0 实现诊断与采证基础，尚未交付统一 Action / Journey、CSS Contract 或构建部署编排。完整蓝图与能力状态见 [BLUEPRINT](docs/BLUEPRINT.md)。通用核心不依赖 Soft & Wet、不要求目标 Mod 使用某个 Runtime，也不需要相邻源码仓库。Soft & Wet、MapleBirch、ModHub 和其它项目的 Integration 都是平级可选增强；目前仅附带 Soft & Wet 桥。
+当前 1.1 在 1.0 重置版上补齐公共格式和第三方 Integration 接入，提供诊断与采证基础，尚未交付统一 Action / Journey、CSS Contract 或构建部署编排。完整蓝图与能力状态见 [BLUEPRINT](docs/BLUEPRINT.md)。通用核心不依赖 Soft & Wet、不要求目标 Mod 使用某个 Runtime，也不需要相邻源码仓库。Soft & Wet、MapleBirch、ModHub 和其它项目的 Integration 都是平级可选增强；附带 Soft & Wet 桥与不依赖它的通用 DOM 接入示例。
 
 1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
 
@@ -32,7 +32,8 @@ adb devices -l
 | Android 日志与性能 | `logcat`、`perf`、`record` |
 | 明确选择的重型采集 | `perf --deep`、`bugreport`、`evidence --full`，须 `--sensitive yes` |
 | 反馈与复现 | `support`、Evidence `--repro`，示例 [repro.example.json](docs/repro.example.json) |
-| 可选 Soft & Wet | Evidence `--integration soft-and-wet`，桥接公开 API；缺失或失败独立记录 |
+| 可选 Integration | `--integration soft-and-wet` 或 `--integration-file REVIEWED_LOCAL.cjs`；缺失或失败独立记录 |
+| 公共接入与格式 | [Contract 1](docs/INTEGRATIONS.md)、[格式说明](docs/FORMATS.md)、[JSON Schema](schemas/diagnostics-v1.schema.json) |
 | Agent 诊断流程 | 仓库内 [.agents/skills/dol-dev-tools](.agents/skills/dol-dev-tools/SKILL.md)，五种模式，不全局安装 |
 
 Python、Pillow、Android CLI、scrcpy 与官方 Perfetto recorder 按能力选用，缺失不影响其它入口。`visual-diff` 需要已有 Python + Pillow；`perf --deep` 需要经检查的本地官方 recorder。详细命令及依赖见 [诊断工作流](docs/DIAGNOSTICS.md)。
@@ -40,6 +41,8 @@ Python、Pillow、Android CLI、scrcpy 与官方 Perfetto recorder 按能力选�
 Evidence 每一步独立记录状态、来源、时间和制品 SHA；请求范围中的失败形成 partial 并保留成功文件。CLI 的 0 表示本次请求完整，1 表示失败或部分完成，不能作为游戏/视觉兼容测试结论。Support 离线投影，不重新连接设备，默认不带截图、DOM、Network、录屏、trace 或 bugreport。
 
 截图、录像和重型资料需要人工隐私检查。Console / Logcat 默认省略正文，Network 不保存 headers、body 或私有路径；摘要不足时明确报告证据限制。数据留在本机，不自动上传。
+
+1.1 提供经过审阅的本地 `.cjs` 接入，10 秒总时限，结果只保存为 JSON；Worker 隔离故障但不是权限沙箱。示例和隐私责任见 [INTEGRATIONS](docs/INTEGRATIONS.md)。
 
 1.0 的交付与迁移说明见 [重置版说明](docs/RELEASE_1.0.md)，实际验收与已知限制见 [验证记录](docs/VALIDATION.md)。长期规划见 [架构约束](docs/ARCHITECTURE.md)，其中未交付的路线不代表现有能力。
 
