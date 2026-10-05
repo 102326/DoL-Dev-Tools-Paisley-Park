@@ -2,7 +2,14 @@
 
 ## 1.3 功能收口：2026-10-06
 
-后续范围纠正：以下1.3及更早记录是通用产品阶段验收，不能代表用户要求的全部最终任务完成。已发行1.3包/tag保持原样，不回填后续结果；源码继续推进，真实业务Mod更新尚未完成。
+后续范围纠正：以下1.3及更早记录是通用产品阶段验收。已发行1.3包/tag保持原样，不回填后续结果；后续原生、真实游戏APK与业务Mod更新证明分别记录如下。
+
+## 后续源码：主游戏真实业务Mod更新
+
+- [目标业务配方](BUSINESS_MOD_UPDATE.md)在本轮独立离线Lyra副本的主游戏中持久安装DoLGameUI 2.0.3、更新2.1.0、重启后复验；business-run-1 complete/exit0。三阶段IndexDB来源、制品JS/CSS SHA、Mod/运行时版本均一致，真实设置打开/guarded click关闭通过；新进程session确认，sentinel保留。
+- 可选native Integration经真实Worker available。三份CSS Evidence共9份标准Draft2020-12/RFC3339验证通过，191/193/193节点无截断，incident/SHA匹配；真实evidence-compare与issue-report均complete。
+- `npm test` 91 passed/0 failed/0 skipped；收据字段注入/穿越/对象在创建输出/ADB前拒绝。独立源码审查指出的输入、ensureWebview及truncated问题在业务动作前修复；没有重试已派发部署。
+- 原APK/已有forward/reverse不变，自建forward移除，原前台恢复确认；测试副本Mod安装与sentinel保留。没有改UI业务源码、原App存储、真实存档/云端，没有采集截图、Console或游戏正文。范围限设置与持久发行更新，不扩大为完整游戏回归或存档迁移。
 
 ## 后续源码：原生重建与真实游戏APK更新
 

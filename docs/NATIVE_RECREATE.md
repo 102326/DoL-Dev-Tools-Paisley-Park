@@ -30,4 +30,4 @@ Runner 首次遇到已有同名包就拒绝；安装 Success 和实际 SHA/versi
 
 这证明 Activity 重建连同其中的 WebView 重建，不证明独立 WebView-only 重建；sentinel 不证明所有业务存档或云数据保留。真实业务 Mod 更新需自己的加载身份与行为证明，不由此回填。首次构建的密码文件重复读取失败、首次 runner 因 Android `appId` 字段而在安装前失败均保留；没有重试已派发的安装/重建动作。
 
-测试副本和自有 sentinel 保留，记录只在忽略的本地 artifacts 中。不采截图、Console、日志正文或游戏文字，不上传。既有 1.3 ZIP/tag 冻结，所有剩余任务完成前不另行封装。
+测试副本和自有 sentinel 保留，记录只在忽略的本地 artifacts 中。不采截图、Console、日志正文或游戏文字，不上传。既有 1.3 ZIP/tag 冻结；后续真实业务更新及最终范围完成后统一汇入[1.4](RELEASE_1.4.md)。

@@ -25,7 +25,7 @@
 | 61..70 Evidence/Schema/Privacy/Repro/Support/Full | manifest/envelope、SHA/incident/time、固定投影、复现说明、重型选项 | 截图/录像/trace/自由文本分别审查；完整包非业务通过；默认Support不扩大正文/二进制范围 |
 | 71..76 Compare/Known Good/Report/Collector/Doctor | 离线证据工具、整包生命周期比较、Support/Evidence报告、独占输出、状态隔离、Doctor | 篡改/路径/缺失/固定投影已验证；Support投影时间不冒充原采集时间，不验证原制品；参考不自动证明业务正确；报告不上传 |
 | 77..84 Skill/边界/独立/公开格式 | 仓库Skill路由实际工具与目标命令；[独立安装](SKILL_INSTALL.md) | 独立安装/定位与前向证据比较报告通过；新回合宿主目录已发现；测试操作与真实数据破坏权限分开 |
-| 85..88 排除项/CLI/开发闭环 | 复用工具；[Workshop](WORKSHOP.md)；[目标原生配方](NATIVE_RECREATE.md) | 桌面源码构建部署与隔离origin ModLoader ZIP持久加载通过；后续独立真实游戏APK已验证同签名更新、版本/UID/sentinel及游戏就绪，主游戏真实业务Mod更新继续推进；不增加业务Runtime/任意执行DSL |
+| 85..88 排除项/CLI/开发闭环 | 复用工具；[Workshop](WORKSHOP.md)；[目标原生配方](NATIVE_RECREATE.md)；[业务Mod更新](BUSINESS_MOD_UPDATE.md) | 独立真实游戏APK同签名更新、版本/UID/sentinel及游戏就绪通过；主游戏DoLGameUI 2.0.3→2.1.0持久更新、加载源SHA/运行时版本、设置行为与App重启复验通过。不是所有业务/存档/其它设备回归；不增加业务Runtime/任意执行DSL |
 
 [关联进程内存](PROCESS_MEMORY.md) 已使用系统公开packageList、user/UID和PID meminfo在真机验证。它补多进程观察，但不能将关联进程自动指定为某个page的renderer。
 
@@ -36,3 +36,5 @@
 1.2发布后新增Android隔离origin持久Mod夹具：完整游戏前空白存储预检，固定父document/context，真实IndexDB部署、自有源SHA/版本与新frame尺寸复验complete；公共格式及清理确认通过。它补充Android隔离持久加载的证明，主游戏业务Mod/APK、App重启和原生WebView recreate仍按各自接入条件判断。新增能力统一汇入[1.3](RELEASE_1.3.md)，原1.2 ZIP保留。
 
 统一封装验收包括通用源码检查、独立Skill安装/任务使用、自有Workshop源码/制品/加载/复验，以及源码包独立解压后的入口与资料排除检查。持久Mod桌面与临时节点Android证明分别完成，不能合并成Android持久Mod/APK证明。真实目标业务的构建/部署/同场景真机验收属于该项目接入条件；重型证据、helper、其它实体设备与专有recreate也分别登记，缺条件不伪造通过或扩大权限。1.2发布证明见[VALIDATION](VALIDATION.md)。
+
+1.4收口补充：上述历史夹具不能证明的原生/API业务部分已有新的独立目标记录：真实游戏APK更新、Activity连同实际WebView重建、主游戏真实DoLGameUI发行更新与App重启后的设置复验均complete。独立范围审查对照原文未发现还需新增实现的产品功能阻断；未知项目接入、其它设备、重型敏感采集/helper及完整游戏/存档回归仍依各自问题判断。通用能力、可选Integration与公共Skill统一交付，旧发行包不改。

@@ -36,6 +36,10 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 后续进展：[目标原生配方](NATIVE_RECREATE.md)已在独立离线真实游戏副本验证Activity及其实际WebView重建、同签名APK版本更新、自有sentinel保留和游戏就绪。原App元信息/已有映射不变，前台恢复确认；真实业务Mod更新仍在推进。此结果只进入开发源码，旧1.3发行包冻结。
 
+后续业务验收：[真实Mod配方](BUSINESS_MOD_UPDATE.md)在该副本主游戏完成DoLGameUI 2.0.3→2.1.0更新与App重启后的IndexDB持久加载、JS/CSS SHA及设置开关复验，complete/exit0。原App与已有连接保留，未修改UI项目源码；当前继续最终清单与Skill收口，尚未重新封装。
+
+最终清单审查未发现新增实现阻断，已按[1.4范围](RELEASE_1.4.md)统一收口；Skill入口同步目标自有配方和证明边界。具体环境/权限及未知项目接口仍按条件判断，完整工具能力不代表所有业务或设备都已通过。
+
 当前开发中已补 CSS Snapshot/Diff、Environment/Mod Snapshot/Diff、Provider、显式 CDP target/socket 选择，以及固定 Action primitives 和 Journey plan/replay/checkpoint。原版页面结构/Mod 元信息保持中立；已明确当前连接 App 可作为测试环境，普通复现动作可主动执行，真实存档和云数据删除/覆盖仍排除。
 
 1.2也包含短时事件/Mutation/Error/Long Task与可选Observer时间线、六类Inspector、Storage结构、区域视觉、重复性能/热电采样、离线Compare/参考/报告、Recorder候选、矩阵、Network实验和动画取帧；数值/可选detached Leak Probe、证据时间对齐、Viewport Matrix与显式Native Layout见对应文档。独立Skill安装/前向任务与固定Workshop通过；renderer归属、完整原生帧时间、目标业务部署和其它设备仍分别判断。候选录制不等于正确Journey，浏览器/矩阵标签不等于实体设备证明。
