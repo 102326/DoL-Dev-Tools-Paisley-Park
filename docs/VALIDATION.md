@@ -2,7 +2,15 @@
 
 ## 1.3 功能收口：2026-10-06
 
-后续范围纠正：以下是已完成的通用产品阶段验收。1.3提前封装，不能代表用户要求的全部最终任务完成；原生Activity/WebView重建及真实业务Mod/APK更新仍待实际接入、操作和复验，系统退出元信息与隔离夹具不能替代。已发行1.3包/tag保持原样，不回填通过；源码后续继续推进。
+后续范围纠正：以下1.3及更早记录是通用产品阶段验收，不能代表用户要求的全部最终任务完成。已发行1.3包/tag保持原样，不回填后续结果；源码继续推进，真实业务Mod更新尚未完成。
+
+## 后续源码：原生重建与真实游戏APK更新
+
+- [目标自有配方](NATIVE_RECREATE.md)添加只读可选native Integration和独立离线Lyra验收副本；Generic没有新增必需依赖。构建输入固定副本/SHA、stub不入DEX、34,468个原assets/DEX字节保持一致；最终APK证书、包名、版本、组件、debug/backup/permission核验通过。
+- 一次实机native-run-2 complete/exit0：同PID/processSession内Activity与实际WebView的UUID及identityHash均变；51201→51202同包/同证书更新，安装SHA匹配、同UID、自有files sentinel SHA保留，更新后document/#passages/SugarCube均就绪。
+- 原App安装SHA/version/UID与已有forward/reverse清单逐项不变；自建forward移除、原前台恢复并确认。测试副本/sentinel保留，没有uninstall/clear/真实存档/云端/截图/日志正文。
+- `npm test` 90 passed/0 failed/0 skipped；后续投影严格类型修正又经定向native测试通过。独立审查核对源码和固定实机JSON，无剩余阻断；不能扩大为独立WebView-only重建或全部业务数据保留。
+- 首次签名因同一密码文件被两次消费而失败，改为signer复用已验证store password；首次runner因设备metadata使用appId而在安装前失败，修正并交叉核对pm exact UID后在新目录执行。失败资料保留，未重试已派发动作；旧矩阵restart partial保持原样。
 
 - 对照原始蓝图的独立只读审查确认两处产品内格式断点：整包生命周期仅比SHA，以及Support不能直接生成Issue Report；均已复用既有契约补齐。未将其它设备、重型采集或专有生命周期的条件验收扩大成必需框架。
 - 生命周期整包比较含普通Evidence与声明的Journey checkpoint，后者按固定类型文件名配对；不同boot/身份、缺失、格式错误或incomplete传播unknown/partial。未加入Known Good，不保存PID/UID、本地退出时间或任意扩展正文。

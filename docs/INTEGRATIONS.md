@@ -48,3 +48,5 @@ Worker 用于故障隔离，**不是安全沙箱**。模块依然拥有 Node 文
 作者应覆盖：目标缺失、未知 API、正常结果、诊断方法报错、redact 报错/改变状态、超时、敏感值过滤。验证 Generic 制品保留、manifest/artifact 状态一致、防覆盖及临时资源清理。当前工具的回归见 [integration.test.cjs](../tests/integration.test.cjs)；这不代替每个第三方项目自己的运行验收。
 
 原有模块对象注入是内部测试钩子，不作为外部作者的公共主机 API。公共接入走 CLI 文件入口与 Contract 1。
+
+目标自有原生实例的只读例子见 [native-lifecycle.cjs](../integrations/examples/native-lifecycle.cjs) 与 [原生验收配方](NATIVE_RECREATE.md)。不存在该桥时跳过，未知契约拒绝；它不为通用 DOM 增加角色或指纹字段，也不通过桥派发动作。
