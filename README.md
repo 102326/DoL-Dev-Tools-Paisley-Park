@@ -1,14 +1,14 @@
-# DoL Dev Tools 1.1
+# DoL Dev Tools 1.2
 
 面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP 与 ADB 构成 Live Device Access；长期开发闭环是 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 
-当前 1.1 在 1.0 重置版上补齐公共格式和第三方 Integration 接入，提供诊断与采证基础，尚未交付统一 Action / Journey、CSS Contract 或构建部署编排。完整蓝图与能力状态见 [BLUEPRINT](docs/BLUEPRINT.md)。通用核心不依赖 Soft & Wet、不要求目标 Mod 使用某个 Runtime，也不需要相邻源码仓库。Soft & Wet、MapleBirch、ModHub 和其它项目的 Integration 都是平级可选增强；附带 Soft & Wet 桥与不依赖它的通用 DOM 接入示例。
+1.2在1.0重置版和1.1公共接入基础上交付通用诊断、有限复现实验、证据比较与Skill开发闭环。完整蓝图按能力组登记在[能力覆盖](docs/CAPABILITY_COVERAGE.md)。通用核心不依赖Soft & Wet、不要求目标Mod使用某个Runtime或相邻源码；各项目Integration都是平级可选增强。附带Soft & Wet桥和独立通用DOM示例。
 
 1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
 
-工作区正在完成最终能力，暂不另发版本包。开发入口已增加 CSS/Environment Snapshot/Diff、target/socket 选择、Action/Journey、事件时间线、通用 DOM Inspector、Storage 元数据 Snapshot/Diff、区域视觉比较、性能重复采样与离线证据工具。以当前 `--help`、[操作说明](docs/ACTIONS.md)、[检查器说明](docs/INSPECTORS.md)、[性能说明](docs/PERFORMANCE.md)、[证据比较](docs/EVIDENCE_TOOLS.md)和验证记录为准；包版本仍保留 1.1.0 基线，完整闭环结束后统一封装。
+提供CSS/Environment/Storage Snapshot/Diff、显式target/socket、Action/Journey/Recorder候选、时间线、通用DOM Inspector、区域视觉比较、性能重复采样和离线证据工具。使用当前`--help`、[操作说明](docs/ACTIONS.md)、[检查器](docs/INSPECTORS.md)、[性能](docs/PERFORMANCE.md)和[证据比较](docs/EVIDENCE_TOOLS.md)。
 
-后续开发已补 [Network 实验](docs/NETWORK.md)、[动画取帧](docs/ANIMATION.md)、[Viewport Matrix](docs/VIEWPORT.md)、[原生布局](docs/NATIVE_LAYOUT.md)、[关联进程内存](docs/PROCESS_MEMORY.md) 和 [Workshop 开发闭环](docs/WORKSHOP.md)。全部命令的存在与设备/业务验收分别记录；不会自动上传或安装缺失依赖。
+还包含[Network实验](docs/NETWORK.md)、[动画取帧](docs/ANIMATION.md)、[Viewport Matrix](docs/VIEWPORT.md)、[原生布局](docs/NATIVE_LAYOUT.md)、[关联进程内存](docs/PROCESS_MEMORY.md)、[Workshop闭环](docs/WORKSHOP.md)和[独立Skill安装](docs/SKILL_INSTALL.md)。80项自动检查通过；桌面持久Mod制品与Android临时WebView夹具分别验收。Android持久业务Mod/APK、重型trace/helper、其它设备和专有生命周期仍按目标条件验收；不会自动上传或安装缺失依赖。迁移与交付范围见[1.2说明](docs/RELEASE_1.2.md)。
 
 ## 开始使用
 
@@ -32,13 +32,15 @@ adb devices -l
 | --- | --- |
 | 环境与现场 | `doctor`、`capture`、`evidence` |
 | WebView / CDP | Evidence 的 Console、Network、版本和 viewport 摘要；保留 `adb-evaluate.cjs` |
-| DOM / Visual | `dom-snapshot`、`dom-diff`、`visual-diff` |
-| Android 日志与性能 | `logcat`、`perf`、`record` |
+| DOM / CSS / Visual | `dom-snapshot/diff`、`css-snapshot/diff`、`dom-inspect`、`hitbox-overlay`、`visual-diff`、`animation-frames` |
+| Environment / Storage / Events | `environment`、`environment-diff`、`storage-snapshot/diff`、`timeline` |
+| 复现与实验 | `action`、`journey`、`journey-record`、`matrix`、`network-scenario`、`viewport-matrix` |
+| Android 日志与性能 | `logcat`、`perf`、`perf-series`、`process-memory`、`leak-probe`、`native-layout`、`record` |
 | 明确选择的重型采集 | `perf --deep`、`bugreport`、`evidence --full`，须 `--sensitive yes` |
-| 反馈与复现 | `support`、Evidence `--repro`，示例 [repro.example.json](docs/repro.example.json) |
+| 反馈与复现 | `support`、`evidence-compare`、`evidence-timeline`、`known-good`、`issue-report`、Evidence `--repro` |
 | 可选 Integration | `--integration soft-and-wet` 或 `--integration-file REVIEWED_LOCAL.cjs`；缺失或失败独立记录 |
 | 公共接入与格式 | [Contract 1](docs/INTEGRATIONS.md)、[格式说明](docs/FORMATS.md)、[JSON Schema](schemas/diagnostics-v1.schema.json) |
-| Agent 诊断流程 | 仓库内 [.agents/skills/dol-dev-tools](.agents/skills/dol-dev-tools/SKILL.md)，五种模式，不全局安装 |
+| Agent 诊断流程 | [.agents/skills/dol-dev-tools](.agents/skills/dol-dev-tools/SKILL.md)，可[独立安装](docs/SKILL_INSTALL.md)，复用同一份Tools |
 
 Python、Pillow、Android CLI、scrcpy 与官方 Perfetto recorder 按能力选用，缺失不影响其它入口。`visual-diff` 需要已有 Python + Pillow；`perf --deep` 需要经检查的本地官方 recorder。详细命令及依赖见 [诊断工作流](docs/DIAGNOSTICS.md)。
 

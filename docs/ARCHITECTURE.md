@@ -2,20 +2,20 @@
 
 2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](BLUEPRINT.md)；当前可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
 目标是面向整个 DoL Mod 生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP、ADB 构成 Live Device Access，支撑 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
-本文不是已完成功能清单。1.0 交付诊断和证据基础，后续 Action / Journey 等能力不能因写入蓝图就视为可用。
+本文是能力边界。1.0交付诊断和证据基础，1.2能力实现与条件验收见[覆盖](CAPABILITY_COVERAGE.md)；蓝图、命令存在和业务通过分别判断。
 
 ## 三者职责
 
 | 部分 | 职责 | 边界 |
 | --- | --- | --- |
-| DoL Dev Tools | 进入 Android/WebView 现场，采证与比较；后续独立执行复现实验 | 面向所有 DoL Mod 作者，不依赖某个 Mod、Runtime 或源码目录 |
+| DoL Dev Tools | 进入 Android/WebView 现场，采证与比较；独立执行有限复现实验 | 面向所有 DoL Mod 作者，不依赖某个 Mod、Runtime 或源码目录 |
 | 目标项目 / Runtime Integration | 提供自身版本、模块、能力与运行状态解释 | 自愿接入、平级可选；项目保有自己的业务模型与状态，Tools 不复制 Runtime |
 | DoL Development Skill | 选择诊断与复现路径，解释证据，按任务完成修改/部署/复验 | 调用实际工具与目标项目既有命令，不复制实现，不虚构蓝图中的命令 |
 
 Soft & Wet 是最早的重度使用案例之一和一个可选 Integration。其 UI Runtime 留在 DoL-Game-UI，只管 UI；不成为 Tools 的核心假设。MapleBirch、ModHub 和其它项目享有相同接入地位。
 
 工具包继续独立维护。已有可用脚本保留，统一 CLI 逐步包装它们，不为统一入口重写全部脚本。
-Skill 已随 1.0 放在 `.agents/skills/dol-dev-tools/`，不自动全局安装。
+Skill随源码放在`.agents/skills/dol-dev-tools/`，1.2提供显式[独立安装](SKILL_INSTALL.md)，复用同一份Tools。
 
 ## 通用核心与可选 Integration
 

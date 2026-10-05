@@ -52,6 +52,7 @@ const help = `DoL Dev Tools ${version} (local development and diagnostics)
   leak-probe --endpoint LOCAL_CDP --out NEW_JSON [--detached yes] [--target-id ID]
   viewport-matrix --file REVIEWED_JSON --endpoint LOCAL_CDP --out NEW_DIR --test-environment yes --exclusive-metrics yes [--plan]
   hitbox-overlay --input HITBOX_JSON --out NEW_SVG [--minimum-css-px 44]
+  install-skill --out NEW_SKILL_DIRECTORY_NAMED_dol-dev-tools
 Evidence creates and removes a temporary ADB forward for the explicit app process.
 Default evidence collectors do not install APKs, perform business actions, read save bodies or repair the environment. Native layout requires explicit --allow-helper yes and may run/install the existing Android CLI helper. Action/Journey are separate explicit operations. Parent directory must exist.
 Integration files execute reviewed local code with Node permissions; worker isolation is not a security sandbox.
@@ -112,6 +113,8 @@ async function main(args = process.argv.slice(2)) {
     const manifest = await evidence(options, { integrations });
     console.log(`Evidence ${manifest.status}; manifest: ${path.resolve(options.out, 'manifest.json')}`);
     if (manifest.status !== 'complete') process.exitCode = 1;
+  } else if(command==='install-skill'){
+    const options=parse(args,['--out']);const result=require('./lib/install-skill.cjs').install(options.out);console.log('Skill installed at '+result.skillDir+'; available on the next turn. Tools location will be reverified before use.');
   } else if(command==='hitbox-overlay'){
     const options=parse(args,['--input','--out','--minimum-css-px']);require('./lib/hitbox-overlay.cjs').write(options.input,options.out,options['minimum-css-px']===undefined?44:Number(options['minimum-css-px']));console.log('Hitbox bounds SVG created; center hit and size hints do not prove click behavior.');
   } else if (command==='viewport-matrix') {

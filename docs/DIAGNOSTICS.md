@@ -1,7 +1,9 @@
-# DoL Dev Tools 1.1：诊断工作流
+# DoL Dev Tools 1.2：诊断工作流
 
 基于 1.0 重置版继续增强。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
+
+仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。
 
 ## 快速入口
 
@@ -67,7 +69,7 @@ Logcat 只读取已验证 App PID 的最后最多 300 条，按设备 epoch 过�
 Console 也省略正文，异常可保留内置异常类型、行列和 script URL 散列；Network 只留经处理摘要，不保存请求 / 响应正文、headers 或私有 URL。
 
 gfxinfo/meminfo 不 reset，不做泄漏诊断。非零 Flags 的帧样本首版不推断其语义，报告排除数量；没有可解析时长样本时 median / p95 为 null，不伪造零。
-App 汇总帧数属于累计 Android 指标；不代表当前复现区间或整个游戏速度。WebView 子进程尚未单独枚举。
+App汇总帧数属于累计Android指标，不代表当前复现区间或整个游戏速度。`process-memory`可补准确packageList关联进程，但不能证明某个page的renderer归属。
 
 Recording 限 1..30 秒、4 Mbps，先创建独立 `/data/local/tmp/dol-dev-UUID` 目录，输出后只清理自己创建的文件和空目录。
 设备文件清理失败会报告警告并使包为 partial；不执行递归删除，也不触碰第三方文件。
@@ -122,8 +124,8 @@ bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、
 
 仓库内 [.agents/skills/dol-dev-tools/SKILL.md](../.agents/skills/dol-dev-tools/SKILL.md) 提供五种诊断模式和升级条件；未安装到全局，不宣称本会话已经自动发现它。
 Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live Site First、证据先行、来源分离、最小充分诊断；测试环境允许任务范围内的主动复现，具体操作边界见 [架构](ARCHITECTURE.md)。
-1.1.0 已封装基线未提供原生 action / journey、自动遍历控件、先进网络正文抓取、Helper APK 自动安装或全局 DOM 镜像。保留已有 Android CLI 独立采集入口，不将其原始布局直接塞进脱敏包。
-这是当前的交付范围。后续独立 Action / Journey 可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect / Doctor / Evidence 的现有观察语义保持不变。真实存档、正式用户数据和凭据的破坏性操作仍需对应显式授权。长期范围见 [BLUEPRINT](BLUEPRINT.md)，不新增后台服务、数据库或云端遥测。
+1.2提供独立有限Action/Journey，不自动遍历控件或抓取网络正文。保留Android CLI独立入口，原始布局不直接进入脱敏包；helper运行/安装需明确选择。
+独立Action/Journey可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect/Doctor/Evidence保持观察语义。真实存档、正式用户数据和凭据的破坏性操作需对应显式授权。范围见[BLUEPRINT](BLUEPRINT.md)，无后台服务、数据库或云端遥测。
 
 ## 公共格式与第三方 Integration
 
@@ -133,7 +135,7 @@ Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live 
 
 ## 开发工作区：CSS / Environment / 目标选择
 
-新增入口尚未制作新版本包，完整能力验收后统一封装。
+下面是1.2的增补入口，现场证明与条件边界见[能力覆盖](CAPABILITY_COVERAGE.md)。
 
 ```powershell
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/facts-001 --scope '#passages' --css yes --environment yes
@@ -150,7 +152,7 @@ CSS 最多 200 节点/深度8，只读样式白名单与矩形，URL 值整体�
 
 Action/Journey 当前开发入口与边界见 [ACTIONS](ACTIONS.md)。Inspect/Doctor/Evidence 仍保持观察语义，操作属于独立命令。
 
-后续开发入口：`journey-record`记录短时WebView trusted元信息并输出待审阅候选；`matrix`按明确设备/App执行有限Journey用例；`network-scenario`仅用于声明中性网络原状态且无竞争设置客户端的测试目标；`animation-frames`离线使用已有ffmpeg/ffprobe。用法及证明范围见[ACTIONS](ACTIONS.md)、[NETWORK](NETWORK.md)、[ANIMATION](ANIMATION.md)。这些新增入口未制作新版本包。
+`journey-record`记录短时WebView trusted元信息并输出待审阅候选；`matrix`按明确设备/App执行有限Journey用例；`network-scenario`用于声明中性网络原状态且无竞争设置客户端的测试目标；`animation-frames`离线使用已有ffmpeg/ffprobe。用法及证明范围见[ACTIONS](ACTIONS.md)、[NETWORK](NETWORK.md)、[ANIMATION](ANIMATION.md)。
 
 `viewport-matrix` 用声明无原 override 的测试 page 做有限宽度采集，见 [VIEWPORT](VIEWPORT.md)；`native-layout`/`evidence --layout yes` 显式选择现有 Android CLI helper，见 [NATIVE_LAYOUT](NATIVE_LAYOUT.md)。`leak-probe` 的数值与可选 detached 能力、清理未知的限制见 [PERFORMANCE](PERFORMANCE.md)。`evidence-timeline` 离线对齐有有效时钟锚的证据，不隐藏源端截断、缺失锚或无法投影的时间源，见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
 

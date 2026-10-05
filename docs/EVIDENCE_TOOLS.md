@@ -9,6 +9,8 @@ node scripts/dol-dev.cjs known-good --from artifacts/after --out artifacts/refer
 node scripts/dol-dev.cjs evidence-compare --before artifacts/reference --after artifacts/later --out artifacts/reference-diff
 ```
 
+比较目录中的结构化结果是`compare.json`；Issue Report目录保存`report.json`与`report.md`。
+
 Compare 输出步骤状态、制品 SHA 变化，以及有效完整 DOM/CSS/Environment/Storage 的描述性变化；不完整来源为 unknown。Android 性能只比较已知非负数值。时间/incidentId变化也改变 JSON 文件 SHA，不能把文件变化当作业务变化。Journey 只比较步骤结构和制品哈希；Integration 只比较状态，不解释私有正文。conditionsVerified=false、automaticTestVerdict=not-inferred，不自动判断兼容回归、性能提升或根因。
 
 Issue Report 保存 report.json 和 Markdown，包含 incident/time、有限版本、步骤状态和固定失败类别。默认不带截图、输入、Console/Network/Storage 正文、Integration 诊断或复现自由文本。复现说明只记录采集状态；需要正文或图片时由调用者审阅后手动补充。生成报告不表示已提交 Issue。

@@ -43,3 +43,19 @@ node examples/workshop/verify-webview.cjs DEVICE_SERIAL YOUR.APP.PACKAGE artifac
 节点只有行内样式、pointer-events:none/aria-hidden，未注册监听器、使用游戏对象/存储或修改全局CSS。已有同ID节点或自有内容身份冲突时拒绝覆盖。结束在原session中只移除自有节点并确认不存在，再核对转发映射后清理自建端口；不明则partial，不自动重试或猜删。
 
 当前授权App的实际运行complete：20×20→48×48、制品SHA一致、节点确认不存在、转发移除；4份Manifest/Envelope标准Schema合格。这证明了真机WebView临时开发闭环，仍不是持久业务Mod安装、APK更新或游戏业务验收。
+
+## 隔离的持久 Mod 制品验收
+
+[verify-mod.cjs](../examples/workshop/verify-mod.cjs)使用调用者已有的带ModLoader游戏HTML、已有Chromium和Python标准库zipfile；它不下载或分发游戏/加载器。
+
+```powershell
+node examples/workshop/verify-mod.cjs PATH_TO_EXISTING_GAME_HTML artifacts/mod-workshop-001 --isolated-browser=yes
+```
+
+只创建独立localhost和全新浏览器profile，不打开现有profile、连接手机或改原HTML。在内存副本里只将唯一标准`window.modDataValueZipList = [...]`数据块替换为空数组，排除内置第三方Mod；其它结构不匹配就拒绝。CSP限制页面网络/资源，服务器不代理或提供游戏资产；这不是完整游戏表现测试。
+
+固定自有[Mod源码](../examples/workshop/mod-fixture.js)与boot.json构建为真正`.mod.zip`，ZIP校验逐文件一致；通过公开ModLoadController仅向这个新profile持久存入自己的唯一Mod。确认新document loader ID后，公开ModInfo报告来源IndexDB、版本及自有preload源SHA；同scope CSS实测20×20→48×48，前后公共Manifest/Envelope和Compare保留。未知API、异常来源或其它存储条目会停止；不接管ModLoader初始化或使用lazy-register冒充安装。
+
+实际运行complete / exit0，4份公共格式标准Schema通过。前期本地IP解析规则阻断页面，以及reload旧context竞态分别失败并保留；修复的是夹具隔离/等待条件，没有改加载器或自动重试操作。ZIP可在启动后释放，所以源SHA读取的是公开ModInfo内本夹具自己的preload源，只有SHA进入报告。
+
+全新profile及自有Mod副本保留在指定输出目录作为本地证据，浏览器关闭；不清理或导入真实游戏存档。桌面持久Mod证明与Android临时节点证明分开，二者不能合并成Android持久Mod/APK安装验收。真实业务项目仍使用自己公开的构建、部署和业务复验路径。

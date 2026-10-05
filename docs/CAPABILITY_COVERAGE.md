@@ -24,11 +24,11 @@
 | 59..60 Integration/Runtime | Contract1、SW可选桥、外置模块与独立DOM例子 | 缺失/未知/异常不阻断Generic；Runtime由目标作者维护，未知私有API不猜测 |
 | 61..70 Evidence/Schema/Privacy/Repro/Support/Full | manifest/envelope、SHA/incident/time、固定投影、复现说明、重型选项 | 截图/录像/trace/自由文本分别审查；完整包非业务通过；默认Support不扩大正文/二进制范围 |
 | 71..76 Compare/Known Good/Report/Collector/Doctor | 离线证据工具、独占输出、状态隔离、Doctor | 篡改/路径/缺失/投影已验证；参考不自动证明业务正确；报告不上传 |
-| 77..84 Skill/边界/独立/公开格式 | 仓库Skill路由实际工具与目标命令 | 结构检查通过，未全局安装；测试操作与真实数据破坏权限分开 |
-| 85..88 排除项/CLI/开发闭环 | 复用工具；[Workshop](WORKSHOP.md) | 受控桌面源码→build→deploy→同场景复验通过；真实项目制品部署/加载和真机复验仍需项目证明；不增加业务Runtime/任意执行DSL |
+| 77..84 Skill/边界/独立/公开格式 | 仓库Skill路由实际工具与目标命令；[独立安装](SKILL_INSTALL.md) | 独立安装/定位与前向证据比较报告通过；宿主自动发现仍需新回合；测试操作与真实数据破坏权限分开 |
+| 85..88 排除项/CLI/开发闭环 | 复用工具；[Workshop](WORKSHOP.md) | 桌面源码→build→deploy→复验，以及真实ModLoader隔离ZIP持久安装/来源/源SHA/版本/尺寸复验通过；Android持久业务Mod/APK仍需目标项目证明；不增加业务Runtime/任意执行DSL |
 
 [关联进程内存](PROCESS_MEMORY.md) 已使用系统公开packageList、user/UID和PID meminfo在真机验证。它补多进程观察，但不能将关联进程自动指定为某个page的renderer。
 
 固定自有WebView夹具还在授权App跑通真实源码→build/deploy→矩形复验与节点/转发清理；制品加载为临时自有DOM，不等于持久业务Mod/APK部署。只采自有scope CSS，不采页面正文或业务状态。
 
-最终统一封装前保留的门槛：真实目标项目构建/部署/加载证明与同场景真机复验，Skill最终安装/独立任务使用，源码包独立解压后的入口与资料排除检查。重型证据、helper、其它实体设备与专有recreate按可用条件分别记录；缺条件不伪造通过或扩大权限。开发中不发布新的ZIP/tag/version。
+统一封装验收包括通用源码检查、独立Skill安装/任务使用、自有Workshop源码/制品/加载/复验，以及源码包独立解压后的入口与资料排除检查。持久Mod桌面与临时节点Android证明分别完成，不能合并成Android持久Mod/APK证明。真实目标业务的构建/部署/同场景真机验收属于该项目接入条件；重型证据、helper、其它实体设备与专有recreate也分别登记，缺条件不伪造通过或扩大权限。1.2发布证明见[VALIDATION](VALIDATION.md)。

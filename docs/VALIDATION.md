@@ -1,5 +1,15 @@
 # DoL Dev Tools 验证记录
 
+## Skill 与持久 Mod 夹具验收：2026-10-05
+
+- 最终集成`npm test`：80 passed / 0 failed / 0 skipped。新增Skill检查实际运行独立安装的解析器，覆盖含空格路径、失效位置/显式恢复、防覆盖与无效来源无输出；没有新增Node依赖。
+- 本机独立Skill安装与quick_validate通过。独立任务从安装副本定位Tools，使用两次真实WebView自有夹具Evidence完成Compare及本地Issue Report，文件状态complete；Compare exit0，Report单独退出码未捕获。首次猜错结果文件名被纠正为compare.json，失败未隐藏。未重连设备或上传，宿主新回合自动发现未在旧回合冒充验证。
+- 持久Mod夹具真实运行complete / exit0：自有源20→48、Python标准库ZIP内两文件一致、CDP部署输入SHA一致、独立profile存入、不同document loader重载、公开ModInfo来源IndexDB/版本/自有源SHA一致、实际CSS20×20→48×48。4份Manifest/Envelope通过Draft2020-12/RFC3339标准验证；不采游戏正文/截图/日志。
+- 初始隔离规则未排除127.0.0.1，公共API预检失败；增加固定能力元信息后核对并修正。本地HTML内存副本将标准嵌入Mod数据块清空，排除第三方Mod；原HTML不变。后续重载旧context竞态导致source确认失败，明确ReferenceError后等待新loader再观察，最终新目录通过。中途夹具源码读取路径也从可能已释放ZIP改为公开ModInfo自有preload；不把尝试记录当作通过，不自动重试部署。
+- 浏览器使用新profile与独立localhost，输出仅本地忽略目录；原手机、现有Mod列表、存档及业务源码未变更。持久Mod证明限桌面真实加载器的自有夹具，Android现有证明仍为临时自有节点；未验证Android持久Mod/APK更新或任何第三方Mod完整业务。
+
+独立只读审查发现夹具在finally清理前报告complete。改为verification-complete中间态，独立有界等待自有进程exit、自建CDP端口ECONNREFUSED与HTTP关闭回调；不明则partial/exit1，不扩大杀进程范围。修复后新目录再次完成完整持久链，exit0，三项清理确认均记录；独立静态复核未发现新增阻断。另4份最新Manifest/Envelope标准Schema通过。原profile/尝试证据不删除。
+
 ## 后续完整能力增补：2026-10-05（未封装）
 
 - 当前完整 `npm test`：79 passed / 0 failed / 0 skipped；覆盖Recorder隐私/候选、matrix全计划校验与失败停止、Network原session恢复、Animation界限/失败保留、Viewport授权/恢复/共享脱敏、Native Layout固定投影、Leak/Timeline清理与未知状态、Hitbox中心命中/SVG及关联进程身份/user/isolated UID。最后user/isolated支持的定向测试1 passed；没有隐藏设备partial或夹具错误。

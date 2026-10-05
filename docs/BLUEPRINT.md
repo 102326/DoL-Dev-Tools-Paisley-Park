@@ -8,11 +8,11 @@ DoL Dev Tools 是面向整个 DoL Mod 生态的公共、本地开发执行工具
 
 Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设备画面、WebView 内部事实、Android / App 系统现场。Skill 选择路径，Tools 执行，目标项目的 Runtime / Integration 提供自己的解释。
 
-完整目标：Reproduce → Observe → Understand → Diagnose → Act → Modify → Deploy → Verify → Preserve Evidence。1.0 是诊断与证据基础，不能将最终闭环全部记为已完成。
+完整目标：Reproduce → Observe → Understand → Diagnose → Act → Modify → Deploy → Verify → Preserve Evidence。1.2交付通用能力与受控开发闭环；目标业务、设备和专有接口的验收条件分别保留，见[能力覆盖](CAPABILITY_COVERAGE.md)。
 
 ## 能力状态
 
-| 能力组 | 1.1 当前状态 | 后续蓝图 |
+| 能力组 | 1.1 发布基线（历史） | 后续增补（1.2实现与条件见能力覆盖） |
 | --- | --- | --- |
 | Live Device Access | Android CLI 独立截图/标注/layout；ADB 与 CDP 采集；Doctor 和人工 Chrome Inspect 流程；scrcpy 检测 | 独立 inspect/session、可选启动辅助；更多 WebView provider / socket / target 情况 |
 | DOM / CSS | 限定 DOM Contract Snapshot/Diff | Computed Style/CSS Contract、Selector Health、DOM Ownership、z-index、Scroll、Hitbox 与 Accessibility |
@@ -30,11 +30,11 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 ## 当前开发与交付方式
 
-用户已明确以完整最终能力为目标：功能分批实现、测试和提交；在完整能力与开发闭环验收结束后统一封装，不再每批制作版本包或 tag。1.1.0 已交付包保留作基线，开发中的新增入口不等于已封装版本。
+用户已明确以完整最终能力为目标：功能分批实现、测试和提交，再统一封装。1.0/1.1交付包保留作基线；1.2统一交付已实现能力和固定自有开发闭环，仍保留目标业务接入的条件验收。[发布说明](RELEASE_1.2.md)与VALIDATION记录发行包和现场证明。
 
 当前开发中已补 CSS Snapshot/Diff、Environment/Mod Snapshot/Diff、Provider、显式 CDP target/socket 选择，以及固定 Action primitives 和 Journey plan/replay/checkpoint。原版页面结构/Mod 元信息保持中立；已明确当前连接 App 可作为测试环境，普通复现动作可主动执行，真实存档和云数据删除/覆盖仍排除。
 
-开发中也已接入短时 Event/Mutation/Error/Long Task 与可选 Observer 创建/方法时间线、六种通用 DOM Inspector、Storage 元数据 Snapshot/Diff、Region Visual Diff、native/WebView 性能重复采样与 Thermal/Battery 元信息、Evidence Compare/Known Good/Markdown Report。后续增补限定WebView Recorder候选、选定矩阵与后台返回/重启实验、声明中性基线的Network实验和离线Animation取帧，见[ACTIONS](ACTIONS.md)、[NETWORK](NETWORK.md)、[ANIMATION](ANIMATION.md)。现已补数值/可选detached Leak Probe、证据时间对齐、[Viewport Matrix](VIEWPORT.md) 和显式选择的 [Native Layout](NATIVE_LAYOUT.md)。renderer进程归属、完整原生帧时间还原、目标项目构建部署复验与最终Skill安装仍需各自验收。每类缺失能力登记与验收；候选录制不等于自动生成正确Journey，浏览器/矩阵标签结果不等于实体设备证明。
+1.2也包含短时事件/Mutation/Error/Long Task与可选Observer时间线、六类Inspector、Storage结构、区域视觉、重复性能/热电采样、离线Compare/参考/报告、Recorder候选、矩阵、Network实验和动画取帧；数值/可选detached Leak Probe、证据时间对齐、Viewport Matrix与显式Native Layout见对应文档。独立Skill安装/前向任务与固定Workshop通过；renderer归属、完整原生帧时间、目标业务部署和其它设备仍分别判断。候选录制不等于正确Journey，浏览器/矩阵标签不等于实体设备证明。
 
 ## 后续实施顺序
 
