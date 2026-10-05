@@ -59,3 +59,17 @@ node examples/workshop/verify-mod.cjs PATH_TO_EXISTING_GAME_HTML artifacts/mod-w
 实际运行complete / exit0，4份公共格式标准Schema通过。前期本地IP解析规则阻断页面，以及reload旧context竞态分别失败并保留；修复的是夹具隔离/等待条件，没有改加载器或自动重试操作。ZIP可在启动后释放，所以源SHA读取的是公开ModInfo内本夹具自己的preload源，只有SHA进入报告。
 
 全新profile及自有Mod副本保留在指定输出目录作为本地证据，浏览器关闭；不清理或导入真实游戏存档。桌面持久Mod证明与Android临时节点证明分开，二者不能合并成Android持久Mod/APK安装验收。真实业务项目仍使用自己公开的构建、部署和业务复验路径。
+
+## Android WebView 隔离 origin 的持久 Mod 夹具（1.2发布后开发）
+
+[verify-android-mod.cjs](../examples/workshop/verify-android-mod.cjs)复用上面已完成的桌面Workshop制品与SHA，仅在明确测试App中创建自有iframe。需已有ADB、Python标准库、标准游戏page和支持`uniqueContextId`的CDP；不支持所需元信息/API就停止。
+
+```powershell
+node examples/workshop/verify-android-mod.cjs DEVICE_SERIAL YOUR.APP.PACKAGE PATH_TO_EXISTING_GAME_HTML COMPLETE_DESKTOP_WORKSHOP_DIR artifacts/android-mod-workshop-001 --test-environment=yes
+```
+
+一次wake后有界等待目标App进入前台；固定父frame/loader/URL及唯一执行context，不追随导航。自建HTTP服务器只提供随机路径的空白预检页和经过SHA核对的游戏内存副本。挂载前在实际执行表达式里排除父页面同源；完整游戏执行前读取local/session数量、数据库/cache/Service Worker数量与可见Cookie存在性，不保留名称/值。请求含Cookie（包括HttpOnly）时服务器拒绝提供页面。发现既有状态或能力未知即停止，不清空存储。空白预检只证明观测时状态为空，不证明该origin从未被使用或消除其它进程并发写入。
+
+确认空白预检后，公开ModLoadController仅向此origin持久存入固定自有ZIP。每阶段新建frame document，确认IndexDB来源、版本、自有preload源SHA和20×20→48×48 CSS；不读主游戏Mod清单、存档、正文或日志。最新实机complete/exit0，4份公共格式及2份CSS payload通过标准Schema和SHA关联检查。此证据证明Android WebView隔离origin内的持久Mod重载，仍不是主游戏业务Mod、App重启、原生WebView重建或APK部署验收。
+
+自有iframe、Runtime域、HTTP及转发分别记录清理；origin内自有夹具数据可保留，不清数据。Reverse使用`--no-rebind`，只有创建ACK确认且当前pair精确匹配才移除；未知ACK不猜删。所有Workshop/Evidence/Journey的Forward清理共用完整serial/动态port/remote socket匹配与移除后确认。ADB没有原子比较删除命令，调用者不得并发重绑这些临时映射；发现已变化则停止清理并保留unknown，不自动重试。

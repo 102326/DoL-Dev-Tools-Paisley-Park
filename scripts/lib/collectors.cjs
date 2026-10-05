@@ -66,8 +66,22 @@ async function forward(ctx) {
   const port = (await ctx.adb('forward', 'tcp:0', `localabstract:${name}`)).toString().trim();
   if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) throw new Error('Invalid forwarding port');
   ctx.forwardPort = port;
+  ctx.forwardRemote = `localabstract:${name}`;
   ctx.endpoint = `http://127.0.0.1:${port}`;
   return { appProcessSocketVerified: true, temporaryForward: true };
+}
+async function removeForward(ctx) {
+  const port = ctx.forwardPort, remote = ctx.forwardRemote, adb = ctx.cleanupAdb || ctx.adb;
+  if (!/^\d{1,5}$/.test(port || '') || !remote || !ctx.options.serial) throw Error('Forward ownership unavailable');
+  const mappings = async () => (await adb('forward','--list')).toString().trim().split('\n').map(line => line.trim().split(/\s+/));
+  const own = rows => rows.filter(row => row[0] === ctx.options.serial && row[1] === `tcp:${port}`);
+  const matches = own(await mappings());
+  if (matches.length !== 1 || matches[0].length !== 3 || matches[0][2] !== remote) throw Error('Forward ownership changed');
+  // ponytail: ADB has no compare-and-remove; callers must not share/rebind this dynamic port during cleanup.
+  await adb('forward','--remove',`tcp:${port}`);
+  if (own(await mappings()).length) throw Error('Forward removal unconfirmed');
+  ctx.forwardPort = undefined; ctx.forwardRemote = undefined;
+  return { removed: true };
 }
 function events() {
   const consoleEvents = [], network = [], active = new Map();
@@ -162,5 +176,5 @@ async function versions(ctx) {
 }
 async function gfx(ctx) { return frames((await ctx.adb('shell', 'dumpsys', 'gfxinfo', ctx.options.package, 'framestats')).toString()); }
 async function mem(ctx) { return memory((await ctx.adb('shell', 'dumpsys', 'meminfo', ctx.options.package)).toString()); }
-module.exports = { android, device, app, screenshot, forward, cdp, consoleSummary, networkSummary, webview, dom, versions, gfx, mem, events,
+module.exports = { android, device, app, screenshot, forward, removeForward, cdp, consoleSummary, networkSummary, webview, dom, versions, gfx, mem, events,
   css, provider: require('./environment.cjs').collectProvider, environment: require('./environment.cjs').collect };

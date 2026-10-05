@@ -1,6 +1,6 @@
 # 限定网络实验与脱敏证据
 
-开发工作区提供 `network-scenario`，尚未重新封装。它只临时改变明确CDP目标的请求网络条件与阻断模式，不读取或发送Cookie、Authorization、正文，不主动构造业务请求。页面自身仍可能在解除离线后重试/同步，所以必须核对测试环境及真实数据边界。
+1.2.0封装提供 `network-scenario`。它只临时改变明确CDP目标的请求网络条件与阻断模式，不读取或发送Cookie、Authorization、正文，不主动构造业务请求。页面自身仍可能在解除离线后重试/同步，所以必须核对测试环境及真实数据边界。
 
 ```powershell
 node scripts/dol-dev.cjs network-scenario --file reviewed-network.json --out artifacts/network-plan --plan

@@ -1,6 +1,6 @@
 # 通用检查器与短时观察
 
-这是开发工作区新增入口，尚未重新封装。所有 DOM 检查都不要求 Soft & Wet；每个输出使用新文件或目录，不覆盖旧证据。显式 CDP endpoint 的 App 关联由调用者核对；需要校验包/PID时使用 Evidence。短时观察不恢复历史。
+这些入口已包含在1.2.0封装中。所有 DOM 检查都不要求 Soft & Wet；每个输出使用新文件或目录，不覆盖旧证据。显式 CDP endpoint 的 App 关联由调用者核对；需要校验包/PID时使用 Evidence。短时观察不恢复历史。
 
 ```powershell
 node scripts/dol-dev.cjs dom-inspect --mode selector-health --endpoint http://127.0.0.1:PORT --scope '#passages' --out artifacts/selector.json

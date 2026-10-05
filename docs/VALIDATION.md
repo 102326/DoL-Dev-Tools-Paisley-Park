@@ -1,5 +1,16 @@
 # DoL Dev Tools 验证记录
 
+## Android 隔离持久 Mod 与传输清理：2026-10-05（1.2发布后开发）
+
+- `npm test`：81 passed / 0 failed / 0 skipped。共享Forward记录完整远端socket；Evidence、Journey和两类Android Workshop统一精确核对后清理并确认不存在。回归覆盖同PID无关socket替换拒绝、独立清理通道、删除未确认保留unknown及无归属不猜删。
+- 独立只读审查发现初稿origin未预检、Reverse可rebind/未知ACK误认领、Forward匹配过宽及context/root导航竞态。改为完整游戏执行前的空白存储预检、父同源排除、`--no-rebind`与ACK归属、共享完整映射清理、`uniqueContextId`和表达式内URL守卫/父loader核对；复审未发现剩余阻断。ADB查询删除非原子和观测后并发写入的限制明确保留。
+- 首次准备阶段原生崩溃，尚未创建frame或写入Mod，原失败保留；App随后恢复，夹具移除新增协议清单请求，未据此确定崩溃根因。旧context版曾通过但不作为上述守卫的验收。修复版首次在wake后的前台检查停止，所有资源not-created；读系统元信息确认wake与前台恢复异步，再补一次wake后的5秒就绪观察，不重复派发动作或部署。
+- 最终修复版新目录实机complete / exit0。空白预检通过，4代frame（含预检）使用固定唯一context；前后ZIP/源SHA分别匹配已验收桌面制品，公开ModInfo来源IndexDB、版本1.0.0/1.0.1，新frame实际CSS20×20/48×48。4份公共Manifest/Envelope、2份CSS payload通过Draft2020-12/RFC3339验证，源与Evidence SHA关联一致。
+- iframe确认不存在、Runtime disabled、Forward/Reverse removed、HTTP closed；采证前后既有两类映射逐项一致。origin内自有夹具数据保留，不访问或清理主游戏存储。随后补充HTTP请求含Cookie时拒绝提供页面的守卫；`node --test tests/workshop-origin.test.cjs` 1 passed，实际生产handler经本地HTTP确认空白页不带游戏、Cookie请求及其后续请求拒绝，生产预检表达式拒绝六种既有状态与能力缺失。没有重复设备动作，不把这一新增分支冒充已运行的真机版本。两个Android例子`node --check`与`git diff --check`通过。
+- 本回合宿主技能目录已列出`dol-dev-tools`，安装副本实际读取过；此前安装/独立任务证明继续有效。新Android入口和共享清理修改仅在开发源码中，已有1.2.0 ZIP/tag未覆盖，未推送或上传。
+
+此证明限已授权App中隔离origin的持久Mod。主游戏业务Mod/APK更新、App重启与原生WebView recreate仍需相应项目的公开接入与现场验收；frame document重建不替代这些结论。步骤和运行条件见[WORKSHOP](WORKSHOP.md)。
+
 ## 1.2.0 统一封装验收：2026-10-05
 
 - 1.0/1.1基线保留，源码目录原地更新为1.2.0。只在全部已实现通用能力、自有开发闭环和Skill验收后统一封装；具体业务接入条件见[RELEASE_1.2](RELEASE_1.2.md)。未推送GitHub或上传任何现场资料。

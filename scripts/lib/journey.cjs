@@ -96,7 +96,7 @@ async function run(options, loaded, overrides = {}) {
   ctx.markSideEffect = () => { assertActive(); actionDispatched = true; };
   async function closeTransport() {
     let closeFailed=false;try{client?.close()}catch{closeFailed=true}client=undefined;
-    if (forwardPort) { const port=forwardPort; await cleanupAdb('forward','--remove',`tcp:${port}`); forwardPort=undefined; }
+    if (forwardPort) { await collectors.removeForward(ctx); forwardPort=undefined; }
     appPid=undefined;ctx.forwardPort=undefined;
     if(closeFailed)throw Error('Transport close failed');
   }

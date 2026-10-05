@@ -3,7 +3,7 @@ const journey=require('../scripts/lib/journey.cjs');
 function fixture(t){const root=fs.mkdtempSync(path.join(os.tmpdir(),'dol-journey-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root}
 const options=out=>({serial:'offline-device',package:'com.example.game',out,testEnvironment:true});
 function adbFixture(){
-  const calls=[];
+  const calls=[];let forwarded=false;
   const adb=async(...args)=>{
     calls.push(args);const text=args.join(' ');
     if(text==='get-state')return Buffer.from('device');
@@ -13,7 +13,9 @@ function adbFixture(){
     if(text.startsWith('shell dumpsys package'))return Buffer.from('versionName=1.0 versionCode=1');
     if(text.startsWith('shell pidof'))return Buffer.from('123');
     if(text==='shell cat /proc/net/unix')return Buffer.from('@webview_devtools_remote_123');
-    if(text==='forward tcp:0 localabstract:webview_devtools_remote_123')return Buffer.from('55555');
+    if(text==='forward tcp:0 localabstract:webview_devtools_remote_123'){forwarded=true;return Buffer.from('55555')}
+    if(text==='forward --list')return Buffer.from(forwarded?'offline-device tcp:55555 localabstract:webview_devtools_remote_123\n':'');
+    if(text==='forward --remove tcp:55555'){forwarded=false;return Buffer.alloc(0)}
     if(text==='exec-out screencap -p'){const png=Buffer.alloc(24);Buffer.from([137,80,78,71,13,10,26,10]).copy(png);png.writeUInt32BE(1,16);png.writeUInt32BE(1,20);return png}
     return Buffer.alloc(0);
   };return {adb,calls};

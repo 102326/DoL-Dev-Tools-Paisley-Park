@@ -23,6 +23,7 @@ function stubs(overrides = {}) {
     screenshot: async () => ({ binary: Buffer.from('png'), extension: 'png', metadata: { width: 1, height: 1 } }),
     gfx: async () => ({ sampledFrames: 0 }), mem: async () => ({ pssKb: 1 }),
     forward: async ctx => { ctx.endpoint = 'http://127.0.0.1:1'; ctx.forwardPort = '1'; return { forwarded: true }; },
+    removeForward: async ctx => { ctx.forwardPort = undefined; return { removed: true }; },
     cdp: async ctx => { ctx.client = { close() {} }; ctx.channels = { Runtime: 'available', Network: 'available' }; ctx.capture = { snapshot: () => ({ console: [], network: [], omittedConsole: 0, omittedNetwork: 0 }) }; return { channels: ctx.channels }; },
     webview: async () => ({ product: 'offline' }), versions: async () => ({ gameVersion: '1' }),
     dom: async () => ({ schemaVersion: 1, nodes: [] }),
@@ -113,8 +114,24 @@ test('WebView forwarding verifies the current PID socket and requests a dynamic 
   assert.ok((await invoke({ socket: both, webviewSocket: 'browser_webview_devtools_remote_123' })).ctx);
   const { ctx, calls } = await invoke();
   assert.equal(ctx.endpoint, 'http://127.0.0.1:54321');
+  assert.equal(ctx.forwardRemote, 'localabstract:webview_devtools_remote_123');
   assert.ok(calls.some(args => args[0] === 'forward' && args[1] === 'tcp:0' && args[2] === 'localabstract:webview_devtools_remote_123'));
   assert.equal(calls.some(args => args[0] === 'forward' && args[1] === 'tcp:54321'), false);
+});
+
+test('forward cleanup requires exact ownership and confirms removal without guessing', async () => {
+  for (const remote of ['localabstract:webview_devtools_remote_123','localabstract:unrelated_123']) {
+    let mapping = `offline-device tcp:54321 ${remote}\n`, removed = false;
+    const ctx = { options: {serial:'offline-device'}, forwardPort:'54321', forwardRemote:'localabstract:webview_devtools_remote_123',
+      cleanupAdb: async (...args) => { if(args[1] === '--list') return Buffer.from(mapping); removed=true;mapping='';return Buffer.alloc(0); },
+      adb: async () => { throw Error('Cleanup must use independent transport'); } };
+    if(remote.includes('unrelated')) { await assert.rejects(collectors.removeForward(ctx),/ownership changed/);assert.equal(removed,false);assert.equal(ctx.forwardPort,'54321'); }
+    else { assert.deepEqual(await collectors.removeForward(ctx),{removed:true});assert.equal(removed,true);assert.equal(ctx.forwardPort,undefined); }
+  }
+  let removes=0;
+  const ctx={options:{serial:'offline-device'},forwardPort:'54321',forwardRemote:'localabstract:webview_devtools_remote_123',adb:async(...args)=>{if(args[1]==='--remove')removes++;return Buffer.from('offline-device tcp:54321 localabstract:webview_devtools_remote_123\n')}};
+  await assert.rejects(collectors.removeForward(ctx),/removal unconfirmed/);assert.equal(removes,1);assert.equal(ctx.forwardPort,'54321');
+  await assert.rejects(collectors.removeForward({...ctx,forwardRemote:undefined}),/ownership unavailable/);assert.equal(removes,1);
 });
 
 test('required collector failure leaves partial evidence and refuses overwrite', async t => {

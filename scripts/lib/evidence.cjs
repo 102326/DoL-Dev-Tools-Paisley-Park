@@ -185,9 +185,7 @@ async function evidence(options, overrides = {}) {
     await step('bugreport', 'Android system bugreport', () => methods.bugreport(ctx), true, noDevice);
   } finally {
     try { ctx.client?.close(); } catch { /* Forward cleanup and manifest still run. */ }
-    if (ctx.forwardPort) await runStep('transport-cleanup', 'ADB forwarding', async () => {
-      await ctx.adb('forward', '--remove', `tcp:${ctx.forwardPort}`); return { removed: true };
-    }, true);
+    if (ctx.forwardPort) await runStep('transport-cleanup', 'ADB forwarding', () => methods.removeForward(ctx), true);
     manifest.captureEnd = new Date().toISOString();
     for (const status of ['completed','failed','skipped','unsupported']) manifest[status] = manifest.steps.filter(s => s.status === status).map(s => s.name);
     const incomplete = manifest.steps.some(s => s.required && s.status !== 'completed') || !!ctx.deviceCaptureCleanupWarning;
