@@ -1,5 +1,15 @@
 # DoL Dev Tools 验证记录
 
+## 终审文档与本机试用：2026-10-06
+
+本轮仅固化短项目AGENTS、README首次使用入口、Live Device Access定位与Integration/Evaluator安全措辞，并同步Skill。运行时、Collector、CLI、Schema与版本号不变；检查文档链接、AGENTS/Skill口径及格式，复用此前功能与真机证明，不重跑完整Node/Python/设备验收。
+
+另按用户的本机安装试用请求，将已验收收口ZIP独立解压到本地工具目录，备份旧Skill后重新安装，resolver定位1.5.0、UTF-8 validator与Windows启动器通过。试用不修改正在开发的DoL UI工作区或手机安装：从UI 2.2开发中的源码固定副本构建Runtime，原声明版本仍为2.1.0，在新Edge profile和自有页面调用实际已安装Tools。
+
+通用DOM/CSS Snapshot及Diff、缺失Integration、实际Worker中的Soft & Wet桥、Adapter fallback/版本降级、Inspector Surface、输入省略和原节点/原按钮保留均通过；Runtime销毁后DOM与基线无差异，自建浏览器/服务关闭及CDP端口拒绝连接确认。这是开发Runtime的桌面接入试用，不是UI 2.2整包或Android业务验收。初次私有runner漏传目录递归参数、随后将Doctor的partial误当成桌面试用必需失败，各次收据保留；修正试用设置后在新目录执行，没有重试已派发业务动作。
+
+Doctor如实保留当前进程ADB不在PATH和自有非标准游戏标题的CDP检查不可用，未修复环境；显式target ID的桌面采集正常。需要Android诊断时按README将DOL_ADB指向现有ADB并重新核对用户选定设备，不把此桌面试用写成Android现场通过。
+
 ## 1.5正式收口口径：2026-10-06
 
 按用户确认，核心能力与约定场景已经完成并验收；剩余属于覆盖扩展、专项Integration或条件性验证。统一使用[三类状态](CLOSEOUT_1_5.md)，不把部分环境验证或按需扩展描述为产品未完成。工具负责调查/复现/诊断/修改部署复验能力闭环，目标项目负责自己的完整业务/存档/云端回归。本次仅更新文档与Skill工作流，运行时/schema/版本不变；复用下方仍有效的源码与设备证明，原ZIP/tag冻结。

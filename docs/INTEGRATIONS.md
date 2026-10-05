@@ -24,6 +24,8 @@ node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACK
 
 `ctx` 只提供 `ctx.client.evaluate(expression)`，执行已经审阅的只读 CDP JS 探针。不注入 ADB、设备 serial、输出目录或 App 私有数据。调用者必须 await 自己的异步工作，不能启动后台任务、抓全页业务状态或把诊断 getter 改成写操作。
 
+这里的“只读”是Probe/Workflow的使用约束；evaluate执行器可以运行传入的任意页面JavaScript，并没有只读权限隔离。自定义表达式和模块必须由使用者审查，不能将接口精简或Worker执行描述成未知插件的安全沙箱。
+
 name/version 描述的是桥接模块；目标 Runtime/Mod 的实际版本可以作为经过白名单处理的诊断字段。capabilities 描述桥的采集能力，不保证目标项目的对应 API 一定存在；仍须 detect/collect 实际检查。
 
 ## 时限与结果

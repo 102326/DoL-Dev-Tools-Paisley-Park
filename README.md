@@ -1,24 +1,18 @@
 # DoL Dev Tools 1.5
 
-面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP 与 ADB 构成 Live Device Access；长期开发闭环是 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
+面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。王牌是让Agent / 开发者直接进入真实Android、WebView和运行现场，形成Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence闭环。
+
+| Live Device Access核心 | 进入什么现场 |
+| --- | --- |
+| Android CLI | 真机画面、标注截图与原生layout |
+| Chrome Inspect / CDP | Agent直接进入真实WebView，按需观察DOM、CSS / Computed Style、Console、Runtime Exception、Network、Storage、Performance、页面状态及项目Integration |
+| ADB | Android / App系统现场、日志、进程、内存、帧统计与生命周期 |
+
+Generic Diagnostics不依赖Soft & Wet、MapleBirch、ModHub或任何特定Runtime；Integration只作可选增强。内置采集遵守限定范围与脱敏策略，现场观察和项目解释分别记录。
 
 **1.5已正式收口：核心能力与约定场景已经完成并验收。** 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
 
-1.2在1.0重置版和1.1公共接入基础上交付通用诊断、有限复现实验、证据比较与Skill开发闭环。完整蓝图按能力组登记在[能力覆盖](docs/CAPABILITY_COVERAGE.md)。通用核心不依赖Soft & Wet、不要求目标Mod使用某个Runtime或相邻源码；各项目Integration都是平级可选增强。附带Soft & Wet桥和独立通用DOM示例。
-
-1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
-
-提供CSS/Environment/Storage Snapshot/Diff、显式target/socket、Action/Journey/Recorder候选、时间线、通用DOM Inspector、区域视觉比较、性能重复采样和离线证据工具。使用当前`--help`、[操作说明](docs/ACTIONS.md)、[检查器](docs/INSPECTORS.md)、[性能](docs/PERFORMANCE.md)和[证据比较](docs/EVIDENCE_TOOLS.md)。
-
-还包含[Network实验](docs/NETWORK.md)、[动画取帧](docs/ANIMATION.md)、[Viewport Matrix](docs/VIEWPORT.md)、[原生布局](docs/NATIVE_LAYOUT.md)、[关联进程内存](docs/PROCESS_MEMORY.md)、[Workshop闭环](docs/WORKSHOP.md)和[独立Skill安装](docs/SKILL_INSTALL.md)。80项自动检查通过；桌面持久Mod制品与Android临时WebView夹具分别验收。Android持久业务Mod/APK、重型trace/helper、其它设备和专有生命周期仍按目标条件验收；不会自动上传或安装缺失依赖。迁移与交付范围见[1.2说明](docs/RELEASE_1.2.md)。
-
-1.3统一汇总后续增补：Android隔离origin内的持久Mod重载、完整转发归属清理、只读生命周期与checkpoint、整包生命周期比较，以及Support直接生成Issue Report。89项检查通过；原1.2 ZIP保留。交付与条件范围见[1.3说明](docs/RELEASE_1.3.md)和[验证记录](docs/VALIDATION.md)。
-
-1.4统一汇总最终清单及[原生重建与真实游戏APK更新](docs/NATIVE_RECREATE.md)、[主游戏真实业务Mod更新](docs/BUSINESS_MOD_UPDATE.md)：原生对象身份、同签名版本更新、自有sentinel保留、DoLGameUI 2.0.3→2.1.0持久加载/源SHA/设置行为及重启后复验均经实机验证，91项检查通过。通用核心、可选Integration、Skill和目标自有配方分层保持独立；覆盖与条件范围见[1.4说明](docs/RELEASE_1.4.md)。旧1.3 ZIP/tag冻结，不回填新结果。
-
-1.5补齐后续[完整验收](docs/FINAL_ACCEPTANCE.md)：独立WebView-only、实际Perfetto/bugreport/helper、detached基线/重复动作/复采Journey及锁屏生命周期；96项Node检查通过。Skill第一原则是[复用成熟能力](.agents/skills/dol-dev-tools/SKILL.md)，优先组合Android CLI、Android Profiler、Chrome DevTools与目标项目构建部署，只做必要DoL适配。完整交付与条件范围见[1.5说明](docs/RELEASE_1.5.md)；旧1.4及更早包保持冻结。
-
-## 开始使用
+## 最快开始
 
 必需 Node.js 22.12+；Android 采集需要已有 ADB、USB 调试和明确的设备/App。CDP 采集还需要 App 开启 WebView 调试。无需 `npm install`。
 
@@ -27,12 +21,21 @@ New-Item -ItemType Directory -Path artifacts -Force
 .\DoL-Dev.cmd --version
 .\DoL-Dev.cmd --help
 .\DoL-Dev.cmd doctor --out artifacts/doctor.json
+# 已建立本地CDP连接时，核对页面与target ID：
+.\DoL-Dev.cmd inspect --endpoint http://127.0.0.1:CDP_PORT --out artifacts/targets.json
 adb devices -l
 .\DoL-Dev.cmd evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages'
 .\DoL-Dev.cmd support --from artifacts/evidence-001 --out artifacts/support-001
 ```
 
-请替换设备与包名占位符，并先手动打开目标 App；工具不会自动选择设备或启动游戏。所有输出目标必须尚不存在，父目录须已创建。ADB 不在 PATH 时，将进程内 `DOL_ADB` 指向已有 `adb.exe`；不自动安装或修改全局配置。
+请替换端口、设备与包名占位符，并先手动打开目标 App；工具不会自动选择设备或启动游戏。所有输出目标必须尚不存在，父目录须已创建。ADB 不在 PATH 时，将进程内 `DOL_ADB` 指向已有 `adb.exe`；不自动安装或修改全局配置。
+
+## 典型使用场景
+
+- 页面错位或点击异常：真机画面→DOM/CSS与命中检查→修改目标源码→同场景复验。
+- Mod兼容问题：通用DOM Snapshot/Diff，按需补Runtime/Adapter的可选解释。
+- 卡顿或内存异常：Console/Network摘要与性能采样，具体问题需要时再升级Profiler或Perfetto。
+- UI开发与复现：审阅Action/Journey、checkpoint、构建部署和Evidence比较；首次诊断先用最小充分采集。
 
 ## 能力与入口
 
@@ -59,6 +62,22 @@ Evidence 每一步独立记录状态、来源、时间和制品 SHA；请求范�
 1.1 提供经过审阅的本地 `.cjs` 接入，10 秒总时限，结果只保存为 JSON；Worker 隔离故障但不是权限沙箱。示例和隐私责任见 [INTEGRATIONS](docs/INTEGRATIONS.md)。
 
 1.0 的交付与迁移说明见 [重置版说明](docs/RELEASE_1.0.md)，实际验收与已知限制见 [验证记录](docs/VALIDATION.md)。长期规划见 [架构约束](docs/ARCHITECTURE.md)，其中未交付的路线不代表现有能力。
+
+## 版本与验收记录
+
+1.2在1.0重置版和1.1公共接入基础上交付通用诊断、有限复现实验、证据比较与Skill开发闭环。完整蓝图按能力组登记在[能力覆盖](docs/CAPABILITY_COVERAGE.md)。通用核心不依赖Soft & Wet、不要求目标Mod使用某个Runtime或相邻源码；各项目Integration都是平级可选增强。附带Soft & Wet桥和独立通用DOM示例。
+
+1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；统一诊断使用 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
+
+提供CSS/Environment/Storage Snapshot/Diff、显式target/socket、Action/Journey/Recorder候选、时间线、通用DOM Inspector、区域视觉比较、性能重复采样和离线证据工具。使用当前`--help`、[操作说明](docs/ACTIONS.md)、[检查器](docs/INSPECTORS.md)、[性能](docs/PERFORMANCE.md)和[证据比较](docs/EVIDENCE_TOOLS.md)。
+
+还包含[Network实验](docs/NETWORK.md)、[动画取帧](docs/ANIMATION.md)、[Viewport Matrix](docs/VIEWPORT.md)、[原生布局](docs/NATIVE_LAYOUT.md)、[关联进程内存](docs/PROCESS_MEMORY.md)、[Workshop闭环](docs/WORKSHOP.md)和[独立Skill安装](docs/SKILL_INSTALL.md)。80项自动检查通过；桌面持久Mod制品与Android临时WebView夹具分别验收。Android持久业务Mod/APK、重型trace/helper、其它设备和专有生命周期仍按目标条件验收；不会自动上传或安装缺失依赖。迁移与交付范围见[1.2说明](docs/RELEASE_1.2.md)。
+
+1.3统一汇总后续增补：Android隔离origin内的持久Mod重载、完整转发归属清理、只读生命周期与checkpoint、整包生命周期比较，以及Support直接生成Issue Report。89项检查通过；原1.2 ZIP保留。交付与条件范围见[1.3说明](docs/RELEASE_1.3.md)和[验证记录](docs/VALIDATION.md)。
+
+1.4统一汇总最终清单及[原生重建与真实游戏APK更新](docs/NATIVE_RECREATE.md)、[主游戏真实业务Mod更新](docs/BUSINESS_MOD_UPDATE.md)：原生对象身份、同签名版本更新、自有sentinel保留、DoLGameUI 2.0.3→2.1.0持久加载/源SHA/设置行为及重启后复验均经实机验证，91项检查通过。通用核心、可选Integration、Skill和目标自有配方分层保持独立；覆盖与条件范围见[1.4说明](docs/RELEASE_1.4.md)。旧1.3 ZIP/tag冻结，不回填新结果。
+
+1.5补齐后续[完整验收](docs/FINAL_ACCEPTANCE.md)：独立WebView-only、实际Perfetto/bugreport/helper、detached基线/重复动作/复采Journey及锁屏生命周期；96项Node检查通过。Skill第一原则是[复用成熟能力](.agents/skills/dol-dev-tools/SKILL.md)，优先组合Android CLI、Android Profiler、Chrome DevTools与目标项目构建部署，只做必要DoL适配。完整交付与条件范围见[1.5说明](docs/RELEASE_1.5.md)；旧1.4及更早包保持冻结。
 
 ## 可选：DoL Game UI 构建与桌面测试
 

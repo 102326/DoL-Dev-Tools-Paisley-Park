@@ -2,6 +2,7 @@
 
 2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](BLUEPRINT.md)；当前可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
 目标是面向整个 DoL Mod 生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP、ADB 构成 Live Device Access，支撑 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
+Android CLI看到真机画面；Chrome Inspect/CDP是Agent进入真实WebView内部的核心桥梁，提供限定范围DOM、CSS/Computed Style、Console/Exception、Network、Storage、Performance与页面状态观察，并连接可选项目Integration；ADB提供Android/App系统现场。Chrome DevTools也可用于交互式深入调查，CDP的定位不限于人工辅助入口。
 本文是能力边界。1.0交付诊断和证据基础，1.2能力实现与条件验收见[覆盖](CAPABILITY_COVERAGE.md)；蓝图、命令存在和业务通过分别判断。
 
 完成标准是能力闭环成立。1.5核心能力与约定场景已完成并验收；已实现但部分环境验证、可选Integration和后续按需覆盖不是当前产品未完成。Tools支持项目调查/验证问题，完整业务与存档回归由对应项目承担；状态定义见[正式收口](CLOSEOUT_1_5.md)。
