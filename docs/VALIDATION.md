@@ -1,5 +1,13 @@
 # DoL Dev Tools 验证记录
 
+## 1.2.0 统一封装验收：2026-10-05
+
+- 1.0/1.1基线保留，源码目录原地更新为1.2.0。只在全部已实现通用能力、自有开发闭环和Skill验收后统一封装；具体业务接入条件见[RELEASE_1.2](RELEASE_1.2.md)。未推送GitHub或上传任何现场资料。
+- 候选ZIP可读，111个跟踪源码逐项字节SHA与Git内容一致，111个本地Markdown链接存在且限定包内；不含artifacts/backups/Git/node_modules、机器位置记录、游戏/APK、私有媒体或存档。初次git archive受本机autocrlf转换影响字节校验失败，确认仅CRLF差异后仅对归档进程设core.autocrlf=false；不改全局配置，失败候选保留。
+- 独立含空格路径解压，不带相邻UI源码。从工作区外调用DoL-Dev.cmd --version返回1.2.0，--help可运行；解压包Integration/Skill行为5 passed / 0 failed / 0 skipped。复用有效的全仓80项、Python/视觉/Schema和实机证明，不为封装重新执行设备动作。
+- 解压包实际安装到新的隔离Skill目录，解析器确认指向该解压根/version1.2.0；静态Journey示例计划complete/exit0，只使用占位设备，不连接设备。本机正式Skill也已更新，旧安装移到独立备份目录，未产生重复发现副本；解析与quick_validate通过，宿主新回合自动发现仍分开判断。
+- 正式ZIP从记录本验收的最终Git revision生成并再次逐文件校验；验证过程只更新这份记录，未变更已测产品代码。ZIP内Git归档注释记录源commit，旁边SHA256文件供核对，旧包不覆盖。
+
 ## Skill 与持久 Mod 夹具验收：2026-10-05
 
 - 最终集成`npm test`：80 passed / 0 failed / 0 skipped。新增Skill检查实际运行独立安装的解析器，覆盖含空格路径、失效位置/显式恢复、防覆盖与无效来源无输出；没有新增Node依赖。
