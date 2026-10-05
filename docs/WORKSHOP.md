@@ -29,3 +29,17 @@ node scripts/dol-dev.cjs hitbox-overlay --input artifacts/workshop-001/before/hi
 ```
 
 SVG 只画结构地址/数值矩形和明确标注的尺寸、中心采样提示，不写原文或图片。它与截图分别审查，未声称矩形就是全部点击区域。目标项目真机 Build→Deploy→Verify 的证明仍须由对应源码、制品、加载结果和现场复验形成；此夹具只证明 Tools/Skill 可完成受控浏览器开发闭环。
+
+## 已授权 App 的临时 WebView 夹具
+
+另有 [verify-webview.cjs](../examples/workshop/verify-webview.cjs)，只部署仓库固定 [webview-fixture.js](../examples/workshop/webview-fixture.js) 的复制品；不是任意脚本 runner。
+
+```powershell
+node examples/workshop/verify-webview.cjs DEVICE_SERIAL YOUR.APP.PACKAGE artifacts/webview-workshop-001 --test-environment=yes
+```
+
+要求明确测试环境、唯一App PID/标准page与已有ADB。它执行一次显式wake，创建自己的动态转发；按复制项目固定build/deploy命令形成SHA一致的制品，再通过CDP加载到随机唯一ID的自有节点。源码20→48的修改在实际WebView矩形上验证；前后只保存自有scope CSS和公共manifest，不采整个页面画面、日志或业务数据。
+
+节点只有行内样式、pointer-events:none/aria-hidden，未注册监听器、使用游戏对象/存储或修改全局CSS。已有同ID节点或自有内容身份冲突时拒绝覆盖。结束在原session中只移除自有节点并确认不存在，再核对转发映射后清理自建端口；不明则partial，不自动重试或猜删。
+
+当前授权App的实际运行complete：20×20→48×48、制品SHA一致、节点确认不存在、转发移除；4份Manifest/Envelope标准Schema合格。这证明了真机WebView临时开发闭环，仍不是持久业务Mod安装、APK更新或游戏业务验收。

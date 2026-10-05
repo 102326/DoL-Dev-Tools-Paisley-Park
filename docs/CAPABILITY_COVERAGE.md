@@ -29,4 +29,6 @@
 
 [关联进程内存](PROCESS_MEMORY.md) 已使用系统公开packageList、user/UID和PID meminfo在真机验证。它补多进程观察，但不能将关联进程自动指定为某个page的renderer。
 
+固定自有WebView夹具还在授权App跑通真实源码→build/deploy→矩形复验与节点/转发清理；制品加载为临时自有DOM，不等于持久业务Mod/APK部署。只采自有scope CSS，不采页面正文或业务状态。
+
 最终统一封装前保留的门槛：真实目标项目构建/部署/加载证明与同场景真机复验，Skill最终安装/独立任务使用，源码包独立解压后的入口与资料排除检查。重型证据、helper、其它实体设备与专有recreate按可用条件分别记录；缺条件不伪造通过或扩大权限。开发中不发布新的ZIP/tag/version。

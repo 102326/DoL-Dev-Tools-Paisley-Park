@@ -15,6 +15,8 @@ Stage3标准验证进一步发现Workshop夹具漏写Evidence必需的privacy与
 
 完整蓝图的实现/外部/条件路径与剩余验收见 [CAPABILITY_COVERAGE](CAPABILITY_COVERAGE.md)。真实目标项目制品部署与真机业务复验、最终Skill安装/独立任务与独立解压包检查仍未宣称完成。
 
+后续在当前授权App执行固定自有WebView夹具：源码修改经其build/deploy形成SHA一致制品，实际矩形20×20→48×48。只采自有CSS scope；自有节点最终确认不存在，自建转发核对后移除，complete/exit0。未安装持久Mod/APK或操作业务存储。`node --check` 两个例子通过；4份真机夹具Manifest/Envelope标准验证通过，stage3/4累计42份及最新进程payload通过，6份旧夹具格式仍按预期拒绝。
+
 ## 完整能力开发工作区：2026-10-05（未重新封装）
 
 在现有目录继续开发，package 仍为 1.1.0 基线；按用户要求暂不新建 ZIP、版本 tag 或推送。已明确当前连接 App 可用于普通测试动作，真实存档/云数据删除覆盖仍排除。
