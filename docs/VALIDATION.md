@@ -4,6 +4,14 @@
 
 后续范围纠正：以下1.3及更早记录是通用产品阶段验收。已发行1.3包/tag保持原样，不回填后续结果；后续原生、真实游戏APK与业务Mod更新证明分别记录如下。
 
+## 1.4 统一交付检查
+
+- 最终范围对照原蓝图独立审查，没有需继续新增实现的产品功能阻断；目标原生/业务闭环证明见下节，条件环境与完整业务回归限制保留。
+- 最终1.4源码 `npm test` 91 passed、0 failed、0 skipped；source Skill与全局安装 quick_validate/resolve通过。Windows默认GBK导致validator首次解码失败，显式`python -X utf8`后成功；未改全局编码设置。
+- 旧Skill先移到独立本地备份，再安装1.4路由；定位到同一Tools目录。独立前向任务实际执行两次Evidence Compare和一次Issue Report，均complete/exit0；after与after-restart CSS无差异，同时明确仅CSS不足以证明重启或所有游戏/存档业务。
+- 候选包基于`bd98784255115376974c3b38ae2f1440aa7940e3`，127个跟踪文件逐字节与Git一致，157个本地Markdown链接存在且包内闭合；不含artifacts/backups/node_modules/Git、位置记录、APK/DEX/密钥/存档/媒体。
+- 含空格路径独立解压、工作区外`DoL-Dev.cmd --version`返回1.4.0；包内Integration/Skill/native contract/receipt七项检查通过。最终包只补这些检查记录，重新核对源码SHA与文档链接，复用有效行为结果。1.2/1.3 ZIP SHA仍与原冻结值一致，无上传。
+
 ## 后续源码：主游戏真实业务Mod更新
 
 - [目标业务配方](BUSINESS_MOD_UPDATE.md)在本轮独立离线Lyra副本的主游戏中持久安装DoLGameUI 2.0.3、更新2.1.0、重启后复验；business-run-1 complete/exit0。三阶段IndexDB来源、制品JS/CSS SHA、Mod/运行时版本均一致，真实设置打开/guarded click关闭通过；新进程session确认，sentinel保留。

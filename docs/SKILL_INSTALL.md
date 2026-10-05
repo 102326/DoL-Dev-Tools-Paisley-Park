@@ -16,3 +16,5 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools/scripts/resolve.cjs
 当前机器已实际安装，并由独立任务使用安装副本完成已有WebView前后Evidence的比较和本地报告；没有重新连接设备、上传或复制Tools。该证明覆盖显式使用与定位，不保证每个自然语言提示都会触发Skill，也不代替游戏业务验收。
 
 1.4已将原生和真实业务目标配方加入Skill路由，并保留证明边界。旧安装先移到独立本地备份，再向空目标安装；UTF-8模式quick_validate及resolver通过，定位1.4.0。原生/业务配方不是通用授权，不自动安装未知APK或修改另一项目的Runtime。
+
+1.4独立前向任务使用安装副本完成真实业务设置CSS的两次比较和重启后Evidence报告，三条CLI均complete/exit0。它将“采集完整”“CSS无差异”和“业务/存档正确”区分，未连接设备或把目录名当作重启证明。
