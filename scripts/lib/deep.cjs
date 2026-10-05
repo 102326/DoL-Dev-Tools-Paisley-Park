@@ -16,7 +16,7 @@ function fileInfo(filename, maximum) {
 async function perfetto(ctx) {
   if (ctx.options.sensitive !== true) throw new Error('Heavy capture requires explicit sensitive-data selection');
   const helper = process.env.DOL_PERFETTO_RECORDER;
-  if (!helper || !['record_android_trace','record_android_trace.py'].includes(path.basename(helper)) || !fs.statSync(helper).isFile()) {
+  if (!helper || !['record_android_trace','record_android_trace.py'].includes(path.basename(helper)) || !fs.existsSync(helper) || !fs.statSync(helper).isFile()) {
     return { collectorStatus: 'unsupported', reason: 'official-recorder-not-configured' };
   }
   const seconds = ctx.options.deepSeconds;
@@ -31,7 +31,7 @@ async function perfetto(ctx) {
   let failed = false;
   const adbPath = process.env.DOL_ADB;
   try {
-    await run(process.env.DOL_PYTHON || 'python', [helper,'--serial',ctx.options.serial,'--no-open','-t',`${seconds}s`,'-b','32mb','-a',ctx.options.package,'-o',filename,'sched','gfx','wm'], {
+    await run(process.env.DOL_PYTHON || 'python', [helper,'--serial',ctx.options.serial,'--user','--no-open','-t',`${seconds}s`,'-b','32mb','-a',ctx.options.package,'-o',filename,'sched','gfx','wm'], {
       timeout: (seconds + 30) * 1000, maxBuffer: 65536, windowsHide: true,
       env: { ...process.env, ...(adbPath ? { PATH: `${path.dirname(path.resolve(adbPath))}${path.delimiter}${process.env.PATH || ''}` } : {}) },
     });

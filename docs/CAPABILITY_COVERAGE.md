@@ -9,14 +9,14 @@
 | 8..9 Generic/CDP Automation | evidence/inspect；保留审阅后使用的evaluator | 显式page ID/唯一标准title；歧义不换目标；通用evaluator不冒充只读约束 |
 | 10..12 截图/录像/动画 | capture/record/animation-frames；visual-diff逐帧比较 | 真机静态与短录屏已有资料；受控取帧通过；完整DoL动画仍按场景验收 |
 | 13..17 Action/Recorder/Replay/Plan | action/journey/journey-record；有限动作/等待/checkpoint | 离线与选定真机场景证明；Recorder输入省略、候选需审阅补全；非自动生成业务测试 |
-| 18..19 原生/生命周期 | Android CLI既有交互；native-layout；app-lifecycle/diff；launch/restart/home/back/wake/rotate；[目标原生配方](NATIVE_RECREATE.md) | 系统退出元信息固定user/UID/boot/PID；wake/后台返回通过，旧restart partial保留；独立Lyra副本同进程内Activity及实际WebView实例重建已验证。独立WebView-only重建、未知App原生入口和凭据解锁仍不推断，Page.reload不能替代 |
+| 18..19 原生/生命周期 | Android CLI既有交互；native-layout；app-lifecycle/diff；launch/restart/home/back/wake/lock/unlock/rotate；[目标原生配方](NATIVE_RECREATE.md) | helper真机通过；系统退出元信息固定user/UID/boot/PID；屏幕关闭与本人认证后返回通过，旧restart partial保留；独立Lyra副本Activity连同WebView及同Activity内独立WebView替换分别验证。未知App原生入口和凭据认证不推断，Page.reload不能替代 |
 | 20..24 DOM/CSS | scoped snapshot/diff、白名单computed style | scoped/截断/结构地址已验证；不是稳定DOM身份或全局镜像 |
 | 25..27 Golden/Visual/Region | 明确参考文件与visual-diff可选region | 比较可运行；同尺寸不足以证明字体/场景/平台等条件一致；不自动更新Golden |
 | 28..32 Event/Mutation/Observer/Ownership/Selector | timeline、可选instrumentation、dom-inspect | 有限窗口/新Observer创建与方法/清理；已有实例与callback闭包未知；作者归属需公开Integration |
 | 33..36 Storage/Console/Error | storage-snapshot/diff、Console元信息、timeline错误种类 | 无记录/输入/错误正文；遗漏与未知分别记录；摘要不足以判断根因时停止推断 |
 | 37..40 Network/HAR/高级工具 | Network摘要JSON是等价网络证据；network-scenario；外部代理按问题选用 | 无path/header/body/原始error；受控离线与恢复通过；不能保证异常终止恢复；代理不成为依赖 |
-| 41..46 Android性能/热电状态 | logcat、gfxinfo/meminfo、perf-series、perf --deep/bugreport、thermal/battery | 普通真机采样已验证；完整trace/dumpstate与设备标志语义仍需具体调查；severity不自动等于CPU降频根因 |
-| 47 Leak Probe | 数值/leak-probe + Journey重复动作/checkpoint +可选Observer窗口 | heap/DOM/listener可读；当前真机detached不完整与清理未知保留partial；浏览器通过不扩成Android证明；不强制GC/泄漏判决 |
+| 41..46 Android性能/热电状态 | logcat、gfxinfo/meminfo、perf-series、perf --deep/bugreport、thermal/battery；复用android-profiler分析 | 普通采样、3秒trace录制与外部schema/目标调度解析、bugreport ZIP完整性均经真机验证；设备帧标志及具体性能根因仍按问题调查；severity不自动等于CPU降频 |
+| 47 Leak Probe | 数值/leak-probe + Journey重复动作/checkpoint +可选Observer窗口 | 旧4MiB超限partial保留；64MiB单请求修复后真机detached、三次真实设置打开关闭/复采Journey及清理通过，截断投影为下界；不强制GC/泄漏判决 |
 | 48 Performance Timeline | evidence-timeline对齐Action/collector与有锚的target事件 | 传播遗漏、未知锚、误差与longtask start；不把native累积gfx还原为逐帧事件。完整原生关联依赖trace/目标事件 |
 | 49..52 Provider/Environment/Mod | environment/profile/snapshot/diff | 真机Provider与公开Mod报告可读；未知enabled/loadOrder为null，reportedIndex非实际执行顺序 |
 | 53..54 兼容/设备/视口矩阵 | matrix显式目标/preconditions；viewport-matrix | 单设备选定用例与浏览器三宽度通过；metrics不模拟其它实体设备；失败停止，无自动切换配置/安装 |
@@ -35,6 +35,6 @@
 
 1.2发布后新增Android隔离origin持久Mod夹具：完整游戏前空白存储预检，固定父document/context，真实IndexDB部署、自有源SHA/版本与新frame尺寸复验complete；公共格式及清理确认通过。它补充Android隔离持久加载的证明，主游戏业务Mod/APK、App重启和原生WebView recreate仍按各自接入条件判断。新增能力统一汇入[1.3](RELEASE_1.3.md)，原1.2 ZIP保留。
 
-统一封装验收包括通用源码检查、独立Skill安装/任务使用、自有Workshop源码/制品/加载/复验，以及源码包独立解压后的入口与资料排除检查。持久Mod桌面与临时节点Android证明分别完成，不能合并成Android持久Mod/APK证明。真实目标业务的构建/部署/同场景真机验收属于该项目接入条件；重型证据、helper、其它实体设备与专有recreate也分别登记，缺条件不伪造通过或扩大权限。1.2发布证明见[VALIDATION](VALIDATION.md)。
+统一封装验收包括通用源码检查、独立Skill安装/任务使用、自有Workshop源码/制品/加载/复验，以及源码包独立解压后的入口与资料排除检查。持久Mod桌面与临时节点Android证明分别登记；后续真实业务Mod/APK与专有recreate、重型证据/helper的独立证明见[最终验收](FINAL_ACCEPTANCE.md)。未知项目/其它实体设备依自身条件核对，缺条件不伪造通过或扩大权限。历史发布证明见[VALIDATION](VALIDATION.md)。
 
-1.4收口补充：上述历史夹具不能证明的原生/API业务部分已有新的独立目标记录：真实游戏APK更新、Activity连同实际WebView重建、主游戏真实DoLGameUI发行更新与App重启后的设置复验均complete。独立范围审查对照原文未发现还需新增实现的产品功能阻断；未知项目接入、其它设备、重型敏感采集/helper及完整游戏/存档回归仍依各自问题判断。通用能力、可选Integration与公共Skill统一交付，旧发行包不改。
+1.4历史阶段记录已证明真实游戏APK更新、Activity连同实际WebView重建、主游戏真实DoLGameUI发行更新与App重启后的设置复验。后续清单发现独立WebView-only、重型/helper实机证明及锁屏生命周期仍需补齐；这些新结果不回填旧发行包，见[最终验收](FINAL_ACCEPTANCE.md)。Skill优先组合已验证Android CLI/Profiler、Chrome DevTools与目标项目流程，不另造对应系统。

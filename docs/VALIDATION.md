@@ -1,5 +1,20 @@
 # DoL Dev Tools 验证记录
 
+## 当前完整能力验收：2026-10-06
+
+当前状态以[最终验收](FINAL_ACCEPTANCE.md)为准。下方1.0..1.4为历史阶段记录，其中“尚未运行/未安装/未证明”只描述当时结果；旧ZIP/tag和失败收据不回填。
+
+- 新源码`npm test`：96 passed、0 failed、0 skipped，覆盖CDP逐请求上限、Journey第三参数传递、重型helper stale路径、detached安全错误、WebView收据边界及锁屏安全分支。
+- Python Backup/Visual三项由已有带Pillow运行时通过，Schema一项由匹配现有jsonschema/RFC3339环境通过。首次合跑格式项跳过，查明现有rpds二进制对应Python3.14、捆绑运行时为3.12；未重装依赖，改由匹配解释器执行格式测试并确认无skip。四项分别实际执行。
+- 新公开证据26份Draft2020-12/RFC3339验证通过，18份制品SHA与incident关联通过；包括重型三profile、WebView四CSS、独立detached、完整Journey与Support。Support无trace/bugreport二进制。
+- 实机3秒Perfetto/bugreport/Android CLI helper全部complete/exit0；复用官方Trace Processor和Python标准库分别验证实际trace schema/目标调度与ZIP CRC/main entry。Support无重型二进制。
+- 独立WebView-only 51204 complete/exit0：同Activity/process实际对象替换、旧token拒绝、业务源SHA/设置行为、实际App重启后复验；原App及已有连接保留。
+- Detached 64MiB单请求及实机15步Journey complete：基线/三次设置打开关闭/复采/Observer窗口；投影截断明确下界。最初不可见侧栏按钮预检失败保留，后续仅增加临时自有按钮调用已知公开方法，未修改UI项目源码或把该结果当作侧栏修复。
+- lock确认屏幕关闭；secure/未知keyguard的unlock按设计停止，用户本人认证后新返回收据complete、页面就绪、临时节点清理/已有映射/原App前台均确认。初始partial保留，人工认证不冒充自动解锁。无凭据/真实存档/云端操作。
+- 1.5全局Skill已保留旧备份后向空目标安装；UTF-8 quick_validate及resolver通过。独立前向请求实际路由installed dol-dev-tools→android-profiler→perfetto-sql，用已经缓存且SHA匹配pin的官方解析器查询既有trace，schema/query exit0、70,038调度记录、非零error stats为0；trace与manifest SHA/大小一致、查询后未改文件。未连接设备、重新录制、下载/安装工具或另写解析器，明确不推出游戏性能/泄漏结论。
+- 独立只读覆盖审查核对原始蓝图、实际模块/CLI与当前文档，未发现具体未实施的约定产品路径；原生交互复用Android CLI、scrcpy人工启动、矩阵由调用者选定配置、凭据由本人认证均保持明确边界。没有把其它设备或所有存档/业务扩写成当前通过范围。搜索发现的可靠第三方Skill同样可进入候选，但须审源码/权限/数据处理并做小范围验证，不能凭排名直接安装。
+
+
 ## 1.3 功能收口：2026-10-06
 
 后续范围纠正：以下1.3及更早记录是通用产品阶段验收。已发行1.3包/tag保持原样，不回填后续结果；后续原生、真实游戏APK与业务Mod更新证明分别记录如下。

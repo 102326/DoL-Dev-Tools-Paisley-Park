@@ -8,6 +8,16 @@ function system(thermal,battery){
       temperatureC:temperature!==null&&temperature>=-1000&&temperature<=2000?temperature/10:null,
       voltageMv:voltage>0&&voltage<20000?voltage:null,chargingStatus:[1,2,3,4,5].includes(status)?status:null}};
 }
+function failureReason(error){
+  if(error?.code==='INVALID_DETACHED_METADATA')return 'invalid-metadata';
+  return ({CDP_COMMAND_REJECTED:'command-rejected',CDP_RESPONSE_TOO_LARGE:'response-too-large',CDP_INVALID_RESPONSE:'invalid-response',ETIMEDOUT:'timeout',CDP_CONNECTION_CLOSED:'connection-closed'})[error?.code]||'unknown';
+}
+function failureCode(error){return Number.isFinite(error?.protocolCode)?error.protocolCode:undefined}
+function recordCleanupFailure(result,stage,error){
+  result.cleanupWarning=true;
+  result.cleanupFailures ||= [];
+  result.cleanupFailures.push({stage,reason:failureReason(error),...(failureCode(error)!==undefined?{protocolCode:failureCode(error)}:{})});
+}
 async function web(client,options={}){
   if(Object.keys(options).some(k=>k!=='detached')||options.detached!==undefined&&typeof options.detached!=='boolean')throw Error('Invalid WebView probe options');
   const result={status:'unsupported',metrics:{},detachedNodes:'not measured',observers:'not measured',leakDiagnosis:'not-inferred'};
@@ -23,21 +33,23 @@ async function web(client,options={}){
     result.capabilities={heap:observed(result.metrics.JSHeapUsedSize),domNodes:observed(result.nodes)||observed(result.metrics.Nodes),listeners:observed(result.jsEventListeners)||observed(result.metrics.JSEventListeners)};
     result.status=Object.values(result.capabilities).every(Boolean)?'available':Object.values(result.capabilities).some(Boolean)?'partial':'unsupported';
   }catch{/* Raw protocol content omitted. */}
-  finally{if(enabled)try{await client.send('Performance.disable')}catch{result.cleanupWarning=true}}
+  finally{if(enabled)try{await client.send('Performance.disable')}catch(error){recordCleanupFailure(result,'Performance.disable',error)}}
   if(options.detached){
-    let enabled=false;result.detachedNodes={status:'unsupported',countsAreProtocolObservations:true,treeContent:'omitted',explicitCollectGarbage:'not called; internal protocol effects unspecified'};
+    let enabled=false,stage='DOM.enable';result.detachedNodes={status:'unsupported',failureStage:null,failureReason:null,countsAreProtocolObservations:true,treeContent:'omitted',explicitCollectGarbage:'not called; internal protocol effects unspecified'};
     try{
       enabled=true;await client.send('DOM.enable');
-      const data=await client.send('DOM.getDetachedDomNodes');
-      if(!Array.isArray(data.detachedNodes))throw Error('Invalid detached metadata');
+      stage='DOM.getDetachedDomNodes';
+      const data=await client.send('DOM.getDetachedDomNodes',{}, {maxResponseBytes:64*1024*1024});
+      stage='validate-detached-metadata';
+      if(!Array.isArray(data.detachedNodes))throw Object.assign(Error(),{code:'INVALID_DETACHED_METADATA'});
       let retainedNodeIdsObserved=0,truncated=data.detachedNodes.length>200;
       for(const item of data.detachedNodes.slice(0,200)){
-        if(!Array.isArray(item.retainedNodeIds)||item.retainedNodeIds.slice(0,1000).some(id=>!Number.isSafeInteger(id)||id<0))throw Error('Invalid retained ids');
+        if(!Array.isArray(item.retainedNodeIds)||item.retainedNodeIds.slice(0,1000).some(id=>!Number.isSafeInteger(id)||id<0))throw Object.assign(Error(),{code:'INVALID_DETACHED_METADATA'});
         retainedNodeIdsObserved+=Math.min(1000,item.retainedNodeIds.length);truncated ||= item.retainedNodeIds.length>1000;
       }
       Object.assign(result.detachedNodes,{status:'available',treesReported:data.detachedNodes.length,retainedNodeIdsObserved,truncated,countsMayBeLowerBound:truncated,countBasis:'retainedNodeIds entries; not JS wrapper object count'});
-    }catch{/* Experimental protocol availability and oversized raw response are conditional. */}
-    finally{if(enabled)try{await client.send('DOM.disable')}catch{result.cleanupWarning=true}}
+    }catch(error){result.detachedNodes.failureStage=stage;result.detachedNodes.failureReason=failureReason(error);if(failureCode(error)!==undefined)result.detachedNodes.failureProtocolCode=failureCode(error)}
+    finally{if(enabled)try{await client.send('DOM.disable')}catch(error){recordCleanupFailure(result,'DOM.disable',error)}}
   }
   return result;
 }

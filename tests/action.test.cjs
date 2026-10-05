@@ -222,3 +222,27 @@ test('rotation registers cleanup before writes; cleanup restores both keys witho
   assert.equal(partial.settings.accelerometer_rotation, '1');
   assert.equal(partial.settings.user_rotation, '0');
 });
+
+test('screen lifecycle confirms power state and never dismisses a secure or unknown keyguard', async () => {
+ const policy=(showing,secure,user='10')=>`KeyguardServiceDelegate\n showing=${showing}\n userId=${user}\n${secure===undefined?'':` secure=${secure}\n`} Looper state:\n`;
+ const asleep=fixture({'shell dumpsys power':'mWakefulness=Asleep'});
+ assert.equal((await execute(asleep.ctx,{type:'lock'})).screenOff,true);
+ assert.ok(asleep.calls.some(a=>a.join(' ')==='shell input keyevent KEYCODE_SLEEP'));
+ const unconfirmed=fixture({'shell dumpsys power':'mWakefulness=Awake'});
+ await assert.rejects(execute(unconfirmed.ctx,{type:'lock'}),/unconfirmed/);
+ for(const p of [policy(true,true),policy(true,undefined),policy(false,false,'0'),'unknown']){
+  const f=fixture({'shell dumpsys window policy':p});
+  await assert.rejects(execute(f.ctx,{type:'unlock'}));
+  assert.equal(f.calls.some(a=>a.includes('KEYCODE_WAKEUP')||a.includes('dismiss-keyguard')),false);
+ }
+ const f=fixture({'shell dumpsys power':'mWakefulness=Awake'});const original=f.ctx.adb;let showing=true;
+ f.ctx.adb=async(...args)=>{
+  if(args.join(' ')==='shell dumpsys window policy')return Buffer.from(policy(showing,false));
+  if(args.includes('dismiss-keyguard'))showing=false;return original(...args);
+ };
+ assert.equal((await execute(f.ctx,{type:'unlock'})).keyguardShowing,false);
+ assert.ok(f.calls.some(a=>a.join(' ')==='shell wm dismiss-keyguard'));
+ const clear=fixture({'shell dumpsys window policy':policy(false,undefined),'shell dumpsys power':'mWakefulness=Awake'});
+ await execute(clear.ctx,{type:'unlock'});
+ assert.equal(clear.calls.some(a=>a.includes('dismiss-keyguard')),false);
+});

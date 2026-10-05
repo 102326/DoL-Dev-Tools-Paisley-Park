@@ -36,7 +36,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ("base-apk", "out", "jdk", "tools", "android-jar", "key", "password-file"):
         p.add_argument("--" + name, type=pathlib.Path, required=True)
-    p.add_argument("--version", type=int, choices=(1, 2), required=True)
+    p.add_argument("--version", type=int, choices=(1, 2, 3, 4), required=True)
     a = p.parse_args()
     if sha(a.base_apk.read_bytes()) != BASE_SHA:
         raise ValueError("Baseline APK identity mismatch")
@@ -94,8 +94,10 @@ def main():
     src = a.out / "stub-source"
     definitions = {
         "com/vrelnir/dol/MainActivity.java": "package com.vrelnir.dol; public class MainActivity extends org.apache.cordova.CordovaActivity { public void onCreate(android.os.Bundle b) {} }",
-        "org/apache/cordova/CordovaActivity.java": "package org.apache.cordova; public class CordovaActivity extends android.app.Activity { protected CordovaWebView appView; }",
-        "org/apache/cordova/CordovaWebView.java": "package org.apache.cordova; public interface CordovaWebView { android.view.View getView(); }",
+        "androidx/appcompat/app/AppCompatActivity.java": "package androidx.appcompat.app; public class AppCompatActivity extends android.app.Activity {}",
+        "org/apache/cordova/CordovaActivity.java": "package org.apache.cordova; public class CordovaActivity extends androidx.appcompat.app.AppCompatActivity { protected CordovaWebView appView; protected CordovaInterfaceImpl cordovaInterface; protected String launchUrl; protected boolean keepRunning; protected void init() {} public void loadUrl(String url) {} protected CordovaInterfaceImpl makeCordovaInterface() { return null; } public Object onMessage(String id,Object data) { return null; } }",
+        "org/apache/cordova/CordovaInterfaceImpl.java": "package org.apache.cordova; public class CordovaInterfaceImpl { protected java.util.concurrent.ExecutorService threadPool; public CordovaInterfaceImpl(androidx.appcompat.app.AppCompatActivity activity) {} public Object onMessage(String id,Object data) { return null; } }",
+        "org/apache/cordova/CordovaWebView.java": "package org.apache.cordova; public interface CordovaWebView { android.view.View getView(); void handlePause(boolean keepRunning); void handleStop(); void handleDestroy(); void handleStart(); void handleResume(boolean keepRunning); }",
     }
     for file, body in definitions.items():
         dest = src / file
@@ -113,7 +115,7 @@ def main():
         *sorted(classes.rglob("*.class")))
     metadata = run(a.tools / "sdk/android-15/dexdump.exe", "-f", dex / "classes.dex")
     descriptors = re.findall(r"Class descriptor\s+: '([^']+)'", metadata)
-    expected = ["Lorg/doldevtools/validation/ProbeActivity$SnapshotBridge;", "Lorg/doldevtools/validation/ProbeActivity;"]
+    expected = ["Lorg/doldevtools/validation/ProbeActivity$SnapshotBridge;", "Lorg/doldevtools/validation/ProbeActivity$ViewInterface;", "Lorg/doldevtools/validation/ProbeActivity$1;", "Lorg/doldevtools/validation/ProbeActivity;"]
     if sorted(descriptors) != sorted(expected):
         raise ValueError("Unexpected DEX classes; compile stubs must not ship")
     rebuilt, unsigned, aligned, signed = (a.out / f"{name}.apk" for name in ("rebuilt", "unsigned", "aligned", "validation"))

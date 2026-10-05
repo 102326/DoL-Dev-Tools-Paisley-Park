@@ -26,6 +26,8 @@ Action 文件是单个对象，例如 `{"type":"web-focus","selector":"#your-tes
 | input | value ≤256，限定 ASCII 字母数字、空格与 `.,_@:+-`；空格编码 %s，不允许任意远端 shell 字符；中文 WebView 输入使用 web-input |
 | back / home | 无额外字段；当前目标 App 持有前台与窗口焦点 |
 | wake | 唤醒明确测试设备屏幕，仍验证当前用户安装的目标 App；不输入凭据、不解除锁屏，不保证 App 获得焦点，也不自动重新休眠 |
+| lock | 前台目标核对后发送 KEYCODE_SLEEP，并确认 Asleep/Dozing；仅证明屏幕关闭，不保证系统已强制凭据锁定。不自动恢复屏幕；后续明确 unlock 或由本人认证 |
+| unlock | 当前用户 keyguard 核对后唤醒；仅当显示中的 keyguard 明确 secure=false 才使用系统 dismiss-keyguard。secure=true/未知时停止，由本人手动认证；不读/输入凭据，不改锁屏配置。确认 Awake、showing=false；App 焦点另查 |
 | launch / restart | 当前 Android 用户安装的明确 package；resolve-activity 精确绑定 package/user；restart 只 force-stop/start，不清数据；检查 start Status: ok |
 | rotate | degrees=0/90/180/270；临时系统旋转设置，在 Journey 清理中恢复。App 可能锁定方向，写设置成功不等于画面实际旋转 |
 
@@ -73,5 +75,7 @@ node scripts/dol-dev.cjs matrix --file reviewed-matrix.json --out artifacts/matr
 可选 preconditions 包括 androidVersion/appVersion 与 requiredMods 名称数组，执行前用通用 Environment 检查。公开 reported Mod 列表只证明该列表报告了名称，不能证明全部导入库存、enabled 或实际执行顺序。原输入包含 serial，保持本地；结果省略 serial。plan不连接设备、不检查现场前提，任一计划生成失败不会报告planned成功。
 
 home→launch表达后台返回；restart表达强制停止后重新启动，不清数据。用例必须按实际加载时间明确安排等待/检查点。launch结果只证明Android启动命令成功；页面就绪和业务状态另外验证。当前已实测后台返回；重启命令完成后的页面等待未在所选时限通过，保留为partial，不自动重试制造通过。
+
+锁屏生命周期可显式安排lock→unlock→页面就绪检查。凭据锁屏设备由本人认证后开始新的返回复验，不能把人工认证伪装成自动解锁成功。未识别的系统keyguard格式会停止；不从simSecure、trust状态或屏幕关闭推断凭据安全性。具体实机记录见[最终验收](FINAL_ACCEPTANCE.md)。
 
 更多实体设备/版本/组合须逐个明确选择；标签、单设备运行或浏览器模拟均不代表完整兼容矩阵。构建部署闭环仍在开发清单。

@@ -1,4 +1,5 @@
 // Shared local CDP transport; target selection stays explicit and unambiguous.
+const DEFAULT_MAX_RESPONSE_BYTES=4*1024*1024,ABSOLUTE_MAX_RESPONSE_BYTES=64*1024*1024;
 async function targets(endpoint, timeoutMs = 10000) {
   const url = new URL(endpoint);
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || url.protocol !== 'http:' || url.username || url.password) {
@@ -22,40 +23,68 @@ async function connect(endpoint, timeoutMs = 10000, onEvent = () => {}, targetId
   const socket = new WebSocket(socketUrl);
   let nextId = 0, closed = false;
   const pending = new Map();
-  function close() {
+  function codedError(code, protocolCode) {
+    const error = new Error(code);
+    error.code = code;
+    if (Number.isFinite(protocolCode)) error.protocolCode = protocolCode;
+    return error;
+  }
+  function responseLimit(method,options){
+    if(options===undefined)return DEFAULT_MAX_RESPONSE_BYTES;
+    if(!options||typeof options!=='object'||Array.isArray(options)||Reflect.ownKeys(options).length!==1||!Object.hasOwn(options,'maxResponseBytes'))throw codedError('CDP_INVALID_RESPONSE_LIMIT');
+    const limit=options.maxResponseBytes;
+    if(!Number.isSafeInteger(limit)||limit<1||limit>ABSOLUTE_MAX_RESPONSE_BYTES||limit>DEFAULT_MAX_RESPONSE_BYTES&&method!=='DOM.getDetachedDomNodes')throw codedError('CDP_INVALID_RESPONSE_LIMIT');
+    return limit;
+  }
+  function close(reason = codedError('CDP_CONNECTION_CLOSED')) {
     if (closed) return;
     closed = true;
-    for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP connection closed before result')); }
+    for (const item of pending.values()) { clearTimeout(item.timer); item.reject(reason); }
     pending.clear(); socket.close();
   }
   try {
     await new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('CDP connection timeout')), timeoutMs);
       socket.onopen = () => { clearTimeout(timer); resolve(); };
-      socket.onerror = () => { clearTimeout(timer); reject(new Error('CDP connection failed')); };
-      socket.onclose = () => { clearTimeout(timer); reject(new Error('CDP connection closed before result')); };
+      socket.onerror = () => { clearTimeout(timer); reject(codedError('CDP_CONNECTION_CLOSED')); };
+      socket.onclose = () => { clearTimeout(timer); reject(codedError('CDP_CONNECTION_CLOSED')); };
     });
   } catch (error) { close(); throw error; }
-  socket.onerror = close;
-  socket.onclose = close;
+  socket.onerror = () => close();
+  socket.onclose = () => close();
   socket.onmessage = event => {
+    if (typeof event.data !== 'string') return close(codedError('CDP_INVALID_RESPONSE'));
+    const responseBytes=Buffer.byteLength(event.data,'utf8');
+    const absolutePendingLimit=Math.max(DEFAULT_MAX_RESPONSE_BYTES,...Array.from(pending.values(),item=>item.maxResponseBytes));
+    if (responseBytes > absolutePendingLimit) return close(codedError('CDP_RESPONSE_TOO_LARGE'));
+    let message;
     try {
-      if (typeof event.data !== 'string' || event.data.length > 4 * 1024 * 1024) throw new Error('Oversized CDP response');
-      const message = JSON.parse(event.data);
-      if (!message.id) { onEvent(message.method, message.params); return; }
-      const item = pending.get(message.id);
-      if (!item) return;
-      pending.delete(message.id); clearTimeout(item.timer);
-      if (message.error) item.reject(new Error('CDP command rejected'));
-      else item.resolve(message.result);
-    } catch { close(); }
+      message = JSON.parse(event.data);
+    } catch { return close(codedError('CDP_INVALID_RESPONSE')); }
+    if (!message || typeof message !== 'object' || Array.isArray(message)) return close(codedError('CDP_INVALID_RESPONSE'));
+    if (message.id === undefined) {
+      if(responseBytes>DEFAULT_MAX_RESPONSE_BYTES)return close(codedError('CDP_RESPONSE_TOO_LARGE'));
+      if (typeof message.method !== 'string') return close(codedError('CDP_INVALID_RESPONSE'));
+      try { onEvent(message.method, message.params); } catch { close(); }
+      return;
+    }
+    if (!Number.isSafeInteger(message.id) || message.id < 1) return close(codedError('CDP_INVALID_RESPONSE'));
+    const item = pending.get(message.id);
+    if(responseBytes>(item?.maxResponseBytes??DEFAULT_MAX_RESPONSE_BYTES))return close(codedError('CDP_RESPONSE_TOO_LARGE'));
+    if (!item) return;
+    if (!message.error && !Object.hasOwn(message, 'result')) return close(codedError('CDP_INVALID_RESPONSE'));
+    pending.delete(message.id); clearTimeout(item.timer);
+    if (message.error) item.reject(codedError('CDP_COMMAND_REJECTED', message.error.code));
+    else item.resolve(message.result);
   };
-  function send(method, params = {}) {
-    if (closed) return Promise.reject(new Error('CDP connection closed'));
+  function send(method, params = {}, options) {
+    let maxResponseBytes;
+    try{maxResponseBytes=responseLimit(method,options)}catch(error){return Promise.reject(error)}
+    if (closed) return Promise.reject(codedError('CDP_CONNECTION_CLOSED'));
     return new Promise((resolve, reject) => {
       const id = ++nextId;
       const timer = setTimeout(() => { pending.delete(id); reject(Object.assign(new Error('CDP evaluation timeout'), { code: 'ETIMEDOUT' })); }, timeoutMs);
-      pending.set(id, { resolve, reject, timer });
+      pending.set(id, { resolve, reject, timer, maxResponseBytes });
       try { socket.send(JSON.stringify({ id, method, params })); }
       catch { pending.delete(id); clearTimeout(timer); reject(new Error('CDP send failed')); }
     });

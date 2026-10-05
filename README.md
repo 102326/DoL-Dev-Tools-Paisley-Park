@@ -1,4 +1,4 @@
-# DoL Dev Tools 1.4
+# DoL Dev Tools 1.5
 
 面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP 与 ADB 构成 Live Device Access；长期开发闭环是 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 
@@ -13,6 +13,8 @@
 1.3统一汇总后续增补：Android隔离origin内的持久Mod重载、完整转发归属清理、只读生命周期与checkpoint、整包生命周期比较，以及Support直接生成Issue Report。89项检查通过；原1.2 ZIP保留。交付与条件范围见[1.3说明](docs/RELEASE_1.3.md)和[验证记录](docs/VALIDATION.md)。
 
 1.4统一汇总最终清单及[原生重建与真实游戏APK更新](docs/NATIVE_RECREATE.md)、[主游戏真实业务Mod更新](docs/BUSINESS_MOD_UPDATE.md)：原生对象身份、同签名版本更新、自有sentinel保留、DoLGameUI 2.0.3→2.1.0持久加载/源SHA/设置行为及重启后复验均经实机验证，91项检查通过。通用核心、可选Integration、Skill和目标自有配方分层保持独立；覆盖与条件范围见[1.4说明](docs/RELEASE_1.4.md)。旧1.3 ZIP/tag冻结，不回填新结果。
+
+1.5补齐后续[完整验收](docs/FINAL_ACCEPTANCE.md)：独立WebView-only、实际Perfetto/bugreport/helper、detached基线/重复动作/复采Journey及锁屏生命周期；96项Node检查通过。Skill第一原则是[复用成熟能力](.agents/skills/dol-dev-tools/SKILL.md)，优先组合Android CLI、Android Profiler、Chrome DevTools与目标项目构建部署，只做必要DoL适配。完整交付与条件范围见[1.5说明](docs/RELEASE_1.5.md)；旧1.4及更早包保持冻结。
 
 ## 开始使用
 

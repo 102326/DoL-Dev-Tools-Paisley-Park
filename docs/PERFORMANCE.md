@@ -23,13 +23,13 @@ node scripts/dol-dev.cjs leak-probe --endpoint http://127.0.0.1:PORT --out artif
 node scripts/dol-dev.cjs leak-probe --endpoint http://127.0.0.1:PORT --out artifacts/leak-detached.json --detached yes
 ```
 
-协议`DOM.getDetachedDomNodes`返回detached树及retainedNodeIds。工具只投影树数量和最多200树/每树1000个retainedNodeIds的计数，不保存/访问treeNode正文；原始协议响应仍在本地运输层收到，已有4MiB上限，超过会断开并如实记unsupported/cleanup未确认。retainedNodeIds数量不是JS wrapper对象数量，截断计数可能只是下界。方法实验性及provider差异明确unsupported，不能用0替代缺失。[CDP DOM协议](https://chromedevtools.github.io/devtools-protocol/tot/DOM/)
+协议`DOM.getDetachedDomNodes`返回detached树及retainedNodeIds。工具只投影树数量和最多200树/每树1000个retainedNodeIds的计数，不保存/访问treeNode正文；原始协议响应在本地运输层收到。普通响应/事件上限4MiB；只有该显式请求可用64MiB上限，Journey也传递该选项。超限断链，如实记录response-too-large与清理是否确认；协议拒绝/超时/断链使用固定安全原因，不保存原始错误或响应。retainedNodeIds数量不是JS wrapper对象数量，截断计数可能只是下界。方法实验性及provider差异明确unsupported，不能用0替代缺失。[CDP DOM协议](https://chromedevtools.github.io/devtools-protocol/tot/DOM/)
 
 派发enable前登记尝试，finally在原连接独立尝试disable；丢失enable响应也尝试清理。清理失败保留warning，Journey保存制品后停止，不报成功。工具不发送collectGarbage或取heap snapshot；内部协议/v8行为和采样扰动未保证。匹配Chromium分支使用heap profiler的detached wrapper观察并构造树，不能以协议观察证明泄漏根因。[Chromium 8037 InspectorDOMAgent](https://chromium.googlesource.com/chromium/src/+/refs/branch-heads/8037/third_party/blink/renderer/core/inspector/inspector_dom_agent.cc)
 
 Timeline显式observerInstrumentation窗口可报告新建且成功instrument的Observer数量与末端WeakRef存活数量，不枚举已有Observer。保存原始bound/arrow方法可能间接保留实例，报告明确instrumentationMayRetainInstances；未强制GC，aliveAtEnd不是无扰动存活或泄漏判断。完整renderer所有权、heap保留链和callback闭包由目标项目公开Integration或Chrome/Perfetto调查，不把generic数字猜成某个Mod的所有权。
 
-当前真机普通WebView数字available；detached请求unsupported且DOM.disable未确认，Journey保留partial并停止复采。浏览器/VM成功不是该WebView实验协议通过。
+早期真机detached响应超过4MiB，DOM.disable未确认，partial保留。修复后当前Android独立detached采样available、DOM.disable确认；真实Journey基线→三次设置打开关闭→复采及短Observer窗口全部complete，运输和临时节点清理分别记录。计数截断保留下界标记，不据此判定泄漏。详情见[最终验收](FINAL_ACCEPTANCE.md)。
 
 休眠时 CDP 可能暂停，黑屏截图也不能当作 App 黑屏；核对设备 power 与焦点。`wake` 是显式 Action，采集器不偷偷唤醒设备或重启 App。
 

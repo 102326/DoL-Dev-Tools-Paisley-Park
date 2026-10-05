@@ -113,7 +113,7 @@ async function run(options, loaded, overrides = {}) {
     client = await (overrides.connect || connect)(ctx.endpoint,Math.min(15000,Math.max(1,deadline-Date.now())),capture.onEvent,options.targetId||null);
     assertActive();
     ctx.client = { async evaluate(source) { assertActive(); const result=await client.evaluate(source);assertActive();return result; },
-      async send(method,params) { assertActive();const result=await client.send(method,params);assertActive();return result; } };
+      async send(method,params,settings) { assertActive();const result=await client.send(method,params,settings);assertActive();return result; } };
     ctx.channels={};
     for(const domain of ['Runtime','Network']) { try {await ctx.client.send(domain+'.enable');ctx.channels[domain]='available'} catch {assertActive();ctx.channels[domain]='unsupported'} }
     ctx.capture=capture;return ctx.client;

@@ -3,7 +3,7 @@ const { android } = require('./collectors.cjs');
 
 const fields = {
   'web-click': ['selector'], 'web-focus': ['selector'], 'web-input': ['selector', 'value'],
-  tap: ['x', 'y'], input: ['value'], back: [], home: [], launch: [], restart: [], wake: [], rotate: ['degrees'],
+  tap: ['x', 'y'], input: ['value'], back: [], home: [], launch: [], restart: [], wake: [], lock: [], unlock: [], rotate: ['degrees'],
 };
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 function sanitized(error, message) {
@@ -100,6 +100,15 @@ async function execute(ctx, action) {
     if (!/^Status:\s*ok\s*$/mi.test(output)) throw new Error('Launch failed');
   };
   const launch = async () => start(await launcher());
+  const keyguard = async () => {
+    const output = (await adb('shell', 'dumpsys', 'window', 'policy')).toString();
+    const block = output.split(/\bKeyguardServiceDelegate\s*\r?\n/)[1]?.split(/\n\s*Looper state:/)[0];
+    const showing = block?.match(/^\s*showing=(true|false)\s*$/m)?.[1];
+    const user = block?.match(/^\s*userId=(\d+)\s*$/m)?.[1];
+    const secure = block?.match(/^\s*secure=(true|false)\s*$/m)?.[1];
+    if (!showing || user !== userId) throw Error('Keyguard state unavailable');
+    return { showing: showing === 'true', secure: secure === undefined ? null : secure === 'true' };
+  };
 
   if (action.type.startsWith('web-')) {
     await foreground();
@@ -114,6 +123,28 @@ async function execute(ctx, action) {
   } else if (action.type === 'wake') {
     ctx.markSideEffect?.();
     await adb('shell','input','keyevent','KEYCODE_WAKEUP');
+  } else if (action.type === 'lock') {
+    await foreground();
+    ctx.markSideEffect?.();
+    await adb('shell', 'input', 'keyevent', 'KEYCODE_SLEEP');
+    // Screen-off is a lifecycle action, not a guarantee that credential locking has occurred.
+    const power = (await adb('shell', 'dumpsys', 'power')).toString();
+    if (!/^\s*mWakefulness=(Asleep|Dozing|DozingSuspend)\s*$/m.test(power)) throw Error('Screen-off unconfirmed');
+    return { status: 'completed', type: 'lock', screenOff: true, credentialLock: 'not inferred', restoration: 'explicit unlock or manual authentication' };
+  } else if (action.type === 'unlock') {
+    let state = await keyguard();
+    if (state.showing && state.secure !== false) throw Error('Manual device authentication required or keyguard security unknown');
+    ctx.markSideEffect?.();
+    await adb('shell', 'input', 'keyevent', 'KEYCODE_WAKEUP');
+    state = await keyguard();
+    if (state.showing) {
+      if (state.secure !== false) throw Error('Manual device authentication required or keyguard security unknown');
+      ctx.markSideEffect?.();
+      await adb('shell', 'wm', 'dismiss-keyguard');
+    }
+    if ((await keyguard()).showing) throw Error('Keyguard dismissal unconfirmed');
+    if (!/^\s*mWakefulness=Awake\s*$/m.test((await adb('shell', 'dumpsys', 'power')).toString())) throw Error('Wake unconfirmed');
+    return { status: 'completed', type: 'unlock', awake: true, keyguardShowing: false, appForeground: 'not inferred' };
   } else if (action.type === 'launch') await launch();
   else if (action.type === 'restart') {
     const component = await launcher();

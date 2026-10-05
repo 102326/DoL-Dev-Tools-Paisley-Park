@@ -18,3 +18,5 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools/scripts/resolve.cjs
 1.4已将原生和真实业务目标配方加入Skill路由，并保留证明边界。旧安装先移到独立本地备份，再向空目标安装；UTF-8模式quick_validate及resolver通过，定位1.4.0。原生/业务配方不是通用授权，不自动安装未知APK或修改另一项目的Runtime。
 
 1.4独立前向任务使用安装副本完成真实业务设置CSS的两次比较和重启后Evidence报告，三条CLI均complete/exit0。它将“采集完整”“CSS无差异”和“业务/存档正确”区分，未连接设备或把目录名当作重启证明。
+
+1.5安装已保留旧副本备份，UTF-8 quick_validate与resolve通过，定位1.5.0。新增“不重复造轮子”路由，优先复用可用android-cli/android-profiler、Chrome DevTools与目标项目既有流程；不把这些Skill装进Tools、不复制工具实现、不要求缺失时自动安装。独立前向验证使用已有trace与现有分析工具，结果见[VALIDATION](VALIDATION.md)。

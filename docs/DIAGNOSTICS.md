@@ -1,4 +1,4 @@
-# DoL Dev Tools 1.2：诊断工作流
+# DoL Dev Tools 1.5：诊断工作流
 
 基于 1.0 重置版继续增强。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
@@ -23,7 +23,7 @@ Node.js 22.12+ 为必需。ADB 不在 PATH 时设 `DOL_ADB`，其值是已有 ad
 其他可选工具环境变量为 `DOL_ANDROID_CLI / DOL_PYTHON / DOL_SCRCPY`。所有设备命令绑定显式 serial 和 package，不猜目标。
 Doctor 检查可选工具缺失不阻断必需环境；没有设备或显式设备不匹配会标记 partial，不自动选另一台设备。
 Doctor 只查询工具版本、设备、App、socket、run-as 可用性、已有转发、Perfetto 与输出目录权限；run-as 只执行 id，不读取私有数据。不创建转发、不修环境、不安装辅助 APK。
-当前 CDP 选择恰好一个标题为 `Degrees of Lewdity` 的 page；不同标题或多个匹配页明确失败，不猜目标。自动转发只支持已验证主进程的 `webview_devtools_remote_PID` socket；其它命名需人工调查。
+默认CDP选择恰好一个标题为`Degrees of Lewdity`的page；可用`--target-id`明确选择inspect确认的page，不自动猜目标。转发绑定已验证主PID的标准/browser WebView socket；多个候选需显式`--webview-socket`，未知命名保留不支持，详见下方目标选择。
 需要现有 CDP 转发时可给 Doctor `--endpoint http://127.0.0.1:PORT`；独立端点的 App 关联标为未验证，不自动创建转发来让检测通过。
 scrcpy 只检测，不启动；人工需要时自行选择设备运行 scrcpy，并用 Chrome 的 `chrome://inspect/#devices` 调查。工具不替代 DevTools。
 
@@ -110,9 +110,10 @@ Support 永远不投影 trace / bugreport；数据仅本地，不提供上传、
 
 Perfetto 包装已有的官方 `record_android_trace`，通过 `DOL_PERFETTO_RECORDER` 指定经过检查的本地脚本，`DOL_PYTHON` 指定 Python。
 不自动下载；缺 recorder 为 unsupported。预检 Android API >=29 和系统 Perfetto，避免官方 helper 在旧平台自动 sideload；不传 root / sideload / no-guardrails。
-固定参数为显式 serial、1..30 秒、32 MB buffer、目标 App 和 sched/gfx/wm，`--no-open` 禁止自动打开或提供 viewer。
+固定参数为显式 serial、`--user`禁止helper尝试root、1..30 秒、32 MB buffer、目标 App 和 sched/gfx/wm，`--no-open` 禁止自动打开或提供 viewer。
 保留 helper SHA、采集参数和 trace 的 SHA / 字节数；文件非空不代表 trace schema 或内容正确，尚未接入 trace processor。
 helper 运行超时为采集时长 +30 秒；系统 trace 本身可能包含设备线程与其他进程信息，须人工检查隐私。
+已有选定真机3秒trace与完整bugreport验收；前者另行复用android-profiler的官方Trace Processor确认schema、约2.9785秒跨度和目标进程调度数据，后者用标准库验证ZIP CRC/main entry。核心仍不内置解析器，traceParsed=false与外部验证收据分开。Support不复制两种二进制，见[最终验收](FINAL_ACCEPTANCE.md)。
 官方参数核对来源：[record_android_trace](https://github.com/google/perfetto/blob/main/tools/record_android_trace)。不同本地脚本版本须核对参数，不把该链接当作已安装版本证明。
 
 bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、接受文件大小上限 512 MiB，ZIP 头检查不等于 archive 完整性检查。
@@ -122,7 +123,7 @@ bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、
 
 ## Skill 与当前边界
 
-仓库内 [.agents/skills/dol-dev-tools/SKILL.md](../.agents/skills/dol-dev-tools/SKILL.md) 提供五种诊断模式和升级条件；未安装到全局，不宣称本会话已经自动发现它。
+仓库内 [.agents/skills/dol-dev-tools/SKILL.md](../.agents/skills/dol-dev-tools/SKILL.md) 路由诊断、复现和开发闭环，支持[独立安装](SKILL_INSTALL.md)。本机已有安装及独立任务使用证明，自动发现仍取决于宿主和实际请求。
 Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live Site First、证据先行、来源分离、最小充分诊断；测试环境允许任务范围内的主动复现，具体操作边界见 [架构](ARCHITECTURE.md)。
 1.2提供独立有限Action/Journey，不自动遍历控件或抓取网络正文。保留Android CLI独立入口，原始布局不直接进入脱敏包；helper运行/安装需明确选择。
 独立Action/Journey可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect/Doctor/Evidence保持观察语义。真实存档、正式用户数据和凭据的破坏性操作需对应显式授权。范围见[BLUEPRINT](BLUEPRINT.md)，无后台服务、数据库或云端遥测。

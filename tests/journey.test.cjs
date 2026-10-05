@@ -49,6 +49,21 @@ test('Journey preserves incomplete requested timeline and stops subsequent actio
  const report=await journey.run(options(path.join(root,'timeline-failure')),load([{type:'checkpoint',scope:'#x',capture:['timeline'],timelineMs:20},{type:'home'}]),{adb:f.adb,connect:async()=>({close(){},send:async()=>({}),evaluate:async()=>({capabilities:{cleanupConflicts:1}})}),executeAction:async()=>actions++});
  assert.equal(report.status,'partial');assert.equal(report.steps[0].status,'failed');assert.equal(actions,0);assert.ok(fs.existsSync(path.join(root,'timeline-failure/step-0-timeline.json')));
 });
+
+test('Journey detached checkpoint forwards its bounded CDP response option and continues after cleanup',async t=>{
+ const root=fixture(t),f=adbFixture(),calls=[];let actions=0;
+ const report=await journey.run(options(path.join(root,'detached')),load([{type:'checkpoint',capture:['leak-probe']},{type:'home'}]),{
+  adb:f.adb,connect:async()=>({close(){},send:async(method,params,settings)=>{
+   calls.push({method,settings});
+   if(method==='Performance.getMetrics')return{metrics:[{name:'JSHeapUsedSize',value:10}]};
+   if(method==='Memory.getDOMCounters')return{nodes:20,documents:1,jsEventListeners:2};
+   if(method==='DOM.getDetachedDomNodes')return{detachedNodes:[]};return{};
+  }}),executeAction:async()=>actions++
+ });
+ assert.equal(report.status,'complete');assert.equal(actions,1);
+ assert.equal(calls.find(c=>c.method==='DOM.getDetachedDomNodes').settings.maxResponseBytes,64*1024*1024);
+ assert.ok(calls.find(c=>c.method==='DOM.disable'));
+});
 test('Journey deadline prevents subsequent side effects and marks the dispatched result unknown',async t=>{
   const root=fixture(t),f=adbFixture();let count=0;
   const loaded=load([{type:'home'},{type:'home'}]);loaded.plan.timeoutMs=30;

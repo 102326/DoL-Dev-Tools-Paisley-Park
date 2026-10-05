@@ -1,6 +1,6 @@
 {
   "name": "dol-dev-tools",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "license": "MIT",
   "engines": { "node": ">=22.12.0" },

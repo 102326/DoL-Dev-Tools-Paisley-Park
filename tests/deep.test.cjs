@@ -28,6 +28,10 @@ test('Perfetto refuses sensitive capture before ADB, reports missing helper, and
   await assert.rejects(perfetto(noTouch), /explicit sensitive-data selection/);
   assert.equal(adbCalls, 0);
 
+  process.env.DOL_PERFETTO_RECORDER = path.join(root, 'missing', 'record_android_trace');
+  assert.equal((await perfetto(context(root, { adb: noTouch.adb }))).collectorStatus, 'unsupported');
+  assert.equal(adbCalls, 0);
+
   delete process.env.DOL_PERFETTO_RECORDER;
   const missing = await perfetto(context(root, { adb: async () => { adbCalls++; } }));
   assert.equal(missing.collectorStatus, 'unsupported');
@@ -57,7 +61,7 @@ test('Perfetto invokes only bounded categories with explicit serial and preserve
   assert.equal(result.collectorStatus, 'completed');
   assert.equal(args[0], 'python');
   assert.equal(args[1], helper);
-  assert.deepEqual(args.slice(2), ['--serial','device-1','--no-open','-t','7s','-b','32mb','-a','com.example.game','-o',path.join(output,'trace.perfetto-trace'),'sched','gfx','wm']);
+  assert.deepEqual(args.slice(2), ['--serial','device-1','--user','--no-open','-t','7s','-b','32mb','-a','com.example.game','-o',path.join(output,'trace.perfetto-trace'),'sched','gfx','wm']);
   assert.equal(config.timeout, 37000);
   assert.equal(config.maxBuffer, 65536);
   assert.deepEqual(adbCalls, [['shell','getprop','ro.build.version.sdk'],['shell','which','perfetto']]);

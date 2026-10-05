@@ -12,6 +12,22 @@ test('performance probes allowlist numeric metadata and leave no Performance dom
   const failedEnable=[];const uncertain=await web({send:async method=>{failedEnable.push(method);if(method.endsWith('.enable'))throw Error('enable response lost');if(method==='DOM.disable')throw Error('connection lost');return{}}},{detached:true});assert.ok(failedEnable.includes('Performance.disable'));assert.ok(failedEnable.includes('DOM.disable'));assert.equal(uncertain.cleanupWarning,true);
   const clockOnly=await web({send:async method=>method==='Performance.getMetrics'?{metrics:[{name:'Timestamp',value:10}]}:{}});assert.equal(clockOnly.status,'unsupported');assert.equal(clockOnly.capabilities.heap,false);
 });
+test('detached probe records sanitized failure and cleanup stages',async()=>{
+  let detachedResponseLimit;
+  const data=await web({send:async(method,_params,options)=>{
+    if(method==='Performance.getMetrics')return{metrics:[{name:'JSHeapUsedSize',value:10}]};
+    if(method==='Memory.getDOMCounters')return{nodes:20,documents:1,jsEventListeners:2};
+    if(method==='DOM.getDetachedDomNodes'){detachedResponseLimit=options?.maxResponseBytes;throw Object.assign(Error('private protocol body'),{code:'CDP_COMMAND_REJECTED',protocolCode:-32000})}
+    if(method==='DOM.disable')throw Object.assign(Error('private cleanup body'),{code:'CDP_CONNECTION_CLOSED'});
+    return{};
+  }},{detached:true});
+  assert.equal(data.detachedNodes.failureStage,'DOM.getDetachedDomNodes');
+  assert.equal(data.detachedNodes.failureReason,'command-rejected');
+  assert.equal(data.detachedNodes.failureProtocolCode,-32000);
+  assert.equal(detachedResponseLimit,64*1024*1024);
+  assert.deepEqual(data.cleanupFailures,[{stage:'DOM.disable',reason:'connection-closed'}]);
+  assert.equal(JSON.stringify(data).includes('private'),false);
+});
 test('native repeated samples stop on changed process and retain successful samples',async()=>{
   let pids=0;
   const ctx={options:{samples:3,intervalMs:0,package:'com.example.game'},appPid:'123',adb:async(...args)=>{

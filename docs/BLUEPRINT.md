@@ -38,7 +38,7 @@ Android CLI、Chrome Inspect / CDP、ADB 共同构成 Live Device Access：设�
 
 后续业务验收：[真实Mod配方](BUSINESS_MOD_UPDATE.md)在该副本主游戏完成DoLGameUI 2.0.3→2.1.0更新与App重启后的IndexDB持久加载、JS/CSS SHA及设置开关复验，complete/exit0。原App与已有连接保留，未修改UI项目源码；当前继续最终清单与Skill收口，尚未重新封装。
 
-最终清单审查未发现新增实现阻断，已按[1.4范围](RELEASE_1.4.md)统一收口；Skill入口同步目标自有配方和证明边界。具体环境/权限及未知项目接口仍按条件判断，完整工具能力不代表所有业务或设备都已通过。
+1.4是历史阶段交付。后续继续补齐独立WebView-only重建、重型采集/helper实机验收、detached Journey与锁屏生命周期；新结果及剩余条件见[最终验收](FINAL_ACCEPTANCE.md)。Skill优先复用成熟Android/Profiler/Chrome诊断路径，DoL只做必要薄封装。具体环境/权限及未知项目接口仍按条件判断，完整工具能力不代表所有业务或设备都已通过。
 
 当前开发中已补 CSS Snapshot/Diff、Environment/Mod Snapshot/Diff、Provider、显式 CDP target/socket 选择，以及固定 Action primitives 和 Journey plan/replay/checkpoint。原版页面结构/Mod 元信息保持中立；已明确当前连接 App 可作为测试环境，普通复现动作可主动执行，真实存档和云数据删除/覆盖仍排除。
 

@@ -11,4 +11,4 @@ node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACK
 
 固定运行参数为 `--no-metrics layout --device=... --flat --full --no-idle`，15秒/2MiB 输出上限。投影最多200节点，记录 class、resourceId 哈希、text/contentDesc 是否存在、矩形、有限 interaction/state 和 off-screen；原始文本、描述、stderr、resourceId 明文不写入包。布局是当前设备窗口，可能包含系统 UI；指定 package 不证明每个节点属于该 App。flat 不重建父子关系，截断不冒充完整。
 
-离线 runner 与隐私/边界检查已通过。本轮没有执行辅助 APK 或宣称真机原生布局通过。需要对真实原生控件操作时，先核对当前画面和控件，用已安装 Android CLI 的现有交互路径，并保留目标、动作和复验；不要通过布局摘要猜测正文或执行任意坐标操作。
+离线 runner 与隐私/边界检查及选定Android真机helper采集已通过；本次flat输出2节点、无截断，仅证明该次窗口采集，不代表所有系统弹窗/权限页。需要对真实原生控件操作时，先核对当前画面和控件，优先复用android-cli Skill与现有交互路径，保留目标、动作和复验；不要通过布局摘要猜测正文或执行任意坐标操作。见[最终验收](FINAL_ACCEPTANCE.md)。

@@ -15,6 +15,8 @@
 Soft & Wet 是最早的重度使用案例之一和一个可选 Integration。其 UI Runtime 留在 DoL-Game-UI，只管 UI；不成为 Tools 的核心假设。MapleBirch、ModHub 和其它项目享有相同接入地位。
 
 工具包继续独立维护。已有可用脚本保留，统一 CLI 逐步包装它们，不为统一入口重写全部脚本。
+第一原则是不重复造轮子：优先组合已验证、可靠且边界清楚的Skill与工具。Android CLI承担原生屏幕/布局/交互，Android Profiler承担官方录制与trace/SQL分析，Chrome Inspect/DevTools承担深入WebView诊断，项目自身负责build/deploy。Tools只补DoL目标绑定、脱敏证据与实际缺失的有限能力；复用方法而不照搬项目假设，不另建UIAutomator、Trace Processor、Viewer或游戏Runtime。外部能力缺失时保留明确条件，不自动安装替代系统。
+候选不限于上述官方Skill；搜索发现的第三方Skill也可参考。先审实际源码、来源与维护、复制许可、依赖/权限和数据处理，再做最小代表性验证。能直接复用就直接用，需要项目适配才做薄封装，也可只吸收诊断方法；搜索排名/流行度不代表可靠，不把发现动作当作安装或外部操作授权。
 Skill随源码放在`.agents/skills/dol-dev-tools/`，1.2提供显式[独立安装](SKILL_INSTALL.md)，复用同一份Tools。
 
 ## 通用核心与可选 Integration
