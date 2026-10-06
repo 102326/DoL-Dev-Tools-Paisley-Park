@@ -1,6 +1,6 @@
-# DoL Dev Tools: Paisley Park 2.0.0：诊断工作流
+# DoL Dev Tools: Paisley Park 2.0.1：诊断工作流
 
-2.0.0统一主题与入口，复用1.5既有能力和证据。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
+2.0.1澄清实战决策指引，沿用2.0.0运行时与1.5既有能力和证据。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
 
 仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools-paisley-park`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。
@@ -24,6 +24,7 @@ Doctor的ADB `unavailable / ENOENT`优先检查已有SDK/platform-tools位置；
 其他可选工具环境变量为 `DOL_ANDROID_CLI / DOL_PYTHON / DOL_SCRCPY`。所有设备命令绑定显式 serial 和 package，不猜目标。
 Doctor 检查可选工具缺失不阻断必需环境；没有设备或显式设备不匹配会标记 partial，不自动选另一台设备。
 Doctor 只查询工具版本、设备、App、socket、run-as 可用性、已有转发、Perfetto 与输出目录权限；run-as 只执行 id，不读取私有数据。不创建转发、不修环境、不安装辅助 APK。
+Doctor的`complete`只表示其必需检查满足；App进程与WebView socket检查可能仍不可用。进入CDP前分别核对这些检查，不能仅凭不可用推断崩溃或调试被关闭。是否恢复运行现场由本轮Done决定，纯源码任务不为补覆盖而启动App。
 默认CDP选择恰好一个标题为`Degrees of Lewdity`的page；可用`--target-id`明确选择inspect确认的page，不自动猜目标。转发绑定已验证主PID的标准/browser WebView socket；多个候选需显式`--webview-socket`，未知命名保留不支持，详见下方目标选择。
 需要现有 CDP 转发时可给 Doctor `--endpoint http://127.0.0.1:PORT`；独立端点的 App 关联标为未验证，不自动创建转发来让检测通过。
 scrcpy 只检测，不启动；人工需要时自行选择设备运行 scrcpy，并用 Chrome 的 `chrome://inspect/#devices` 调查。工具不替代 DevTools。
@@ -89,6 +90,7 @@ node scripts/dol-dev.cjs dom-diff --before artifacts/dom-001.json --after artifa
 
 独立 endpoint 的 App 关联未验证；调用者先核对对应 socket / 页面。基础只描述结构与 data 属性名，不读取 HTML、正文、input 值或 data 值；范围与截断明确记录。
 Diff 使用结构地址，插入节点可能导致地址移动，不能证明节点身份或自动决定兼容失败。
+兼容契约先区分原生、第三方和UI自有节点及明确允许的例外；由目标项目定义identity、handler、父子/兄弟关系的稳定要求。UI自有组件重建或约定的有限移动不自动构成失败。精确对象/事件断言留在项目测试或审阅后的直接探针中，不扩大通用Snapshot字段。
 
 ```powershell
 node scripts/dol-dev.cjs visual-diff --golden golden.png --current current.png --out artifacts/visual-001 --tolerance 8

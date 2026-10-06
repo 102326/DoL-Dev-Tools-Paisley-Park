@@ -4,6 +4,8 @@
 
 | 历史版本 | 记录 |
 | --- | --- |
+| 2.0.1 / v2.0.1 | [实战经验指引补丁](RELEASE_2.0.1.md) |
+| 2.0.0 / v2.0.0 | [Paisley Park品牌重置](RELEASE_2.0.0.md) |
 | 1.0 / v1.0.0 | [通用诊断重置](RELEASE_1.0.md) |
 | 1.1 / v1.1.0 | [Integration Contract 1](INTEGRATIONS.md)、[历史验证](VALIDATION.md) |
 | 1.2 / v1.2.0 | [有限复现与独立Skill](RELEASE_1.2.md) |

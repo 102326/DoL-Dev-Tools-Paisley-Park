@@ -10,9 +10,9 @@
 
 Generic Diagnostics不依赖Soft & Wet、MapleBirch、ModHub或任何特定Runtime；Integration只作可选增强。内置采集遵守限定范围与脱敏策略，现场观察和项目解释分别记录。
 
-**当前版本：2.0.0（Paisley Park 重置版）。** 核心能力沿用已完成并验收的1.5路线。 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
+**当前版本：2.0.1（实战经验指引补丁）。** 核心能力沿用已完成并验收的1.5路线。 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
 
-本次统一产品名、CLI、Skill与交付包，标准能力优先并保留直接工具出口。见[2.0.0发布与迁移](docs/RELEASE_2.0.0.md)。[GitHub仓库](https://github.com/102326/DoL-Dev-Tools-Paisley-Park)提供源码与发布包；旧版tag与验收记录保留。
+本次澄清Doctor就绪判断、DOM ownership契约及标准工具/直接工具/Journey的选择，运行时与采集格式沿用2.0.0。见[2.0.1发布说明](docs/RELEASE_2.0.1.md)；品牌重置与迁移见[2.0.0](docs/RELEASE_2.0.0.md)。[GitHub仓库](https://github.com/102326/DoL-Dev-Tools-Paisley-Park)提供源码与发布包；旧版tag与验收记录保留。
 
 ## 最快开始
 

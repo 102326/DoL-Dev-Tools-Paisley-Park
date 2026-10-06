@@ -1,5 +1,15 @@
 # DoL Dev Tools: Paisley Park — 验证记录
 
+## 2.0.1实战经验指引封装：2026-10-06
+
+范围见[2.0.1发布说明](RELEASE_2.0.1.md)：只吸收通用决策经验并更新Skill、AGENTS、诊断文档和发布入口；运行时代码、Collector、Integration与Schema相对2.0.0没有变化。项目特例与原始资料留在本地，CLI帮助可发现性及其它覆盖只是候选，不在本轮实施。
+
+`node --test tests/install-skill.test.cjs`通过1项，验证独立安装、工作区外解析、生成链接/显示元数据、拒绝覆盖与失效位置停止；源Skill UTF-8 quick_validate通过，CLI --version和--help显示2.0.1及统一产品名。既有反馈复核与指引检查结果复用，不重新执行项目业务或设备动作。
+
+发布封装核对Git原文字节、CRC、文件集合、文档链接与私有资料排除；将新包安装到独立2.0.1目录，备份原Skill后生成新安装，核对文档、resolver及Windows入口。实际提交、SHA、安装结果、远端tag/资产/CI和发布状态保存在本地交付收据。仓库CI按既有配置运行，不能冒充新增真机证明；旧tag、Release与冻结ZIP保持原样。
+
+Not validated：新指引的后续实战收益、更多实体环境及候选路径。Known limitations保持原采样/unknown边界；本轮不增加运行时或业务覆盖。源/安装Skill与当前发行包应一致，不把仅更新旧安装文字当成新版本安装。
+
 ## 2.0.0命名与发布一致性：2026-10-06
 
 本轮范围见[重置版说明](RELEASE_2.0.0.md)：统一显示名、包/Skill标识、主启动器、当前文档和公开仓库/资产；保留历史tag及旧验收记录。历史条目与原始提案保留当时名称，见[HISTORY](HISTORY.md)。Schema稳定URN、环境变量和夹具内部标识保留语义。
