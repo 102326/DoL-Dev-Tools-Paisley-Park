@@ -1,0 +1,23 @@
+{
+  "id": "dol051213-native-bedroom-first-entry-v1",
+  "before": "Orphanage Intro",
+  "receiving": {
+    "passage": "Bedroom",
+    "sha256": "e8e33a839c2ff0d1786645843b9731a7a85da4a26e5f420fe09c9cb47ac705fc",
+    "tags": "[]"
+  },
+  "widgets": {
+    "bedclotheson": "95df28c426073031d66cde4a96d33c370af76f19ff3121fde8136c6a36d5cfe7",
+    "home_effects": "007541433026c545375bac95ad9cf07fb3f7ebb0c0fc680f90e84ba1886b9c8a",
+    "getTarget": "a3b38dd894a76400f3802b76e0a799ffc96dc9b29c233ec8dacb0c97f53d9af1",
+    "wardrobeSelection": "f86225415532c98e211d6c44bc494d29ef07e8dda8f80f4f7f6797274df07ede",
+    "updateWornClothingLocation": "a443eae5ab2125bbea4bd90ad990834dc908dbcb677da0b07da590a6727b14a8"
+  },
+  "handlerSha256": {
+    "bedclotheson": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "home_effects": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "getTarget": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "wardrobeSelection": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "updateWornClothingLocation": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+  }
+}

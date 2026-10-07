@@ -1,0 +1,2386 @@
+{
+  "id": "dol051213-bedroom-v2",
+  "terminalReviewed": true,
+  "flags": {
+    "autosaveDisabled": true,
+    "ironmanmode": false,
+    "engineAutosave": [
+      "autosave"
+    ],
+    "updateStoryElements": true,
+    "specialPassages": [
+      {
+        "name": "PassageReady",
+        "exists": false
+      },
+      {
+        "name": "PassageDone",
+        "exists": false
+      },
+      {
+        "name": "StoryDisplayTitle",
+        "exists": false
+      },
+      {
+        "name": "StoryBanner",
+        "exists": false
+      },
+      {
+        "name": "StorySubtitle",
+        "exists": false
+      },
+      {
+        "name": "StoryAuthor",
+        "exists": false
+      },
+      {
+        "name": "StoryMenu",
+        "exists": false
+      }
+    ],
+    "mapleOnStart": false,
+    "maplePreInit": true,
+    "mapleMainInit": true,
+    "mapleStoredVersion": "5.2.3",
+    "mapleModuleVersion": "5.2.3",
+    "mapleAfters": [],
+    "gateKeys": [
+      "notice"
+    ],
+    "appendKeys": [],
+    "noticeActive": false,
+    "noticePassages": [
+      "Start"
+    ],
+    "noticeAction": "undefined",
+    "noticeOutput": "maplebirchFrameworkNotice",
+    "zoneShape": [
+      {
+        "name": "Header",
+        "entries": []
+      },
+      {
+        "name": "Footer",
+        "entries": [
+          "CE_CheatExtendedVersion"
+        ]
+      },
+      {
+        "name": "CustomLinkZone",
+        "entries": []
+      },
+      {
+        "name": "CaptionDescription",
+        "entries": []
+      },
+      {
+        "name": "CaptionAfterDescription",
+        "entries": [
+          "CEstatebox"
+        ]
+      },
+      {
+        "name": "StatusBar",
+        "entries": []
+      },
+      {
+        "name": "MenuBig",
+        "entries": [
+          "CE_originalCheatButton"
+        ]
+      },
+      {
+        "name": "MenuSmall",
+        "entries": []
+      }
+    ],
+    "phaseShape": [
+      {
+        "name": "passageinit",
+        "count": 6
+      },
+      {
+        "name": "passagestart",
+        "count": 17
+      },
+      {
+        "name": "passagerender",
+        "count": 4
+      },
+      {
+        "name": "passagedisplay",
+        "count": 17
+      },
+      {
+        "name": "passageend",
+        "count": 15
+      },
+      {
+        "name": "passageoverride",
+        "count": 0
+      },
+      {
+        "name": "historyupdate",
+        "count": 1
+      },
+      {
+        "name": "window.historyupdate",
+        "count": 0
+      }
+    ],
+    "moduleShape": [
+      {
+        "name": "dynamic",
+        "state": 1
+      },
+      {
+        "name": "tool",
+        "state": 1
+      },
+      {
+        "name": "audio",
+        "state": 1
+      },
+      {
+        "name": "var",
+        "state": 1
+      },
+      {
+        "name": "char",
+        "state": 1
+      },
+      {
+        "name": "npc",
+        "state": 1
+      },
+      {
+        "name": "combat",
+        "state": 1
+      }
+    ],
+    "mapleEvents": [
+      {
+        "phase": "passageinit",
+        "count": 0
+      },
+      {
+        "phase": "passagestart",
+        "count": 0
+      },
+      {
+        "phase": "passagerender",
+        "count": 0
+      },
+      {
+        "phase": "passagedisplay",
+        "count": 2
+      },
+      {
+        "phase": "passageend",
+        "count": 3
+      }
+    ],
+    "tableShape": [
+      "ConflictChecker",
+      "ImageLoaderHook",
+      "ImageLoaderHookCore",
+      "ModLoader DoL ImageLoaderHook",
+      "ModSubUiAngularJs",
+      "BeautySelectorAddon",
+      "ImageLoaderHook2BeautySelectorAddon",
+      "TweeReplacerLinker",
+      "TweeReplacer",
+      "I18nTweeReplacer",
+      "ReplacePatcher",
+      "TweePrefixPostfixAddon",
+      "Diff3WayMerge",
+      "DoLTimeWrapperAddon",
+      "ModdedClothesAddon",
+      "ModdedHairAddon",
+      "ModdedFeatsAddon",
+      "ModuleCssReplacer",
+      "maplebirch",
+      "cheatExtended",
+      "optimization",
+      "特姿拓展"
+    ],
+    "sc2Count": 7,
+    "addonInitialized": [
+      {
+        "name": "ModdedClothesAddon",
+        "isInit": true
+      },
+      {
+        "name": "ModdedHairAddon",
+        "isInit": true
+      },
+      {
+        "name": "ModdedFeatsAddon",
+        "isInit": true
+      }
+    ],
+    "ceToggle": 0,
+    "wearOutfit": "none",
+    "possessed": false,
+    "passout": false,
+    "combat": false,
+    "replayScene": false
+  },
+  "functions": [
+    {
+      "name": "jq.trigger",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "trigger",
+      "sha256": "9a91266e71a441ca84753b9d243e490598aa4404fe668d1bf99245c6b04e4ca3"
+    },
+    {
+      "name": "footer.processText",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "processText",
+      "sha256": "2193b511f92ca4ee25bbdfd710e69d58669dfc45af137d4c4524df69984642d2"
+    },
+    {
+      "name": "header.processText",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "processText",
+      "sha256": "2193b511f92ca4ee25bbdfd710e69d58669dfc45af137d4c4524df69984642d2"
+    },
+    {
+      "name": "config.onProcess",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "e0464a3045d863029a614edb85b938ac7cb84bb0cb225efc0b34cf0a098b3bf4"
+    },
+    {
+      "name": "config.navigation",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "c88594269262d3c2b25fdc3df9ef5853a0b2ba1c4060aa571a968c285ac8e6ac"
+    },
+    {
+      "name": "engine.isIdle",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "value",
+      "sha256": "d35dfa9c129b9ad3542dc000f464f652f4a64ef7fb834d7e128fd3c529f5682b"
+    },
+    {
+      "name": "uibar.update",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "uiBarUpdate",
+      "sha256": "b72975c61c0e231a3f5726ae396eb726396e77580871364553325c444f7e79b3"
+    },
+    {
+      "name": "macro.maplebirchHeader",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "macro.maplebirchFooter",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "macro.CE_CheatExtendedVersion",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "handler",
+      "sha256": "f5bb1728f5db4e14ba58f35421cf5fb49db8bfb7fd41aad469013774a84919ca"
+    },
+    {
+      "name": "macro.CEstatebox",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "handler",
+      "sha256": "5c4f84613adc8d147a733f096274650d3bc66db65fab4e2c973eb2323b6039e0"
+    },
+    {
+      "name": "macro.CE_sideBarIcon",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "macro.CE_originalCheatButton",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "macro.cleanupOnWardrobeExit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "macro.pass",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "7c1fc29be04476ded27867dd2485d769794fef00d0f5598c6a6b4afbd5d155f8"
+    },
+    {
+      "name": "event.passageinit.0",
+      "mode": "event",
+      "meta": {
+        "phase": "passageinit",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "745037b73779d5fd198b79c09419762ca33b08091c2ebb9bba9001073cc5c6a0"
+    },
+    {
+      "name": "event.passageinit.1",
+      "mode": "event",
+      "meta": {
+        "phase": "passageinit",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "24278b599c208b6355a0f5992422b29b33fbd28729e3782899f847be4232ba9f"
+    },
+    {
+      "name": "event.passageinit.2",
+      "mode": "event",
+      "meta": {
+        "phase": "passageinit",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "07ec0a16b747ed5e0e2431bc5577ef082d98bb1a1b73ba04e65f820475d5bf69"
+    },
+    {
+      "name": "event.passageinit.3",
+      "mode": "event",
+      "meta": {
+        "phase": "passageinit",
+        "namespace": "modHubBeautyImages",
+        "selector": null
+      },
+      "functionName": "modHubBindBeautyImageGuard",
+      "sha256": "546fe50f34e337305cec8d776492613cafab39ecef297b7432d2971236d38b70"
+    },
+    {
+      "name": "event.passageinit.4",
+      "mode": "event",
+      "meta": {
+        "phase": "passageinit",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "7a3b6783bc40d5e25f42da20b218f6a8549354c511f3dcb7be93737993465118"
+    },
+    {
+      "name": "event.passageinit.5",
+      "mode": "event",
+      "meta": {
+        "phase": "passageinit",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "8626d583109ace727c995ba8c3398656b4c644b4320f9d3523a7223ddcca3a68"
+    },
+    {
+      "name": "event.passagestart.0",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "98e70baafd11d3156f251e302c27536fedd6c5ec919f9485cad768fcdba0fb5b"
+    },
+    {
+      "name": "event.passagestart.1",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "23c4b12e52272973fcf8dcf7e2e68222f91fed9a1b01d72422a6eea89befb306"
+    },
+    {
+      "name": "event.passagestart.2",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "0cb5feb4fe9ef955ec9792648235e65c49d2776981cfecd298cee023eb64390b"
+    },
+    {
+      "name": "event.passagestart.3",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "493b96b08d6bd8060e7c4d2de876df2ff671d36f90252c1dd5846190de25a065"
+    },
+    {
+      "name": "event.passagestart.4",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "run",
+      "sha256": "a71173f92fd53ed3955ddfdfabd5481f545b5f13bf6aa432ccaa4a891ea64805"
+    },
+    {
+      "name": "event.passagestart.5",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "run",
+      "sha256": "cd6ff7967886f396f2cfe67b1feae535a74ecc775c1ffe1dfca442a3bcd0718a"
+    },
+    {
+      "name": "event.passagestart.6",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "restock",
+      "sha256": "7025adac0f8d4414e0219b1a2dfa46194396a4cb3063eab7c12c7cb43719a5b6"
+    },
+    {
+      "name": "event.passagestart.7",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "c6a0d072175016e983198dc6c3cd91cafb622146d6523272821887a327b4380b"
+    },
+    {
+      "name": "event.passagestart.8",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "57b7a79ac52451d7a71591c8dd3f0b0c54267adfd726a5da3203e67daec4c789"
+    },
+    {
+      "name": "event.passagestart.9",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "0b15560ff638ba1e01428dc40b67892323ae9ddf722b6639fcdb84dc381be7b8"
+    },
+    {
+      "name": "event.passagestart.10",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "a67d2da05251e65ee66bb189d4623bf612feb31b869b4110239c5583b3df84be"
+    },
+    {
+      "name": "event.passagestart.11",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "a67d2da05251e65ee66bb189d4623bf612feb31b869b4110239c5583b3df84be"
+    },
+    {
+      "name": "event.passagestart.12",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "ae7da4b40d9dc703fb727a427598f06f684a8024fe68b0c645a000ef8cc1bb98"
+    },
+    {
+      "name": "event.passagestart.13",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "cf38d733d7ec40b953d218424f7f58d70dee1a3e1b661ceb270827bc2831f430"
+    },
+    {
+      "name": "event.passagestart.14",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "41283295dee2ee9d769f532c9189e7af98c02625f87ed2621ed9e2cfa6500cca"
+    },
+    {
+      "name": "event.passagestart.15",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "56e65271dbcf3bb9b4b42e4ae9a2fd283e2c743bdb3bab4b0d665912c067b632"
+    },
+    {
+      "name": "event.passagestart.16",
+      "mode": "event",
+      "meta": {
+        "phase": "passagestart",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "4c2251f4175df4cc07ff9a6edb9c15f89e5b3d031b1e8782858f48ea64b54c95"
+    },
+    {
+      "name": "event.passagerender.0",
+      "mode": "event",
+      "meta": {
+        "phase": "passagerender",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "cf5882bdd1b9f70b51a9f18b69572e8a5f83a321f4fb8a0a09f804cec17d6e8e"
+    },
+    {
+      "name": "event.passagerender.1",
+      "mode": "event",
+      "meta": {
+        "phase": "passagerender",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "992ec01a23796683de8640145ee817f134f0c6e2ff15db7c57876b235ed088b8"
+    },
+    {
+      "name": "event.passagerender.2",
+      "mode": "event",
+      "meta": {
+        "phase": "passagerender",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "d1949040bc8efd7097b828b9b50ad88878f161c4c4e431086ef6a922048effc8"
+    },
+    {
+      "name": "event.passagerender.3",
+      "mode": "event",
+      "meta": {
+        "phase": "passagerender",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "840ecbdc94ee326e9e28c7a00c1932e3b2a76cce3e980a67577de852b803cbaf"
+    },
+    {
+      "name": "event.passagedisplay.0",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "3f8e5938a925a863c2adaf9eebb7c70a33a5a037a3b0398a9ccd01658706806f"
+    },
+    {
+      "name": "event.passagedisplay.1",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "2c6e611fb4710fe032a39201b82e828ff09eb48d89ed7220826a6213a360d2b3"
+    },
+    {
+      "name": "event.passagedisplay.2",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "onPassageOrReady",
+      "sha256": "6348c7ab1116f1c702eac4b942cc7c224fe80f3923e3673c1aec4033fb1841de"
+    },
+    {
+      "name": "event.passagedisplay.3",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "registerMacroHooks",
+      "sha256": "e9adaec265bf4b3d444c4d6ba16867adf070efc41689943a96889532ce35ced4"
+    },
+    {
+      "name": "event.passagedisplay.4",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "ac3128621cf87e1fb998103784e1bfcb1104b3b5fefbdcd68ad8544f965e747d"
+    },
+    {
+      "name": "event.passagedisplay.5",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "ed193966c736860e2520ac26834d376ef40d9698ab11ac389123d1898e26f8fc"
+    },
+    {
+      "name": "event.passagedisplay.6",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "69dcbf4fdb75383ec516b20a23f1dad72ed6b90535540f4818c704bfb8a41b55"
+    },
+    {
+      "name": "event.passagedisplay.7",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "77e8a4fa0d058703fa8c06146a703dd8263d3340f71202f39c0a954ae5652608"
+    },
+    {
+      "name": "event.passagedisplay.8",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "a20281aff1e4b240202848ae7b28930d38aaa909cb28d83aa05eb39ac509d860"
+    },
+    {
+      "name": "event.passagedisplay.9",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "1a9a0c9cea02939dadc4c694d1b80f1cec422ee996302a2fb090bb1ad03580c5"
+    },
+    {
+      "name": "event.passagedisplay.10",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "402d8ef2a79c10b9769c1a840ffd97ee6942ed08136a22f7fe25f6e002e06d7b"
+    },
+    {
+      "name": "event.passagedisplay.11",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "2e5b8ee740beeae817a1c616ef254f6252dab04a1a4328d209657e68a66cefc9"
+    },
+    {
+      "name": "event.passagedisplay.12",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "ForestMapGUI",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "56afab52746ef3d57ecdae88bc101106a341e8bc68a6d3552db297472ece6603"
+    },
+    {
+      "name": "event.passagedisplay.13",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "SewersMapGUI",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "56afab52746ef3d57ecdae88bc101106a341e8bc68a6d3552db297472ece6603"
+    },
+    {
+      "name": "event.passagedisplay.14",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "BeachCaveMapGUI",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "23e2380c963a3a70f990b17c4df4157b8a53f4e1ffc43051798ac97edc6482eb"
+    },
+    {
+      "name": "event.passagedisplay.15",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "FarmRoadMapGUI",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "23e2380c963a3a70f990b17c4df4157b8a53f4e1ffc43051798ac97edc6482eb"
+    },
+    {
+      "name": "event.passagedisplay.16",
+      "mode": "event",
+      "meta": {
+        "phase": "passagedisplay",
+        "namespace": "MoorMapGUI",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "23e2380c963a3a70f990b17c4df4157b8a53f4e1ffc43051798ac97edc6482eb"
+    },
+    {
+      "name": "event.passageend.0",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "8f13d3473beb6ee822f0e5e44044023a93f2812e370b2a2b1c6dcc83f8a33457"
+    },
+    {
+      "name": "event.passageend.1",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "cf83b8477b6e5554c477e42ac339f8e36bf716d13b98e20c791f870000757b27"
+    },
+    {
+      "name": "event.passageend.2",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "cf83b8477b6e5554c477e42ac339f8e36bf716d13b98e20c791f870000757b27"
+    },
+    {
+      "name": "event.passageend.3",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "f61bf947c68aae777ec138c932cc49f1c506efad07d5ee98f4fc2555a2df872a"
+    },
+    {
+      "name": "event.passageend.4",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "03349a8acf3305bc39747119264eea603633db4cab1d27e505e8310c749083d0"
+    },
+    {
+      "name": "event.passageend.5",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "10813df93d35b76568877adad001e7500fe2389631c6b2dda16ca6eb34bbc9de"
+    },
+    {
+      "name": "event.passageend.6",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "3f6721a6b09a5e1344da4cc32fe8760e8be8ab2a594add2662f7fb489053079a"
+    },
+    {
+      "name": "event.passageend.7",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "80e81002b7f81788af6d14dc19e44f23abfb9bdf3efeb8a96f4a40a03d2ae96d"
+    },
+    {
+      "name": "event.passageend.8",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "dgw",
+        "selector": null
+      },
+      "functionName": "Z",
+      "sha256": "20439545a5ff3d363a2e1c67c6a51152f59f78bcbd770329238c4137605970c4"
+    },
+    {
+      "name": "event.passageend.9",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "dolPanels",
+        "selector": null
+      },
+      "functionName": "$",
+      "sha256": "0e5b36df749513080ff4c5e20d2c042ce8faabaa1650e65b4ebd6e9216f5131e"
+    },
+    {
+      "name": "event.passageend.10",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "dcu",
+        "selector": null
+      },
+      "functionName": "I",
+      "sha256": "7cfd7d11c0a07a16b726a7bb2169c9a0cc99abada66d6130f644fa89fab0c06a"
+    },
+    {
+      "name": "event.passageend.11",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "dolMidnight",
+        "selector": null
+      },
+      "functionName": "ue",
+      "sha256": "3186616e5d8ac4f58adb0a24dc86d84cdd1c0d89860c7b496697f5c48f93d740"
+    },
+    {
+      "name": "event.passageend.12",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "e506fca878d40d7ae1028635e956e33344382fde7ca0f436b6d1df4d9df5a8b5"
+    },
+    {
+      "name": "event.passageend.13",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "setBindings",
+      "sha256": "9eb733e4b6c61cb1257834b1a2bff59b4adfa337dfd22a48ae695046ab26fc54"
+    },
+    {
+      "name": "event.passageend.14",
+      "mode": "event",
+      "meta": {
+        "phase": "passageend",
+        "namespace": "",
+        "selector": null
+      },
+      "functionName": "updateCaptionTooltip",
+      "sha256": "b931f362bfb3518abf369fc4c5f04564537c2ec70e6383b92efcf1cdfb630fb9"
+    },
+    {
+      "name": "event.historyupdate.0",
+      "mode": "event",
+      "meta": {
+        "phase": "historyupdate",
+        "namespace": "ui-bar",
+        "selector": null
+      },
+      "functionName": "",
+      "sha256": "e4b6ae35452d19a368d006cd9fbc9620c9036ea4e778f12c4898cec585a4afac"
+    },
+    {
+      "name": "sc2.0.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageInit",
+      "sha256": "428b8b4598246d7ae6bd3ba0301c6f2bb86d46197078348b9c6f8e89d05ef90b"
+    },
+    {
+      "name": "sc2.0.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageStart",
+      "sha256": "d8a0be41e563123fc323fd744ddc904eef9eb86f5eff3cf75df4da9a3a0ee37f"
+    },
+    {
+      "name": "sc2.0.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageRender",
+      "sha256": "0e95d5c754596c6c3174a483a372022daaaba1b28b3609cc383eab49e97f6b81"
+    },
+    {
+      "name": "sc2.0.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageDisplay",
+      "sha256": "8dadd1559b4c623cca70f99e75bb5fd5bf2f984371e61b917b3594123aabfdc8"
+    },
+    {
+      "name": "sc2.0.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageEnd",
+      "sha256": "a53631690a7528076bab75e59bf519a405f5bc1c454c3a83f6744c1eb3ac7ba4"
+    },
+    {
+      "name": "sc2.1.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.1.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.1.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.1.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.1.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.2.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.2.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.2.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.2.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.2.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.3.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageInit",
+      "sha256": "711f330d2b042e7b007e53615191cd80b77b2df4fe8e4796e7bf07efae1c8828"
+    },
+    {
+      "name": "sc2.3.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.3.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.3.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.3.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.4.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageInit",
+      "sha256": "711f330d2b042e7b007e53615191cd80b77b2df4fe8e4796e7bf07efae1c8828"
+    },
+    {
+      "name": "sc2.4.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.4.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.4.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.4.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.5.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageInit",
+      "sha256": "711f330d2b042e7b007e53615191cd80b77b2df4fe8e4796e7bf07efae1c8828"
+    },
+    {
+      "name": "sc2.5.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.5.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.5.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.5.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.6.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.6.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.6.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.6.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "sc2.6.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageEnd",
+      "sha256": "44f530aad6b1696480fd7b1534c8b0c3b9de5cb7f2e22d672ec5fa12926d0fdb"
+    },
+    {
+      "name": "addon.0.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.0.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.0.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.0.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.0.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.1.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.1.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.1.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.1.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.1.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageEnd",
+      "sha256": "d7794de03b8ccf9258d70eb1490e65e0aa1bdd89b9b0689d2fcf33a37700b393"
+    },
+    {
+      "name": "addon.2.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.2.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.2.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.2.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.2.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageEnd",
+      "sha256": "d7794de03b8ccf9258d70eb1490e65e0aa1bdd89b9b0689d2fcf33a37700b393"
+    },
+    {
+      "name": "addon.3.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.3.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.3.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.3.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.3.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageEnd",
+      "sha256": "d7794de03b8ccf9258d70eb1490e65e0aa1bdd89b9b0689d2fcf33a37700b393"
+    },
+    {
+      "name": "addon.4.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.4.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.4.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.4.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.4.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageEnd",
+      "sha256": "d0753c9d8a9d8478fe75f3c68944699ca4d37abbbc3fab976dc87b52adb8ffae"
+    },
+    {
+      "name": "addon.5.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.5.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.5.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.5.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.5.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.6.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.6.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.6.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.6.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.6.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.7.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.7.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.7.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.7.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.7.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.8.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.8.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.8.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.8.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.8.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.9.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.9.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.9.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.9.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.9.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.10.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.10.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.10.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.10.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.10.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.11.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.11.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.11.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.11.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.11.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.12.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.12.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.12.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.12.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.12.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.13.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.13.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.13.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.13.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.13.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.14.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.14.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.14.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.14.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.14.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.14.init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "init",
+      "sha256": "7b49bf049c9ac454d45b09058e7a88f531a54687b3c8c437b5a7963e1a9eeb2d"
+    },
+    {
+      "name": "addon.15.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.15.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.15.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.15.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.15.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.15.init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "init",
+      "sha256": "dc65863e27974ca4a5813e77629f7e314985cb8ea51738a972490fe0cfe48563"
+    },
+    {
+      "name": "addon.16.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.16.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.16.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.16.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.16.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.16.init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "init",
+      "sha256": "dc3fa760bc27836a3aede25b3a065882c6ca1ec8058d80a8eed0b259b71f6faa"
+    },
+    {
+      "name": "addon.17.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.17.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.17.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.17.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.17.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.18.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageInit",
+      "sha256": "e3a864b6bbc9e1a6779d8c5f7467248342c8b24442c979cc9613d9944650b8af"
+    },
+    {
+      "name": "addon.18.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageStart",
+      "sha256": "f18f0d95cd421f7483942a8befa49d8e0d70e629376e1fbebc611b02a734d8f8"
+    },
+    {
+      "name": "addon.18.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageRender",
+      "sha256": "9868a348071d7d53e4c1ac3350652452c689b385684fc4ee200171f70e408879"
+    },
+    {
+      "name": "addon.18.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageDisplay",
+      "sha256": "916665e0fb5f2720c1c512e4978c18ac500ae7e02e65759a373743b465c41b35"
+    },
+    {
+      "name": "addon.18.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "whenSC2PassageEnd",
+      "sha256": "d4619fa66590a821a7fd1cb300b80fd78b1c75b49d3eaab3dcf7c1cdc42f6eb7"
+    },
+    {
+      "name": "addon.19.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.19.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.19.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.19.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.19.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.20.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.20.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.20.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.20.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.20.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.21.whenSC2PassageInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.21.whenSC2PassageStart",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.21.whenSC2PassageRender",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.21.whenSC2PassageDisplay",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.21.whenSC2PassageEnd",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "addon.trigger",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "triggerHookWhenSC2",
+      "sha256": "1fe232c65daa77bf0001ddbcf5932f1fdc6c7b822750c2edf27ee5df45aa9d4c"
+    },
+    {
+      "name": "maple.modules.run",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "run",
+      "sha256": "569599cca0412a066cbb45b9ac8c3044da993c02593edc8ead8b5e5671dd2fe3"
+    },
+    {
+      "name": "maple.modules.init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "init",
+      "sha256": "9ee64dcabbb5f4ae50511e323ab9b69901e280c2e0d05a8c98a715308273f2ad"
+    },
+    {
+      "name": "maple.modules.phase",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "phase",
+      "sha256": "dd3ee74dda82dfe2d166822086ff6aff50a51ec6ba9104487816e77116bd52a7"
+    },
+    {
+      "name": "maple.modules.execute",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "execute",
+      "sha256": "7403d3b120d09900cf91bbabf35dab98a34f4e92f5d8f2adfa441c2eaf74762a"
+    },
+    {
+      "name": "maple.modules.topologicalOrder",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "topologicalOrder",
+      "sha256": "da7b83c8d8586a8247a46e8bc95bef8da664f89f2f63e55648384edb3bef0fda"
+    },
+    {
+      "name": "maple.modules.ready",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "ready",
+      "sha256": "5ce6ac9c2de788dee49affae12ccf6d38cff02b90c98b19fdbdcbb1093082cb7"
+    },
+    {
+      "name": "maple.events.trigger",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "trigger",
+      "sha256": "da39714e6d88c739612afe108dfe30b3e0af8fcc2877a0636b334b165b3c7e2c"
+    },
+    {
+      "name": "maple.events.pending",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "pending",
+      "sha256": "ca798497e3f0d376cda74f264ea8ac5eaa7f23ba147b9afe81119d5418541df5"
+    },
+    {
+      "name": "maple.module.dynamic.preInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "preInit",
+      "sha256": "defcee17821a714b94cd1042389a6b331ec961e877480c69e098d9ea0fe93e31"
+    },
+    {
+      "name": "maple.module.dynamic.Init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "Init",
+      "sha256": "280e342fd8745b5c74ca4043fcab99d1e2f62c955c4ebbe9127d1a39a3b74662"
+    },
+    {
+      "name": "maple.module.dynamic.postInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "postInit",
+      "sha256": "248dc4d8dc8b9f51989dd605e4737b2b2629d5f924db30898ce232694f22e59e"
+    },
+    {
+      "name": "maple.module.tool.preInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "preInit",
+      "sha256": "b9cb35cc81d3dba77bb5ed444be2c089d5f35dcf4284a3b0a7b34b6df0bdfc23"
+    },
+    {
+      "name": "maple.module.tool.Init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "Init",
+      "sha256": "986a4e8c307241baeb422904a7af4687dbca76acb52e56a449093faca74d5f97"
+    },
+    {
+      "name": "maple.module.tool.postInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "maple.module.audio.preInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "preInit",
+      "sha256": "28721ae439c1752aaa8012f4b86f1c838145018ab6660ba4cbecfd3ba30b6f31"
+    },
+    {
+      "name": "maple.module.audio.Init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "maple.module.audio.postInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "maple.module.var.preInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "maple.module.var.Init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "Init",
+      "sha256": "72ee947f5889164dc8c3b2a251341c504e502791dd4c083d607a91eb93a0a5d3"
+    },
+    {
+      "name": "maple.module.var.postInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "postInit",
+      "sha256": "58840ad6042be6b08aff1cb6bb9cd8c8785f9c45faf095c8731f202d0796ed3e"
+    },
+    {
+      "name": "maple.module.char.preInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "preInit",
+      "sha256": "ee9ce793809f2717a57fa42bd101efb456d6c7ada077c0e8b72c1cd433a33ae0"
+    },
+    {
+      "name": "maple.module.char.Init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "Init",
+      "sha256": "3af7983d272f38d5b9d9f2627d8159a02c506e63c58e4c3a939fd07e00c8e133"
+    },
+    {
+      "name": "maple.module.char.postInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "maple.module.npc.preInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "preInit",
+      "sha256": "afea006b4b5cba3b2c7572e70d51af4bf47b9f78720266610e3fac74c62de06f"
+    },
+    {
+      "name": "maple.module.npc.Init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "Init",
+      "sha256": "4e2a11d7ba1b4e8ca830eb676dd63db5ffd9c2aa28e81eb100789deffc5b06b5"
+    },
+    {
+      "name": "maple.module.npc.postInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "postInit",
+      "sha256": "925cfe3f1ea636e8ee7e74b7911677baa250c1461d37c7169e7740dd1a22a2c6"
+    },
+    {
+      "name": "maple.module.combat.preInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "preInit",
+      "sha256": "d832c521967b22bf00d55f08164bc0f35efcac685d44dbfec1336981d3edb781"
+    },
+    {
+      "name": "maple.module.combat.Init",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "Init",
+      "sha256": "83203ef8e853ae60baccbb00cebad0d12e0b1b3f59085faceabffb015ddb9613"
+    },
+    {
+      "name": "maple.module.combat.postInit",
+      "mode": "identity",
+      "meta": null,
+      "functionName": null,
+      "sha256": null
+    },
+    {
+      "name": "maple.event.passagedisplay.0",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "db2c659627985ef8deae48b0eebee81b40df7a03a100bd9c4f4be7ae90a6ccec"
+    },
+    {
+      "name": "maple.event.passagedisplay.1",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "77fd9e97b4772d5745ee60bf1aa7692831cddfb2cc2845f0fb97c1562e4cccc9"
+    },
+    {
+      "name": "maple.event.passageend.0",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "6cace06e102da3df433b8c70e60f71608fa4d27bb7715991ac96ac095d37e66b"
+    },
+    {
+      "name": "maple.event.passageend.1",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "",
+      "sha256": "d460fcf8a27b935af1f85182b447a26dbab4116820ade0fca7b36d4c9eaba2a4"
+    },
+    {
+      "name": "maple.event.passageend.2",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "r",
+      "sha256": "cc1e12f677f47fbdbd294f8ddedffb2fbc2b966d67b3bad6f85de22dec9eabeb"
+    },
+    {
+      "name": "maple.dynamic.trigger",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "trigger",
+      "sha256": "d2bcf52294568d36c4449d30193f0bd3eba85e3907e6c3925e4707ebf7df418d"
+    },
+    {
+      "name": "maple.state.trigger",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "trigger",
+      "sha256": "1ac07dd047918da3f9a5df9284493ca65191cd571d740a9f0c44ae5ea35ed431"
+    },
+    {
+      "name": "maple.state.gate",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "processGateEvents",
+      "sha256": "4c9494896379bc5258b1d09c7e8ac90b0f2f21ce74c42ca912b32c18ded567fb"
+    },
+    {
+      "name": "maple.state.append",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "processAppendEvents",
+      "sha256": "30c9372f65a296a38feb89f5e8c02159038a3fd7f19b731e9d5575e69b55c286"
+    },
+    {
+      "name": "maple.notice.cond",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "cond",
+      "sha256": "8ff30939add67805ce12b6b9a22903ec69b73ecaf2eb5ff662e76d6514de6bb8"
+    },
+    {
+      "name": "maple.notice.matches",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "matches",
+      "sha256": "eaf441d3c67b571c0c09b494b26fac34b474aae3c57022ea8f31a248a860a77a"
+    },
+    {
+      "name": "maple.notice.match",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "match",
+      "sha256": "b15f45e7986d24814a754b67f366c67d6693a7288ae3f5e218cebea4e3cc1352"
+    },
+    {
+      "name": "maple.notice.checkPassage",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "checkPassage",
+      "sha256": "d3e9a6465929e380e62e63549fd35892c090674d881810c3f210ed2bcff2e47e"
+    },
+    {
+      "name": "maple.notice.evaluate",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "evaluate",
+      "sha256": "2b6c7644191a2a4e9812adaee6f071d25b1299c1ee24be6137877220f2245781"
+    },
+    {
+      "name": "maple.notice.run",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "run",
+      "sha256": "29ecd978e94b72d516897e3c6bd0a6fbe3714a377feb63bf3739c0211182d322"
+    },
+    {
+      "name": "maple.notice.tryRun",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "tryRun",
+      "sha256": "b60a33e5273df5dd1785fd5e9172e9f5f24549d2926b294cd4f37728b2d84f63"
+    },
+    {
+      "name": "maple.zone.play",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "play",
+      "sha256": "a759d49ce4b41d7736f93f3d30c2c3af09af2712a66f700a6e9997a6aa714900"
+    },
+    {
+      "name": "maple.zone.render",
+      "mode": "identity",
+      "meta": null,
+      "functionName": "render",
+      "sha256": "6b3953ad7c3a1282cf5f8ba667a66a6cd3feeeed27550ec8ccddeec09738a62d"
+    }
+  ],
+  "texts": [
+    {
+      "name": "PassageHeader",
+      "sha256": "2bc1391e984a9f848c2bf3f265df928358eb21e5dbc2218952c5617eb229fa20"
+    },
+    {
+      "name": "PassageFooter",
+      "sha256": "4ffd25999b38a9d3fc98879d91f077cd532359b1875625043937490a2f30057f"
+    },
+    {
+      "name": "Bedroom",
+      "sha256": "0740a8ce3f906fceeeca67e1dceffcf044d1216e406b518d46b67711b76f2e34"
+    },
+    {
+      "name": "StoryCaption",
+      "sha256": "dc09a676ba6e9cd65074255162acd63db786f6307abee9fff2c159a4ad7dbd59"
+    }
+  ]
+}

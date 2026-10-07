@@ -1,6 +1,6 @@
-# DoL Dev Tools: Paisley Park 2.0.1：诊断工作流
+# DoL Dev Tools: Paisley Park：诊断工作流与3.0 Foundation
 
-2.0.1澄清实战决策指引，沿用2.0.0运行时与1.5既有能力和证据。通用核心不要求 Soft & Wet；独立 Integration 只读其公开诊断。
+当前 3.0.2 Gold Experience Requiem 提供通用诊断/Schema 1 与独立私有的[Gameplay Runtime](GAMEPLAY.md)，验收与限制见[收口](CLOSEOUT_3_0_2.md)。通用核心不要求 Soft & Wet 或 Gameplay 依赖；Integration 为可选增强，业务 Scene/Memory 不自动进入 Evidence/Support。旧阶段文档保留为验证历史；3.0.0/3.0.1 公开 Release/tag 已按用户要求移除。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
 
 仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools-paisley-park`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。

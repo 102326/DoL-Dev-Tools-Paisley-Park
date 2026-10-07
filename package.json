@@ -1,9 +1,17 @@
 {
   "name": "dol-dev-tools-paisley-park",
   "displayName": "DoL Dev Tools: Paisley Park",
-  "version": "2.0.1",
+  "version": "3.0.2",
   "private": true,
   "license": "MIT",
-  "engines": { "node": ">=22.12.0" },
-  "scripts": { "test": "node --test tests/*.test.cjs" }
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "test": "node --experimental-sqlite --test tests/*.test.cjs experiments/gold-runtime/test/*.test.cjs"
+  },
+  "dependencies": {
+    "xstate": "5.33.2"
+  },
+  "releaseName": "Gold Experience Requiem"
 }

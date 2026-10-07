@@ -30,6 +30,12 @@ test('CDP transport bounds responses per request without leaking protocol bodies
     client.close();
 
     client=await open();
+    reply=request=>JSON.stringify({id:request.id,result:{padding:'x'.repeat(4*1024*1024+64)}});
+    const properties=await client.send('Runtime.getProperties',{objectId:'scope'}, {maxResponseBytes:8*1024*1024});
+    assert.equal(properties.padding.length,4*1024*1024+64);
+    client.close();
+
+    client=await open();
     const unicode=JSON.stringify({id:1,result:{text:'界'.repeat(8)}});
     assert.ok(Buffer.byteLength(unicode,'utf8')>unicode.length);
     reply=()=>unicode;
@@ -39,6 +45,8 @@ test('CDP transport bounds responses per request without leaking protocol bodies
     client=await open();
     const beforeInvalid=requests;
     await assert.rejects(client.send('Runtime.evaluate',{}, {maxResponseBytes:8*1024*1024}),error=>error.code==='CDP_INVALID_RESPONSE_LIMIT');
+    await assert.rejects(client.send('Runtime.callFunctionOn',{}, {maxResponseBytes:8*1024*1024}),error=>error.code==='CDP_INVALID_RESPONSE_LIMIT');
+    await assert.rejects(client.send('Runtime.getProperties',{}, {maxResponseBytes:16*1024*1024+1}),error=>error.code==='CDP_INVALID_RESPONSE_LIMIT');
     await assert.rejects(client.send('DOM.getDetachedDomNodes',{}, {maxResponseBytes:64*1024*1024+1}),error=>error.code==='CDP_INVALID_RESPONSE_LIMIT');
     await assert.rejects(client.send('DOM.getDetachedDomNodes',{}, {maxResponseBytes:8*1024*1024,extra:true}),error=>error.code==='CDP_INVALID_RESPONSE_LIMIT');
     assert.equal(requests,beforeInvalid);
@@ -58,6 +66,15 @@ test('CDP transport bounds responses per request without leaking protocol bodies
     const otherPending=client.send('DOM.getDetachedDomNodes',{}, {maxResponseBytes:8*1024*1024});
     socket.onmessage({data:JSON.stringify({id:999,result:{padding:'x'.repeat(4*1024*1024+64)}})});
     await assert.rejects(otherPending,error=>error.code==='CDP_RESPONSE_TOO_LARGE');
+    client.close();
+
+    client=await open();
+    reply=null;
+    const largeProperties=client.send('Runtime.getProperties',{objectId:'scope'},{maxResponseBytes:8*1024*1024});
+    const defaultRequest=client.send('Runtime.evaluate',{expression:'1'});
+    socket.onmessage({data:JSON.stringify({id:2,result:{padding:'x'.repeat(4*1024*1024+64)}})});
+    await assert.rejects(defaultRequest,error=>error.code==='CDP_RESPONSE_TOO_LARGE');
+    await assert.rejects(largeProperties,error=>error.code==='CDP_RESPONSE_TOO_LARGE');
     client.close();
 
     client=await open();

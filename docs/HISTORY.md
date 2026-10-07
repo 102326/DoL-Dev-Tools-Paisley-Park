@@ -4,6 +4,7 @@
 
 | 历史版本 | 记录 |
 | --- | --- |
+| 3.0.0 / v3.0.0（正式Release已撤回） | [原发布说明](RELEASE_3.0.0.md)、[Foundation A—D证明](CLOSEOUT_3_0.md)、[撤版](WITHDRAWAL_3.0.0.md)、[新的研发方案](GOLD_EXPERIENCE_REAUDIT.md) |
 | 2.0.1 / v2.0.1 | [实战经验指引补丁](RELEASE_2.0.1.md) |
 | 2.0.0 / v2.0.0 | [Paisley Park品牌重置](RELEASE_2.0.0.md) |
 | 1.0 / v1.0.0 | [通用诊断重置](RELEASE_1.0.md) |

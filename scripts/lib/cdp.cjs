@@ -1,5 +1,5 @@
 // Shared local CDP transport; target selection stays explicit and unambiguous.
-const DEFAULT_MAX_RESPONSE_BYTES=4*1024*1024,ABSOLUTE_MAX_RESPONSE_BYTES=64*1024*1024;
+const DEFAULT_MAX_RESPONSE_BYTES=4*1024*1024,PROPERTIES_MAX_RESPONSE_BYTES=16*1024*1024,ABSOLUTE_MAX_RESPONSE_BYTES=64*1024*1024;
 async function targets(endpoint, timeoutMs = 10000) {
   const url = new URL(endpoint);
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || url.protocol !== 'http:' || url.username || url.password) {
@@ -33,7 +33,8 @@ async function connect(endpoint, timeoutMs = 10000, onEvent = () => {}, targetId
     if(options===undefined)return DEFAULT_MAX_RESPONSE_BYTES;
     if(!options||typeof options!=='object'||Array.isArray(options)||Reflect.ownKeys(options).length!==1||!Object.hasOwn(options,'maxResponseBytes'))throw codedError('CDP_INVALID_RESPONSE_LIMIT');
     const limit=options.maxResponseBytes;
-    if(!Number.isSafeInteger(limit)||limit<1||limit>ABSOLUTE_MAX_RESPONSE_BYTES||limit>DEFAULT_MAX_RESPONSE_BYTES&&method!=='DOM.getDetachedDomNodes')throw codedError('CDP_INVALID_RESPONSE_LIMIT');
+    if(!Number.isSafeInteger(limit)||limit<1||limit>ABSOLUTE_MAX_RESPONSE_BYTES||
+      limit>DEFAULT_MAX_RESPONSE_BYTES&&method!=='DOM.getDetachedDomNodes'&&!(method==='Runtime.getProperties'&&limit<=PROPERTIES_MAX_RESPONSE_BYTES))throw codedError('CDP_INVALID_RESPONSE_LIMIT');
     return limit;
   }
   function close(reason = codedError('CDP_CONNECTION_CLOSED')) {

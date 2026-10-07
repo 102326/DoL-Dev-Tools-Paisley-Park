@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "id": "ui-2.2.2-dol-0.5.12.13-native-head-wear-candidate",
+  "terminalReviewed": true,
+  "contract": {
+    "scope": "original Wardrobe simple head wear",
+    "status": "reviewed local terminal contract; runtime verification pending",
+    "targetPackage": "com.vrelnir.dol.lyra.uicompat051213",
+    "gameVersion": "0.5.12.13",
+    "uiVersion": "2.2.2",
+    "sugarCubeVersion": "2.36.1+34",
+    "maxSourceBytes": 32768,
+    "sourceEvidence": "private captured target; Story-only widget entries are not handler-closure attestation"
+  },
+  "widgets": [
+    {
+      "name": "updatewardrobe",
+      "expr": "window.SugarCube.Macro.get(\"updatewardrobe\").handler",
+      "sha256": "fe6c7454b495ba91ad8f9e9ecaf5884b8f4cbd37ec70f6e3d45266c0ecb9fb9e",
+      "sourceBytes": 2057,
+      "capture": "handler-closure-and-unique-story",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "wardrobewear",
+      "expr": "window.SugarCube.Macro.get(\"wardrobewear\").handler",
+      "sha256": "cc8e4431559e1267d308abe4b706e1a40afbbad83e5812349ed89e15aa8bbb68",
+      "sourceBytes": 13100,
+      "capture": "handler-closure-and-unique-story",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "generalUndress",
+      "expr": "window.SugarCube.Macro.get(\"generalUndress\").handler",
+      "sha256": "1ae907aaed54615a4d16f7742a7610929dfa58ee1e2a7651379499b33937df64",
+      "sourceBytes": 3710,
+      "capture": "handler-closure-and-unique-story",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "wearoutfit",
+      "expr": "window.SugarCube.Macro.get(\"wearoutfit\").handler",
+      "sha256": "4c777409f177139e47a1f6b498d271124905135a04b873567b329fd11503ddcf",
+      "sourceBytes": 30252,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "wardrobeSanityCheck",
+      "expr": "window.SugarCube.Macro.get(\"wardrobeSanityCheck\").handler",
+      "sha256": "9b26e0ae4393bd7df96415fd097781fa8faf38c65f6bd7d2c8a14238964d1a04",
+      "sourceBytes": 2913,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "wardrobeExits",
+      "expr": "window.SugarCube.Macro.get(\"wardrobeExits\").handler",
+      "sha256": "68f637b11c02f2fd6f76eb28c3170c917b20a91031eb8abfc83049273c5581ac",
+      "sourceBytes": 5576,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "clotheson",
+      "expr": "window.SugarCube.Macro.get(\"clotheson\").handler",
+      "sha256": "9876c556f6a423c77c912a66910c5a1537a6468a389cd14d64ca1cc1f7e94dc2",
+      "sourceBytes": 1894,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "updateallure",
+      "expr": "window.SugarCube.Macro.get(\"updateallure\").handler",
+      "sha256": "d7c1dd3c0e130ec4545150641fd270bbb39f654b023a3283d8b48faf6156b163",
+      "sourceBytes": 141,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "updatesidebardescription",
+      "expr": "window.SugarCube.Macro.get(\"updatesidebardescription\").handler",
+      "sha256": "d058f72cf6b4e7f3e2e9a84e93f70ed28b2435cc2765d57de8bf1e3ab5724b40",
+      "sourceBytes": 206,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "updatewarmthdescription",
+      "expr": "window.SugarCube.Macro.get(\"updatewarmthdescription\").handler",
+      "sha256": "d74669435826135929856628168a90f260a957e18a2491d1686c119afcd0a209",
+      "sourceBytes": 70,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "updatesidebarimg",
+      "expr": "window.SugarCube.Macro.get(\"updatesidebarimg\").handler",
+      "sha256": "6866fe70d4c183c055836c2d2ac311120ab7927f90c16144f2b5f766abbb265a",
+      "sourceBytes": 354,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "7d1d98c8468c1eed017553ecc6f9f039f11954739cd782907b9eced33f1dbe1a",
+      "wrapperChain": [
+        {
+          "handlerSha256": "7d1d98c8468c1eed017553ecc6f9f039f11954739cd782907b9eced33f1dbe1a",
+          "captured": {
+            "name": "t",
+            "type": "function",
+            "sha256": "1282493cac9f14fc4650d5a85d91305185a6c5ce0effbeb16fda144ec51bdf15"
+          }
+        },
+        {
+          "handlerSha256": "1282493cac9f14fc4650d5a85d91305185a6c5ce0effbeb16fda144ec51bdf15",
+          "captured": {
+            "name": "t",
+            "type": "object",
+            "property": "handler",
+            "sha256": "7d1d98c8468c1eed017553ecc6f9f039f11954739cd782907b9eced33f1dbe1a"
+          }
+        },
+        {
+          "handlerSha256": "7d1d98c8468c1eed017553ecc6f9f039f11954739cd782907b9eced33f1dbe1a",
+          "captured": {
+            "name": "t",
+            "type": "function",
+            "sha256": "08681e4c2d47d072cd8a907503442ba4ae4bd032737331c47c07573f20f5e7c2"
+          }
+        },
+        {
+          "handlerSha256": "08681e4c2d47d072cd8a907503442ba4ae4bd032737331c47c07573f20f5e7c2",
+          "captured": {
+            "name": "n",
+            "type": "object",
+            "property": "handler",
+            "sha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+          }
+        }
+      ],
+      "bodyHandlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "disabledDisplayMethods": {
+        "requiredOptions": [
+          {
+            "expr": "window.SugarCube.State.variables.options.maplebirch.npcsidebar.pet.enabled",
+            "equals": false
+          },
+          {
+            "expr": "window.SugarCube.State.variables.options.maplebirch.character.pet.enabled",
+            "equals": false
+          }
+        ],
+        "methods": [
+          {
+            "name": "sync",
+            "owner": "npc-pet",
+            "sha256": "fbb3253460611d56f369da26bad40f77037d9e0c3c49f6fff8cf97c6efd7ff0c"
+          },
+          {
+            "name": "cancel",
+            "owner": "npc-pet",
+            "sha256": "5aa63eee62d66926fd5810a671f41ebc4bbd5889a9e8a87b401b620824a21188"
+          },
+          {
+            "name": "sync",
+            "owner": "character-pet",
+            "sha256": "72638ca56c35da24a6c3561c6142068253a80404309e4aabb5e40df3cacdc855"
+          },
+          {
+            "name": "readSettings",
+            "owner": "character-pet",
+            "sha256": "4f20a8ab4afb7285ef67a582c66e8e0b9916ba33faddd468b919238ba3f98018"
+          },
+          {
+            "name": "cancel",
+            "owner": "floating-pet",
+            "sha256": "49a3a961998b0dfbef543271676a491625e5ee9cef9503ac8cb8e3c51bc41c8b"
+          },
+          {
+            "name": "unmount",
+            "owner": "floating-pet",
+            "sha256": "bbf8e62a270d4e4b1e609dc0dae1e9e78d9a85cbdf705ea6f444b6cbbedd156e"
+          },
+          {
+            "name": "unmount",
+            "owner": "base-pet",
+            "sha256": "e987e51359b4c7f14b171ebff3faf61f9d8d0268e11a7865ac384c12344c0d26"
+          },
+          {
+            "name": "stopAnimation",
+            "owner": "base-pet",
+            "sha256": "c3b5e65e3273b05f7c08ec31a7a853f22b332b6ac4937ebf9c35a76f1e0daf29"
+          },
+          {
+            "name": "clearBox",
+            "owner": "base-pet",
+            "sha256": "e22fd6f603f507ae200114cf31945eb7956eda64b3079de20074d2701a4e3b0b"
+          }
+        ]
+      }
+    },
+    {
+      "name": "deleteoutfit",
+      "expr": "window.SugarCube.Macro.get(\"deleteoutfit\").handler",
+      "sha256": "402510c64fec7e985e4841ef3018ae4a441c2f19b4936737216139145cb6cf51",
+      "sourceBytes": 142,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "overwriteoutfit",
+      "expr": "window.SugarCube.Macro.get(\"overwriteoutfit\").handler",
+      "sha256": "121611930935880cd767fd26a8c1d625caf6cb58e8cb20056e0e73fad9d8d859",
+      "sourceBytes": 1174,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    {
+      "name": "updateWornClothingLocation",
+      "expr": "window.SugarCube.Macro.get(\"updateWornClothingLocation\").handler",
+      "sha256": "a443eae5ab2125bbea4bd90ad990834dc908dbcb677da0b07da590a6727b14a8",
+      "sourceBytes": 573,
+      "capture": "unique-story-source-inventory",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    }
+  ],
+  "functionMacros": [
+    {
+      "name": "exposure",
+      "expr": "window.SugarCube.Macro.get(\"exposure\").handler",
+      "macroFunction": {
+        "sha256": "f9e7996ee17d71876236004345f49a9daf0d3276dcdc8b82e7a103effe001a67",
+        "sourceBytes": 2904
+      },
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    {
+      "name": "updatewarmthscale",
+      "expr": "window.SugarCube.Macro.get(\"updatewarmthscale\").handler",
+      "macroFunction": {
+        "sha256": "41b464877514cbe72a17f8ca9c4c57522f51185f6ce1024295ec0a2a0e79f555",
+        "sourceBytes": 888
+      },
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164",
+      "capturedClosure": {
+        "name": "clothingWarmthScale",
+        "sha256": "05cbc7081ac39819e31d870e79bda182e6283f3f4939af079590c86d64e7dbf0",
+        "sourceBytes": 227
+      }
+    },
+    {
+      "name": "numberify",
+      "expr": "window.SugarCube.Macro.get(\"numberify\").handler",
+      "macroFunction": {
+        "sha256": "9d1e077a616949778dc6464731b420592f580dc65722236baffbb84fa9833d17",
+        "sourceBytes": 104
+      },
+      "nestedMacroFunction": {
+        "sha256": "002397c2edfa1b8214edeb3324bb5d1881406eebe5533dbb68eb041042593b21",
+        "sourceBytes": 94
+      },
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    }
+  ],
+  "coreFunctions": [
+    {
+      "name": "Wikifier",
+      "expr": "window.SugarCube.Wikifier",
+      "sha256": "35d670dd4e6944351719a375b43086aea8a19d2b8baf800466c7e358745973f5",
+      "sourceBytes": 4286
+    },
+    {
+      "name": "updateMoment",
+      "expr": "window.updateMoment",
+      "sha256": "2ac7b4b575482af0241110257a2efdd8f54238ff30d9c5c8772d12384031f5dc",
+      "sourceBytes": 104
+    },
+    {
+      "name": "resetClothingState",
+      "expr": "window.resetClothingState",
+      "sha256": "4c343c3e54c67f53c2ad551e34061c325a6f76d32c0d07e844f354cf55987ab3",
+      "sourceBytes": 770
+    },
+    {
+      "name": "selectWardrobe",
+      "expr": "window.selectWardrobe",
+      "sha256": "5e4e3d1f281ba41a47ce8b74b3abc3fb771d94746616f1e0ffb05b36b9de364a",
+      "sourceBytes": 470
+    },
+    {
+      "name": "clothesIndex",
+      "expr": "window.clothesIndex",
+      "sha256": "c12370bf9d9bb36a28ce1c2fc75dc26aa9dc6e36b2c313ef2ae4baa5f86b21fc",
+      "sourceBytes": 2358
+    },
+    {
+      "name": "playerBellySize",
+      "expr": "window.playerBellySize",
+      "sha256": "786cff01add9d7faf62328b120f87e77bfc53b0f3657a6b1275660b78337e5b8",
+      "sourceBytes": 1139
+    },
+    {
+      "name": "formatList",
+      "expr": "window.formatList",
+      "sha256": "81f3aca76d84e4db8649b3a83ac94a270474da8d9c9fee900526080a01d136cf",
+      "sourceBytes": 560
+    },
+    {
+      "name": "clone",
+      "expr": "window.clone",
+      "sha256": "0c770a4eed861b09d36fa14308a2340060eab159d16ac3ef95625c17f2a97d08",
+      "sourceBytes": 1055,
+      "capturedClosure": {
+        "name": "ny",
+        "sha256": "928080ad4dcd852e0fed46fe723fc720a691b7047edfb6fc0b8f44bead4ef4c7",
+        "sourceBytes": 98
+      }
+    },
+    {
+      "name": "wornStackingApplyStats",
+      "expr": "window.DolOptimization.wornStackingApplyStats",
+      "sha256": "ba9e804f05f4a1787c7baeae53c49fa9710367d2fdc7819c5a3b3b10afb69454",
+      "sourceBytes": 1793
+    },
+    {
+      "name": "wornStackingStore",
+      "expr": "window.DolOptimization.wornStackingStore",
+      "sha256": "9bc950d0d830e320c55984ac51bec75f0fc58d53b6da3ef024bdf6702308e3b3",
+      "sourceBytes": 483
+    },
+    {
+      "name": "Array.prototype.deleteAt",
+      "expr": "Array.prototype.deleteAt",
+      "sha256": "645e9581dc55cbc2fee6204afb4f81b599c36e6a8f04ecea318b19decd589b32",
+      "sourceBytes": 559
+    },
+    {
+      "name": "Weather.BodyTemperature.getWarmth",
+      "expr": "window.Weather.BodyTemperature.getWarmth",
+      "sha256": "de68c7958b58e3e8631c058f90f948c5d0d9aaa0d0f1de34bba464826c99afe4",
+      "sourceBytes": 158
+    },
+    {
+      "name": "Weather.BodyTemperature.getRestingPoint",
+      "expr": "window.Weather.BodyTemperature.getRestingPoint",
+      "sha256": "4cf75997bee3bc75ed57dbef71ece13ad7b82f9aa5aa8bfc27d49c496714d956",
+      "sourceBytes": 473
+    },
+    {
+      "name": "Links.generateLinkNumbers",
+      "expr": "window.Links.generateLinkNumbers",
+      "sha256": "706eb240f00ee3d3c34386f8c7b90847bd9c36f48f71c84bfb7c1218d51ad8e3",
+      "sourceBytes": 1081,
+      "capturedClosure": {
+        "name": "generateDebounce",
+        "sha256": "87ca270cc66f1df38df4da518edcd9751be7a0d8063e8fe5a9f0ad8a310e218c",
+        "sourceBytes": 213,
+        "fixedCallback": {
+          "name": "j",
+          "sha256": "3e0f262b9899fc069e48a675daa9acb117fa32882ea10a8db432a90f28a4a018",
+          "sourceBytes": 107
+        }
+      }
+    }
+  ],
+  "wikifierMembers": [
+    {
+      "name": "Wikifier.prototype.subWikify",
+      "expr": "window.SugarCube.Wikifier.prototype.subWikify",
+      "sha256": "f06a59c18e4f6ce23e9184b2c7c291c8b901fb262f92c5b283a7e9ea5524921b",
+      "sourceBytes": 2312
+    },
+    {
+      "name": "Wikifier.prototype.outputText",
+      "expr": "window.SugarCube.Wikifier.prototype.outputText",
+      "sha256": "4d1db17f0b7b19a88c021fa1f3dcfe4fa5df950f65cb74eb03255c7695525c09",
+      "sourceBytes": 129
+    },
+    {
+      "name": "Wikifier.Parser.Profile.isEmpty",
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.isEmpty",
+      "sha256": "02c0729ad8aee5e4bbabec28190b220ee9706ecb3a68a2b96d365c43c29190a5",
+      "sourceBytes": 79
+    },
+    {
+      "name": "Wikifier.Parser.Profile.get",
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.get",
+      "sha256": "b99945fa55d8ef0652a1b9d6630b0f880b5bd390f75db1e31a34e2312b47f19b",
+      "sourceBytes": 169
+    },
+    {
+      "name": "Wikifier.Parser.Profile.compile",
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.compile",
+      "sha256": "fb7514347420b6b423a64899bdf771fbe6e95be4d6ba7c0488d70ce01cd6df79",
+      "sourceBytes": 364
+    },
+    {
+      "name": "Wikifier.Parser.Profile.get(all).parsers[macro].handler",
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.get(\"all\").parsers.find(p => p.name === \"macro\").handler",
+      "sha256": "4454dc787c37b2786d950e390c44424473da483ec6baf29b30bf2b9eb3bb120f",
+      "sourceBytes": 2841,
+      "parserName": "macro",
+      "requireUniqueParserName": true
+    }
+  ],
+  "uiBinding": {
+    "invokerSha256": "7f6b285ddebe8f52b1bfb7d8f811c19a2f2e9c3ff289cbbfe0090a16e810dea4",
+    "head": {
+      "callbackSha256": "0deaa43c5862902f007955f0be85787dc71a0323cddbfa77593335511957b1bc",
+      "toggleSha256": "ede4db195cf167704506c8437147032ffceb0dde5b52cd63d907e76e052e44b8",
+      "onSelectSha256": "88721de087971dc0aa2d08a6fd16d9fc185a9e97aad5984a8930570e8c6a9d35",
+      "actionSha256": "a6ad995eb4c37dd2fea61d71cb58eec668db6f96110369f983b6af56ebb95ddf",
+      "errorMessages": ["原版换装报告了错误，请在界面设置中切换原版衣柜检查。", "原版换装未完成，请在原版衣柜检查当前装备。", "衣柜内容已变化，请重新选择", "换装接口尚不可用"]
+    },
+    "strip": {
+      "callbackSha256": "ecf417f74f8ef5fcfdf92c11f1f1db8f6c260665db6e17fc23f2df92878cdfb7",
+      "actionSha256": "269d49b961ec494fe94ef10b91e4f1d17d260ee381a478cb1fa0bbe1da135f3e",
+      "errorMessages": ["脱下操作未完成，请在界面设置中切换原版衣柜检查"]
+    },
+    "shared": {
+      "pSha256": "305ae9a2da3ed0d8654c752c07a4efb6c8ceccfbbb13109489e4d504b8cf5413",
+      "ySha256": "24851de2117c6494f7dd0a02c19a8dd5ec777806024e75c01a8c336213596232",
+      "jSha256": "1277e04b5a34b1dbe771a52bd1d2ac19db7bdf19cb6ccda1b6f0fcc1fa018e96",
+      "cSha256": "2f0ed69ef0d14db240795cc4aaae1154cd2475cf52945b868cbc2aaee290002b",
+      "qeSha256": "eb0e26b57e82af4b4813e162389e49b332b5386c0c705016eba5a8258a06bb57",
+      "neSha256": "5d2cd754c0554d237243ae3cf57327e7c4cd04388d6f215cae095e61926a5acb",
+      "measureSha256": "3ca1b8eafff975cfe3e4050923b1a1e2f6489201091ba0d930177c33c811264e",
+      "xrSha256": "8108dd3770b501e27b4fe3a50cf1ebfa66a586f84d7087be2010cc60ce473f04",
+      "outfitSyncSha256": "894aad5da8ebb30ddf9ebc888f3e61077ef055af982363d7aba920a6f30c4737",
+      "bridgeActionSha256": "8cbe67b41604d9e559f795ded218a70a05e95b2b203fa58259032e64bb174c9d",
+      "bridgeMessageSha256": "e1e68c0e637678fbbf3aca514e3a314cbedbb132435100d04898d187104116be",
+      "bridgeAvailableSha256": "a667a632a9401aa28dc1f10540b8753487f944b6fbd27ea4b2528746512d63cb",
+      "bridgeExecuteSha256": "2d56fdd61d4c5777db9271932b529cf130008a8db7fadbf7b7ecc4c7790c9588",
+      "wikifierGetterSha256": "fdfd024b37c6f76fe6c0b7ebeefbb3fdac43108256bf51763ce688c04af396da",
+      "wikifierSha256": "35d670dd4e6944351719a375b43086aea8a19d2b8baf800466c7e358745973f5",
+      "hostEnabledSha256": "acad76b2cb531130f48e638a3bec03833c812a2ebe3dd0fbd5e5e3d6e8a4f0d9"
+    }
+  }
+}

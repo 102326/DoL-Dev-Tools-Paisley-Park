@@ -1,5 +1,97 @@
 # DoL Dev Tools: Paisley Park — 验证记录
 
+## 3.0.2 文档与公开历史重置：2026-10-08
+
+用户要求仅保留英文主题名、提供首次使用简介，并明确授权删除 3.0.0/3.0.1 对应 Git 提交历史。完整旧 refs/提交和发布元数据已先备份到本地；公开研发链压成当前 Requiem 实现提交、接在 v2.0.1 后，移除旧两个 Release/tag，当前 3.0.2 tag/包重新绑定。原代码、存档保护、Store/未决 effect 和 S1/S2 证据保留，历史文档标明已移除下载入口。
+
+本轮只改 README、Skill 和文档；检查名称、链接、旧历史可达性、当前源码完整性、包 digest 和安装定位。复用 331 项 Node、4 项 Python 及真实 S1/S2，不为 Git parent/文档变化重复 Gameplay。GitHub 缓存的孤立对象是否被物理清除不作为承诺；公开 branches/tags 不再引用原研发链。
+
+## 3.0.2 — Gold Experience Requiem：2026-10-08
+
+本轮验收为 Provider/profile 维护检查、compatibility API 表述、缺依赖入口和正式命名；不重做 Gameplay 业务验收。检查确认现场/控件/源码绑定、原 Scene transfer、Action、回执读取及 Ledger 已共享；新增特殊业务仍需自己的事实/终止合同。当前路由显式本地接入，不是动态插件平台。详细复用点见 [GAMEPLAY](GAMEPLAY.md#providerprofile维护边界)。低层三个 Goal 名不改，明确 compatibility API 身份。
+
+定位的发布体验问题：原 Runtime load 在一次只读 ADB 查询后发生，且 CLI 通用 catch 隐藏具体安装错误。现在先检查 Runtime 依赖，再查询 Android/创建目录、Store 或 Session；已知依赖错误输出固定安装指引，其它原始错误继续隐藏。缺 XState/SQLite 的独立子进程断言零 Android I/O、零输出/Store 写入；受影响 Goal 32项通过（含子测试），Generic 无依赖检查保留。命名统一为 3.0 阶段 Gold Experience Requiem，包版本3.0.2；旧发行文档不改写。
+
+复用 3.0.1 S1/S2、共享执行/Outcome/Recovery 和实机安装观察；本轮未修改它们的逻辑或原游戏。最终 CI、包/Skill/安装及资产校验在本地发行回执保留，CI 用锁文件安装，更多环境仍记 Coverage。
+
+## 3.0.1 候选收口：2026-10-08
+
+当前 M5 S1/S2 代表性验收完成，范围见 [CLOSEOUT_3_0_1](CLOSEOUT_3_0_1.md)。下方按时间保留中间记录，“S1 待完成”等是历史快照。
+
+S1 原生离线独立 App，同 Session `e636bcc2-b809-4eb5-8747-027fa6b86ff2` 完成条件黑色 head 购衣→返回→穿戴：38 动作、73 观察、spent500/reserved0/pendingfalse，原 money500→0，精确 black/black hairpin 购买一次并最终穿戴，原白色 hairpin 回库存，最终 Bedroom。普通关门、教学战斗选择/对话、狗与欺凌偏航由宿主根据新 Scene 处理，Working Memory 保留事件与返回子目标；购买后独立进程 resume 保留原 Goal、deadline、已发生 witness 和消费，不重复购买。未写存档或准备性改游戏状态。约42分57秒墙钟含研发间隔，不作为连续运行指标。
+
+复用 S2 同 Session `2e546fad-421c-4306-a9f5-770dacc2c2c5` 的原生劳动/返回、约12分40秒有效连续运行和无旧聊天新宿主接管；未因文档/发行版本改动重复业务路径。复用两模式同核心、Memory/租约/预算/未知效果/开发 checkpoint 专项及 M4 真实事件证据。
+
+本机 Node24 候选检查最初330项中329通过，1项安装测试失败：带锚点 Markdown 链接未转换为安装后的绝对链接。修复共享 installer 的可选 anchor 保留，加断言后该测试通过。shop/menu/clothing/capability 4文件20项、Skill quick_validate、diff 空白检查通过；其余原有效结果复用。CI 在最终源码运行 Node22 与 Python 检查，发行安装验证另行记录。失败日志保留为私有 artifacts，不用反复重跑掩盖。
+
+旧离线 App 的商店退出 guard 错把原 prehistory task 清理的阶段当作已清理，造成 started/Engine busy；修为 passageinit 查 before、后续 phase 查 after，并在新 S1 App 原商店退出证明任务/registry 清理、五 phase、Addon 与 history terminal。旧 attempt `d63bddd7-3cff-49c1-8c25-4d74b62a2d91` 没有完整 terminal，仍 pending，未重放或重置。旧 UI attempt `2c59c79e-6e9b-4193-9bd0-f8d65391864c` 同样保留；旧 mapping/object 清理失败没有冒充成功。
+
+收口时只读核对共享 Store：S1/S2 都为 completed，各自未结清 effect 数为0。S2 的当前 status.pending=true 来自同物理目标后来留下的旧商店退出 effect，不能冒充 S2 自身未结清或清除该阻挡；完成时 pending=false 的历史证明仍有效。
+
+M6 候选提交 `9993ca663dc3227bfe2b735af31158ea02bab020` 的 CI `37662651689` 完成：Node22 全330项、Python3.10 四项通过。干净 `git archive` 包含240个受控文件，逐项核对名称集合，无 artifacts/Store/依赖目录/APK/存档/密钥。解压副本在无 Gameplay 依赖时 version/help/doctor 成功；安装锁定 XState 后共享 Runtime 的35项检查通过。由该副本运行既有 install-skill，独立 Skill 定位3.0.1、quick_validate 和带锚点链接转换通过。当前入口8份文档/Skill局部链接、版本/名称、S1/S2原Store只读核对通过。
+
+最终收口仅追加本段发行验证说明，运行时代码复用上述候选结果；实际发行 commit/tag/digest、稳定目录安装与本机 Skill 更新按 Release 资产和本地回执核对。冻结 v3.0.0 tag/草稿/资产不改写，私有证明不上传。
+
+## M5 S1准备：原生首次出门与受限恢复：2026-10-07
+
+标准 Session `5a3f48d3-b5a3-4ce5-b93f-c2797268572b`完成 Bedroom→Orphanage，1动作/3观察、pending=false、spent0。随后新 Session `6fc7ff56-5633-4fba-8ea1-82e8a2bef4bb`通过实际原生出门控件到达 Domus Street（turns33→34、time10200→10260、money500不变），触发原生首次教学入口。首次接收端错误要求活动 `npc` 数组增长，实际 `generateNPC` 更新 `NPCList`，导致旧合同 `native-passage-8128aafb01db`未结清。该失败已保留；修正容器断言，未修改原游戏变量、RNG 或教学状态，也未重放导航。
+
+旧 effect `28e28a5c-720c-413c-b3de-da249d43b33f`只通过受审本地只读 recovery 结清：绑定原 nonce/合同/requestDigest，要求冻结的五阶段、五个已完成 Addon phase、自有观察器恢复及原 historyCreated 记录、仍相邻的原生历史、原金额/时间和重新审阅的接收端/时间对象/源码。SugarCube 在渲染前创建历史 moment，存入的 incoming tutorial/NPCList 与渲染后的 active variables 分开检查；不能要求它们是相同的完成快照。不修改页面 started record，不生成原时间回调数等缺失见证。首次恢复读拒绝、租约失效及纠正依据均保留。
+
+共享停止后 reconcile 收费1次，pending=false、spent0/reserved0；Session仍 exhausted/halted，原 deadline不变，原停止理由 `observation-budget-exhausted`保留，未改称 completed。私有只读及清理证据分别为 `native-first-street-recovery-3c5a187e-4341-4f15-a54f-5cf4cec33929.json`、`native-first-street-reconciled-7c77f42f-cf71-477b-a7e2-03f2a0c2a441.json`。street/recovery/profile 15项通过；复用未改 navigation/time 相关结果。当前停在可观察的原生教学入口，无购买；这属于导航/恢复组件证明，不代替 S1 条件购衣同 Goal 验收。S2、冻结安装和发布均不变。
+
+## M5 S1准备：原生商店扣款绑定：2026-10-07
+
+原生 DoL 的扣款函数由注册的 `money` macro 捕获，未暴露 `window.money`。商店映射现在复用既有 function-macro attester 绑定实际捕获函数，保留已有全局函数路线；绑定失败、对象组释放失败不会被吞掉。受影响 shop/clothing-provider/purchase/contract 四文件 27 项通过。真实原生目标的零动作调查及共享 attester 核对通过，Bedroom/turns32/time10140/money500 不变，自有对象与 transport 清理完成；早期全局函数读取失败保留。私有证据 `native-shop-business-8dbaa774-fee7-41c5-ac45-4dd79ddf278e.json` 与 `native-money-attest-4afb218f-716e-4ccf-9509-4aaf79498877.json` 不发布。
+
+这只修正扣款入口的源码/对象绑定，尚未验证商店现场 prepare、购买终止或实际扣款；没有发生购买，不构成 S1 完成依据。接收端、原库存及 moneyStats 增量仍须独立证明。复用未改 S2、穿戴和返回证据，不重跑全量验证。
+
+后续购买 operation 组件以原控件一次点击为入口，要求原 `updateMoment` 同步完成一次、库存仅追加指定完整 variant、原穿戴不变、精确扣款及 clothes moneyStats 增量、同 Passage/历史记录提交和自有观察器恢复，才生成已有 purchase receipt 格式；失败保留 started，重复 attempt 拒绝。尚未接入 Provider，不具备可派发的购买合同。shop/native-shop-operation/purchase/clothing-provider 四文件 22 项通过，覆盖部分业务成功、无扣款、错误金额/款式、重复库存、旧历史、源变化及外来观察器所有权等拒绝分支。另修复报价观察可能进入原 `clothesIndex` 修复分支的问题：读取前核对唯一 index/name/modder，回归确认不调用价格函数。真实零动作核对了 clothingShopv2、刷新和目录等已载入原 widget 身份，原状态不变；未执行购买或计为 S1 完成。
+
+## M5 S1准备：原生穿戴与返回合同：2026-10-07
+
+原生衣物Provider接入已审简单head回执，独立于Soft & Wet；Node24受影响7文件40项通过。复用真实原控件脱下白色发卡并穿回的两份producer回执，原moment各1次、库存0→1→0、turn/time/money不变，source/object/transport清理通过；新领域回执校验离线读取两份原结果通过，无重复穿脱。标准Session `9c79a601-48d6-4f6d-8e18-5baff1726f01`通过原生“关上衣柜”返回Bedroom，1动作/2观察、terminal结清、pending=false、spent0/reserved0，原turns32/time10140/money500。首次只读调查误用同页attester而拒绝，0动作，改用已有导航attester后preflight与真实执行通过。详情与范围见[审计记录](GOLD_EXPERIENCE_REAUDIT.md#m5-s1准备原生穿戴生产合同与返回片段)。这些是片段证明，不替代S1同Goal购买闭环；S1/M6未完成，S2与冻结安装/发布不变。
+
+## M5 S2：原生劳动资源目标与新宿主接管：2026-10-07
+
+无UI、离线Lyra 0.5.12.13的同Session `2e546fad-421c-4306-a9f5-770dacc2c2c5`完成原生劳动使physique达到5310以上并返回Bedroom：原体能5142.857142857143→5322.857142857143、timeStamp2700→10140、money500不变，9动作、23观察、9重规划、pending=false、spent0/reserved0。三个40分钟原生活动具有八/八/四回调见证；全部9个原terminal及mapping/object/transport清理逐项通过。无旧聊天新宿主读取原Goal/预算/Memory/Outcome和新Scene，继续同一目标；租约及手抄引用拒绝记录保留，无重放、预算重置或存档写入。受影响8个测试文件55项通过；复用未改共享核心与M4真实事件证据。
+
+该Goal墙钟约18分49秒；保守剔除约6分09秒源码/只读准备及Primary输入诊断，剩余约12分40秒为实际目标观察/决策/派发与受控交接/恢复，没有sleep凑时长或拼接其它Session。这条普通原生活动路径通过S2代表性验收；没有宣称本Goal又遇到随机对话或其它分支全部通过。精确证据、失败及范围见[审计记录](GOLD_EXPERIENCE_REAUDIT.md#m5-s2原生劳动跨小时与新宿主恢复)。S1复杂副作用与M6仍待完成，冻结安装/发布和旧UI未知effect不变。
+
+## M5准备：原生知识活动与新宿主恢复：2026-10-07
+
+无UI、离线Lyra 0.5.12.13的同Session `9c6e940a-21ac-4b34-bacd-5deb10bad01b`完成原生发现daisy知识并返回Bedroom；8动作、18观察、8重规划，8个terminal结清，pending=false、spent0/reserved0。寻找活动有1800秒/四回调/空Hook表/同步见证；原知识及返回谓词同时为真。无旧聊天新宿主读取原Goal、预算、Outcome和新Scene后接管返回；两次ADB进程环境失败收费保留，修正明确原因后标准resume，无重放或预算重置。受影响园地4项、接收profile10项通过，复用未改相关证据。详见[审计记录](GOLD_EXPERIENCE_REAUDIT.md#m5准备原生知识活动与无旧聊天新宿主恢复)。本次含代码研发间隔，不能算作完整S2连续Gameplay；S1/S2强场景与M6仍待原约定验收。
+
+## M5准备：原生日常活动短路径：2026-10-07
+
+相关profile与状态检查11项通过，复用未变更的时间、共享Action/Outcome和恢复证据。无UI、离线Lyra 0.5.12.13的Session `ec7a5206-8311-4030-a2c3-519cb8c67425`实际完成Bedroom→大厅→Bathroom→刷牙随机场景→Bathroom→Bedroom：5动作、10观察、5个terminal结清，pending=false、spent0/reserved0；原时间180→660、金额500不变。刷牙动作有300秒/四回调/空Hook表/同步见证，随机生成孤儿来访正常处理并返回原Goal。原状态谓词与实际活动路径的证据分开，不把初始hygiene或时间条件单独当活动证明。详情见[审计记录](GOLD_EXPERIENCE_REAUDIT.md#m5准备原生日常活动真实短路径)。这仍是M5准备，不替代S2约10—20分钟连续Gameplay及无旧聊天新宿主接管；S1和正式封装仍待原约定验收。
+
+## M4原生动态事件与共享guard传参：2026-10-07
+
+Node24受影响的8个测试文件62 passed、0 failed；相关真机Session `9c48b1e7-3457-46f3-93aa-da9eca14a437`在无UI、离线Lyra 0.5.12.13完成Kitchen→大厅普通随机事件→同页继续→Bedroom，三个terminal均结清、pending=false、spent0/reserved0，原timeStamp最终180。事件/返回计划、租约到期后的同Session resume及早期只读失败保留，详见[当前审计记录](GOLD_EXPERIENCE_REAUDIT.md#m4原生普通事件动态返回与同session恢复)。这不替代M5 S1/S2或新宿主验收；冻结安装/发布未改。复用未受影响的既有证据，没有重跑全量回归。
+
+## 正式3.0撤回与架构重新审计：2026-10-06
+
+原v3.0.0已撤为草稿，稳定latest恢复2.0.1；tag、原资产/摘要、源码和现场证据保留。以下3.0候选记录仍证明Foundation原范围，不证明新定义的持续Gameplay核心。当前交付与后续必需研发见[重新审计](GOLD_EXPERIENCE_REAUDIT.md)和[撤回记录](WITHDRAWAL_3.0.0.md)。
+
+本轮只修改状态说明、架构设计和Skill，验证文档链接/格式、安装器及源/安装Skill一致性，复用未改动的Foundation结果；不重新跑全量Node/Python或真机，不安装框架候选。框架稳定tag/官方文档审阅与独立设计复核不替代本地spike及新S1/S2验收。
+
+文档本地目标检查298处通过；`node --test tests/install-skill.test.cjs`通过1项，源/安装Skill quick_validate与resolver检查通过，生成指引指向本机3.0 Foundation。当前指引与旧Skill完整备份保留；核对47个运行时/Schema/入口文件摘要未变，冻结ZIP和两个远端资产摘要未变、13条旧tag记录保留。格式与文档一致性通过，不将位置解析或设计复核写成新Gameplay运行证明。
+
+## 3.0.0 Gold Experience候选与收口：2026-10-06
+
+本轮范围以[3.0收口](CLOSEOUT_3_0.md)为准。最终源码 `node --test tests/*.test.cjs` 119 passed、0 failed、0 skipped，包括Goal跨片段/预算/未知结果、原状态谓词、映射漂移、可选缺失、守卫输入与现有Generic/Action/Journey回归。阶段性29/34项结果与真实失败收据保留；最终候选检查不抹掉先前失败。
+
+Python3.14首次执行四项：两项Backup通过，Visual/Schema因缺少可选依赖跳过。使用已有捆绑Python3.12+Pillow执行Backup/Visual三项通过；用已有schema-validation-deps及匹配Python3.14执行Schema一项通过，最终四项各自实际通过，无需安装依赖。跳过记录保留，不将首次跳过计为通过。
+
+真机证明复用本轮仍有效的stage1/2/3原记录：M367FC、Android user 0、Lyra包装App 0.5.12.13、UI 2.2.1/2.2.2，衣柜/普通绕路、单件购买、资金/精确变体/穿戴与恢复。价格差异调查、首次输入守卫不支持、原anchor不可操作等失败已解释并修复，没有未知结果重放或钱/库存回写；包装App不替代unknown GameVersion。
+
+受控C采用实际隔离Git源码包 `c681890`→`45464d6`，相同原head穿戴与恢复Goal各执行一次；四个Goal完成、pending为空，三份选定原库存/穿戴摘要相同，资金、UI及Mod组合一致。五个当前加载UI/兼容包JS/CSS摘要与既有制品核对通过。这个证明属于Tools Node源码更新，不是新增APK部署或完全受控UI升级；原生/业务Mod部署能力复用[既有1.5验收](FINAL_ACCEPTANCE.md)。
+
+发布一致性检查涵盖当前产品名、版本、CLI help、Skill入口与安装器、文档链接、Git原文字节/CRC/文件集合/私有资料排除、独立源码包启动和本机稳定安装。发布提交/包摘要、旧Skill备份、远端tag/资产/CI回执只保存本地交付收据；未把游戏证据上传。新包通过相同安装器生成完整Skill，不只改旧安装文本。
+
+Not validated与Known limitations分别记录在[Coverage Ledger](CLOSEOUT_3_0.md)。有限映射之外的intent不代表完整业务验证器；私有Goal制品保留experimental标识，不是稳定公共诊断格式。未改动平台的已有有效证据复用，不为穷举设备或生态而追加验收。
+
 ## 2.0.1实战经验指引封装：2026-10-06
 
 范围见[2.0.1发布说明](RELEASE_2.0.1.md)：只吸收通用决策经验并更新Skill、AGENTS、诊断文档和发布入口；运行时代码、Collector、Integration与Schema相对2.0.0没有变化。项目特例与原始资料留在本地，CLI帮助可发现性及其它覆盖只是候选，不在本轮实施。

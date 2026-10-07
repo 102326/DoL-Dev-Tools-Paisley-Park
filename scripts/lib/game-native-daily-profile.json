@@ -1,0 +1,87 @@
+{
+  "bathroom": {
+    "id": "dol051213-native-bathroom-day0-v1",
+    "before": "Orphanage",
+    "payload": "<<pass 1>>",
+    "timeSeconds": 60,
+    "receiving": {
+      "passage": "Bathroom",
+      "sha256": "c36c82074e739a1e257fb0f02652625748ce5cb26de156417217bc2d2412da3a",
+      "tags": "[]"
+    },
+    "widgets": {
+      "personalUpkeep": "9da1822d94ee696106bc7225e034a7ad02cd52ec8939792da2b3dc75f07f886e",
+      "pregnancyTest": "45d971ef5df5d1190f119d76f6db84940b93fd8746a39131b3ffbcc62d4dbcfc"
+    },
+    "handlerSha256": {
+      "personalUpkeep": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "pregnancyTest": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "globalFunctions": {
+      "pcAreArmsBound": "323a3e8265475a738514b3db1a28bd0bf4ea5ab2ae2200ff5b96481905a0f0bc"
+    }
+  },
+  "brush": {
+    "id": "dol051213-native-brush-day0-v1",
+    "before": "Bathroom",
+    "payload": "<<pass 5>>",
+    "timeSeconds": 300,
+    "receiving": {
+      "passage": "Bathroom Brush",
+      "sha256": "3b6c4c94a88bf86a7cb7eb9f10364e21f5130ef7f58a886a9edf9eeb86d1ccb0",
+      "tags": "[]"
+    },
+    "widgets": {
+      "bodyliquid": "d752e22315ad4dc9d2cc2fcb8e7d2daf291a81a77f4977eaf3fc03faf49b0796",
+      "canvas-model-override": "f30f30e89dec46f6a925f1abe3d62a53d72a7f416705102f97b3713bba02d125",
+      "wash_mouth": "94181ca93a9c7b88f4bfd11c21f1857a83902d2b93bab8d18e2ce436f5188a5e"
+    },
+    "handlerSha256": {
+      "bodyliquid": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "canvas-model-override": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "wash_mouth": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "cleareventpool": "3b1c2163822a61ff9c7069f7170e4acce4eb38798bbde0994430f21131e1f256",
+      "addinlineevent": "e75756997d9ef7e7fbf414f802c700aacb98022409af998eb80a0c3fe5ba151b",
+      "runeventpool": "53ffe3a80cf3c630aba3f5a00cba4cd3e1a74935c4bdc3ee88f3117c63e12522",
+      "wearProp": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164",
+      "stress": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164",
+      "lstress": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164",
+      "gstress": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    "functionMacros": {
+      "wearProp": "bab5f923b03ffb6fb61b86fda4f8697ed85672f888c00503d1f47a5835135dac",
+      "stress": "16d62db873e384471e0661b77dac06b84ff53845e37151af91b8bc2f6cd148b5",
+      "lstress": "4b660587ed04e71069594934d8486de279d079fedc00f02a7b59e1cdaf17f7b8",
+      "gstress": "4b660587ed04e71069594934d8486de279d079fedc00f02a7b59e1cdaf17f7b8"
+    },
+    "functionCaptures": {
+      "lstress": {
+        "fn": "b10b57163e96f5e51dd89214dd6b8937f10099cca361b355c9ed2fbec6fc6c87"
+      },
+      "gstress": {
+        "fn": "f5ee435de771a0d519acaf44f4d8be112a94d4ba55b9ccdb78555b1f5d4c32f6"
+      }
+    },
+    "globalFunctions": {
+      "normaliseKey": "defdcc807d31751ed60223ba4ee06307d1bdaef92905d87b408b411e59350f9f",
+      "removeDiacritics": "dbe2e1dde4e1dbfeeb92acbbab8d725c81ef93760d9953b76f9c5bdd5ad563ca",
+      "normaliseFileName": "ea5e3808356b7b4bb84243f64571c7bd21a02e0716f62a872f3fa929e570f3e1",
+      "rollWeightedRandomFromArray": "50408885054eca4e9846120e096bc222887bd343ba4d587fa3bea344ec0ad131",
+      "randomFloat": "69df452f0aa96e394b7c6da98359098fc3715c9dbcd238f5d7227eed2c9372d5",
+      "setup.bodyliquid.combined": "3bb6964133a37e5fc9c0c30cd0a8314ec0fd0d389d9466e52718e0388b96a659",
+      "either": "0227e51cd64792f64414f7bf5fca5415266685f3f9bfd3e73ecb066009236602"
+    }
+  },
+  "continued": {
+    "id": "dol051213-native-brush-continue-v1",
+    "before": "Bathroom Brush",
+    "payload": "<<endevent>><<canvas-model-override \"clear\">><<run delete $bathroomExit>>",
+    "timeSeconds": 0,
+    "widgets": {
+      "canvas-model-override": "f30f30e89dec46f6a925f1abe3d62a53d72a7f416705102f97b3713bba02d125"
+    },
+    "handlerSha256": {
+      "canvas-model-override": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    }
+  }
+}

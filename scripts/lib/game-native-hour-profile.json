@@ -1,0 +1,43 @@
+{
+  "widgets": {
+    "orgasmHourlyRecovery": "4898b8c67848c1b72f06f520ddaee54ea4ff92338d2cf06036101229c24af37f",
+    "wetnessCalculate": "f5e55b1622d431106aeba35832a4b1498d16e4981b35563a0906360202b8d73f",
+    "vaginaWetnessCalculate": "799a46dded36ebd4ce327c57a821d9533d320181c463e7aa61764d52a9e37555",
+    "orgasmcount": "152d5616ef1ffd4051c97acb8ae7458f9f6d095459d2fafd3385a8c98e4ada78"
+  },
+  "handlerSha256": {
+    "orgasmHourlyRecovery": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "wetnessCalculate": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "vaginaWetnessCalculate": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "orgasmcount": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "milk_amount": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+  },
+  "functionMacros": {
+    "milk_amount": "db68e8f1c4ed1c0ee9fd0cd8c35a594e97ff19b9b6a2263da651b5e552331854"
+  },
+  "globalFunctions": {
+    "wikifier": "26551086661bbe8e635dbecf273af600910f690b91183f9ea4f2471b780b6091",
+    "calchairlengthstage": "1d72e4b1946ae20dc594aff6c61857d83aaeb05008d81c8ee2c69bc5a61a8652",
+    "hourlyPregnancyUpdate": "d435ec55e6e969e8a628dc3ce312b451103d9d8cae1b7262f44262bb3fd329b7",
+    "checkLabour": "540de33693c702571bac3ffee2950f4389b0582c06b023da38e837fda9416a8d",
+    "baileyConfiscationTick": "f67deb3ecadfa51cbded83375d5b360a387e2d91e5c28765a0ab0cc160062b89",
+    "trimExpiredLoads": "7a3881396d2c8689d02a369310df225d810df147ab47218492b79cf6950864be",
+    "startDuePregnancies": "328e73bbcd96dc96f4e6567eaa6f49c71f1cef50678d5898d07186f8d5324869",
+    "getActivePregnancies": "8728dec914d20e73267a2b2e926a4fd94730b5cac8715986acaa05823392b0e4",
+    "rollAndRecordConception": "eecb956d56d20b363163a546d9b121c9d18b639a2021bc83a6cf883891922117",
+    "convertHairLengthToStage": "008913a4c78f7e3c2cba084809605e61955c36b7a785dacf75bd7a21825381fa",
+    "playerRutMinArousal": "bb879783f537a9d355cabf29169be3e006c938c57f0b2a652f5c9f096ab51412",
+    "playerHeatMinArousal": "5c1dfa2f3b515e49bfcf00aac113cc774054874dd596af6212ca0e048dfa40bb",
+    "numberOfEarSlime": "0adb4b385dc5a2dd597c5b1abe9d5adc0ce253c2fd8396c06d6f07a9c2f6539d",
+    "readyToCarry": "2b6dcc4c2531876ca89d60ad3eb1dd2dcdb37d460684683e54d5e732c9062234",
+    "orificeHasParasites": "d919ebe4034098187cc691efe8bb50f15a416961312ad89e54543b78f3b021a5",
+    "playerCanCarryAnally": "ce5524e78c485a8c9202d2aa1b6f9b378f2eb98e7d32bd2d9ca2ee0e461bbb99",
+    "playerIsPregnant": "fac4d30db63acb47030f3d1f5212696ec805543023c8e6e549b23ebdb764d7ac",
+    "menstrualCycleFertility": "464bdb0053a73dc5d4112af969c4cbd2e3e39e97b14eade59a4c5f0215024fce",
+    "currentBodyPregnancies": "3ad7184d0abe4504595f85ca011d984a45435b2e5b819c93a2be9b8b7549cf44",
+    "cycleFertilityRamp": "2300c2a277535d128b33e17a4162affdceb5a265dc7fdade23c567d25d9df1c3",
+    "fertilityRamp": "274c61973aba2ecd15935560a3a8e58edd9bbde664337af0aa4368fd658ac3cd",
+    "random": "b4cd525348af44474e41c2a8a1972b9eb6b3b059ecb38a172a201cdca450e19f",
+    "setup.bodyliquid.combined": "3bb6964133a37e5fc9c0c30cd0a8314ec0fd0d389d9466e52718e0388b96a659"
+  }
+}

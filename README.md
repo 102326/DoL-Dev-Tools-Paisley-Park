@@ -1,24 +1,31 @@
 # DoL Dev Tools: Paisley Park
 
-面向整个 DoL Mod 开发生态的公共本地开发、调试、诊断与复现实验工具链。王牌是让Agent / 开发者直接进入真实Android、WebView和运行现场，形成Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence闭环。
+**Gold Experience Requiem · 3.0.2**
 
-| Live Device Access核心 | 进入什么现场 |
+一套面向 DoL 玩家、Mod 作者和开发 Agent 的本地工具，帮助你查看真实游戏现场、排查问题、验证修改，以及让 Agent 完成有边界的游戏目标。
+
+工具在电脑上运行，通过 Android/ADB 和 WebView 调试接口连接游戏，生成可检查的截图与结构化记录。你可以用它：
+
+- **看现场**：查看手机画面、页面 DOM/CSS、Console、网络摘要与 Android 日志。
+- **查问题**：把截图、日志、页面结构和性能信息整理成 Evidence Bundle，保留复现步骤与失败记录。
+- **做开发**：复现问题、修改目标项目、使用其构建部署流程，再回到同一场景验证。
+- **跑 Gameplay**：由宿主 Agent 根据当前场景选择动作、处理普通事件、重规划路线，并用原游戏状态确认结果；预算和未决副作用跨会话保留。
+
+通用诊断适用于原版和不同 DoL Mod；Soft & Wet 等 Integration 提供可选增强。Gameplay 需要宿主 Agent 和受支持的动作合同。正常游戏行为在授权测试环境中自治，删除或覆盖已有存档默认禁止。
+
+第一次使用可以先跑 **doctor** 检查环境，然后按需用 **inspect** 查看 WebView、用 **evidence** 保留现场。希望让 Agent 使用工具时，按[安装指南](docs/SKILL_INSTALL.md)安装 `$dol-dev-tools-paisley-park`；游戏目标的用法和支持边界见[Gameplay 指南](docs/GAMEPLAY.md)。
+
+| 三个现场入口 | 能看到什么 |
 | --- | --- |
-| Android CLI | 真机画面、标注截图与原生layout |
-| Chrome Inspect / CDP | Agent直接进入真实WebView，按需观察DOM、CSS / Computed Style、Console、Runtime Exception、Network、Storage、Performance、页面状态及项目Integration |
-| ADB | Android / App系统现场、日志、进程、内存、帧统计与生命周期 |
-
-Generic Diagnostics不依赖Soft & Wet、MapleBirch、ModHub或任何特定Runtime；Integration只作可选增强。内置采集遵守限定范围与脱敏策略，现场观察和项目解释分别记录。
-
-**当前版本：2.0.1（实战经验指引补丁）。** 核心能力沿用已完成并验收的1.5路线。 后续设备/场景覆盖、专项Integration及条件性验证按需推进；使用Completed／Implemented, coverage limited／Not implemented三类任务状态，并将可选扩展单列Coverage Ledger，不以穷举所有环境作为产品完成标准。见[收口口径与可复用工作流](docs/CLOSEOUT_1_5.md)。
-
-本次澄清Doctor就绪判断、DOM ownership契约及标准工具/直接工具/Journey的选择，运行时与采集格式沿用2.0.0。见[2.0.1发布说明](docs/RELEASE_2.0.1.md)；品牌重置与迁移见[2.0.0](docs/RELEASE_2.0.0.md)。[GitHub仓库](https://github.com/102326/DoL-Dev-Tools-Paisley-Park)提供源码与发布包；旧版tag与验收记录保留。
+| Android CLI | 真机画面、标注截图与原生布局 |
+| Chrome Inspect / CDP | Agent 进入真实 WebView，读取 DOM、CSS、Console、网络、Storage 与性能信息 |
+| ADB | Android/App 的日志、进程、内存、帧统计与生命周期 |
 
 ## 最快开始
 
-从[Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/latest)下载源码ZIP并解压；目录名使用`DoL-Dev-Tools-Paisley-Park`，Windows路径不使用产品名中的冒号。旧`DoL-Dev.cmd`是同一CLI的保留别名。Skill调用名为`$dol-dev-tools-paisley-park`，安装步骤见[SKILL_INSTALL](docs/SKILL_INSTALL.md)。
+从[3.0.2 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.2)下载源码包，解压到稳定目录。目录名使用 `DoL-Dev-Tools-Paisley-Park`，Windows 路径不使用产品名中的冒号。旧 `DoL-Dev.cmd` 是同一 CLI 别名，Skill 名为 `$dol-dev-tools-paisley-park`，见[SKILL_INSTALL](docs/SKILL_INSTALL.md)。
 
-必需 Node.js 22.12+；Android 采集需要已有 ADB、USB 调试和明确的设备/App。CDP 采集还需要 App 开启 WebView 调试。无需 `npm install`。
+必需 Node.js 22.12+。Generic Diagnostics 无需 npm 依赖；Gameplay 先在根目录运行 `npm ci --ignore-scripts --no-audit --no-fund` 安装锁定的 XState。Node 22 运行 Gameplay 加 `--experimental-sqlite`（Windows launcher 已包含）。Android 采集需要已有 ADB、USB 调试和明确的设备/App；CDP 需要 App 开启 WebView 调试。
 
 ```powershell
 New-Item -ItemType Directory -Path artifacts -Force
@@ -48,6 +55,7 @@ $env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'
 
 - 页面错位或点击异常：真机画面→DOM/CSS与命中检查→修改目标源码→同场景复验。
 - Mod兼容问题：通用DOM Snapshot/Diff，按需补Runtime/Adapter的可选解释。
+- 短游戏目标与开发复验：读取当前原状态→选择原动作→核对购买/穿戴结果→遇到正常分支时重规划。
 - 卡顿或内存异常：Console/Network摘要与性能采样，具体问题需要时再升级Profiler或Perfetto。
 - UI开发与复现：审阅Action/Journey、checkpoint、构建部署和Evidence比较；首次诊断先用最小充分采集。
 
@@ -60,7 +68,8 @@ $env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'
 | DOM / CSS / Visual | `dom-snapshot/diff`、`css-snapshot/diff`、`dom-inspect`、`hitbox-overlay`、`visual-diff`、`animation-frames` |
 | Environment / Storage / Events | `environment`、`environment-diff`、`storage-snapshot/diff`、`timeline` |
 | 复现与实验 | `action`、`journey`、`journey-record`、`matrix`、`network-scenario`、`viewport-matrix` |
-| Android 日志与性能 | `logcat`、`perf`、`perf-series`、`process-memory`、`leak-probe`、`native-layout`、`record`；开发源码增加[app-lifecycle/diff](docs/APP_LIFECYCLE.md) |
+| Gold Experience Requiem Runtime | `game-observe`、`game-goal-start/step/status`、`game-session`；[Goal、Decision、Memory、预算、Outcome 与恢复](docs/GAMEPLAY.md)，宿主 Agent 持续决策，原生及领域 Provider 执行 |
+| Android 日志与性能 | `logcat`、`perf`、`perf-series`、`process-memory`、`leak-probe`、`native-layout`、`record`、[app-lifecycle/diff](docs/APP_LIFECYCLE.md) |
 | 明确选择的重型采集 | `perf --deep`、`bugreport`、`evidence --full`，须 `--sensitive yes` |
 | 反馈与复现 | `support`、`evidence-compare`、`evidence-timeline`、`known-good`、`issue-report`、Evidence `--repro` |
 | 可选 Integration | `--integration soft-and-wet` 或 `--integration-file REVIEWED_LOCAL.cjs`；缺失或失败独立记录 |

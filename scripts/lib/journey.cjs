@@ -3,7 +3,7 @@ const path = require('node:path');
 const { randomUUID, createHash } = require('node:crypto');
 const collectors = require('./collectors.cjs');
 const action = require('./action.cjs');
-const { connect } = require('./cdp.cjs');
+const execution = require('./execution-context.cjs');
 const { redact } = require('./privacy.cjs');
 const { version } = require('../../package.json');
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -78,52 +78,8 @@ async function run(options, loaded, overrides = {}) {
     report.steps = plan.steps.map(s=>({...summarize(s),status:'planned',targetCheck:'revalidated at execution; future selectors may not exist yet'}));
     report.status = 'planned'; report.captureEnd = new Date().toISOString(); checkpoint(); return report;
   }
-  const controller = new AbortController(); let client, appPid, forwardPort, capture, forwardAllocationUncertain=false;
-  const cleanup = [], baseAdb = overrides.adb || collectors.android(options), deadline = started + plan.timeoutMs;
-  const assertActive = () => { if (controller.signal.aborted || Date.now() >= deadline) throw Object.assign(Error('Journey deadline'),{code:'ETIMEDOUT'}); };
-  const timer = setTimeout(()=>{controller.abort();try{client?.close()}catch{/* Final cleanup records failures. */}},plan.timeoutMs);
-  const execute = async (args, settings = {}) => {
-    assertActive();
-    if(args[0]==='forward'&&args[1]==='tcp:0')forwardAllocationUncertain=true;
-    const signal=settings.signal?AbortSignal.any([settings.signal,controller.signal]):controller.signal;
-    const result = baseAdb.execute ? await baseAdb.execute(args,{...settings,timeout:Math.min(settings.timeout??10000,10000,Math.max(1,deadline-Date.now())),signal}) : await baseAdb(...args);
-    // Keep a successful dynamic port result so its owner can register cleanup even at the deadline.
-    if (!(args[0] === 'forward' && args[1] === 'tcp:0')) assertActive(); return result;
-  };
-  const adb = (...args)=>execute(args); adb.execute = execute;
-  const cleanupAdb = (...args)=>baseAdb.execute ? baseAdb.execute(args,{timeout:3000}) : baseAdb(...args);
-  const ctx = { options, adb, cleanupAdb, cleanup, assertActive };
-  let actionDispatched = false;
-  ctx.markSideEffect = () => { assertActive(); actionDispatched = true; };
-  async function closeTransport() {
-    let closeFailed=false;try{client?.close()}catch{closeFailed=true}client=undefined;
-    if (forwardPort) { await collectors.removeForward(ctx); forwardPort=undefined; }
-    appPid=undefined;ctx.forwardPort=undefined;
-    if(closeFailed)throw Error('Transport close failed');
-  }
-  ctx.ensureWebview = async () => {
-    assertActive();
-    const pid = (await adb('shell','pidof',options.package)).toString().trim();
-    if (!/^\d+$/.test(pid)) throw Error('App identity unavailable');
-    if (client && appPid === pid && (!client.isOpen || client.isOpen())) return ctx.client;
-    await closeTransport(); assertActive();
-    ctx.appPid=pid; await collectors.forward(ctx); forwardPort=ctx.forwardPort;forwardAllocationUncertain=false;appPid=pid;
-    assertActive();
-    capture=collectors.events();
-    client = await (overrides.connect || connect)(ctx.endpoint,Math.min(15000,Math.max(1,deadline-Date.now())),capture.onEvent,options.targetId||null);
-    assertActive();
-    ctx.client = { async evaluate(source) { assertActive(); const result=await client.evaluate(source);assertActive();return result; },
-      async send(method,params,settings) { assertActive();const result=await client.send(method,params,settings);assertActive();return result; } };
-    ctx.channels={};
-    for(const domain of ['Runtime','Network']) { try {await ctx.client.send(domain+'.enable');ctx.channels[domain]='available'} catch {assertActive();ctx.channels[domain]='unsupported'} }
-    ctx.capture=capture;return ctx.client;
-  };
-  const pause = ms => new Promise((resolve,reject)=>{
-    assertActive();const tick=setTimeout(done,ms);
-    function done(){controller.signal.removeEventListener('abort',abort);resolve()}
-    function abort(){clearTimeout(tick);reject(Object.assign(Error('Journey deadline'),{code:'ETIMEDOUT'}))}
-    controller.signal.addEventListener('abort',abort,{once:true});
-  });
+  const ctx = execution.create(options, overrides, { started, timeoutMs: plan.timeoutMs, captureEvents: true });
+  const { assertActive } = ctx;
   async function captureCheckpoint(step,index,entry) {
     const scope=step.scope||plan.scope; ctx.options={...options,scope,timelineMs:step.timelineMs,observerInstrumentation:step.observerInstrumentation===true}; entry.artifacts=[];
     for(const kind of step.capture) {
@@ -164,10 +120,10 @@ async function run(options, loaded, overrides = {}) {
       const begin=Date.now(), entry={index,...summarize(step),captureStart:new Date().toISOString(),status:'failed'};
       report.steps.push(entry);checkpoint();
       try {
-        actionDispatched=false;
+        ctx.resetSideEffect();
         assertActive();
         if(step.type==='wait') {
-          if(step.milliseconds!==undefined) await pause(step.milliseconds);
+          if(step.milliseconds!==undefined) await ctx.pause(step.milliseconds);
           else {
             const until=Date.now()+step.timeoutMs;
             while(true) {
@@ -175,26 +131,24 @@ async function run(options, loaded, overrides = {}) {
               if(Date.now()>until) throw Error('Wait condition not satisfied');
               if(result?.satisfied===true) break;
               if(Date.now()>=until) throw Error('Wait condition not satisfied');
-              await pause(Math.min(100,Math.max(1,until-Date.now())));
+              await ctx.pause(Math.min(100,Math.max(1,until-Date.now())));
             }
           }
         } else if(step.type==='checkpoint') await captureCheckpoint(step,index,entry);
-        else { if(['launch','restart'].includes(step.type)) await closeTransport();await (overrides.executeAction||action.execute)(ctx,step); }
+        else { if(['launch','restart'].includes(step.type)) await ctx.closeTransport();await (overrides.executeAction||action.execute)(ctx,step); }
         assertActive();entry.status='completed';
       } catch(error) {
-        const timeout=controller.signal.aborted||error?.code==='ETIMEDOUT'||error?.killed;
+        const timeout=ctx.timedOut||error?.code==='ETIMEDOUT'||error?.killed;
         entry.reason=timeout?'deadline-or-command-timeout':'step-failed';entry.errorContent='omitted';
-        if(actionDispatched)entry.outcome='unknown; side effect may have occurred';
+        if(error?.notDispatched === true)entry.outcome='not dispatched; guard rejection acknowledged';
+        else if(ctx.actionDispatched)entry.outcome='unknown; side effect may have occurred';
         throw error;
       } finally {entry.captureEnd=new Date().toISOString();entry.durationMs=Date.now()-begin;checkpoint()}
     }
     report.status='complete';
   } catch {report.status=report.steps.some(s=>s.status==='completed'||s.artifacts?.length)?'partial':'failed'}
   finally {
-    clearTimeout(timer);controller.abort();
-    for(const restore of cleanup.reverse()) {try {await restore();report.cleanup.push({status:'completed'})} catch {report.cleanup.push({status:'failed',reason:'restore-failed-or-conflict'})} }
-    try {await closeTransport();report.cleanup.push({status:'completed',resource:'own CDP transport'})} catch {report.cleanup.push({status:'failed',resource:'own CDP transport'})}
-    if(forwardAllocationUncertain)report.cleanup.push({status:'failed',resource:'ADB forward allocation',reason:'ownership-unknown; no unrelated forwards removed'});
+    report.cleanup.push(...await ctx.finish());
     if(report.cleanup.some(c=>c.status==='failed')&&report.status==='complete')report.status='partial';
     report.captureEnd=new Date().toISOString();checkpoint();
   }

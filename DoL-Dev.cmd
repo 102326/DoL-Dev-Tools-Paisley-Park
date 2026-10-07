@@ -1,2 +1,2 @@
 @echo off
-node "%~dp0scripts\dol-dev.cjs" %*
+node --experimental-sqlite "%~dp0scripts\dol-dev.cjs" %*

@@ -11,7 +11,7 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装后从下一次对话回合开始发现；当前回合显式读取可以验证行为，但不能冒充宿主自动发现验收。
 
-当前[2.0.1](RELEASE_2.0.1.md)包含实战经验指引补丁。更新时保留旧Tools和Skill，使用新包生成指向2.0.1稳定目录的完整Skill；同时核对生成文字、文档链接与resolver版本，不只替换旧安装的SKILL.md。
+当前安装版为 3.0.2 Gold Experience Requiem。先在新的稳定 Tools 目录准备 Gameplay 依赖；完整备份旧 Skill，再向空目标执行上方安装命令，核对 resolver、生成文档链接和实际 CLI 版本。旧 v3.0.0 Foundation 与[撤版记录](WITHDRAWAL_3.0.0.md)保留；新[收口](CLOSEOUT_3_0_2.md)与[工作流](GAMEPLAY.md)是本版本依据。安装不迁移旧私有 journal、不清共享 Store/未决 effect，也不保证每种自然语言提示都会自动触发 Skill。
 
 移动Tools或恢复安装时，先核对新路径，再在当前进程设置`DOL_DEV_TOOLS_HOME`；它优先于安装记录和仓库相对位置。旧记录失效会停止，不扫描私有目录或自行下载替代包。搬迁后说明中的机器专属链接也可能过期，以解析结果中的docs为准；更新安装前保留旧目录，再向新的空目标安装。
 

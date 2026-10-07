@@ -1,0 +1,152 @@
+{
+  "garden": {
+    "id": "dol051213-native-garden-day0-v1",
+    "before": "Orphanage",
+    "payload": "<<pass 1>>",
+    "timeSeconds": 60,
+    "receiving": {
+      "passage": "Garden",
+      "sha256": "34571b091e9034f03e41db0cd602d09ab9bdc252fa92fb3eb4ad7e8bb9e497fa",
+      "tags": "[]"
+    },
+    "widgets": {
+      "gardenicon": "1bbf5314a4a92d8b5fba929f0af2bc157064df7da38ca8300ade8e394418d53f",
+      "main_hall_icon": "9b7fd6a38453f7b9ff71765b659cc669d538ad6116aa6e95a339e9545abd08f8",
+      "fenceicon": "291b5b951026461538d6ebd28d9705ecd67aa8eee3f33b59db95733a7f8ba844"
+    },
+    "handlerSha256": {
+      "gardenicon": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "main_hall_icon": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "fenceicon": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "globalFunctions": {
+      "getRobinLocation": "c5af73d126ce4f2dd3d5b22e0167bf30a5b66735f6e7e70e217adde5c55fbc5b"
+    }
+  },
+  "flowers": {
+    "id": "dol051213-native-flowers-day0-v1",
+    "before": "Garden",
+    "payload": "",
+    "timeSeconds": 0,
+    "receiving": {
+      "passage": "Garden Flowers",
+      "sha256": "722d06e91765475d0f01080306acb4632908de5b901e2ed9c6e1a195247e7f5c",
+      "tags": "[]"
+    },
+    "widgets": {
+      "plot_effects": "7048a4dac0f677c544459cf02fa20854f0746aa76cb2ff9689e092afdf55a727",
+      "plots_init": "bcb88d52ede8a8bb873fe0e7186b61da79ea40fc65051a7d21bba06e149d0a81",
+      "display_plot": "50441d571015aa1b4ce0bcba83487fbed2abe2bc779b2cc9a3e5bb338075df1b",
+      "foodstufficon": "a9b522d5e12215eb07511c2823f524fc8c07a6e35e8d771c823f4c6ce295b07c",
+      "wordify_i": "4bc3a8bfe714176fefdc7a370402154cd20e8e6cf3cc282ef47160b962ddbf6f",
+      "display_quality": "c098249477a6bfeb29f03d19d28bf20a84074e4dd5bbb1c928aa33e3d2e56aa0",
+      "tendingTillOptions": "0b8f89eef2d2540db499d93532631c44ed7d214b74e7be13aa35be006fcbf42c",
+      "number": "95e97455abb24321179b879b27e5e3afcf07d8475b0237e86ee2c2b3945d9b99",
+      "capitalise": "4eadefcd3cdff428be4076b7d9894c5c6d446fed92a008f77ebe599458c10613",
+      "gardenicon": "1bbf5314a4a92d8b5fba929f0af2bc157064df7da38ca8300ade8e394418d53f"
+    },
+    "handlerSha256": {
+      "plot_effects": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "plots_init": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "display_plot": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "foodstufficon": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "wordify_i": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "display_quality": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "tendingTillOptions": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "number": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "capitalise": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "gardenicon": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "gtiredness": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    "globalFunctions": {
+      "getRobinLocation": "c5af73d126ce4f2dd3d5b22e0167bf30a5b66735f6e7e70e217adde5c55fbc5b",
+      "statusCheck": "0848a84298a2c2a11f4d76473a3a47b109189e93bcccd6153847df7544fedcef",
+      "unsetTendingVars": "b44c1254f43c9c000cb6df2cb82714e5157a914ca865803cf7d38b4a2ecb3dcf",
+      "orphanagePlotsPlanted": "2380eac90046ca547b7cb0658a417b8f25ca7b9fc366f0fd00c95a724d494d9a",
+      "currentSkillValue": "b5d1075f2dbce3128a65dba444935697a361b3d79c893da583b33dc48b438d9a",
+      "getTimeString": "4bd861acb93118a46fdfb2cc6061cdc2c8b052425d3c22d62e374da43189a882",
+      "pcAreArmsBound": "323a3e8265475a738514b3db1a28bd0bf4ea5ab2ae2200ff5b96481905a0f0bc",
+      "statDisplay.statChange": "eea33b7676d01d71d46d598118ad51bf6bde84f5e77fc2260aa3c1eb732c299d"
+    },
+    "functionMacros": {
+      "gtiredness": "4b660587ed04e71069594934d8486de279d079fedc00f02a7b59e1cdaf17f7b8"
+    },
+    "functionCaptures": {
+      "gtiredness": {
+        "fn": "8ed77eaf709d4c08f090644a12e5c75221a4a353b971cc26479d481fbb4d1346"
+      }
+    }
+  },
+  "seeds": {
+    "id": "dol051213-native-garden-seeds-day0-v1",
+    "before": "Garden Flowers",
+    "payload": "<<set $plants_known.push(\"daisy\")>><<pass 30>>",
+    "timeSeconds": 1800,
+    "receiving": {
+      "passage": "Garden Flowers Seeds",
+      "sha256": "66259a84e32568b40a5fcb12faac8da11572dd3311f8fe43667145db3a42a7de",
+      "tags": "[]"
+    },
+    "widgets": {
+      "foodstufficon": "a9b522d5e12215eb07511c2823f524fc8c07a6e35e8d771c823f4c6ce295b07c"
+    },
+    "functionMacros": {
+      "wearProp": "bab5f923b03ffb6fb61b86fda4f8697ed85672f888c00503d1f47a5835135dac",
+      "specialClothesUnlock": "9d1e077a616949778dc6464731b420592f580dc65722236baffbb84fa9833d17"
+    },
+    "functionCaptures": {
+      "specialClothesUnlock": {
+        "macroFunction": "fe9306f8c1736780ef4bd0908bab3e16548dcda72fe0fbe10fc1f474755c4038",
+        "macroFunction.specialClothesUnlockText": "1bfb543673f27a444c0091d22f874660bdcd01110fb80568ea9a1cd69afaa400",
+        "macroFunction.specialClothesRefresh": "35ded85be583a14215ae6fae6f166d065fff789247f7d77a4bae2e2521d9fbbe",
+        "macroFunction.specialClothesRefresh.getSpecialSets": "c6045233bbd21bb94e369b775b47f4eae6f081dae77932ddbcb302de3a67d568",
+        "macroFunction.specialClothesRefresh.getUnlockedSpecialSets": "cc0aaa8f3b18c44e32bd9cb0e0d2be695200d05bd0cb0f47c2e800be4f3022cc",
+        "macroFunction.specialClothesRefresh.statusCheck": "0848a84298a2c2a11f4d76473a3a47b109189e93bcccd6153847df7544fedcef"
+      }
+    },
+    "handlerSha256": {
+      "foodstufficon": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "wearProp": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164",
+      "specialClothesUnlock": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    "globalFunctions": {
+      "normaliseKey": "defdcc807d31751ed60223ba4ee06307d1bdaef92905d87b408b411e59350f9f",
+      "removeDiacritics": "dbe2e1dde4e1dbfeeb92acbbab8d725c81ef93760d9953b76f9c5bdd5ad563ca",
+      "normaliseFileName": "ea5e3808356b7b4bb84243f64571c7bd21a02e0716f62a872f3fa929e570f3e1"
+    },
+    "seedRequirementsSha256": "a43c21d057e5c04bb768da1800fb3d2c5425c24768d73d54b7ea58463d18464e"
+  },
+  "till": {
+    "id": "dol051213-native-flowers-till-morning-v1",
+    "before": "Garden Flowers",
+    "payload": "<<set $tendingvars.plot_tilled to true>> <<tiredness _baseTiredness>><<physique _baseTiredness>> <<if $location is \"alex_farm\">> <<farm_count _baseTime>> <</if>> <<pass _baseTime>> <<set _plantbed.till to 1>>",
+    "timeSeconds": 2400,
+    "widgets": {
+      "physique": "de9f2d6c718b5e39dbda0934114834c887071e5a28af04b26ee10ecf58b174ec",
+      "tendingPlantSeedsOptions": "8f3715721a8ea43677da6f9838dfe8d92b58e6500da535ae59869b3581b7895f"
+    },
+    "handlerSha256": {
+      "physique": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "tendingPlantSeedsOptions": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+      "tiredness": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    "functionMacros": {
+      "tiredness": "dc87fff538204e3bf6cc751c85a28bef720e717e4507834fa65e9cefeb38d897"
+    },
+    "functionCaptures": {
+      "tiredness": {
+        "fatigueClamp": "7efa01e9f3913cef540c792ba24c6a4946cbaff67aeabdde40897e2c0e66a7e8",
+        "fatigueClamp.stressClamp": "d33dde70ed31902b5db16a23277556bfc7a548b9a1a19343dc13e732eba8ea24",
+        "fatigueClamp.stressClamp.traumaClamp": "ed1f5e85bd868062c27965ac2ebc5356cc9c7e41c00277887ff2f0566a37b80a"
+      }
+    },
+    "globalFunctions": {
+      "Weather.BodyTemperature.addActivity": "80d9ea9a3b13c78962c71b3e2d46acb7cd77269cb97ab7f1b19053c75a6232a8"
+    },
+    "globalCaptures": {
+      "Weather.BodyTemperature.addActivity": {
+        "resetActivity": "056d869d4fa598935ddd3b5a89fa707aed8759a234e979e620ebaebc0cfb10e1"
+      }
+    }
+  }
+}

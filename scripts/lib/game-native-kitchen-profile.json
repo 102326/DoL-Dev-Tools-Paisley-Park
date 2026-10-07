@@ -1,0 +1,32 @@
+{
+  "id": "dol051213-native-kitchen-first-entry-v1",
+  "before": "Bedroom",
+  "payload": "<<pass 1>>",
+  "receiving": {
+    "passage": "Kitchen",
+    "sha256": "fb6b3b2726bee63c9198dfb737abb300c000ebc4e1d5b4b159c3f8ec5c35e2cb",
+    "tags": "[]"
+  },
+  "widgets": {
+    "robinorphanagekitchen": "0c384e52a81f00010a771b35392aeba6f290e9615dc360a203e1355c25df987a",
+    "ingredientsSupplied": "aa0f3aba8ef1f94dd24af4a678490cda7db0306c429e370abae3254d8eb83e3b",
+    "ingredientsExceptions": "9712382c4565922fe7c5f8b1e2d5f7b1e3773fb1f866295f548c02e146c87e01",
+    "kitchenDisplay": "685ed516ef2f9e075cc9d843fad734a305db79153b130c1773ae46a238624929",
+    "kitchenDisplayRecipes": "afc1f876b497318163d1a8fe22bbb2e84c0a88af5a72c59c8c4b72abdb4ee18e",
+    "kitchenDisplayOptions": "81d087459c247de47c2b23bb15794ba9837120edca4e971e42840029b29cc47a",
+    "kitchenDisplayRecipe": "2e2db6e7b980823b65f84ff50399ff5ac25eabbbe0c8ca048fbaeec1f94b265d"
+  },
+  "functionMacros": {
+    "kitchenFilter": "62f87cc58374975a33f801821c72a287495643e5a7c3c78562f8c42a36061661"
+  },
+  "handlerSha256": {
+    "robinorphanagekitchen": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "ingredientsSupplied": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "ingredientsExceptions": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "kitchenDisplay": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "kitchenDisplayRecipes": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "kitchenDisplayOptions": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "kitchenDisplayRecipe": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "kitchenFilter": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+  }
+}

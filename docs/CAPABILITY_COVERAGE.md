@@ -2,6 +2,8 @@
 
 对照 [原文](proposals/CAPABILITY_BLUEPRINT.md) 第0..88节，按能力组登记。实现、依赖可用、采集完整和业务验收分别判断。外部路径复用已有工具；条件能力缺少目标接口/权限时必须 unsupported/unknown，不能编造证据。
 
+下表保留1.5诊断平台验收边界；3.0新增的有限Goal、原商店/可选衣柜映射与A—D代表性证明另见[Foundation历史收口](CLOSEOUT_3_0.md)。正式v3.0.0已撤回；[新的Gameplay核心与验收](GOLD_EXPERIENCE_REAUDIT.md)尚需实现，属于新承诺内工作，不是本表可选覆盖。新语义不扩大下表原证据或Generic默认采集范围。
+
 1.5产品已经正式收口。任务状态采用Completed／Implemented, coverage limited／Not implemented；Optional Integration和Future coverage另列Coverage Ledger，不是本轮Not implemented。以本行声明范围判断，代表性验证足够时可以完成任务，不把覆盖有限描述成产品未完成。更细的责任与复用流程见[收口说明](CLOSEOUT_1_5.md)。现有能力的精度上限保留；专项调查按问题复用专业工具或目标接口。
 
 | 原文章节 | 核心状态 / 覆盖登记 | 已有路径 | 当前证明与条件 |

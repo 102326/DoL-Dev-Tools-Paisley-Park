@@ -36,19 +36,24 @@ function summary(action) {
   return result;
 }
 
-function webExpression(action) {
+function webExpression(action, guard = '', operation, hasGuard = false) {
+  const rejected = hasGuard ? '{ok:false,guardRejected:true}' : '{ok:false}';
   return `(() => {
     const nodes = document.querySelectorAll(${JSON.stringify(action.selector)});
-    if (nodes.length !== 1) return {ok:false};
+    if (nodes.length !== 1) return ${rejected};
     const node = nodes[0];
     if (!(node instanceof HTMLElement) || !node.isConnected || node.matches(':disabled') || node.closest('[inert]') ||
-        !node.getClientRects().length) return {ok:false};
+        !node.getClientRects().length) return ${rejected};
     const style = getComputedStyle(node);
-    if (style.display === 'none' || style.visibility !== 'visible' || style.opacity === '0') return {ok:false};
+    if (style.display === 'none' || style.visibility !== 'visible' || style.opacity === '0') return ${rejected};
+    ${guard}
+    ${operation ? `const operated=(function(){ ${operation.source} })();
+    const completed=result=>({...result,guardRejected:false});
+    return operated&&typeof operated.then==='function'?Promise.resolve(operated).then(completed):completed(operated);` : ''}
     if (${JSON.stringify(action.type)} === 'web-input') {
       const input = node instanceof HTMLInputElement, area = node instanceof HTMLTextAreaElement;
-      if (!input && !area) return {ok:false};
-      if (node.readOnly || (input && ['password','file','hidden','button','submit','radio','checkbox'].includes(node.type))) return {ok:false};
+      if (!input && !area) return ${rejected};
+      if (node.readOnly || (input && ['password','file','hidden','button','submit','radio','checkbox'].includes(node.type))) return ${rejected};
       const setter = Object.getOwnPropertyDescriptor(input ? HTMLInputElement.prototype : HTMLTextAreaElement.prototype, 'value').set;
       setter.call(node, ${JSON.stringify(action.value || '')});
       node.dispatchEvent(new Event('input', {bubbles:true}));
@@ -69,6 +74,7 @@ async function execute(ctx, action) {
   if ((await adb('get-state')).toString().trim() !== 'device') throw new Error('Device unavailable');
   const userId = (await adb('shell', 'am', 'get-current-user')).toString().trim();
   if (!/^\d+$/.test(userId)) throw new Error('Android user unavailable');
+  if (options.expectedUserId !== undefined && options.expectedUserId !== userId) throw Object.assign(new Error('Android user changed'), { code: 'TARGET_USER_CHANGED' });
   const packageInfo = (await adb('shell', 'dumpsys', 'package', options.package)).toString();
   const packageBlock = packageInfo.split(`Package [${options.package}]`)[1]?.split(/\n\s*Package \[/)[0];
   if (!packageBlock ||
@@ -118,8 +124,42 @@ async function execute(ctx, action) {
     if (!client || typeof client.evaluate !== 'function') throw new Error('WebView unavailable');
     await foreground();
     let result;
-    try { ctx.markSideEffect?.(); result = await client.evaluate(webExpression(action)); } catch (error) { throw sanitized(error, 'Web action failed'); }
-    if (result?.ok !== true) throw new Error('Web target unavailable');
+    // Internal reviewed semantic callers may bind a CDP object and a synchronous guard.
+    // This is deliberately not an Action JSON field or an arbitrary-JS CLI option.
+    if(ctx.webGuard && (!['web-click','web-input'].includes(action.type) || typeof ctx.webGuard.objectId !== 'string' || typeof ctx.webGuard.source !== 'string'))
+      throw Object.assign(Error('Invalid internal guard'),{notDispatched:true});
+    const operation=ctx.webGuard?.operation;
+    if(operation!==undefined && (action.type!=='web-click'||!ctx.webGuard||!operation||typeof operation!=='object'||Array.isArray(operation)||Object.keys(operation).length!==2||!Object.hasOwn(operation,'name')||!Object.hasOwn(operation,'source')||typeof operation.name!=='string'||!/^[a-z][a-z0-9-]{0,63}$/.test(operation.name)||typeof operation.source!=='string'||!operation.source.trim()||Buffer.byteLength(operation.source,'utf8')>32768))
+      throw Object.assign(Error('Invalid internal operation'),{notDispatched:true});
+    try {
+      ctx.markSideEffect?.();
+      if (ctx.webGuard) {
+        const response = await client.send('Runtime.callFunctionOn', {
+          objectId: ctx.webGuard.objectId,
+          functionDeclaration: `function(...observedInputs) { const observedRoot = this; return ${webExpression(action, ctx.webGuard.source, operation, true)}; }`,
+          arguments: ctx.webGuard.arguments || [],
+          returnByValue: true, awaitPromise: true,
+        });
+        if (response?.exceptionDetails) throw Error('Guarded evaluation failed');
+        result = response?.result?.value;
+      } else result = await client.evaluate(webExpression(action));
+    } catch (error) { throw sanitized(error, 'Web action failed'); }
+    if (ctx.webGuard && result?.ok === false && result.guardRejected === true) throw Object.assign(new Error('Semantic guard rejected'), { code: 'WEB_GUARD_REJECTED', notDispatched: true });
+    if (result?.ok !== true) {
+      const error=new Error('Web target unavailable');
+      // Only internal fixed categories reach the private Gameplay report; never
+      // forward a page-supplied message or arbitrary JS result as diagnostics.
+      if(operation?.name==='native-passage')error.operationReason=[
+        'navigation-phase-incomplete','navigation-final-state-unavailable','passage-phase-order','passage-identity',
+        'passage-content','passage-phase-threw','footer-save-intent','footer-threw','addon-phase-order',
+        'addon-phase-threw','addon-promise-unavailable','addon-promise-observer-unavailable','addon-phase-rejected',
+        'addon-phase-timeout','observer-ownership-conflict','original-navigation-threw','unreviewed-save-intent',
+        'native-lifecycle-tasks-changed','native-environment-changed','native-environment-unavailable','native-history-changed',
+        'native-time-witness-unavailable','native-time-unavailable'
+      ].includes(result?.reason)?result.reason:'native-operation-failed';
+      throw error;
+    }
+    if (operation) return { status:'completed', ...summary(action), execution:'native-operation', operation:operation.name, receipt:result.receipt??null };
   } else if (action.type === 'wake') {
     ctx.markSideEffect?.();
     await adb('shell','input','keyevent','KEYCODE_WAKEUP');

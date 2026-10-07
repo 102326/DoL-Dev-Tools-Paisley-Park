@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "id": "dol051213-native-simple-head-purchase-v1",
+  "terminalReviewed": true,
+  "scope": "original one-item head purchase, debit/stats/inventory/moment; cosmetic timers and all shop interactions are outside this receipt",
+  "widgets": {
+    "printbuysendhome": {
+      "sha256": "61234cac0639df8b4dfa6ca4205d15ec0f935a29bab53fbb4d83db2f0dec4865",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "shopbuyv2": {
+      "sha256": "0742666268fe8b62c700197c47b89627006aa035d0c79f703677ad63cbd65e0e",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "generalSend": {
+      "sha256": "45fef2e7b3fd427f7dc8c93795230d68808a964c6d13c7896f93e8d9d89c5698",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "sendToWardrobeFromDefault": {
+      "sha256": "5c8dce6875604239317a457bdb46752e187f073b8812a63e402e0cf289a52f49",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingReset": {
+      "sha256": "95bba5ba629aa5a93b10efaa31194fb0dce5962adca3026de28b502296c931c6",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingResetOwnedReset": {
+      "sha256": "840db17485bccad7fd5dd6ba99db1619279d0396eb7fd09e1451974b32e2ea93",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "removeTryingOn": {
+      "sha256": "e515539a86e0ed58ddedb3a0331ce69585224f73aecd70ab5af7b97f4eb810ea",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "updatesidebarmoney": {
+      "sha256": "2c289d3dde7c19cf4e28c2010ae5dc684cf0c1bebb8a83799fde96e492201aef",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "statsCaption": {
+      "sha256": "ca3bae8d4074277c0f0e51021e0ac5e9a679ec981ed29768f2b9b65d9a4a2975",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "sidebarTime": {
+      "sha256": "035da7cb32f52d792b77a2205aed8d3b2ee36c32d92ab5be402ea1576e30c7b9",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "sidebarDefaultTime": {
+      "sha256": "03ef09a19a7bbf05b2928200c506bed39a2dd880c11187cb99357b419c190636",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "printmoney": {
+      "sha256": "3fbe03e65ff6482f35f43190927723039d39ab7516c5f076d1cf39403e0e7e30",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "possessedWord": {
+      "sha256": "962d2ed1bc1c961c7e4a995426ae5e13e7ae4bd84eda24669c9b9c195e1513f6",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "updateclotheslist": {
+      "sha256": "84f1255116fe72933df533187076304974d2fcd262a58907b65d11824bb09857",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingShopv2": {
+      "sha256": "d1378a620dcf99dedb2faa866aa312b162de68d1bb9086b77bc5f0c6ee570b8d",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "shopDetailsv2": {
+      "sha256": "ebc7857d36908de87be68bcaacc990e37905044f7e650b36bec1f8ac364c16dc",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "exitclothingshop": {
+      "sha256": "f02d6d5614fb99dfd088cf5aecf92992ca3744641848993d49939ae9cf7dc6fd",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "generateshoppage": {
+      "sha256": "6f9387c5d7753a4b22a3ae5e89b4e471b57c52f7fcc39b3f70fb1bf552986524",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "shopCategoryTabs": {
+      "sha256": "f3dcdea169217fd2d0990c75c3a5d0936d17988e4af60a75c9615709645b3ca5",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "shopClothingFilterReset": {
+      "sha256": "66aa2e375c34926f2ba09d5c47f15ec39ef1c7bb69b662bf175b81c5a15530e6",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "updatesidebarimg": {
+      "sha256": "6866fe70d4c183c055836c2d2ac311120ab7927f90c16144f2b5f766abbb265a",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "updatesidebardescription": {
+      "sha256": "d058f72cf6b4e7f3e2e9a84e93f70ed28b2435cc2765d57de8bf1e3ab5724b40",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "updatewarmthdescription": {
+      "sha256": "d74669435826135929856628168a90f260a957e18a2491d1686c119afcd0a209",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "warmth_description": {
+      "sha256": "ab743e628f87e49e69e32c34c8527a0ef9cc1d07b3059b31b3502e5ba17f51b2",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingicon": {
+      "sha256": "696c1c28b54f594a536e129f0472d94defcfd19009445a736bc03f71150ea545",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingtrait": {
+      "sha256": "08a00f32b6fd1d984c5be817605256a04946b14033e6504151ad09179c320e79",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "shoptraits": {
+      "sha256": "409b6f44bfa178f853929ae5f36c970720ea6629152c43b254d7ec1b36c0e617",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingCaptionText": {
+      "sha256": "e900515bbe9cc8aeb2f846fbecaef504788f81cc8d51fcc2edf0bf4562aa252c",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "allurecaption": {
+      "sha256": "db0201035a28f14da19c931048d8dad88c4472d3319685df90b57ef22618ee10",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "canvasimg": {
+      "sha256": "bc00a1f8d13f719cf29c034b8954601184507b48469b0a2eedef1d391b309579",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "integrity": {
+      "sha256": "05cf39d66e34731b624f93fee5f7745f61ba25301a2e1f9ea053bb0544e4a3a4",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "reveal": {
+      "sha256": "03f5b8075b8c76911359fd2dd5de594517687610367bdd51b2b23c8135190254",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "updateallure": {
+      "sha256": "d7c1dd3c0e130ec4545150641fd270bbb39f654b023a3283d8b48faf6156b163",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    }
+  },
+  "functionMacros": {
+    "exposure": {
+      "sha256": "f9e7996ee17d71876236004345f49a9daf0d3276dcdc8b82e7a103effe001a67",
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    "updatewarmthscale": {
+      "sha256": "41b464877514cbe72a17f8ca9c4c57522f51185f6ce1024295ec0a2a0e79f555",
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164",
+      "captures": {
+        "clothingWarmthScale": "05cbc7081ac39819e31d870e79bda182e6283f3f4939af079590c86d64e7dbf0"
+      }
+    },
+    "numberify": {
+      "sha256": "9d1e077a616949778dc6464731b420592f580dc65722236baffbb84fa9833d17",
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164",
+      "captures": {
+        "macroFunction": "002397c2edfa1b8214edeb3324bb5d1881406eebe5533dbb68eb041042593b21"
+      }
+    },
+    "calculateallure": {
+      "sha256": "843af5783b74d97c2ef891b50207523908be240fb21be57d4161980151e49350",
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    "outfitChecks": {
+      "sha256": "cda6e9316df4d1000b4ecf01e0acb6e70211617586857e5bd55609e17672c35f",
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    },
+    "money": {
+      "sha256": "9f3af72846a7105de0cef60158fa6b094c67e635330364e34544d3329aa30f37",
+      "handlerSha256": "c8b8d2b8f09b95d696de7b9500b98626b4ce45de0b598a5b8804ddde080a3164"
+    }
+  },
+  "functions": {
+    "Wikifier": {
+      "expr": "window.SugarCube.Wikifier",
+      "sha256": "35d670dd4e6944351719a375b43086aea8a19d2b8baf800466c7e358745973f5"
+    },
+    "updateMoment": {
+      "expr": "window.updateMoment",
+      "sha256": "2ac7b4b575482af0241110257a2efdd8f54238ff30d9c5c8772d12384031f5dc"
+    },
+    "resetClothingState": {
+      "expr": "window.resetClothingState",
+      "sha256": "4c343c3e54c67f53c2ad551e34061c325a6f76d32c0d07e844f354cf55987ab3"
+    },
+    "selectWardrobe": {
+      "expr": "window.selectWardrobe",
+      "sha256": "5e4e3d1f281ba41a47ce8b74b3abc3fb771d94746616f1e0ffb05b36b9de364a"
+    },
+    "clothesIndex": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"clothesIndex\")",
+      "sha256": "c12370bf9d9bb36a28ce1c2fc75dc26aa9dc6e36b2c313ef2ae4baa5f86b21fc"
+    },
+    "playerBellySize": {
+      "expr": "window.playerBellySize",
+      "sha256": "786cff01add9d7faf62328b120f87e77bfc53b0f3657a6b1275660b78337e5b8"
+    },
+    "formatList": {
+      "expr": "window.formatList",
+      "sha256": "81f3aca76d84e4db8649b3a83ac94a270474da8d9c9fee900526080a01d136cf"
+    },
+    "Array.prototype.deleteAt": {
+      "expr": "Array.prototype.deleteAt",
+      "sha256": "645e9581dc55cbc2fee6204afb4f81b599c36e6a8f04ecea318b19decd589b32"
+    },
+    "Weather.BodyTemperature.getWarmth": {
+      "expr": "window.Weather.BodyTemperature.getWarmth",
+      "sha256": "de68c7958b58e3e8631c058f90f948c5d0d9aaa0d0f1de34bba464826c99afe4"
+    },
+    "Weather.BodyTemperature.getRestingPoint": {
+      "expr": "window.Weather.BodyTemperature.getRestingPoint",
+      "sha256": "4cf75997bee3bc75ed57dbef71ece13ad7b82f9aa5aa8bfc27d49c496714d956"
+    },
+    "Links.generateLinkNumbers": {
+      "expr": "window.Links.generateLinkNumbers",
+      "sha256": "706eb240f00ee3d3c34386f8c7b90847bd9c36f48f71c84bfb7c1218d51ad8e3",
+      "captures": {
+        "generateDebounce": "87ca270cc66f1df38df4da518edcd9751be7a0d8063e8fe5a9f0ad8a310e218c",
+        "generateDebounce.j": "3e0f262b9899fc069e48a675daa9acb117fa32882ea10a8db432a90f28a4a018"
+      }
+    },
+    "Wikifier.prototype.subWikify": {
+      "expr": "window.SugarCube.Wikifier.prototype.subWikify",
+      "sha256": "f06a59c18e4f6ce23e9184b2c7c291c8b901fb262f92c5b283a7e9ea5524921b"
+    },
+    "Wikifier.prototype.outputText": {
+      "expr": "window.SugarCube.Wikifier.prototype.outputText",
+      "sha256": "4d1db17f0b7b19a88c021fa1f3dcfe4fa5df950f65cb74eb03255c7695525c09"
+    },
+    "Wikifier.Parser.Profile.isEmpty": {
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.isEmpty",
+      "sha256": "02c0729ad8aee5e4bbabec28190b220ee9706ecb3a68a2b96d365c43c29190a5"
+    },
+    "Wikifier.Parser.Profile.get": {
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.get",
+      "sha256": "b99945fa55d8ef0652a1b9d6630b0f880b5bd390f75db1e31a34e2312b47f19b"
+    },
+    "Wikifier.Parser.Profile.compile": {
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.compile",
+      "sha256": "fb7514347420b6b423a64899bdf771fbe6e95be4d6ba7c0488d70ce01cd6df79"
+    },
+    "Wikifier.Parser.Profile.get(all).parsers[macro].handler": {
+      "expr": "window.SugarCube.Wikifier.Parser.Profile.get(\"all\").parsers.find(p => p.name === \"macro\").handler",
+      "sha256": "4454dc787c37b2786d950e390c44424473da483ec6baf29b30bf2b9eb3bb120f"
+    },
+    "outfitChecks": {
+      "expr": "window.outfitChecks",
+      "sha256": "cda6e9316df4d1000b4ecf01e0acb6e70211617586857e5bd55609e17672c35f"
+    },
+    "updateCaptionTooltip": {
+      "expr": "window.updateCaptionTooltip",
+      "sha256": "b931f362bfb3518abf369fc4c5f04564537c2ec70e6383b92efcf1cdfb630fb9"
+    },
+    "elementExists": {
+      "expr": "window.elementExists",
+      "sha256": "39d5ab4edf28264f95d51b09e55b454fe1dec8c4ca5baef2969a0854757415d8"
+    },
+    "getTrueWarmth": {
+      "expr": "window.getTrueWarmth",
+      "sha256": "2957e1fedb7efbe5b6ee2ee18e67e657ba9e93162b62f3eacc9b52d7dbdfebdd"
+    },
+    "clothingData": {
+      "expr": "window.clothingData",
+      "sha256": "bd318a7c258a35d1c98b05076294ba61c50f1819e449b1200929a8208aa3fb25"
+    },
+    "isConnectedToHood": {
+      "expr": "window.isConnectedToHood",
+      "sha256": "73874f7eeb821155230d6c5a2aef7e4d0dd41da50e88e21ca8f38f05ac43e0a9"
+    },
+    "pcAreArmsBound": {
+      "expr": "window.pcAreArmsBound",
+      "sha256": "323a3e8265475a738514b3db1a28bd0bf4ea5ab2ae2200ff5b96481905a0f0bc"
+    },
+    "clone": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"clone\")",
+      "sha256": "ac367783afb50da33c4e0e5c9831ee92df59d27bc72cb28b5ec1b88378eb40e6"
+    },
+    "formatMoney": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"formatMoney\")",
+      "sha256": "41441d97d8a7e62f52009510804a098333bbdcf4ea30935c1c41b85ba640c0e5"
+    },
+    "getShortFormattedDate": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"getShortFormattedDate\")",
+      "sha256": "1c9a7921b2bf1e3a12e49f85144c2c426580e25703180f4987dfe6ff83020c12"
+    },
+    "clothingSlotToIconName": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"clothingSlotToIconName\")",
+      "sha256": "91b7f09f86a2d20d20273b603779024304ffd3f38eb6a64f98b081480fd230db"
+    },
+    "earSlimeCorruptionClothes": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"earSlimeCorruptionClothes\")",
+      "sha256": "8b63d1446b0707d610d0910fef39c261ce7c92e94a95186d5107662386ff71c9"
+    },
+    "applyClothingShopFilters": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"applyClothingShopFilters\")",
+      "sha256": "6a504f0cb4c2a2ce05e8c580bd0cbc16354451a4a50a48ba9d53d271ef21bc0b"
+    },
+    "filterShopGroup": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"filterShopGroup\")",
+      "sha256": "ae39d7725830aedb97ef17e038c2a5ffb0a99d9e690acd677cfe89e7d03d653f"
+    },
+    "shopSearchReplacer": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"shopSearchReplacer\")",
+      "sha256": "b68d562e4aee9eff8976763e63d32fdcbf672829c001e85a63e6e7839a9c3640"
+    },
+    "getClothingCost": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"getClothingCost\")",
+      "sha256": "5424a6f34332b8a79c55cd740b1d6c40696352141908119c4690f511ac885710"
+    },
+    "toCamelCase": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"toCamelCase\")",
+      "sha256": "d5672e44cf0f9e67d7f972fc82fbda7f39c22d805117582d4266e149a67e5494"
+    },
+    "clothesDataTrimmer": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"clothesDataTrimmer\")",
+      "sha256": "4b7427a1cc9d4685ca241cadd4166ad49ed06b7e9150903671289bcb58b6ff2f"
+    },
+    "linkifyDivs": {
+      "expr": "window.SugarCube.Scripting.evalJavaScript(\"linkifyDivs\")",
+      "sha256": "b9f3ed8fca0f5f541979e900ef9c3c8916f3ac989b6bbe71a1fb0b7cdd8518c0"
+    }
+  },
+  "payloadSha256": "1a1cd2044b7929b9877fd47fc9db31efbc68c2b165581a490e661b011124f580",
+  "shadowKeys": [
+    "_args",
+    "_item",
+    "_itemData",
+    "_shopLocation",
+    "_csslot",
+    "_outfits"
+  ]
+}

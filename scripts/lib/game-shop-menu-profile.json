@@ -1,0 +1,58 @@
+{
+  "id": "dol051213-native-shop-menu-v1",
+  "widgets": {
+    "HeadShop": {
+      "sha256": "b1d54d491e3276fa85c262cdd759f4b03a80f79a194a7465eda0235603ff8901",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "updateclothingshop": {
+      "sha256": "58dc85c920c2a3ba9043c5f4db27f9cccfd6b73dbac66d9b0917e02e5ed23459",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "exitclothingshop": {
+      "sha256": "f02d6d5614fb99dfd088cf5aecf92992ca3744641848993d49939ae9cf7dc6fd",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingShop-main": {
+      "sha256": "5b66615e900d17a7bae8cfaaccdfe46f4c95a25969926ffcd1a5d7153a93e383",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "tryOnReset": {
+      "sha256": "2f0093da71ebe0bf568a4becdaacb4b19b8d9b4e315e923bd3bd8ec5a127f03f",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "getouticon": {
+      "sha256": "957a10f4be5f37a4cc4b4846aee2761e049d8a64fddaf9347d5be4d400c4142b",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "tryOnStats": {
+      "sha256": "f94894e3a16e84affb1efd3b2f20b6652f53d2ffc9718173851f8abbbc306273",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "warmthscale": {
+      "sha256": "89447a206b617217613602ed3b8e3b454ce466d55af411ed172922de8418f8e2",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "clothingcategoryicon": {
+      "sha256": "d711e50ce1ee8c90d5cc240ee596e464bd953799f8b83fa52a2be86ff7172ac0",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    },
+    "rebuyicon": {
+      "sha256": "37a32f21a77509305874bcb556b4e6f95c32f053c070a30c5fcaa9904c90271c",
+      "handlerSha256": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+    }
+  },
+  "functions": {
+    "icon": {
+      "expr": "window.SugarCube.Macro.get(\"icon\").handler",
+      "sha256": "6d39372ca34a782dcded2745b1a5c5e18cfa1a7673b17a49e2d30efe47561b76",
+      "captures": {
+        "normaliseFileName": "ea5e3808356b7b4bb84243f64571c7bd21a02e0716f62a872f3fa929e570f3e1"
+      }
+    }
+  },
+  "payloads": {
+    "item": "d1adb8ad89160511284b9278ae8c12275c084018b2f452d9d203def0d842ad76",
+    "catalogue": "85136830b1e6b8f18a54f7251cf3e890b4f22bd8c4b9624fa0fa51aa5d817b2a"
+  }
+}

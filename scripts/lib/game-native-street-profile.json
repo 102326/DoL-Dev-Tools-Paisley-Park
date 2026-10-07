@@ -1,0 +1,28 @@
+{
+  "id": "dol051213-native-first-street-v1",
+  "before": "Orphanage",
+  "payload": "<<pass 1>>",
+  "timeSeconds": 60,
+  "receiving": {
+    "passage": "Domus Street",
+    "sha256": "f264b06c02d1c068b23905f0121faaf26ab103101328775ac13417f882366419",
+    "tags": "[]"
+  },
+  "widgets": {
+    "streeteffects": "6be2a1262cccf576b22e985b5149a0a84e8095018c1c4d9218ce1fc638b78581",
+    "getTarget": "a3b38dd894a76400f3802b76e0a799ffc96dc9b29c233ec8dacb0c97f53d9af1",
+    "generate1": "d10914261050f6b14e9302b22b3f129669e6a3c4a73455350cf5fb9355f47e5e",
+    "wTimerProgress": "2d73ba92933d19aeaf80c3c217c23495eeceb5a8064a159b1009ddabfbc76105"
+  },
+  "handlerSha256": {
+    "streeteffects": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "getTarget": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "generate1": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40",
+    "wTimerProgress": "f4f6b6b947f76c84ea6f28f8f09a39e150ba3c4f25ec43dada16151d30f54c40"
+  },
+  "globalFunctions": {
+    "getKylarLocation": "19a75ebfd6a8902606f3166a17c1a88897407e40166e80a8b4cb6ce69925fced",
+    "npcCanHunt": "2a300c4df380120386009b6edb02d8f09af80f7b62372cbcbd7e3413c335bcbd"
+  },
+  "bloodMoonSha256": "53080719093e9d1a82b68478b0f0304d70350e45dce4ed7422b7cb3d4f30d94e"
+}

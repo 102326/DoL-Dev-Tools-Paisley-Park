@@ -11,9 +11,21 @@ const inspectors = require('./lib/inspectors.cjs');
 const { redact } = require('./lib/privacy.cjs');
 const { doctor } = require('./lib/doctor.cjs');
 const { support } = require('./lib/support.cjs');
-const { version, displayName } = require('../package.json');
-const help = `${displayName} ${version} (local development and diagnostics)
+const { version, displayName, releaseName } = require('../package.json');
+const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''} (local development and diagnostics)
   --version
+  game-goal-start --file REVIEWED_GOAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
+    Native Gameplay Goals: reach-passage, native-state conditions, or native-knowledge membership with optional return Passage; clothing Goals belong to a domain provider.
+  game-goal-step --goal GOAL_DIR --test-environment yes [--file REVIEWED_ACTION_JSON --intent navigation|dialogue|combat|buy|sell|equip|unequip|sleep|menu|settings|load-save]
+    Gameplay: reviewed native navigation/activity/combat selection; dol-shop browse/return/buy-one, native simple-head or optional sw-wardrobe. Host Agent supplies Decisions. No file: observe/check original Goal state.
+    Unknown results stay pending until a reviewed terminal Outcome reader verifies closure and original effects.
+    --store ABSOLUTE_SQLITE selects an isolated Store at start; normal use shares the local target ledger. --resume yes renews the binding at step.
+  game-goal-status --goal GOAL_DIR
+  game-session --goal GOAL_DIR --operation request|propose|dispatch|resume|reconcile|checkpoint|cancel|status [--file PROPOSAL_OR_CHECKPOINT_JSON] [--test-environment yes]
+  game-observe --serial SERIAL --package PACKAGE --out NEW_DIR [--target-id ID] [--gameplay yes] [--shop yes]
+    Gameplay view adds private bounded visible context and choice labels for Agent interpretation/replanning, never save bodies or input values.
+  game-open-wardrobe --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes [--plan]
+    Gameplay: verified Bedroom entry only; original controls, no direct inventory/save writes or automatic retry.
   evidence --serial SERIAL --package PACKAGE --out NEW_DIR [--scope SELECTOR] [--window-ms 1000] [--integration soft-and-wet]
     Optional: --logcat-seconds 30 --record-seconds 10 --repro NOTE_JSON --integration-file REVIEWED_LOCAL.cjs
     Optional: --css yes --environment yes --target-id ID --webview-socket VERIFIED_PID_SOCKET
@@ -77,7 +89,41 @@ async function main(args = process.argv.slice(2)) {
   const command = args.shift();
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
-  if (['evidence','capture','perf','logcat','record','bugreport','environment','perf-series','native-layout','process-memory','app-lifecycle'].includes(command)) {
+  if(command==='game-session'){
+    const options=parse(args,['--goal','--operation','--file','--test-environment']);
+    if(!options.goal||!['request','propose','dispatch','resume','reconcile','checkpoint','cancel','status'].includes(options.operation)||options['test-environment']!==undefined&&options['test-environment']!=='yes'||['propose','checkpoint'].includes(options.operation)&&!options.file||!['propose','checkpoint'].includes(options.operation)&&options.file)throw Error('Invalid Session operation/options');
+    options.testEnvironment=options['test-environment']==='yes';const result=await require('./lib/game-goal.cjs').session(options.goal,options.operation,options);console.log(JSON.stringify(result,null,2));if(['paused','exhausted','failed'].includes(result.status))process.exitCode=1;
+  } else if (['game-goal-start','game-goal-step','game-goal-status'].includes(command)) {
+    const goal = require('./lib/game-goal.cjs'); let result;
+    if (command === 'game-goal-status') {
+      const options = parse(args, ['--goal']); if (!options.goal) throw Error('Provide Goal directory'); result = goal.view(goal.status(options.goal));
+    } else {
+      const options = parse(args, command === 'game-goal-start' ? ['--file','--serial','--package','--out','--test-environment','--target-id','--webview-socket','--store'] : ['--goal','--file','--intent','--test-environment','--resume']);
+      if (options['test-environment'] !== 'yes') throw Error('Explicit test environment required'); options.testEnvironment = true;
+      if (command === 'game-goal-start') {
+        if (!options.file || fs.statSync(options.file).size > 65536) throw Error('Provide bounded Goal request');
+        options.targetId = options['target-id']; options.webviewSocket = options['webview-socket'];
+        result = await goal.start(options, JSON.parse(fs.readFileSync(options.file, 'utf8')));
+      } else { if (!options.goal) throw Error('Provide Goal directory'); if(options.resume!==undefined&&options.resume!=='yes')throw Error('Invalid resume option'); options.resume=options.resume==='yes';result = await goal.advance(options.goal, options); }
+    }
+    console.log(JSON.stringify(result, null, 2));
+    if (['paused','exhausted','failed'].includes(result.status)) process.exitCode = 1;
+  } else if (['game-observe','game-open-wardrobe'].includes(command)) {
+    const options = parse(args, ['--serial','--package','--out','--target-id','--webview-socket', ...(command === 'game-open-wardrobe' ? ['--test-environment','--plan'] : ['--gameplay','--shop'])]);
+    if (options['test-environment'] !== undefined && options['test-environment'] !== 'yes') throw Error('Invalid test environment');
+    options.testEnvironment = options['test-environment'] === 'yes'; options.targetId = options['target-id']; options.webviewSocket = options['webview-socket'];
+    if (options.gameplay !== undefined && options.gameplay !== 'yes') throw Error('Invalid gameplay view');
+    options.gameplay = options.gameplay === 'yes';
+    if(options.shop!==undefined && options.shop!=='yes')throw Error('Invalid shop view');
+    options.shop=options.shop==='yes';
+    const site = require('./lib/game-dol-provider.cjs');
+    const report = await site[command === 'game-observe' ? 'observe' : 'openWardrobe'](options,options.shop?{probeCapabilities:client=>require('./lib/game-clothing-provider.cjs').observe(client,{kind:'purchase-one'})}:{});
+    // Preserve the explicit domain CLI view while the shared collector uses a
+    // generic provider hook instead of importing shop semantics itself.
+    if(options.shop){report.shop=report.capabilities?.shop;fs.writeFileSync(path.join(options.out,'semantic.json'),JSON.stringify(report,null,2))}
+    console.log(`Experimental game semantic operation ${report.status}; inspect semantic.json and original-state proof limits.`);
+    if (!['observed','completed','planned'].includes(report.status)) process.exitCode = 1;
+  } else if (['evidence','capture','perf','logcat','record','bugreport','environment','perf-series','native-layout','process-memory','app-lifecycle'].includes(command)) {
     const allowed = command === 'evidence' ? ['--serial','--package','--out','--scope','--window-ms','--integration','--integration-file','--logcat-seconds','--record-seconds','--repro','--full','--sensitive','--css','--environment','--target-id','--webview-socket','--timeline-ms','--observer-instrumentation','--inspectors','--storage','--layout','--allow-helper','--processes','--lifecycle']
       : ['--serial','--package','--out', ...(command === 'logcat' || command === 'record' ? ['--seconds'] : []),
         ...(command === 'environment' ? ['--target-id','--webview-socket','--window-ms'] : []),
@@ -250,4 +296,9 @@ async function main(args = process.argv.slice(2)) {
   } else throw new Error('Unknown command; use --help');
 }
 module.exports = { main, parse };
-if (require.main === module) main().catch(() => { console.error('Command failed. Check arguments, target availability and output protection; raw error content omitted.'); process.exitCode = 1; });
+if (require.main === module) main().catch(error => {
+  console.error(error.code==='GAMEPLAY_RUNTIME_UNAVAILABLE'
+    ? 'Gameplay Runtime requires XState and Node SQLite. Run npm ci --ignore-scripts --no-audit --no-fund in the Tools root; Node 22.12 needs --experimental-sqlite. Generic diagnostics remain available.'
+    : 'Command failed. Check arguments, target availability and output protection; raw error content omitted.');
+  process.exitCode = 1;
+});

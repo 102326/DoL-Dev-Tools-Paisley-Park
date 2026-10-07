@@ -4,6 +4,72 @@ const vm = require('node:vm');
 const { validate, summary, execute } = require('../scripts/lib/action.cjs');
 
 const pkg = 'com.example.game';
+test('reviewed guarded input shares the original setter/events and rejects a stale guard before changing the input',async()=>{
+ let value='2',events=0,allowed=true,marked=0;
+ class Element {isConnected=true;readOnly=false;type='range';matches(){return this.disabled===true}closest(){return null}getClientRects(){return[1]}dispatchEvent(){events++}}
+ Object.defineProperty(Element.prototype,'value',{set(v){value=v}});
+ const node=new Element(),globals={HTMLElement:Element,HTMLInputElement:Element,HTMLTextAreaElement:class {},Event:class {},
+   document:{querySelectorAll:()=>[node]},getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1'}),canAct:()=>allowed};
+ const {ctx}=fixture();ctx.markSideEffect=()=>marked++;
+ ctx.webGuard={objectId:'current-input',source:'if(node!==observedRoot||!canAct())return {ok:false,guardRejected:true};'};
+ ctx.ensureWebview=async()=>({evaluate(){throw Error('Guard cannot use unbound evaluation')},async send(method,p){
+   assert.equal(method,'Runtime.callFunctionOn');return{result:{value:vm.runInNewContext(`(${p.functionDeclaration})`,globals).call(node)}}}});
+ await execute(ctx,{type:'web-input',selector:'#quantity',value:'1'});assert.equal(value,'1');assert.equal(events,2);
+ node.disabled=true;await assert.rejects(execute(ctx,{type:'web-input',selector:'#quantity',value:'3'}),e=>e.notDispatched===true);assert.equal(value,'1');assert.equal(events,2);
+ node.disabled=false;
+ node.readOnly=true;await assert.rejects(execute(ctx,{type:'web-input',selector:'#quantity',value:'3'}),e=>e.notDispatched===true);assert.equal(value,'1');assert.equal(events,2);node.readOnly=false;
+ allowed=false;await assert.rejects(execute(ctx,{type:'web-input',selector:'#quantity',value:'3'}),e=>e.notDispatched===true);assert.equal(value,'1');assert.equal(events,2);
+ const attempts=marked;await assert.rejects(execute(ctx,{type:'web-focus',selector:'#quantity'}),e=>e.notDispatched===true);assert.equal(marked,attempts);
+});
+test('reviewed guarded click runs one internal operation only after the guard and keeps partial failure uncertain',async()=>{
+ let allowed=false,operations=0,clicks=0,marked=0;
+ class Element {isConnected=true;matches(){return false}closest(){return null}getClientRects(){return[1]}click(){clicks++}}
+ const node=new Element(),globals={HTMLElement:Element,document:{querySelectorAll:()=>[node]},getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1'}),canAct:()=>allowed,runOperation:()=>{operations++;return {ok:true,receipt:{source:'native'}}}};
+ const {ctx}=fixture();ctx.markSideEffect=()=>marked++;
+ ctx.webGuard={objectId:'selected-node',source:'if(node!==observedRoot||!canAct())return {ok:false,guardRejected:true};',operation:{name:'head-wear',source:'return runOperation();'}};
+ ctx.ensureWebview=async()=>({evaluate(){throw Error('Unbound evaluation')},async send(method,p){assert.equal(method,'Runtime.callFunctionOn');return {result:{value:vm.runInNewContext(`(${p.functionDeclaration})`,globals).call(node)}}}});
+ const action={type:'web-click',selector:'.head'};
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched===true);assert.equal(operations,0);assert.equal(clicks,0);
+ ctx.webGuard.source='if(!canAct())return {ok:false};';
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true);assert.equal(operations,0);assert.equal(clicks,0);
+ ctx.webGuard.source='if(node!==observedRoot||!canAct())return {ok:false,guardRejected:true};';
+ allowed=true;const result=await execute(ctx,action);
+ assert.deepEqual(result,{status:'completed',...summary(action),execution:'native-operation',operation:'head-wear',receipt:{source:'native'}});
+ assert.equal(operations,1);assert.equal(clicks,0);
+ ctx.webGuard.operation.source='operationsNeverCalled();return {ok:false,guardRejected:true};';
+ globals.operationsNeverCalled=()=>{operations++;};
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true);
+ assert.equal(operations,2);assert.equal(clicks,0);
+ for(const bad of [{name:'Bad',source:'return {ok:true};'},{name:'head-wear',source:' '},{name:'head-wear',source:'x'.repeat(32769)},{name:'head-wear',source:'return {ok:true};',extra:1}]){
+   ctx.webGuard.operation=bad;const before=marked;
+   await assert.rejects(execute(ctx,action),e=>e.notDispatched===true);
+   assert.equal(marked,before);assert.equal(operations,2);assert.equal(clicks,0);
+ }
+ ctx.webGuard.operation={name:'native-passage',source:'return {ok:false,guardRejected:true,reason:"navigation-final-state-unavailable"};'};
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true&&e.operationReason==='navigation-final-state-unavailable');
+ for(const reason of ['native-time-witness-unavailable','native-time-unavailable']){
+   ctx.webGuard.operation.source=`return {ok:false,reason:${JSON.stringify(reason)}};`;
+   await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true&&e.operationReason===reason);
+ }
+ ctx.webGuard.operation.source='return {ok:false,reason:"private-page-content"};';
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true&&e.operationReason==='native-operation-failed'&&!e.message.includes('private-page-content'));
+ assert.equal(clicks,0);
+});
+test('internal async operation awaits its terminal result without weakening synchronous guards or replaying',async()=>{
+ let allowed=false,calls=0,finish;
+ class Element {isConnected=true;matches(){return false}closest(){return null}getClientRects(){return[1]}click(){throw Error('Must not click')}}
+ const node=new Element(),globals={HTMLElement:Element,document:{querySelectorAll:()=>[node]},getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1'}),canAct:()=>allowed,
+   operation:()=>{calls++;return new Promise(resolve=>{finish=resolve})}};
+ const {ctx}=fixture();ctx.webGuard={objectId:'node',source:'if(!canAct())return {ok:false,guardRejected:true};',operation:{name:'async-native',source:'return operation();'}};
+ ctx.ensureWebview=async()=>({evaluate(){throw Error('Unbound evaluation')},async send(method,p){assert.equal(p.awaitPromise,true);return{result:{value:await vm.runInNewContext(`(${p.functionDeclaration})`,globals).call(node)}}}});
+ const action={type:'web-click',selector:'.head'};
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched===true);assert.equal(calls,0);
+ allowed=true;let settled=false;const running=execute(ctx,action).then(r=>{settled=true;return r});
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(calls,1);assert.equal(settled,false);
+ finish({ok:true,receipt:{status:'terminal'}});assert.equal((await running).receipt.status,'terminal');
+ const partial=execute(ctx,action);await new Promise(resolve=>setImmediate(resolve));
+ finish({ok:false,guardRejected:true});await assert.rejects(partial,e=>e.notDispatched!==true);assert.equal(calls,2);
+});
 function png(width = 20, height = 10) {
   const result = Buffer.alloc(24);
   Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).copy(result);
@@ -50,6 +116,7 @@ test('validation and summaries allow only bounded actions without exposing input
   assert.throws(() => validate({ type: 'web-input', selector: '.x', value: 'x'.repeat(1025) }));
   assert.throws(() => validate({ type: 'tap', x: 1.5, y: 2 }));
   assert.throws(() => validate({ type: 'rotate', degrees: 45 }));
+  assert.throws(() => validate({ type: 'web-click', selector: '.head', operation: { name:'head-wear', source:'return {ok:true};' } }));
   assert.deepEqual(summary({ type: 'input', value: 'private' }), { type: 'input', inputLength: 7 });
   const web = summary({ type: 'web-input', selector: '#private', value: 'private' });
   assert.equal(web.inputLength, 7);

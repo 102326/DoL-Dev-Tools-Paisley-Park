@@ -1,0 +1,79 @@
+{
+  "id": "dol051213-native-minute-raw-time-v2",
+  "functions": [
+    {
+      "name": "pass.handler",
+      "sha256": "0e6b57e36bf08b7fd71bb186f4ffa13a3b1c06bd0202e0137d6733fa1e06244e"
+    },
+    {
+      "name": "passTime",
+      "sha256": "4113af3c8058f128b8d569738bb38e6029298cb13e1256340af0a1d6859b25e6"
+    },
+    {
+      "name": "Time.pass.proxy",
+      "sha256": "f157e56b58e395785bfabb831b55fa3cf222f62926ca9dd2c484a3cdb4e3be66"
+    },
+    {
+      "name": "Time.pass.original",
+      "sha256": "635ef92c4ec78dc3175f8103ea25506611a4f1b2f3cf74b9c47e0ae584a6be8f"
+    },
+    {
+      "name": "secondPassed",
+      "sha256": "8b1317fe8de812e9c19378d5c78665ef990345032fea9f002917487decc900d7"
+    },
+    {
+      "name": "minutePassed.wrapper",
+      "sha256": "4113af3c8058f128b8d569738bb38e6029298cb13e1256340af0a1d6859b25e6"
+    },
+    {
+      "name": "set",
+      "sha256": "408a3b9c0f6e1272c9ef8847200e5856ad9555f4c71f4352e04df34c514962b7"
+    },
+    {
+      "name": "setDate",
+      "sha256": "09f0365b8aea6a987aa2d3b76adbe7b08c8763f79f22b5599a16d609841e425e"
+    },
+    {
+      "name": "old.passTime",
+      "sha256": "f58eb67d395409875315b57e1912e317d8a572ab972ddcd459db211e6309a56c"
+    },
+    {
+      "name": "old.minutePassed",
+      "sha256": "5789000d11dfe7ac9ef4fc176dd2ceccf12f773a87bf22c2ac997ccde98b1f5c"
+    },
+    {
+      "name": "hook.invoke",
+      "sha256": "80565e76350f20e7f324c8c99ae8566984e5dc1ca01236dcf9be0af845ee3304"
+    },
+    {
+      "name": "hook.safe",
+      "sha256": "304dd0ac3b9a2586c3e2042390244f40f33ccfae95a0f487f960840878cbf7e1"
+    },
+    {
+      "name": "hook.callback",
+      "sha256": "9271b05dab1b71b469755309afec4627e4074cbaf8113a2a6dbba5bf1ff56355"
+    },
+    {
+      "name": "proxy.callback",
+      "sha256": "9271b05dab1b71b469755309afec4627e4074cbaf8113a2a6dbba5bf1ff56355"
+    }
+  ],
+  "hourFunctions": [
+    {
+      "name": "hourPassed.wrapper",
+      "sha256": "4113af3c8058f128b8d569738bb38e6029298cb13e1256340af0a1d6859b25e6"
+    },
+    {
+      "name": "old.hourPassed",
+      "sha256": "03e052da1645fb59f0531b08dc7993cbb8e1e5bdc9b0eb379f244e06db144c51"
+    },
+    {
+      "name": "hour.control",
+      "sha256": "51039b10dbab391adb318d1f1b61ecb69df523a7a3cbf4297281867775260c20"
+    },
+    {
+      "name": "hour.arousal",
+      "sha256": "0f082fffee176812aadaa52d2ce81441deefeeed863d5952c9b02bc1d89f002e"
+    }
+  ]
+}
