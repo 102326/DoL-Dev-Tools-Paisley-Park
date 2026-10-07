@@ -1,193 +1,116 @@
 # DoL Dev Tools: Paisley Park
 
-**Gold Experience Requiem · 3.0.2**
+**3.0 — Gold Experience Requiem · 当前发行版 3.0.2**
 
-一套面向 DoL 玩家、Mod 作者和开发 Agent 的本地工具，帮助你查看真实游戏现场、排查问题、验证修改，以及让 Agent 完成有边界的游戏目标。
+面向 DoL Mod 生态的本地开发工具系统。连接真实 Android / WebView，帮助开发者和 Agent 查看运行现场、调查问题、复现操作，并在修改、构建和部署后验证结果。
 
-工具在电脑上运行，通过 Android/ADB 和 WebView 调试接口连接游戏，生成可检查的截图与结构化记录。你可以用它：
+除了诊断，3.0 还支持 Agent 根据游戏目标持续观察、决策和行动，在普通事件中调整路线，并在中断后接着完成原任务。Gameplay 可用于真实业务验收，也可用于有边界的游玩。
 
-- **看现场**：查看手机画面、页面 DOM/CSS、Console、网络摘要与 Android 日志。
-- **查问题**：把截图、日志、页面结构和性能信息整理成 Evidence Bundle，保留复现步骤与失败记录。
-- **做开发**：复现问题、修改目标项目、使用其构建部署流程，再回到同一场景验证。
-- **跑 Gameplay**：由宿主 Agent 根据当前场景选择动作、处理普通事件、重规划路线，并用原游戏状态确认结果；预算和未决副作用跨会话保留。
+[下载 3.0.2](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.2) · [快速开始](#快速开始) · [文档导航](#文档导航)
 
-通用诊断适用于原版和不同 DoL Mod；Soft & Wet 等 Integration 提供可选增强。Gameplay 需要宿主 Agent 和受支持的动作合同。正常游戏行为在授权测试环境中自治，删除或覆盖已有存档默认禁止。
+## 能做什么
 
-第一次使用可以先跑 **doctor** 检查环境，然后按需用 **inspect** 查看 WebView、用 **evidence** 保留现场。希望让 Agent 使用工具时，按[安装指南](docs/SKILL_INSTALL.md)安装 `$dol-dev-tools-paisley-park`；游戏目标的用法和支持边界见[Gameplay 指南](docs/GAMEPLAY.md)。
+- **进入真实现场**：查看手机画面、原生布局与 WebView 内部的 DOM、CSS、Console、异常、网络摘要和页面状态。
+- **调查界面与 Mod 问题**：检查控件命中、结构和样式差异，结合 Android 日志、内存与帧统计，按问题选择采集深度。
+- **复现并比较结果**：用 Action / Journey 执行审阅过的步骤，保留检查点、失败记录和前后 Evidence，生成可分享的本地问题报告。
+- **连接开发流程**：使用目标项目自己的源码、构建和部署方式，核对实际加载的制品，再回到同一场景复验。
+- **持续执行游戏目标**：让宿主 Agent 读取当前场景、选择动作、处理普通偏航，并通过原游戏状态确认完成。
 
-| 三个现场入口 | 能看到什么 |
+三个现场入口各有分工：
+
+| 入口 | 作用 |
 | --- | --- |
-| Android CLI | 真机画面、标注截图与原生布局 |
-| Chrome Inspect / CDP | Agent 进入真实 WebView，读取 DOM、CSS、Console、网络、Storage 与性能信息 |
-| ADB | Android/App 的日志、进程、内存、帧统计与生命周期 |
+| Android CLI | 看见真机画面，取得标注截图与原生布局 |
+| Chrome Inspect / CDP | Agent 直接进入真实 WebView，读取 DOM、Computed Style、Console、异常、Network、Storage 摘要与 Performance |
+| ADB | 查看 Android / App 的日志、进程、内存、帧统计和生命周期 |
 
-## 最快开始
+这些能力由同一套诊断、执行和证据流程连接起来：记录明确的设备与 App、每步结果和制品来源，支持前后比较、检查点和恢复。直接 CDP / ADB 查询仍可用于更灵活的调查；已有标准能力能覆盖问题时，优先复用它，减少临时脚本与重复采集。
 
-从[3.0.2 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.2)下载源码包，解压到稳定目录。目录名使用 `DoL-Dev-Tools-Paisley-Park`，Windows 路径不使用产品名中的冒号。旧 `DoL-Dev.cmd` 是同一 CLI 别名，Skill 名为 `$dol-dev-tools-paisley-park`，见[SKILL_INSTALL](docs/SKILL_INSTALL.md)。
+## 3.0 — Gold Experience Requiem
 
-必需 Node.js 22.12+。Generic Diagnostics 无需 npm 依赖；Gameplay 先在根目录运行 `npm ci --ignore-scripts --no-audit --no-fund` 安装锁定的 XState。Node 22 运行 Gameplay 加 `--experimental-sqlite`（Windows launcher 已包含）。Android 采集需要已有 ADB、USB 调试和明确的设备/App；CDP 需要 App 开启 WebView 调试。
+3.0 在指定步骤的工具执行之上，加入了目标驱动的 Gameplay Runtime。宿主 Agent 负责理解场景与决策，Tools 负责可靠地执行、保存进度和核对结果：
+
+> 目标 → 观察现场 → 理解与决策 → 行动 → 读取结果 → 调整计划
+
+- **按目标推进**：目标可以跨越多段 Journey；普通对话、随机事件或路线变化出现后，重新理解现场再继续。
+- **保留 Working Memory**：保存短计划、已走路线、事件与返回子目标，帮助后续决策；这些解释不会替代真实游戏状态。
+- **中断后接管**：跨进程或换宿主 Agent 时，重新读取原目标、累计预算、Memory 和当前场景，沿同一个 Session 继续。
+- **确认业务结果**：购买、资源变化、穿戴与返回条件由原状态和动作结果证明，完成判断围绕目标。
+- **协调副作用**：消费和未决动作持续记录，避免恢复后重复购买或把结果未知的动作当作没发生。
+- **复用开发验收底座**：Gameplay 与开发检查共享执行、证据和恢复核心；开发模式可加入更严格的检查点。
+
+玩法目标与当前版本的执行细节分层：`Goal → Semantic → Capability Provider → Execution → Outcome`。原生 DoL 是主要对象；商店和衣柜是领域 Provider，Soft & Wet 等 Mod 提供可选映射。实现协议与支持范围见 [Gameplay 指南](docs/GAMEPLAY.md)。
+
+## 已验证的例子
+
+**Mod 更新与界面复验。** 在独立 Android 测试 App 中，将 DoLGameUI 2.0.3 更新为 2.1.0，核对持久加载来源与 JS/CSS 哈希，打开/关闭真实设置并比较限定范围 CSS；重启后再次确认加载与行为。这证明了真实发行包更新和设置复验，不代表工具能自动修复任意项目源码。见 [业务 Mod 更新记录](docs/BUSINESS_MOD_UPDATE.md) 和 [开发工作流](docs/WORKSHOP.md)。
+
+**条件购衣、返回并穿戴。** Agent 在预算内购买黑色发卡，处理途中普通事件后返回卧室并穿戴。购买后独立进程恢复保留原目标、预算与购买证明，没有重复购买；最终核对资金、库存、完整颜色变体和穿戴状态。
+
+**原生活动与新宿主接管。** Agent 从卧室前往花园劳动，达到体能目标后返回。没有旧聊天的新宿主从同一个 Session 读取进度继续，累计约 12 分 40 秒有效连续运行。与购衣场景一样，这条实机路径不依赖 Soft & Wet 私有 Runtime、衣柜 Adapter 或 UI Mod。两条 Gameplay 路径的结果和覆盖边界见 [代表性验收](docs/CLOSEOUT_3_0_1.md#validated)。
+
+## 快速开始
+
+从 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.2) 下载 `DoL-Dev-Tools-Paisley-Park-3.0.2.zip`，核对随附 SHA256，解压到稳定目录并进入工具根目录。包不包含游戏、APK 或设备工具。
+
+需要 **Node.js 22.12+**。Android 现场需要已有 **ADB、USB 调试授权和明确的设备 serial / App package**；先手动打开目标 App。WebView 内部观察还需要 App 开启调试支持。ADB 不在 PATH 时，在当前进程设置 `DOL_ADB` 为已有 `adb.exe` 的绝对路径；详见 [环境与连接说明](docs/DIAGNOSTICS.md#快速入口)。
+
+### 普通开发诊断
+
+Generic Diagnostics 不需要安装 npm 依赖，也不要求任何特定 Mod。以下为 Windows PowerShell 示例，请替换设备和包名占位符：
 
 ```powershell
 New-Item -ItemType Directory -Path artifacts -Force
-.\Paisley-Park.cmd --version
-.\Paisley-Park.cmd --help
-.\Paisley-Park.cmd doctor --out artifacts/doctor.json
-# 已建立本地CDP连接时，核对页面与target ID：
-.\Paisley-Park.cmd inspect --endpoint http://127.0.0.1:CDP_PORT --out artifacts/targets.json
-adb devices -l
+.\Paisley-Park.cmd doctor --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/doctor.json
+.\Paisley-Park.cmd capture --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/screen-001
+# 需要 WebView 结构、Console、网络等证据时：
 .\Paisley-Park.cmd evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages'
-.\Paisley-Park.cmd support --from artifacts/evidence-001 --out artifacts/support-001
 ```
 
-请替换端口、设备与包名占位符，并先手动打开目标 App；工具不会自动选择设备或启动游戏。所有输出目标必须尚不存在，父目录须已创建。ADB 不在 PATH 时，将进程内 `DOL_ADB` 指向已有 `adb.exe`；不自动安装或修改全局配置。
+检查 Doctor 的具体结果后再进入依赖步骤；它不会修复环境或启动游戏。输出目标必须尚不存在，父目录须先创建；重复采集使用新的文件名或目录。其他平台可将 launcher 替换为 `node scripts/dol-dev.cjs`。查看页面 target、深入检查或比较证据时，进入 [诊断工作流](docs/DIAGNOSTICS.md) 与 [Evidence 工具](docs/EVIDENCE_TOOLS.md)。
 
-若Doctor提示ADB `unavailable / ENOENT`，先核对自己已有SDK的platform-tools路径，再仅在当前PowerShell配置并重跑到新输出：
+### Agent / Gameplay
+
+先满足上面的设备与 WebView 条件，再在 Tools 根目录安装锁定的 Gameplay 依赖，并安装 Skill：
 
 ```powershell
-$env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'
-& $env:DOL_ADB version
-.\Paisley-Park.cmd doctor --out artifacts/doctor-adb.json
+npm ci --ignore-scripts --no-audit --no-fund
+.\Paisley-Park.cmd install-skill --out "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park"
+node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
 ```
 
-`complete`表示请求步骤完成。DOM仍可能因节点数/深度等限制截断，Console接收窗口也可能包含Runtime缓存事件；摘要不能直接证明全DOM、实时日志速率或业务通过。游戏核心版本未知时保持unknown，包装App的ADB版本另列来源。
+Skill 目标目录必须尚不存在；已有安装先备份并移出该路径，安装器会拒绝覆盖。Tools 必须留在稳定位置，Skill 调用这一份 Tools。Node 22 直接运行 Gameplay CLI 时需加 `--experimental-sqlite`，Windows launcher 已包含；详细安装、更新和搬迁见 [Skill 安装](docs/SKILL_INSTALL.md)。
 
-## 典型使用场景
+在下一回合显式使用 `$dol-dev-tools-paisley-park`，提供设备、App、目标与预算。例如对 Agent 说：
 
-- 页面错位或点击异常：真机画面→DOM/CSS与命中检查→修改目标源码→同场景复验。
-- Mod兼容问题：通用DOM Snapshot/Diff，按需补Runtime/Adapter的可选解释。
-- 短游戏目标与开发复验：读取当前原状态→选择原动作→核对购买/穿戴结果→遇到正常分支时重规划。
-- 卡顿或内存异常：Console/Network摘要与性能采样，具体问题需要时再升级Profiler或Perfetto。
-- UI开发与复现：审阅Action/Journey、checkpoint、构建部署和Evidence比较；首次诊断先用最小充分采集。
+> 在指定的已授权测试 App 中，去花园劳动，达到约定体能目标后回卧室。先核对当前状态与支持能力，设置本次时间和动作预算；途中普通事件自行处理，中断后恢复原 Session。
 
-## 能力与入口
+这是给宿主 Agent 的任务示例，具体 Goal 条件需按当前原状态和受支持能力确定。Agent 将其落实为 Goal 与 Decision，Tools 不内置无人值守的模型服务。创建目标、执行和恢复的完整步骤见 [Gameplay 工作流](docs/GAMEPLAY.md)。
 
-| 范围 | 命令 / 入口 |
+## 使用边界
+
+- **通用诊断与可选 Integration 分离**：Generic 不依赖 Soft & Wet、MapleBirch、ModHub 或特定 UI Runtime；Integration 缺失、不支持或失败会独立记录，不使已成功的 Generic 采集失效。
+- **Gameplay 覆盖有边界**：需要宿主 Agent 与已审阅的动作/结果合同，尚未支持全部 Passage、版本、Mod 和业务。正常事件可重新规划；缺少可靠执行或结果证明时拒绝派发。旧 Foundation journal 不自动迁移。
+- **存档与未知结果受保护**：删除或覆盖已有存档默认禁止。恢复不会重置累计预算或盲目重放未决副作用；新合同不能无依据结清旧动作。
+- **证据与结论分开**：Evidence 的 complete / partial / failed 描述本次采集。结构可能截断，像素差异不等于兼容失败，内存增长不等于泄漏，采集完整不等于业务通过。
+- **本地资料与代码权限**：私有截图、日志、存档与游戏数据不自动上传，分享前须审查。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 能执行传入的页面 JavaScript，“只读”是内置 Probe 的使用约束。
+
+具体支持范围、旧未决 effect 和后续覆盖见 [当前验收与已知限制](docs/CLOSEOUT_3_0_2.md)。规划中的能力与已交付功能分开记录。
+
+## 文档导航
+
+| 要做什么 | 资料 |
 | --- | --- |
-| 环境与现场 | `doctor`、`capture`、`evidence` |
-| WebView / CDP | Evidence 的 Console、Network、版本和 viewport 摘要；保留 `adb-evaluate.cjs` |
-| DOM / CSS / Visual | `dom-snapshot/diff`、`css-snapshot/diff`、`dom-inspect`、`hitbox-overlay`、`visual-diff`、`animation-frames` |
-| Environment / Storage / Events | `environment`、`environment-diff`、`storage-snapshot/diff`、`timeline` |
-| 复现与实验 | `action`、`journey`、`journey-record`、`matrix`、`network-scenario`、`viewport-matrix` |
-| Gold Experience Requiem Runtime | `game-observe`、`game-goal-start/step/status`、`game-session`；[Goal、Decision、Memory、预算、Outcome 与恢复](docs/GAMEPLAY.md)，宿主 Agent 持续决策，原生及领域 Provider 执行 |
-| Android 日志与性能 | `logcat`、`perf`、`perf-series`、`process-memory`、`leak-probe`、`native-layout`、`record`、[app-lifecycle/diff](docs/APP_LIFECYCLE.md) |
-| 明确选择的重型采集 | `perf --deep`、`bugreport`、`evidence --full`，须 `--sensitive yes` |
-| 反馈与复现 | `support`、`evidence-compare`、`evidence-timeline`、`known-good`、`issue-report`、Evidence `--repro` |
-| 可选 Integration | `--integration soft-and-wet` 或 `--integration-file REVIEWED_LOCAL.cjs`；缺失或失败独立记录 |
-| 公共接入与格式 | [Contract 1](docs/INTEGRATIONS.md)、[格式说明](docs/FORMATS.md)、[JSON Schema](schemas/diagnostics-v1.schema.json) |
-| Agent 诊断流程 | [.agents/skills/dol-dev-tools-paisley-park](.agents/skills/dol-dev-tools-paisley-park/SKILL.md)，可[独立安装](docs/SKILL_INSTALL.md)，复用同一份Tools |
+| 配置环境、连接现场、查看命令 | [诊断工作流](docs/DIAGNOSTICS.md) · `Paisley-Park.cmd --help` |
+| 复现操作与开发检查点 | [Action / Journey](docs/ACTIONS.md) |
+| 比较证据、整理问题报告 | [Evidence 工具](docs/EVIDENCE_TOOLS.md) · [格式与 Schema](docs/FORMATS.md) |
+| 运行和恢复 Gameplay 目标 | [Gameplay](docs/GAMEPLAY.md) |
+| 安装与使用 Agent Skill | [安装指南](docs/SKILL_INSTALL.md) · [Skill 源码](.agents/skills/dol-dev-tools-paisley-park/SKILL.md) |
+| 接入项目专属诊断 | [Integration Contract](docs/INTEGRATIONS.md) |
+| 修改、构建、部署与贡献 | [Workshop](docs/WORKSHOP.md) · [项目规则](AGENTS.md) · [架构边界](docs/ARCHITECTURE.md) |
+| 查询真实验收和安全限制 | [当前收口](docs/CLOSEOUT_3_0_2.md) · [验证记录](docs/VALIDATION.md) |
+| 了解版本演进与未来方向 | [历史索引](docs/HISTORY.md) · [能力蓝图](docs/BLUEPRINT.md) |
 
-Python、Pillow、Android CLI、scrcpy 与官方 Perfetto recorder 按能力选用，缺失不影响其它入口。`visual-diff` 需要已有 Python + Pillow；`perf --deep` 需要经检查的本地官方 recorder。详细命令及依赖见 [诊断工作流](docs/DIAGNOSTICS.md)。
+贡献时使用目标模块的最小充分检查；Tools 的离线检查入口为 `npm test` 和 `python -m unittest discover -s tests -p "test_*.py"`。离线通过不能代替真机或游戏业务证明。
 
-Evidence 每一步独立记录状态、来源、时间和制品 SHA；请求范围中的失败形成 partial 并保留成功文件。CLI 的 0 表示本次请求完整，1 表示失败或部分完成，不能作为游戏/视觉兼容测试结论。Support 离线投影，不重新连接设备，默认不带截图、DOM、Network、录屏、trace 或 bugreport。
-
-截图、录像和重型资料需要人工隐私检查。Console / Logcat 默认省略正文，Network 不保存 headers、body 或私有路径；摘要不足时明确报告证据限制。数据留在本机，不自动上传。
-
-1.1 提供经过审阅的本地 `.cjs` 接入，10 秒总时限，结果只保存为 JSON；Worker 隔离故障但不是权限沙箱。示例和隐私责任见 [INTEGRATIONS](docs/INTEGRATIONS.md)。
-
-1.0 的交付与迁移说明见 [重置版说明](docs/RELEASE_1.0.md)，实际验收与已知限制见 [验证记录](docs/VALIDATION.md)。长期规划见 [架构约束](docs/ARCHITECTURE.md)，其中未交付的路线不代表现有能力。
-
-## 历史版本与验收记录
-
-以下保留重置前版本及其证明边界，不表示当前发行版本。[历史索引](docs/HISTORY.md)标明旧名称、tag与文档归属；原始需求提案保留当时措辞。
-
-1.2在1.0重置版和1.1公共接入基础上交付通用诊断、有限复现实验、证据比较与Skill开发闭环。完整蓝图按能力组登记在[能力覆盖](docs/CAPABILITY_COVERAGE.md)。通用核心不依赖Soft & Wet、不要求目标Mod使用某个Runtime或相邻源码；各项目Integration都是平级可选增强。附带Soft & Wet桥和独立通用DOM示例。
-
-1.0.0 在原工具包目录直接更新，保留 Android CLI、CDP evaluator、只读探针和私有备份入口；当时统一诊断入口为 `DoL-Dev.cmd` 或 `node scripts/dol-dev.cjs`。这是此前版本号重置，Evidence JSON 仍使用 `schemaVersion: 1`。
-
-提供CSS/Environment/Storage Snapshot/Diff、显式target/socket、Action/Journey/Recorder候选、时间线、通用DOM Inspector、区域视觉比较、性能重复采样和离线证据工具。使用当前`--help`、[操作说明](docs/ACTIONS.md)、[检查器](docs/INSPECTORS.md)、[性能](docs/PERFORMANCE.md)和[证据比较](docs/EVIDENCE_TOOLS.md)。
-
-还包含[Network实验](docs/NETWORK.md)、[动画取帧](docs/ANIMATION.md)、[Viewport Matrix](docs/VIEWPORT.md)、[原生布局](docs/NATIVE_LAYOUT.md)、[关联进程内存](docs/PROCESS_MEMORY.md)、[Workshop闭环](docs/WORKSHOP.md)和[独立Skill安装](docs/SKILL_INSTALL.md)。80项自动检查通过；桌面持久Mod制品与Android临时WebView夹具分别验收。Android持久业务Mod/APK、重型trace/helper、其它设备和专有生命周期仍按目标条件验收；不会自动上传或安装缺失依赖。迁移与交付范围见[1.2说明](docs/RELEASE_1.2.md)。
-
-1.3统一汇总后续增补：Android隔离origin内的持久Mod重载、完整转发归属清理、只读生命周期与checkpoint、整包生命周期比较，以及Support直接生成Issue Report。89项检查通过；原1.2 ZIP保留。交付与条件范围见[1.3说明](docs/RELEASE_1.3.md)和[验证记录](docs/VALIDATION.md)。
-
-1.4统一汇总最终清单及[原生重建与真实游戏APK更新](docs/NATIVE_RECREATE.md)、[主游戏真实业务Mod更新](docs/BUSINESS_MOD_UPDATE.md)：原生对象身份、同签名版本更新、自有sentinel保留、DoLGameUI 2.0.3→2.1.0持久加载/源SHA/设置行为及重启后复验均经实机验证，91项检查通过。通用核心、可选Integration、Skill和目标自有配方分层保持独立；覆盖与条件范围见[1.4说明](docs/RELEASE_1.4.md)。旧1.3 ZIP/tag冻结，不回填新结果。
-
-1.5补齐后续[完整验收](docs/FINAL_ACCEPTANCE.md)：独立WebView-only、实际Perfetto/bugreport/helper、detached基线/重复动作/复采Journey及锁屏生命周期；96项Node检查通过。Skill第一原则是[复用成熟能力](.agents/skills/dol-dev-tools-paisley-park/SKILL.md)，优先组合Android CLI、Android Profiler、Chrome DevTools与目标项目构建部署，只做必要DoL适配。完整交付与条件范围见[1.5说明](docs/RELEASE_1.5.md)；旧1.4及更早包保持冻结。
-
-## 可选：DoL Game UI 构建与桌面测试
-
-构建脚本和完整桌面回归已经随 [DoL Game UI](https://github.com/102326/DoL-Game-UI) 公开，继续在该仓库维护，避免两份代码漂移。需要 Node.js 22.12+ 和 Python 3.10+。
-
-```sh
-git clone https://github.com/102326/DoL-Game-UI.git
-cd DoL-Game-UI
-npm ci
-npm run test:quick
-npm run package
-npm run test:release -- --plan
-```
-
-完整游戏集成与性能测试需要自行取得游戏资源和 Microsoft Edge；`--plan` 只列计划和缺少的资源。详见该仓库的 [开发文档](https://github.com/102326/DoL-Game-UI/blob/main/docs/DEVELOPMENT.md)。本仓库不自动下载游戏或安装浏览器。
-
-## 独立 Android CLI 采集（保留旧入口）
-
-统一入口的默认 Evidence 使用 ADB 截图和限定范围的 CDP 采证。需要 Android CLI 的自动标注及原始布局时，使用下面保留的独立入口；原始布局不自动进入脱敏 Evidence。
-
-Windows可通过 `winget install --id Google.AndroidCLI --exact --source winget` 安装；其他平台见[官方安装说明](https://developer.android.com/tools/agents/android-cli)。Node.js工具没有新增依赖。默认使用PATH中的`android`，也可指定现有CLI/SDK，不会自动改全局SDK配置。
-
-```powershell
-$env:DOL_ANDROID_CLI = "$env:LOCALAPPDATA/Microsoft/WinGet/Packages/Google.AndroidCLI_Microsoft.Winget.Source_8wekyb3d8bbwe/android.exe"
-$env:DOL_ANDROID_SDK = 'PATH_TO_EXISTING_SDK'
-New-Item -ItemType Directory -Path artifacts -Force
-node scripts/android-inspect.cjs DEVICE_SERIAL artifacts/session-001
-```
-
-Windows也可执行 `Inspect-Android.cmd DEVICE_SERIAL artifacts/session-001`；双击无参数只显示用法，不自动选择设备。目标目录必须尚不存在，父目录需先创建。输出原图、标注图、完整布局JSON及命令状态/耗时报告；失败时保留已采资料，不覆盖旧报告，不偷偷重试或换设备。所有CLI调用加`--no-metrics`，单命令超时30秒。`complete=true`只说明制品结构可读取，不能证明屏幕已解锁、画面正确或测试通过；必须查看截图与目标控件。
-
-`layout`首次可能安装Google独立的`com.android.cli.interact.instrumentation`辅助APK。需用户允许USB安装，它不替换游戏。若手机拒绝，报告失败并使用已有ADB/CDP回退，不关闭系统保护或反复安装。采集器不点按、不启动/重启应用、不安装游戏APK、不操作存档。
-
-标注编号可交给官方`screen resolve`生成坐标（本命令不点击）：
-
-```powershell
-& $env:DOL_ANDROID_CLI --no-metrics screen resolve --screenshot=artifacts/session-001/annotated.png '--string=input tap #N'
-```
-
-视觉分块不等于业务控件语义，执行前核对实时画面。不能以布局JSON替代DOM、游戏变量、原节点身份或性能证明。采集失败时可用`adb -s DEVICE_SERIAL exec-out screencap -p`获取截图（用二进制安全的文件写入方式）；网页检查继续走下面的CDP入口。
-
-工具0.2.0在Windows/Android CLI 1.0.16486076连接实际手机验证了完整四步采集，PNG1200×2608、非空layout、失败记录与防覆盖通过。未验所有设备、系统对话框、APK增量部署或Journey。真实截图/布局/日志仅本地保存，不上传仓库。
-
-## ADB/CDP 回退与精确检查
-
-安装 Android SDK Platform Tools，使 `adb` 可用；开启设备 USB 调试。应用必须支持 WebView 调试。以下命令中的 `DEVICE_SERIAL` 和 `SOCKET_NAME` 必须替换为实际值。
-
-```sh
-adb devices
-adb -s DEVICE_SERIAL shell cat /proc/net/unix
-adb -s DEVICE_SERIAL forward tcp:50806 localabstract:SOCKET_NAME
-node scripts/adb-evaluate.cjs probes/status.js
-node scripts/adb-evaluate.cjs probes/wardrobe.js artifacts/wardrobe.json
-```
-
-从 `/proc/net/unix` 查找对应应用的 `webview_devtools_remote` socket，去掉开头的 `@`；不要使用另一应用的 socket。应用重启后需重新核对。先创建 `artifacts` 目录；输出文件已存在时不会覆盖。
-
-端口可通过环境变量 `DOL_CDP_URL` 调整。PowerShell 示例：
-
-```powershell
-$env:DOL_CDP_URL = 'http://127.0.0.1:50806'
-node scripts/adb-evaluate.cjs probes/shop.js
-```
-
-附带探针只读取版本、页面和布局统计，不购买、换装、加载存档或推进剧情。执行器本身会执行你指定的任意 JavaScript，因此只运行检查过的脚本。接口不存在时返回空值，不代表该版本已验证兼容。
-
-## 私有应用数据备份
-
-先在游戏里保存并退出应用，避免文件在读取期间发生变化；本工具不停止应用，不操作存档槽，不恢复数据。
-
-```sh
-python scripts/adb-backup-app-data.py --serial DEVICE_SERIAL --label before-test
-```
-
-ADB 不在 PATH 时使用 `--adb` 指定路径；其他包名使用 `--package`。需要应用允许 `run-as`，不支持时明确失败，不尝试 root 或绕过限制。输出默认在已忽略的 `backups/` 中，包含真实私有数据，不要上传。TAR 可读性及 SHA256 检查不等于恢复验收。
-
-## 离线验证
-
-```sh
-npm test
-python -m unittest discover -s tests -p "test_*.py"
-```
-
-Node 测试覆盖统一采集器、传输、失败隔离、脱敏、投影与旧入口；Python 测试覆盖私有备份和可选视觉比较。测试不连接真实设备，系统 Python 缺 Pillow 时视觉项明确跳过。真机与交付包检查见 [验证记录](docs/VALIDATION.md)。
-
-保留的 evaluator 会执行调用者指定的 JavaScript；只运行自己检查过的探针。Backup 处理真实私有数据，始终独立于 Evidence / Support，不默认执行。DoLWorkbench、Mod Center 和 Soft & Wet Runtime 不属于工具包本体。
-
-MIT 许可只适用于本仓库工具源码，不涵盖游戏、加载器或其他模组。不要提交真实存档、日志、截图、凭据、第三方资源或 APK。
+工具源码使用 [MIT](LICENSE)；许可不涵盖游戏、加载器或其他 Mod。不要提交真实存档、日志、截图、凭据、第三方资源或 APK。

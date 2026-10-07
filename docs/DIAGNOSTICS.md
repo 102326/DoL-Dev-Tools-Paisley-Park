@@ -1,4 +1,4 @@
-# DoL Dev Tools: Paisley Park：诊断工作流与3.0 Foundation
+# DoL Dev Tools: Paisley Park — 诊断工作流
 
 当前 3.0.2 Gold Experience Requiem 提供通用诊断/Schema 1 与独立私有的[Gameplay Runtime](GAMEPLAY.md)，验收与限制见[收口](CLOSEOUT_3_0_2.md)。通用核心不要求 Soft & Wet 或 Gameplay 依赖；Integration 为可选增强，业务 Scene/Memory 不自动进入 Evidence/Support。旧阶段文档保留为验证历史；3.0.0/3.0.1 公开 Release/tag 已按用户要求移除。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
@@ -131,7 +131,7 @@ bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、
 仓库内 [.agents/skills/dol-dev-tools-paisley-park/SKILL.md](../.agents/skills/dol-dev-tools-paisley-park/SKILL.md) 路由诊断、复现和开发闭环，支持[独立安装](SKILL_INSTALL.md)。本机已有安装及独立任务使用证明，自动发现仍取决于宿主和实际请求。
 Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live Site First、证据先行、来源分离、最小充分诊断；测试环境允许任务范围内的主动复现，具体操作边界见 [架构](ARCHITECTURE.md)。
 1.2提供独立有限Action/Journey，不自动遍历控件或抓取网络正文。保留Android CLI独立入口，原始布局不直接进入脱敏包；helper运行/安装需明确选择。
-独立Action/Journey可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect/Doctor/Evidence保持观察语义。真实存档、正式用户数据和凭据的破坏性操作需对应显式授权。范围见[BLUEPRINT](BLUEPRINT.md)，无后台服务、数据库或云端遥测。
+独立Action/Journey可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect/Doctor/Evidence保持观察语义。真实存档、正式用户数据和凭据的破坏性操作需对应显式授权。范围见[BLUEPRINT](BLUEPRINT.md)。诊断层无常驻后台服务或云端遥测；Gameplay 使用独立的本地 SQLite Store。
 
 ## 公共格式与第三方 Integration
 
@@ -165,3 +165,65 @@ Action/Journey 当前开发入口与边界见 [ACTIONS](ACTIONS.md)。Inspect/Do
 `process-memory`/`evidence --processes yes` 使用 Android 公开 packageList 关联与逐PID内存，不猜 JS renderer，见 [PROCESS_MEMORY](PROCESS_MEMORY.md)。`hitbox-overlay` 把新的 Hitboxes JSON 投影为无正文 SVG，见 [INSPECTORS](INSPECTORS.md)。目标项目自身 Build→Deploy→Verify 流程和独立可运行夹具见 [WORKSHOP](WORKSHOP.md)。
 
 1.2发布后开发源码提供 `app-lifecycle`、`app-lifecycle-diff`、`evidence --lifecycle yes` 和 Journey 原生checkpoint；仅采当前user/UID绑定的系统退出元信息，见 [APP_LIFECYCLE](APP_LIFECYCLE.md)。观察与重启动作分开，不访问Mod内部对象、栈正文或存档。
+
+## 独立 Android CLI 与兼容入口
+
+统一入口的默认 Evidence 使用 ADB 截图和限定范围的 CDP 采证。需要 Android CLI 的自动标注及原始布局时，使用下面保留的独立入口；原始布局不自动进入脱敏 Evidence。
+
+Windows可通过 `winget install --id Google.AndroidCLI --exact --source winget` 安装；其他平台见[官方安装说明](https://developer.android.com/tools/agents/android-cli)。这个独立 Node.js 采集入口不需要 npm 依赖。默认使用PATH中的`android`，也可指定现有CLI/SDK，不会自动改全局SDK配置。
+
+```powershell
+$env:DOL_ANDROID_CLI = "$env:LOCALAPPDATA/Microsoft/WinGet/Packages/Google.AndroidCLI_Microsoft.Winget.Source_8wekyb3d8bbwe/android.exe"
+$env:DOL_ANDROID_SDK = 'PATH_TO_EXISTING_SDK'
+New-Item -ItemType Directory -Path artifacts -Force
+node scripts/android-inspect.cjs DEVICE_SERIAL artifacts/session-001
+```
+
+Windows也可执行 `Inspect-Android.cmd DEVICE_SERIAL artifacts/session-001`；双击无参数只显示用法，不自动选择设备。目标目录必须尚不存在，父目录需先创建。输出原图、标注图、完整布局JSON及命令状态/耗时报告；失败时保留已采资料，不覆盖旧报告，不偷偷重试或换设备。所有CLI调用加`--no-metrics`，单命令超时30秒。`complete=true`只说明制品结构可读取，不能证明屏幕已解锁、画面正确或测试通过；必须查看截图与目标控件。
+
+`layout`首次可能安装Google独立的`com.android.cli.interact.instrumentation`辅助APK。需用户允许USB安装，它不替换游戏。若手机拒绝，报告失败并使用已有ADB/CDP回退，不关闭系统保护或反复安装。采集器不点按、不启动/重启应用、不安装游戏APK、不操作存档。
+
+标注编号可交给官方`screen resolve`生成坐标（本命令不点击）：
+
+```powershell
+& $env:DOL_ANDROID_CLI --no-metrics screen resolve --screenshot=artifacts/session-001/annotated.png '--string=input tap #N'
+```
+
+视觉分块不等于业务控件语义，执行前核对实时画面。不能以布局JSON替代DOM、游戏变量、原节点身份或性能证明。采集失败时可用`adb -s DEVICE_SERIAL exec-out screencap -p`获取截图（用二进制安全的文件写入方式）；网页检查继续走下面的CDP入口。
+
+早期 Android CLI 采集证明见 [历史索引](HISTORY.md#早期入口与相邻项目)。真实截图/布局/日志仅本地保存，不上传仓库。
+
+## ADB/CDP 回退与精确检查
+
+安装 Android SDK Platform Tools，使 `adb` 可用；开启设备 USB 调试。应用必须支持 WebView 调试。以下命令中的 `DEVICE_SERIAL` 和 `SOCKET_NAME` 必须替换为实际值。
+
+```sh
+adb devices
+adb -s DEVICE_SERIAL shell cat /proc/net/unix
+adb -s DEVICE_SERIAL forward tcp:50806 localabstract:SOCKET_NAME
+node scripts/adb-evaluate.cjs probes/status.js
+node scripts/adb-evaluate.cjs probes/wardrobe.js artifacts/wardrobe.json
+```
+
+从 `/proc/net/unix` 查找对应应用的 `webview_devtools_remote` socket，去掉开头的 `@`；不要使用另一应用的 socket。应用重启后需重新核对。先创建 `artifacts` 目录；输出文件已存在时不会覆盖。
+
+端口可通过环境变量 `DOL_CDP_URL` 调整。PowerShell 示例：
+
+```powershell
+$env:DOL_CDP_URL = 'http://127.0.0.1:50806'
+node scripts/adb-evaluate.cjs probes/shop.js
+```
+
+附带探针只读取版本、页面和布局统计，不购买、换装、加载存档或推进剧情。执行器本身会执行你指定的任意 JavaScript，因此只运行检查过的脚本。接口不存在时返回空值，不代表该版本已验证兼容。
+
+## 私有应用数据备份
+
+先在游戏里保存并退出应用，避免文件在读取期间发生变化；本工具不停止应用，不操作存档槽，不恢复数据。
+
+```sh
+python scripts/adb-backup-app-data.py --serial DEVICE_SERIAL --label before-test
+```
+
+ADB 不在 PATH 时使用 `--adb` 指定路径；其他包名使用 `--package`。需要应用允许 `run-as`，不支持时明确失败，不尝试 root 或绕过限制。输出默认在已忽略的 `backups/` 中，包含真实私有数据，不要上传。TAR 可读性及 SHA256 检查不等于恢复验收。
+
+Backup 始终独立于 Evidence / Support，不默认执行。DoLWorkbench、Mod Center 和 Soft & Wet Runtime 不属于工具包本体。
