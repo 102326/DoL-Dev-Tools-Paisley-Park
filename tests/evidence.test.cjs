@@ -210,12 +210,13 @@ test('complete Evidence keeps truncated DOM coverage and unknown game version se
 test('CLI states collection coverage, cached Console timing and separate version sources', () => {
   const {execFileSync}=require('node:child_process');
   const evidenceFile=require.resolve('../scripts/lib/evidence.cjs'),cliFile=require.resolve('../scripts/dol-dev.cjs');
-  const manifest={status:'complete',gameVersion:null,app:{versionName:'0.5.12.13'},completed:['console','versions'],steps:[{name:'dom-contract',coverage:{truncated:true,reasons:['max-depth']}}]};
+  const manifest={status:'complete',gameVersion:null,gameVersionSources:{startConfig:'0.5.12.13',gameVersionMod:null},app:{versionName:'0.5.12.13'},completed:['console','versions'],steps:[{name:'dom-contract',coverage:{truncated:true,reasons:['max-depth']}}]};
   const source=`require(${JSON.stringify(evidenceFile)});require.cache[${JSON.stringify(evidenceFile)}].exports.evidence=async()=>(${JSON.stringify(manifest)});require(${JSON.stringify(cliFile)}).main(['evidence','--serial','offline-device','--package','com.example.game','--out','unused-output']);`;
   const output=execFileSync(process.execPath,['-e',source],{encoding:'utf8',windowsHide:true});
   assert.match(output,/Evidence complete/);assert.match(output,/not complete content coverage or a functional test verdict/);
   assert.match(output,/DOM coverage truncated: max-depth/);assert.match(output,/cached Runtime events/);
   assert.match(output,/Game version: unknown \(CDP GameVersion\); wrapper App version: 0\.5\.12\.13 \(ADB package versionName\)/);
+  assert.match(output,/StartConfig.version=0\.5\.12\.13; GameVersion Mod=unknown/);
 });
 
 test('performance parsers read memory totals and frame timing percentiles', () => {

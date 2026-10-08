@@ -83,7 +83,7 @@ test('Support projects the allowlist only and rejects mismatched evidence withou
   for (const [name, data] of Object.entries({
     device: { androidVersion: '15', model: 'private-model', serial: 'private-serial' },
     app: { versionName: '1.0', package: 'private-package', inputValue: 'private-input' },
-    versions: { gameVersion: '1.2', loaderVersion: '3.4', token: 'private-token' },
+    versions: { gameVersion: '1.2', loaderVersion: '3.4', token: 'private-token',gameVersionSources:{startConfig:'0.5.12.13',gameVersionMod:null,body:'private-source-body'} },
     console: { events: Array.from({ length: 55 }, () => ({ kind: 'console', level: 'error', timestampMs: 2, content: 'private-console' })), omitted: 800 },
     network: { requests: [{ host: 'private-host', path: '/private' }] },
     'dom-contract': { nodes: [{ id: 'private-dom-id' }] },
@@ -99,6 +99,8 @@ test('Support projects the allowlist only and rejects mismatched evidence withou
   fs.writeFileSync(path.join(from, 'manifest.json'), JSON.stringify(manifest));
   const out = path.join(root, 'support');
   const report = support(from, out);
+  assert.deepEqual(report.versions.gameVersionSources,{startConfig:'0.5.12.13',gameVersionMod:null});
+  assert.equal(report.versions.gameVersion,'1.2');assert.equal(JSON.stringify(report).includes('private-source-body'),false);
   assert.equal(report.status, 'complete', JSON.stringify(report.steps));
   assert.equal(report.privacy.screenshotIncluded, false);
   assert.equal(fs.existsSync(path.join(out, 'screenshot.png')), false);

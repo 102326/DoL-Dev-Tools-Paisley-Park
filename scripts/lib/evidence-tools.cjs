@@ -59,6 +59,7 @@ function projectSnapshot(kind, value) {
       provider: group('provider', ['status','package','version']),
       webview: group('webview', ['product','protocolVersion','jsVersion']),
       runtime: { ...group('runtime', ['gameVersion','loaderVersion']),
+        gameVersionSources: group('runtime.gameVersionSources', ['startConfig','gameVersionMod']),
         viewport: group('runtime.viewport', ['width','height','devicePixelRatio']),
         capabilities: group('runtime.capabilities', ['modList','performanceObserver','mutationObserver','indexedDB']),
         mods: { status: 'available', truncated: false, unreadable: 0,
@@ -277,6 +278,10 @@ function readSupport(fromDir) {
     if (version(value)) versions[field] = value;
   };
   for (const field of ['gameVersion','loaderVersion']) addVersion(field, data.versions[field]);
+  if (data.versions.gameVersionSources !== undefined) {
+    if (!object(data.versions.gameVersionSources)) throw Error('Invalid support version sources');
+    for (const source of ['startConfig','gameVersionMod']) addVersion(source+'Version',data.versions.gameVersionSources[source]);
+  }
   if (data.versions.app !== undefined) {
     if (!object(data.versions.app)) throw Error('Invalid support version');
     addVersion('appVersion', data.versions.app.versionName);
@@ -326,6 +331,9 @@ function report(fromDir, outDir) {
       if (value) result.versions[field] = value;
     }
     if (version(m.app?.versionName)) result.versions.appVersion = version(m.app.versionName);
+    for (const source of ['startConfig','gameVersionMod']) {
+      const value=version(m.gameVersionSources?.[source]);if(value)result.versions[source+'Version']=value;
+    }
     for (const step of m.steps) {
       const label = loaded.journey ? step.type : step.name;
       result.steps.push({ step: label, status: step.status, ...(step.status !== 'completed' ? { reason: reason(step.reason) } : {}) });

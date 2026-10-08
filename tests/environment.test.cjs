@@ -14,6 +14,15 @@ function runtime(utils) {
 }
 const utils = { version: () => '2.101.1', getModListNameNoAlias: () => ['Example'],
   getMod: () => ({ version: '1.2.3', get bootJson() { throw Error('whole metadata must not be read'); } }) };
+test('version observations retain separate sources and preserve legacy Environment contracts', async()=>{
+  const result=runtime({...utils,getMod:name=>name==='GameVersion'?null:{version:'1.2.3'}});
+  assert.equal(result.gameVersion,'0.5.12.13');assert.deepEqual(result.gameVersionSources,{startConfig:'0.5.12.13',gameVersionMod:null});
+  const observed=await require('../scripts/lib/collectors.cjs').versions({client:{evaluate:expression=>vm.runInNewContext(expression,{window:{StartConfig:{version:'0.5.12.13'},modUtils:{getMod:()=>null}}})}});
+  assert.equal(observed.gameVersion,null);assert.equal(observed.gameVersionSources.startConfig,'0.5.12.13');assert.equal(observed.gameVersionSources.gameVersionMod,null);
+  const old=data();delete old.runtime.gameVersionSources;assert.doesNotThrow(()=>env.contract(old));
+  const current=data();current.runtime=result;assert.equal(env.contract(current).fields['runtime.gameVersionSources.startConfig'],'0.5.12.13');
+  current.runtime.gameVersionSources.startConfig={secret:'PRIVATE'};assert.throws(()=>env.contract(current),/Invalid environment field/);
+});
 function data() { return { schemaVersion: 1, source: 'Environment', device: { androidVersion: '16', model: 'test' },
   app: { package: 'com.example.app', versionName: '1.0', versionCode: '1', foregroundMatches: true },
   provider: env.provider('Current WebView package (name, version): (com.google.android.webview, 154.0.0.0)'),

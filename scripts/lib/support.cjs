@@ -56,7 +56,16 @@ function support(from, out, includeScreenshot = false) {
         const data = envelope.data;
         if (step.name === 'device') report.device = { androidVersion: versionField(data.androidVersion) }; // Omit model and serial for support by default.
         if (step.name === 'app') report.versions.app = { versionName: versionField(data.versionName), versionCode: versionField(data.versionCode) };
-        if (step.name === 'versions') Object.assign(report.versions, { gameVersion: versionField(data.gameVersion), loaderVersion: versionField(data.loaderVersion) });
+        if (step.name === 'versions') {
+          Object.assign(report.versions, { gameVersion: versionField(data.gameVersion), loaderVersion: versionField(data.loaderVersion) });
+          if(data.gameVersionSources!==undefined){
+            if(!data.gameVersionSources||typeof data.gameVersionSources!=='object'||Array.isArray(data.gameVersionSources))throw Error('Invalid version sources');
+            const sources={};for(const source of ['startConfig','gameVersionMod']){
+              const value=versionField(data.gameVersionSources[source]);if(value!==null&&!/^[0-9A-Za-z._()+-]{1,64}$/.test(value))throw Error('Invalid version source');sources[source]=value;
+            }
+            report.versions.gameVersionSources=sources;
+          }
+        }
         if (step.name === 'console') report.console = { events: (data.events || []).slice(0,50).map(e => ({
           kind: ['console','exception'].includes(e.kind) ? e.kind : 'other', level: ['error','warning','log','info','debug'].includes(e.level) ? e.level : 'other',
           timestampMs: typeof e.timestampMs === 'number' ? e.timestampMs : null })), content: 'omitted',

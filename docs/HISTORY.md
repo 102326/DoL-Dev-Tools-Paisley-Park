@@ -4,7 +4,8 @@
 
 | 历史版本 | 记录 |
 | --- | --- |
-| 3.0.2 / v3.0.2 | [Gold Experience Requiem 发布说明](RELEASE_3.0.2.md)、[当前验收与限制](CLOSEOUT_3_0_2.md) |
+| 3.0.3 / v3.0.3 | [实战诊断体验补丁](RELEASE_3.0.3.md)、[当前收口](CLOSEOUT_3_0_3.md) |
+| 3.0.2 / v3.0.2 | [Gold Experience Requiem 发布说明](RELEASE_3.0.2.md)、[3.0.2 验收与限制](CLOSEOUT_3_0_2.md) |
 | 3.0.1（公开 Release / tag 已删除） | [历史发布说明](RELEASE_3.0.1.md)、[S1/S2 代表性证明](CLOSEOUT_3_0_1.md) |
 | 3.0.0（公开 Release / tag 已删除） | [原发布说明](RELEASE_3.0.0.md)、[Foundation A—D证明](CLOSEOUT_3_0.md)、[撤版](WITHDRAWAL_3.0.0.md)、[新的研发方案](GOLD_EXPERIENCE_REAUDIT.md) |
 | 2.0.1 / v2.0.1 | [实战经验指引补丁](RELEASE_2.0.1.md) |

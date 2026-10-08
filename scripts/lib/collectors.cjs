@@ -173,7 +173,8 @@ async function versions(ctx) {
   if (!ctx.client) throw new Error('CDP unavailable');
   return ctx.client.evaluate(`(() => {
     const read = fn => {try {const v=fn(); return typeof v==='string' && /^[0-9A-Za-z._()+-]{1,64}$/.test(v) ? v : null} catch {return null}};
-    return {gameVersion:read(()=>window.modUtils?.getMod?.('GameVersion')?.version),
+    const gameVersion=read(()=>window.modUtils?.getMod?.('GameVersion')?.version);
+    return {gameVersion,gameVersionSources:{gameVersionMod:gameVersion,startConfig:read(()=>window.StartConfig?.version)},
       loaderVersion:read(()=>typeof window.modUtils?.version==='function' ? window.modUtils.version() : window.modUtils?.version)};
   })()`);
 }

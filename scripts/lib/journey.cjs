@@ -27,6 +27,7 @@ function validate(plan) {
       } else if (!selector(step.selector) || !['exists','visible','hidden','absent'].includes(step.condition)
         || !Number.isInteger(step.timeoutMs) || step.timeoutMs < 1 || step.timeoutMs > 10000) throw Error('Invalid wait');
     } else if (step?.type === 'checkpoint') {
+      if (Object.hasOwn(step,'name')) throw Object.assign(Error('Invalid checkpoint'),{code:'UNSUPPORTED_CHECKPOINT_NAME'});
       if (Object.keys(step).some(k=>!['type','scope','capture','timelineMs','observerInstrumentation'].includes(k)) || step.scope !== undefined && !selector(step.scope)
         || !Array.isArray(step.capture) || step.capture.length < 1 || step.capture.length > captureKinds.length || new Set(step.capture).size !== step.capture.length
         || step.capture.some(k=>!captureKinds.includes(k))

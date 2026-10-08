@@ -1,11 +1,11 @@
 # DoL Dev Tools: Paisley Park — Gold Experience Requiem 工作流
 
-当前版本 3.0.2 Gold Experience Requiem提供共享 Gameplay Runtime 与宿主 Decision 协议。Agent 理解当前原生 Scene、选择动作与动态重规划；Tools 持久保存 Goal、Memory、预算、Effect Ledger、checkpoint 与 Outcome，协调同 Session 中断恢复。S1/S2 代表性实机验收与本轮维护检查见[收口](CLOSEOUT_3_0_2.md)。原 v3.0.0 Foundation 已撤回；本页后半保留旧接口作为明确历史，不能用旧 journal 模型解释新 Session。Gameplay 私有记录不属于 Generic Schema 1，不自动跨版本恢复或上传。
+当前版本 3.0.3 Gold Experience Requiem提供共享 Gameplay Runtime 与宿主 Decision 协议。Agent 理解当前原生 Scene、选择动作与动态重规划；Tools 持久保存 Goal、Memory、预算、Effect Ledger、checkpoint 与 Outcome，协调同 Session 中断恢复。S1/S2 代表性实机验收与本轮维护检查见[收口](CLOSEOUT_3_0_3.md)。原 v3.0.0 Foundation 已撤回；本页后半保留旧接口作为明确历史，不能用旧 journal 模型解释新 Session。Gameplay 私有记录不属于 Generic Schema 1，不自动跨版本恢复或上传。
 
 
 ## 当前 Runtime 与冻结 Foundation 的区别
 
-3.0.2 的 `game-goal` 使用共享 XState/SQLite 核心，以下旧接口说明保留为冻结 Foundation 历史。Gameplay 需要根目录 `npm ci --ignore-scripts --no-audit --no-fund`；Node 22 运行时加 `--experimental-sqlite`，Windows launcher 已包含，Generic 可独立使用。参见[共享核心设计记录](GOLD_EXPERIENCE_REAUDIT.md#10-m2共享内核迁移进展)。
+3.0.3 的 `game-goal` 使用共享 XState/SQLite 核心，以下旧接口说明保留为冻结 Foundation 历史。Gameplay 需要根目录 `npm ci --ignore-scripts --no-audit --no-fund`；Node 22 运行时加 `--experimental-sqlite`，Windows launcher 已包含，Generic 可独立使用。参见[共享核心设计记录](GOLD_EXPERIENCE_REAUDIT.md#10-m2共享内核迁移进展)。
 
 ### 版本与语义边界
 
@@ -68,7 +68,7 @@
 
 条件为AND，1—8项；field只接受hunger/thirst/tiredness/stress/hygiene/physique/money/timeStamp，op为eq/lte/gte，value为绝对值≤1e12的有限number。数值单位来自当前原游戏，示例不代表当前目标或现场。读取缺失/非数值为unavailable，不能当0；最终满足不证明曾执行某项活动，初始满足可以直接完成，pending effect仍阻止Session完成。消费和期限独立受父预算限制。原生数值Goal的路线进展要求全部条件不退步且至少一项改善，资源取舍可能记未进展；这不是完整振荡检测。只读谓词本身不证明活动发生；S2 由独立原活动 Outcome 与同 Goal 连续路径证明。
 
-新宿主使用同一个`game-goal-start`创建Session，随后使用`game-session --goal DIR --operation ... --test-environment yes`。这不是第二执行引擎；propose/dispatch/恢复共用原Action/Journey和effect ledger。S1/S2 同 Goal 代表性验收已通过；正式包及本机安装按 3.0.2 收口记录核对。
+首次使用 `game-goal-start` 创建 Session，随后使用 `game-session --goal DIR --operation ... --test-environment yes`。新宿主接管既有任务先对原 DIR 执行 resume，再取新 Request，不再次 start 替代原 Session。这不是第二执行引擎；propose/dispatch/恢复共用原 Action/Journey 和 effect ledger。S1/S2 同 Goal 代表性验收已通过；正式包及本机安装按 3.0.3 收口记录核对。
 
 ```powershell
 # 初次创建；REQ/PROPOSAL/DIR 等路径与设备参数须换成当前目标
@@ -97,6 +97,8 @@ node --experimental-sqlite scripts/dol-dev.cjs game-session --goal GOAL_DIR --op
 `reconcile`在I/O前预约并持久化一次独立清理读取，最多8次，跨宿主不重置；失败也收费，第9次不读取。读取共用一个30秒受限CDP transport，迟到结果拒绝，resume/新预约/lease换代使旧预约失效。不强占其它活跃Session，不改变原deadline、动作/观察/消费预算；结清仍验证原attempt、终止事实及实际消费。成功也保持原停止原因和halted，不重新计算Goal完成。`status.reconciliation`显示次数/失败，`budget.actualSpendExceeded`保留停止后的真实超支事实。CLI不接受用户提供的结果文件或JavaScript；特殊恢复reader只能是审阅过的本地代码，不能据模型解释清除pending。
 
 `status.pending` 汇总当前物理目标所有未结清 effect，不限于当前 Session。历史 completed Session 后来看到 pending=true，可能是同目标的新 Session 留下未决动作；须按 effect.sessionId 和原 attempt 区分，不据此改写旧验收或绕过当前目标阻挡。status 本地读取不证明现场仍满足旧 Goal。
+
+3.0.3 的 `game-session --operation status` / `game-goal-status` 及其它当前 Session 输出附带只读 `pendingEffects`：scope=target、总 count、truncated，以及最多 32 项 effectId / sessionId / owner / status / actionKind / provider。owner 区分 current-session、other-session 和 unknown；不输出跨 Session 叙事标签、selector、目标绑定、ack 或原状态。actions=0 与 pending=true 可以同时成立，不能因此认定当前购买已派发或购买 Provider 缺失。摘要只解释已有阻挡，不清账、不重放、不改变预算；截断或 unknown 必须保留。旧 Foundation 输出不追加此字段。
 
 Proposal复制当前Request的`protocol/requestId/sessionId/bindingGeneration/epoch/revision/planRevision/memoryRevision`，提交`actionRef`、简短`reason`、最多8条`plan`及最多16条`beliefs`。每条belief为`{claim,sourceEpoch}`，只承载宿主解释。宿主选择当前候选引用，不传selector或JavaScript；连接、目标绑定、解析和最终guard由既有执行链负责。现场文字不授予权限。迟到/重复响应整体拒绝，不部分写入Memory。
 

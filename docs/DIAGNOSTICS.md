@@ -1,6 +1,6 @@
 # DoL Dev Tools: Paisley Park — 诊断工作流
 
-当前 3.0.2 Gold Experience Requiem 提供通用诊断/Schema 1 与独立私有的[Gameplay Runtime](GAMEPLAY.md)，验收与限制见[收口](CLOSEOUT_3_0_2.md)。通用核心不要求 Soft & Wet 或 Gameplay 依赖；Integration 为可选增强，业务 Scene/Memory 不自动进入 Evidence/Support。旧阶段文档保留为验证历史；3.0.0/3.0.1 公开 Release/tag 已按用户要求移除。
+当前 3.0.3 Gold Experience Requiem 提供通用诊断/Schema 1 与独立私有的[Gameplay Runtime](GAMEPLAY.md)，验收与限制见[收口](CLOSEOUT_3_0_3.md)。通用核心不要求 Soft & Wet 或 Gameplay 依赖；Integration 为可选增强，业务 Scene/Memory 不自动进入 Evidence/Support。旧阶段文档保留为验证历史；3.0.0/3.0.1 公开 Release/tag 已按用户要求移除。
 历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
 
 仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools-paisley-park`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。
@@ -22,6 +22,8 @@ Windows 可用 `Paisley-Park.cmd` 替换 `node scripts/dol-dev.cjs`。先创建�
 Node.js 22.12+ 为必需。ADB 不在 PATH 时设 `DOL_ADB`，其值是已有 adb 可执行文件；不自动安装或修改系统 PATH。
 Doctor的ADB `unavailable / ENOENT`优先检查已有SDK/platform-tools位置；仅当前进程设`$env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'`，用`& $env:DOL_ADB version`核对后重新采集到新输出，不覆盖初次partial。不要把可选scrcpy缺失当作ADB缺失。
 其他可选工具环境变量为 `DOL_ANDROID_CLI / DOL_PYTHON / DOL_SCRCPY`。所有设备命令绑定显式 serial 和 package，不猜目标。
+
+3.0.3 起，CLI 失败使用固定 `[CODE stage=STAGE]` 提示。已审类型包括 INVALID_CLI_ARGUMENTS / cli.parse、UNSUPPORTED_CHECKPOINT_NAME / journey.validate（固定 field=name）、GAMEPLAY_RUNTIME_UNAVAILABLE / runtime.prerequisites；其余保留 COMMAND_FAILED，Session 异常可标明 game-session.cancel 等实际调用阶段，原因仍 unknown。Action/Journey checkpoint 不接受 name，Gameplay 开发 checkpoint 的 name 是另一接口；不要混用。未知参数、字段值、路径、异常正文与堆栈不回显，stage 不是根因判断或自动重试依据。
 Doctor 检查可选工具缺失不阻断必需环境；没有设备或显式设备不匹配会标记 partial，不自动选另一台设备。
 Doctor 只查询工具版本、设备、App、socket、run-as 可用性、已有转发、Perfetto 与输出目录权限；run-as 只执行 id，不读取私有数据。不创建转发、不修环境、不安装辅助 APK。
 Doctor的`complete`只表示其必需检查满足；App进程与WebView socket检查可能仍不可用。进入CDP前分别核对这些检查，不能仅凭不可用推断崩溃或调试被关闭。是否恢复运行现场由本轮Done决定，纯源码任务不为补覆盖而启动App。
@@ -153,6 +155,8 @@ node scripts/dol-dev.cjs environment-diff --before BEFORE_JSON --after AFTER_JSO
 ```
 
 CSS 最多 200 节点/深度8，只读样式白名单与矩形，URL 值整体省略，长值/节点截断如实标记；结构地址不是稳定节点身份。Environment 使用公开 loader 元信息，最多300项；reportedIndex 是报告顺序，enabled/loadOrder 未知时为 null，不能当作全部导入/禁用库存或实际执行顺序。
+
+版本来源：versions.json / manifest.gameVersion 继续只读 GameVersion Mod；Environment.runtime.gameVersion 保持既有 StartConfig 优先读取。两者新增 gameVersionSources.startConfig / gameVersionMod，分别保存受限版本字符串或 null；CLI 同时显示来源，Support / Issue Report 与 Environment Diff 保留允许的来源元信息。某来源无值不表示其它来源不可读，不用 wrapper 版本补成游戏版本，也不猜无值原因。较旧制品没有来源字段时按 unknown 处理；来源元信息由缺失变为有值不证明游戏升级。现场采样是顺序观察，来源冲突须保留并按实际问题复核。
 
 默认 CDP 仍要求唯一标准 DoL 标题；可用 inspect 的 ID 通过 --target-id 显式选择 page，缺失/歧义不自动回退到另一页。ADB 转发支持当前唯一 PID 的标准/browser WebView socket；多候选时须 --webview-socket 指定当前 PID 的已核对名称。独立 endpoint 入口不自动证明 App 关联。
 

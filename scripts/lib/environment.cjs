@@ -21,6 +21,7 @@ function snapshot() {
     } catch { mods.status = 'failed'; }
   }
   return { gameVersion: version(() => window.StartConfig?.version ?? utils?.getMod?.('GameVersion')?.version),
+    gameVersionSources: { startConfig: version(() => window.StartConfig?.version), gameVersionMod: version(() => utils?.getMod?.('GameVersion')?.version) },
     loaderVersion: version(() => typeof utils?.version === 'function' ? utils.version() : utils?.version),
     viewport: { width: innerWidth, height: innerHeight, devicePixelRatio: devicePixelRatio },
     capabilities: { modList: typeof utils?.getModListNameNoAlias === 'function' && typeof utils?.getMod === 'function',
@@ -64,6 +65,8 @@ function contract(value) {
     if (!plain(data[group])) throw Error('Invalid environment group');
     for (const [key, kind] of Object.entries(properties)) result[`${group}.${key}`] = scalar(data[group][key], kind);
   }
+  if (data.runtime.gameVersionSources !== undefined && !plain(data.runtime.gameVersionSources)) throw Error('Invalid environment version sources');
+  for (const source of ['startConfig','gameVersionMod']) result[`runtime.gameVersionSources.${source}`] = scalar(data.runtime.gameVersionSources?.[source], 'version');
   const viewport = data.runtime.viewport;
   if (!plain(viewport)) throw Error('Invalid viewport');
   for (const key of ['width','height','devicePixelRatio']) {

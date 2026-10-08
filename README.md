@@ -1,12 +1,12 @@
 # DoL Dev Tools: Paisley Park
 
-**3.0 — Gold Experience Requiem · 当前发行版 3.0.2**
+**3.0 — Gold Experience Requiem · 当前发行版 3.0.3**
 
 面向 DoL Mod 生态的本地开发工具系统。连接真实 Android / WebView，帮助开发者和 Agent 查看运行现场、调查问题、复现操作，并在修改、构建和部署后验证结果。
 
 除了诊断，3.0 还支持 Agent 根据游戏目标持续观察、决策和行动，在普通事件中调整路线，并在中断后接着完成原任务。Gameplay 可用于真实业务验收，也可用于有边界的游玩。
 
-[下载 3.0.2](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.2) · [快速开始](#快速开始) · [文档导航](#文档导航)
+[下载 3.0.3](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) · [快速开始](#快速开始) · [文档导航](#文档导航)
 
 ## 能做什么
 
@@ -51,7 +51,7 @@
 
 ## 快速开始
 
-从 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.2) 下载 `DoL-Dev-Tools-Paisley-Park-3.0.2.zip`，核对随附 SHA256，解压到稳定目录并进入工具根目录。包不包含游戏、APK 或设备工具。
+从 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) 下载 `DoL-Dev-Tools-Paisley-Park-3.0.3.zip`，核对随附 SHA256，解压到稳定目录并进入工具根目录。包不包含游戏、APK 或设备工具。
 
 需要 **Node.js 22.12+**。Android 现场需要已有 **ADB、USB 调试授权和明确的设备 serial / App package**；先手动打开目标 App。WebView 内部观察还需要 App 开启调试支持。ADB 不在 PATH 时，在当前进程设置 `DOL_ADB` 为已有 `adb.exe` 的绝对路径；详见 [环境与连接说明](docs/DIAGNOSTICS.md#快速入口)。
 
@@ -95,7 +95,7 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 - **证据与结论分开**：Evidence 的 complete / partial / failed 描述本次采集。结构可能截断，像素差异不等于兼容失败，内存增长不等于泄漏，采集完整不等于业务通过。
 - **本地资料与代码权限**：私有截图、日志、存档与游戏数据不自动上传，分享前须审查。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 能执行传入的页面 JavaScript，“只读”是内置 Probe 的使用约束。
 
-具体支持范围、旧未决 effect 和后续覆盖见 [当前验收与已知限制](docs/CLOSEOUT_3_0_2.md)。规划中的能力与已交付功能分开记录。
+具体支持范围、旧未决 effect 和后续覆盖见 [当前验收与已知限制](docs/CLOSEOUT_3_0_3.md)。规划中的能力与已交付功能分开记录。
 
 ## 文档导航
 
@@ -108,7 +108,7 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 | 安装与使用 Agent Skill | [安装指南](docs/SKILL_INSTALL.md) · [Skill 源码](.agents/skills/dol-dev-tools-paisley-park/SKILL.md) |
 | 接入项目专属诊断 | [Integration Contract](docs/INTEGRATIONS.md) |
 | 修改、构建、部署与贡献 | [Workshop](docs/WORKSHOP.md) · [项目规则](AGENTS.md) · [架构边界](docs/ARCHITECTURE.md) |
-| 查询真实验收和安全限制 | [当前收口](docs/CLOSEOUT_3_0_2.md) · [验证记录](docs/VALIDATION.md) |
+| 查询真实验收和安全限制 | [当前收口](docs/CLOSEOUT_3_0_3.md) · [验证记录](docs/VALIDATION.md) |
 | 了解版本演进与未来方向 | [历史索引](docs/HISTORY.md) · [能力蓝图](docs/BLUEPRINT.md) |
 
 贡献时使用目标模块的最小充分检查；Tools 的离线检查入口为 `npm test` 和 `python -m unittest discover -s tests -p "test_*.py"`。离线通过不能代替真机或游戏业务证明。

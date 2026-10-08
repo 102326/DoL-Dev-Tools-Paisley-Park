@@ -43,7 +43,14 @@ function view(s){
   if(s.readOnly)return{experimental:true,goalId:s.id,status:'foundation-history',readOnly:true,proof:s.proof||null,pending:!!s.pending,next:'start-a-new-scoped-goal'};
   const memory=require('./game-runtime.cjs').memoryView(s);
   const combinedProof=capabilities.publicProof(s);
-  const state=s.machine.value;return{experimental:true,runtimeVersion:2,goalId:s.id,epoch:s.epoch,revision:s.revision,status:state==='completed'?'completed':s.stopReason==='checkpoint-failed'?'failed':s.stopReason==='cancelled'?'cancelled':s.stopReason?'exhausted':state==='paused'?'paused':state==='reconciling'?'needs-result-interpretation':'active',phase:state,actions:s.actions,observations:s.observations,pending:!!s.openEffects?.length,proof:combinedProof,reason:s.pauseReason||s.stopReason||null,decision:decisionView(s.decision),budget:{deadline:s.deadline,maxSpend:s.config.budget.maxSpend,spent:s.spent,reserved:s.reserved,actualSpendExceeded:s.spent>s.config.budget.maxSpend},reconciliation:{reads:s.reconciliationReads??0,maxReads:8,error:s.reconciliationError??null},checkpoints:s.checkpoints,requiredCheckpoints:s.config.requiredCheckpoints||[],routes:s.routes||[],...memory};
+  const effects=s.openEffects??[],uuid=value=>typeof value==='string'&&/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(value)?value:null;
+  const pendingEffects={scope:'target',count:effects.length,truncated:effects.length>32,items:effects.slice(0,32).map(e=>({
+    effectId:uuid(e?.id),sessionId:uuid(e?.sessionId),owner:uuid(e?.sessionId)?e.sessionId===s.id?'current-session':'other-session':'unknown',
+    status:['prepared','dispatching','acknowledged'].includes(e?.status)?e.status:'unknown',
+    actionKind:semantic.intents.includes(e?.action?.kind)?e.action.kind:'unknown',
+    provider:['native-dol','clothing'].includes(e?.action?.capability?.provider)?e.action.capability.provider:'unknown',
+  }))};
+  const state=s.machine.value;return{experimental:true,runtimeVersion:2,goalId:s.id,epoch:s.epoch,revision:s.revision,status:state==='completed'?'completed':s.stopReason==='checkpoint-failed'?'failed':s.stopReason==='cancelled'?'cancelled':s.stopReason?'exhausted':state==='paused'?'paused':state==='reconciling'?'needs-result-interpretation':'active',phase:state,actions:s.actions,observations:s.observations,pending:!!effects.length,pendingEffects,proof:combinedProof,reason:s.pauseReason||s.stopReason||null,decision:decisionView(s.decision),budget:{deadline:s.deadline,maxSpend:s.config.budget.maxSpend,spent:s.spent,reserved:s.reserved,actualSpendExceeded:s.spent>s.config.budget.maxSpend},reconciliation:{reads:s.reconciliationReads??0,maxReads:8,error:s.reconciliationError??null},checkpoints:s.checkpoints,requiredCheckpoints:s.config.requiredCheckpoints||[],routes:s.routes||[],...memory};
 }
 async function start(options,request,overrides={}){
   request=validate(request);

@@ -62,6 +62,20 @@ function fixture(t,config={}) {
 }
 const step=f=>({testEnvironment:true,file:f.file,intent:'navigation'});
 
+test('target pending summary identifies another Session without clearing its effect or exposing bindings',async t=>{
+  const f=fixture(t);await goal.start(f.options,f.request,f.overrides);await goal.advance(f.options.out,step(f),f.overrides);
+  const original=goal.status(f.options.out),effect=structuredClone(original.openEffects[0]);
+  await goal.session(f.options.out,'cancel',{testEnvironment:true},f.overrides);
+  const nextDir=path.join(f.base,'next-goal'),next=await goal.start({...f.options,out:nextDir},f.request,f.overrides);
+  assert.equal(next.actions,0);assert.equal(next.pending,true);assert.equal(next.decision,null);
+  assert.deepEqual(next.pendingEffects,{scope:'target',count:1,truncated:false,items:[{effectId:effect.id,sessionId:original.id,owner:'other-session',status:effect.status,actionKind:'navigation',provider:'native-dol'}]});
+  const before=goal.status(nextDir),view=goal.view(before);assert.deepEqual(goal.status(nextDir),before);
+  assert.deepEqual(before.openEffects[0],effect);assert.equal(f.stats().clicks,1);assert.equal(view.budget.spent,0);
+  for(const key of ['selector','executionBinding','targetKey','label','trace','ack'])assert.equal(Object.hasOwn(view.pendingEffects.items[0],key),false);
+  const hostile=structuredClone(before);hostile.openEffects=Array.from({length:33},()=>({id:'PRIVATE_PATH',sessionId:'PRIVATE_OWNER',status:'PRIVATE_STATUS',action:{kind:'PRIVATE_KIND',capability:{provider:'PRIVATE_PROVIDER'},label:'PRIVATE_LABEL'}}));
+  const projected=goal.view(hostile);assert.equal(projected.pending,true);assert.equal(projected.pendingEffects.count,33);assert.equal(projected.pendingEffects.items.length,32);assert.equal(projected.pendingEffects.truncated,true);assert.equal(JSON.stringify(projected.pendingEffects).includes('PRIVATE'),false);
+});
+
 test('original task description survives the CLI adapter, stored request and rebind with unchanged predicate and budget',async t=>{
   const f=fixture(t);f.request.description='通过原生游戏入口前往目标地点，普通偏航自行处理，保持原预算。';
   const first=await goal.start(f.options,f.request,f.overrides);

@@ -99,11 +99,13 @@ test('Issue Report consumes projected Support without exporting private fields o
   const data = require('../scripts/lib/support.cjs').support(source.dir, supportDir);
   data.privateBody = 'SECRET_BODY'; data.console = { events: [{ body: 'SECRET_CONSOLE' }] };
   data.versions.extra = { body: 'SECRET_VERSION' };
+  data.versions.gameVersionSources={startConfig:'0.5.12.13',gameVersionMod:null,body:'SECRET_SOURCE'};
   fs.writeFileSync(path.join(supportDir, 'support.json'), JSON.stringify(data));
   fs.writeFileSync(path.join(supportDir, 'repro.json'), 'SECRET_REPRO');
   const out = path.join(base, 'support-report'), result = report(supportDir, out);
   assert.equal(result.status, 'complete'); assert.equal(result.inputKind, 'support');
   assert.equal(result.versions.appVersion, '0.5.12'); assert.equal(result.incident.incidentId, incident);
+  assert.equal(result.versions.startConfigVersion,'0.5.12.13');assert.equal(result.versions.gameVersionModVersion,undefined);
   assert.equal(result.support.supportId, data.supportId); assert.equal(result.support.originalEvidenceVerified, false);
   assert.equal(result.incident.captureStart, null); assert.equal(result.incident.captureEnd, null);
   for (const file of ['report.json','report.md']) assert.equal(fs.readFileSync(path.join(out, file), 'utf8').includes('SECRET_'), false);
@@ -249,7 +251,7 @@ test('knownGood projects complete environment and storage metadata without extra
     app: { package: 'com.example.game', versionName: '1', versionCode: '1', foregroundMatches: true },
     provider: { status: 'available', package: 'com.android.webview', version: '1' },
     webview: { product: 'WebView/1', protocolVersion: '1', jsVersion: '1' },
-    runtime: { gameVersion: '1', loaderVersion: '1', viewport: { width: 100, height: 100, devicePixelRatio: 1 },
+    runtime: { gameVersion: '1', loaderVersion: '1',gameVersionSources:{startConfig:'1',gameVersionMod:null,body:'SECRET_SOURCE'}, viewport: { width: 100, height: 100, devicePixelRatio: 1 },
       capabilities: { modList: true, performanceObserver: true, mutationObserver: true, indexedDB: true },
       mods: { status: 'available', items: [{ name: 'SECRET_MOD', version: '1', reportedIndex: 0,
         enabled: null, loadOrder: null }], truncated: false, unreadable: 0 } },
@@ -271,6 +273,7 @@ test('knownGood projects complete environment and storage metadata without extra
   const comparison = compare(out, source.dir, path.join(base, 'comparison'));
   assert.equal(comparison.status, 'complete');
   assert.equal(comparison.comparisons.every(item => item.status === 'available' && item.changes.length === 0), true);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(out,'environment.json'),'utf8')).data.runtime.gameVersionSources,{startConfig:'1',gameVersionMod:null});
   storage.local.status = 'unsupported';
   const incomplete = incidentDir(base, 'incomplete', { storage });
   assert.throws(() => knownGood(incomplete.dir, path.join(base, 'refused')), /reference snapshot/);

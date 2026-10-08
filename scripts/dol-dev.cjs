@@ -76,10 +76,21 @@ function parse(args, allowed) {
   while (args.length) {
     const flag = args.shift();
     if (['--deep','--full','--plan'].includes(flag) && allowed.includes(flag) && !Object.hasOwn(options,flag.slice(2))) { options[flag.slice(2)] = true; continue; }
-    if (!allowed.includes(flag) || Object.hasOwn(options, flag.slice(2)) || !args.length) throw new Error('Unknown, duplicate or incomplete option');
+    if (!allowed.includes(flag) || Object.hasOwn(options, flag.slice(2)) || !args.length) throw Object.assign(new Error('Unknown, duplicate or incomplete option'),{code:'INVALID_CLI_ARGUMENTS'});
     options[flag.slice(2)] = args.shift();
   }
   return options;
+}
+function errorMessage(error) {
+  const known={
+    GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Run npm ci --ignore-scripts --no-audit --no-fund in the Tools root; Node 22.12 needs --experimental-sqlite. Generic diagnostics remain available.'],
+    INVALID_CLI_ARGUMENTS:['cli.parse','Unknown, duplicate or incomplete option; use --help. Supplied arguments omitted.'],
+    UNSUPPORTED_CHECKPOINT_NAME:['journey.validate','field=name: Action/Journey checkpoints do not accept name. See docs/ACTIONS.md.'],
+  };
+  const code=typeof error?.code==='string'&&Object.hasOwn(known,error.code)?error.code:'COMMAND_FAILED';
+  const stage=['request','propose','dispatch','resume','reconcile','checkpoint','cancel','status'].includes(error?.cliOperation)?'game-session.'+error.cliOperation:'command';
+  const [where,message]=known[code]??[stage,'Command failed. Check arguments, target availability and output protection; cause unknown, raw error content omitted.'];
+  return `[${code} stage=${where}] ${message}`;
 }
 function write(out, source, data) {
   if (!out) throw new Error('Provide --out');
@@ -92,7 +103,9 @@ async function main(args = process.argv.slice(2)) {
   if(command==='game-session'){
     const options=parse(args,['--goal','--operation','--file','--test-environment']);
     if(!options.goal||!['request','propose','dispatch','resume','reconcile','checkpoint','cancel','status'].includes(options.operation)||options['test-environment']!==undefined&&options['test-environment']!=='yes'||['propose','checkpoint'].includes(options.operation)&&!options.file||!['propose','checkpoint'].includes(options.operation)&&options.file)throw Error('Invalid Session operation/options');
-    options.testEnvironment=options['test-environment']==='yes';const result=await require('./lib/game-goal.cjs').session(options.goal,options.operation,options);console.log(JSON.stringify(result,null,2));if(['paused','exhausted','failed'].includes(result.status))process.exitCode=1;
+    options.testEnvironment=options['test-environment']==='yes';let result;
+    try{result=await require('./lib/game-goal.cjs').session(options.goal,options.operation,options)}catch(error){if(error&&typeof error==='object')error.cliOperation=options.operation;throw error}
+    console.log(JSON.stringify(result,null,2));if(['paused','exhausted','failed'].includes(result.status))process.exitCode=1;
   } else if (['game-goal-start','game-goal-step','game-goal-status'].includes(command)) {
     const goal = require('./lib/game-goal.cjs'); let result;
     if (command === 'game-goal-status') {
@@ -167,6 +180,7 @@ async function main(args = process.argv.slice(2)) {
     if (manifest.completed.includes('versions')) {
       const display = value => typeof value === 'string' && /^[0-9A-Za-z._()+-]{1,64}$/.test(value) ? value : 'unknown';
       console.log(`Game version: ${display(manifest.gameVersion)} (CDP GameVersion); wrapper App version: ${display(manifest.app?.versionName)} (ADB package versionName).`);
+      if(manifest.gameVersionSources)console.log(`Game version sources: StartConfig.version=${display(manifest.gameVersionSources.startConfig)}; GameVersion Mod=${display(manifest.gameVersionSources.gameVersionMod)}. unknown means no usable value from that source, not a known cause.`);
     }
     if (manifest.status !== 'complete') process.exitCode = 1;
   } else if(command==='install-skill'){
@@ -297,8 +311,6 @@ async function main(args = process.argv.slice(2)) {
 }
 module.exports = { main, parse };
 if (require.main === module) main().catch(error => {
-  console.error(error.code==='GAMEPLAY_RUNTIME_UNAVAILABLE'
-    ? 'Gameplay Runtime requires XState and Node SQLite. Run npm ci --ignore-scripts --no-audit --no-fund in the Tools root; Node 22.12 needs --experimental-sqlite. Generic diagnostics remain available.'
-    : 'Command failed. Check arguments, target availability and output protection; raw error content omitted.');
+  console.error(errorMessage(error));
   process.exitCode = 1;
 });
