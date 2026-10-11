@@ -22,6 +22,8 @@ CLI screen/layout 提供画面/结构；ADB 输入、CDP DOM click、trusted tou
 
 授权的独立 Debug 准备可改变虚拟金钱、物品、剧情、时间或测试存档，必须与原 Bug 触发条件、真实购买结果和已有未决事实分开记录。目标包/签名/user/数据范围复核后执行；PID/Document 变化重新绑定，同一有效授权不逐动作重新确认。旧 Unknown 不因重载或更换 Store 消失；真实重建需可核验代次，未实现相应合同不能宣称已隔离。
 
+没有当前合适的 Mod Bug 时，不恢复已修历史版本或人为制造故障。可用研发中实际发现的源码缺陷证明调查、修复和回归，单独核验制品身份与失败恢复。完整 Android Mod 自主修复闭环标为 Not Validated，不冒充通过，也不阻塞本轮其它约定实现。历史夹具记录只保留其原证据范围。
+
 ## 可运行的独立夹具
 
 仓库提供 [examples/workshop](../examples/workshop/verify.cjs)。它只复制自有 HTML/build/deploy 到调用者指定的新目录，使用已有 Chromium 浏览器和 localhost。无需 npm 依赖；不会修改任何真实 Mod 或 Android App。默认使用 Windows 已安装 Edge，可用进程环境 DOL_WORKSHOP_BROWSER 明确指定已有 Chromium 浏览器。

@@ -1,67 +1,65 @@
 # DoL Dev Tools 4.0 — Bites the Dust 开发记录
 
-状态：开发中，未发布。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；其历史实验记录保留，只复用与当前合同直接相关的已审实现和测试。
+状态：开发中，未发布。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；历史资料保留，只复用与当前合同直接相关的已审实现和测试。
 
 ## 本轮范围与 Done
 
-主计划为用户交付的 Bites the Dust 最终执行计划书：Debug 与 GER 同批放权，既有 Runtime/Effect Ledger 内收口可选消费、项目实验能力、存档/自动保存、重复探索、目标重绑与真实数据代次；定向修复 Q1a/Q1b/Q2/Q3；复用 Android CLI/Skills/KB；真实 Bug 自主修复、制品对照及失败恢复。全部约定切片验收后才称正式 4.0 完成。当前只完成下表中的首批实现，不能提前宣布正式版。
+按 Bites the Dust 最终执行计划书和用户的自主调试验收调整通知执行：Debug 与 GER 同批放权；既有 Runtime/Effect Ledger 内完成可选消费、项目实验、存档/自动保存、重复探索、目标重绑和真实数据代次；修复 Q1a/Q1b/Q2/Q3；落实 Android CLI/Skills/Knowledge Base 协作；收口制品身份、失败留证和恢复继续。候选制品与工作流一致性核验后，再判断本轮能力是否完成。
 
-保留原 CLI/Skill/Store/TargetKey 身份。指定测试 App 的范围授权已由用户确认，运行前重新核对设备/user/package/签名和数据域；授权随正常重载继承，执行绑定不静默跟随新文档。正式仓库、旧实验、已安装 3.0.3 和历史未决记录不变。本计划未授权推送、合并、公开 Tag/Release 或公开上传现场证据。
+**历史故障重演已取消。** 不恢复 Soft & Wet 2.3/2.5 已修问题、不制造故障、不执行历史 Plan B。使用本轮真实源码缺陷的调查、修复和回归验证工程能力。完整 Android Mod 自主修复闭环在没有当前适合案例时标记 **Not Validated**；不冒充通过，也不阻塞其它必交实现。
 
-## Delivered / 首批实现
+保留 CLI/Skill/Store/TargetKey 身份。用户已授权指定测试 App 及数据内操作；写前重新核对设备/user/package/签名和数据域。重载自动继承有效授权，但执行绑定必须显式重新建立。正式 3.0.3、已安装稳定 Skill、历史 Tusk 和未决事实保留。推送、正式合并、Tag/Release 和公开现场证据仍需另行确认。
 
-| 切片 | 当前实现与证据边界 |
+## Delivered / 当前实现
+
+| 切片 | 实现及边界 |
 | --- | --- |
-| A2 可选消费 | 新请求未设上限持久化为 null；显式零/有限值保留；父子取有效较小限额；候选、准备、结算、完成、view、SQLite/新宿主恢复一致。旧字段缺失按零读取，读取本身不改写原记录；3.0.3 无法反向读取新 null 合同。 |
-| A5 重复探索 | 三次无进展改为 routeHints；第四、第五次已结清实验可继续，resume 不恢复硬封路；未决副作用限制保留。 |
-| A3 项目实验 | 既有 CLI request/propose/dispatch 可达的单一项目 Recipe Provider；按宿主已授权工作区、device/App/user/签名摘要/data domain/intent 核对；文件和函数源摘要进入候选和旧 binding。独立 read/quote/execute/Outcome，最终仍用原生 Goal Predicate；没有第二个 Runtime/Ledger。源码变更先 fresh observe，旧 terminal 不依赖新源码，旧 started 不被新源码追认。详见 [配方合同](PROJECT_EXPERIMENTS.md)。 |
-| Q1a 决策预留 | 复用 SQLite 事务内 approved snapshot CAS；预留后执行 Effect 的 action；两个 SQLite 连接替换 A/B 提案时零点击、零新增 effect。 |
-| Q3 回执生命周期 | 仅回收可靠持久结清后匹配的 terminal；按 namespace owner 在 LIMIT 前筛选，避免异类历史占满候选；同页面 66 Session 连续执行，清理响应丢失和清理后确认中断可恢复，started/Unknown 保留。 |
-| Q1b 实际调用 | 点击型原生 producer 绑定实际 DOM receiver 与原生 click callable；最终边界复核，使用捕获函数与明确 receiver 调用；替换/getter 在调用前拒绝，跨开始标记后的错误仍 Unknown。Soft & Wet 原生 head 的 UI 回调继续使用已有捕获函数/对象合同。普通 Debug click 不被强制加入这些认证。 |
-| Q2 零派发与 Unknown | 已审本地操作通过不可序列化的进程内 provenance 与显式开始标记保留可信 preflight 拒绝；标记后失败不降级。任意操作返回 guardRejected、复制 operation 对象或页面声明零效果均不能取得该语义。不是权限旗标、脚本沙箱或新的审批。 |
-| Android layout | ENOENT 单独 unsupported；权限拒绝/进程终止/执行失败/输出超限/无效 JSON/无效布局分别 failed；不输出私人 stdout/stderr，不从错误文本猜测目标状态。 |
-| Android Document | execution-context 复用已有不可变 frame/loader/unique context 合同；同 PID/target 重载也拒绝旧持有者。仅显式 closeTransport 或新上下文建立新绑定；不静默重连，不改变 TargetKey/历史账本，不引入 ChromeHost。 |
-| Skill/Workshop | 明确 Debug 路由、一次范围授权、禁止伪造证据与允许独立状态准备的区别；Android 工具/Skill/KB 来源分别记录；未实现的 GER 合同不由授权旗标代替。 |
+| A1 Debug | 复用 Action/Journey/evaluator，自主调查、状态准备、导航和已授权数据重建；不为普通读取/点击强制创建 GER Goal。授权范围变化与易变执行句柄变化分开。 |
+| A2 可选消费 | 新请求缺上限为 null；显式零/有限预算、父子有效限额、候选/派发/结算/完成/view/resume 一致；旧缺字段按零读取。零价交易需要实际 quote/库存/moneyStats/moment 和 terminal，不以不扣钱代替购买证明。 |
+| A3 项目实验 | 复用 GER CLI 的单一 reviewed Recipe Provider，范围/源码摘要/独立 Outcome/原生 Goal Predicate；源码迭代不追认旧未决操作。见 [配方合同](PROJECT_EXPERIMENTS.md)。 |
+| A4 存档 | 明确 save Scope 传到原生 producer；支持 reviewed IDB autosave transaction/readback，独立 numbered save/create/overwrite/load/delete Recipe。不同后端/hook 仍需 reviewed 支持，历史 no-save 恢复合同冻结。 |
+| A5 重复探索 | 三次无进展改为提示；第四/第五次已终结实验及 resume 可继续，未知效果不盲重放。 |
+| A6 资源代次 | 原 Store/TargetKey 内表达获证实 native App-user-data 重建，旧记录继续可见；自报 UUID/换库不构成隔离。见 [代次合同](RESOURCE_GENERATIONS.md)。 |
+| Q1a | SQLite 事务内 approved snapshot CAS；执行成功预留 Effect 的同一动作，双连接竞争拒绝 stale Decision。 |
+| Q1b/Q2 | 实际 callable/receiver 绑定；可信本地 provenance + 开始标记区分未派发与 Unknown。复制对象/页面自报不能取得零派发语义，普通 Debug 不被强制加入 GER 认证。 |
+| Q3 | owner 在 LIMIT 前筛选；精确持久 terminal 安全回收；超过 64 条及提交/清理中断恢复，started/Unknown 保留。 |
+| Android | layout 区分缺工具/权限/进程/执行/输出/JSON/布局失败；不可变 frame/loader/unique context 拒绝旧持有者，显式新绑定；复用已装 CLI/Skills/KB，来源和现场证据分开。 |
 
-这张表为离线实现状态。没有把 Node/替身 DOM/合成历史测试当成本轮真实 Android 或 Gameplay 通过。
+## Validated / 本轮 Windows 与真实 Android
 
-## Validated / 2026-10-11 Windows 本地
+- 源码与最后行为回归固定 `467f32e15d6929e13bf2d4bc5d9fcc0bae33a146`：Node **393 passed / 0 failed / 0 skipped**；定向 window 回归 56 passed。未改 Python，复用有效 **2 passed / 2 optional-dependency skips**（Pillow、JSON Schema/date-time）。Node 24.19.0、Python 3.14.7、锁定 XState 5.33.2，复用已有依赖，不新增安装。
+- 同一获授权 Android 17 / WebView 154.0.8037.58 / user 0 的 DoL 0.5.12.13 测试包：真实文档重载 10 项身份检查、显式新绑定及自有 forward 清理；PID/target 不变仍拒绝旧 Document client。
+- Android CLI 1.0.16486076 实际 version/help、标准 native-layout；实际安装 Skill list、相关内容身份；真实 KB search/fetch 及返回文档/时间/Android 适用性记录。layout 不证明全部控件或 trusted touch。
+- GER 标准 CLI 完成五项 native save/create/overwrite/独立货币准备/load/delete 试验；真实状态恢复、terminal、fresh checkpoint 一致。另有真实 native navigation autosave **1 个 transaction commit + original archive readback**，owned observer 恢复；其它 count 0 导航不算写档试验。
+- 原生真实零价购买：受审准备使原成本设置报价为零；实际 inventory 0→1、money 0→0、spentCount/time 改变，bound receipt occurred/settled、Goal completed、预算 0。随后恢复原成本设置为 1。它不是原经济中天然免费商品。
+- 本轮真实缺陷：one-item 候选缺 quote/terminal binding，实际购买 ACK 后无法结清。修复复用已有原生购买 producer；新候选绑定，旧 unquoted 写入在派发前拒绝。旧 ACK 不追认。原 60s preflight 失败未派发；只读测量 83,782ms/584 CDP calls 后使用既有有界 120s window，显式 resume + fresh Decision 的后续真实购买完成。
+- Q1b/Q2 真实 WebView 生产 Action 边界 4 检查：callable 替换前拒绝且零调用；trusted pre-marker 拒绝保留 notDispatched；复制 provenance 不取得零派发；post-marker 自有 DOM 变化后不伪称未派发。清理 owned 属性/callable，原游戏 money/passage/turn/time 不变。它是受控 Action 夹具，不是购买中断或 durable GER 崩溃试验。
+- 四次获证实的原生数据重建与失败后继续；原 81 Effect docs/status、21 Session docs 和后来四条未决 Effect 原合同保持不变，同一 Store/TargetKey 历史可见。实际失败包括已写 save 的 delta 读取失败、派发后 navigation 超时、缺绑定购买 ACK、可信派发前拒绝；失败和成功独立保留。
+- Q1a/Q3 的并发 SQLite、66 Session 回执容量、持久提交/回收中断为离线/受控 DOM 验证，不冒充手机 66 次真实业务。
 
-- Node 24.19.0、Python 3.14.7、锁定 XState 5.33.2；复用正式基线的已有 node_modules，以每次进程的 NODE_PATH 指定，不安装新依赖。首批实现本地提交 `70eef54f9cdafe3e71b074be5a605d695522d543`；后续 Q1b/Q2 在同一开发分支提交，以实际 HEAD 和日志定位。
-- 核心跨模块变化执行完整离线 Node 套件：首批 347 passed；Q1b/Q2 新变更后的最终结果 352 passed、0 failed、0 skipped。Python：2 passed、2 skipped，Pillow 与 JSON Schema/date-time 可选开发依赖缺失；代码未受后续变更影响，复用已有结果，未补装。
-- 定向回归先执行，再全套。首轮保留一条旧“必须填写消费上限”断言失败，按新约定替换为零/有限/不限及旧记录测试。新增报价授权夹具首次输入格式不完整已修正；回执容量实验首次未在普通 request 观察入口执行维护，已接线并通过。不用跳过、吞错或重复跑至绿隐藏原因。
-- 日志在本轮 ignored `artifacts/bites-the-dust-offline-20261011/`，依代码变化更新实际结果；目录不包含游戏存档/资源。独立测试所建 SQLite 连接先关闭，目录后清理。
-- Android CLI 实际版本 1.0.16486076；本轮运行 version、docs help、skills help，未运行设备动作或 KB query。help 显示存在 search/fetch 与 Skill 管理入口，不能将其写成 KB 查询或实机采集通过。
-- Android 文档绑定变更：定向 68 passed；完整 Node 359 passed、0 failed、0 skipped。复用的 Android 修复来自历史 Tusk 源码，仅取 Android 分支；首轮移植混入 Chrome 分支及 Python 默认编码失败已修正，失败日志保留。后续失败来自旧替身连接重复使用已关闭客户端、未转交事件参数及旧“零身份事件”断言，已更新夹具；不放松生产绑定。Python 未涉及，复用前述结果。
-- 项目 Recipe CLI 通过注入的替身 Android/CDP 执行完整入口，未调用真实游戏；验证执行确认/副作用/Goal 三层分离、源码迭代、未决保护、旧终态恢复及 Scope 身份拒绝。新测试发现预算外候选仍会展示，已在既有 Runtime allowedAction 统一按有效限额过滤，准备/派发仍保留预算检查；不是放宽限制。异步 preflight 在 await 后重新核对 root/namespace，避免旧接收者执行。
-- 项目 Recipe 最终定向 60 passed，完整 Node 367 passed、0 failed、0 skipped；Python 代码未改，复用已有结果。失败的显式零预算候选展示检查保留于 project-targeted-second.log；源代码收口后通过，未修改预期或跳过。
+原始日志、SQLite 一致备份、APK 签名/摘要、游戏源码/存档和阶段证据只保存在 ignored `artifacts/bites-the-dust-{offline,document,resource}-20261011/`，不提交或公开。详见下方按固定提交记录的历史切片。
 
-## Not validated / 本轮未覆盖
+## Not Validated / 覆盖说明
 
-除下述已运行的文档身份和布局外，当前变更的其它真机验收、正式构建/部署/加载身份、真实游戏业务及存档、APK/数据恢复尚未执行。现有历史现场不计入本轮通过。
+- 完整 Android Mod 自主修复→构建→持久部署→实际加载→同条件复验；没有当前合适 Bug，不补造案例。
+- 设备物理断连恢复、CLI trusted touch、更多设备/Provider/游戏/Mod 组合。
+- arbitrary save backend/hook、全字段存档迁移/备份恢复、每个原生 producer 的实际 autosave。
+- 手机上的完整 durable GER 故障注入和 66 次真实业务容量；已有生产 Action 检查及真实失败留存分别证明其有限范围。
 
-### 已运行的 Android 代表验证
+## Remaining work / 当前收口
 
-固定源码 `5b281b10864d9b865f63f56f23410a1a36125256`，2026-10-11 本轮已授权测试 App、user 0、Android 17、WebView 154.0.8037.58。ADB 1.0.41、Android CLI 1.0.16486076。现场序列号、APK/证书 SHA256 和加载身份在本地 `artifacts/bites-the-dust-document-20261011/`；APK 仅为签名核对所读的现场制品，不公开或写入 Git。
+- 候选工具制品、CLI/Skill/文档版本和使用入口一致性；实际使用来源身份与错制品拒绝对照。
+- 最终证据矩阵与本地候选交付审查。上述未覆盖项不自动转为阻塞任务。
 
-- 标准 Action 启动成功；一次 Page.reload：PID、frame、URL 摘要不变，loader、unique context、timeOrigin 变化。旧生产 evaluate/send、旧 context/object 与 ensureWebview 均拒绝；显式新绑定成功；10 项检查 passed，未派发业务点击、未调用存档 API、不写 GER Store。游戏启动/重载自身的持久化未验证。旧、新自有 forward 清理完成，预存映射未改变；不宣称设备断连恢复。
-- 标准 native-layout 在 helper 已有范围授权下完成；结果只证明本次当前窗口采集，不证明全部原生控件/弹窗或 CLI trusted touch。
-- 实际 `android skills list --agent codex --long` 发现已安装 Android CLI Skill；使用 Skill 及 interact 引用的内容 SHA 记入 provenance。没有安装或升级 Skill/工具。
-- 实际 KB query 和 fetch 完成，`kb://android/develop/ui/views/layout/webapps/debugging`。KB 只支持工具选择说明，不证明本次 Document 合同；原 query、结果、检索时间、Android 版本及来源 SHA 保存在 provenance，不冒充官网浏览或设备事实。
+## Known limitations
 
-Q1b/Q2 已实现，真实 WebView 定向验收未执行；替身 CDP 的原生源码文本断言仅验证本地合同，不替代真实宿主验证。Q1b 首轮新增测试语法错误及旧 toy CDP 不支持函数 object 的失败已定位修正，原失败日志保留为 q1b-targeted.log / q1b-node.log，最终通过另存 q1b-node-final.log。
+新 null 消费合同不能由稳定 3.0.3 反向读取；native data-reset 将共享 Store 升至 schema 3，稳定版不得继续写入该 Store。当前 scoped save Producer 使用有界 120s，caller/Session deadline 仍可先到期；没有 save Scope 的原路径保留 30s。技术超时不证明远端取消。
 
-## Remaining implementation / 尚需完成
+已购测试物品/当前游戏状态是本轮授权实验数据，不声称完整回滚。历史 Unknown 继续未决，不因新成功或真重建变为成功/未发生。外部 storage/cloud/shared UID 不在本轮原生隔离证明内。历史 Soft & Wet 材料保留为资料，重演候选已取消。
 
-- A3 已有离线 CLI/合同实现；真实项目 Recipe 派发、真实免费交易与更多 Goal/领域组合仍需本轮代表验证，不能据此宣布完整放权完成。
-- A4 存档/自动保存复制 guard 的实际放权与代表操作合同。
-- A6 已接入 Scope/原生数据代次和同 Store 历史可见性，并有本轮实际 App 数据重建证据；后续存档/自动保存操作继续在此基础上验证。
-- A1/Android 协作的代表性实机验证，以及 B/C 真实问题修复、旧/错制品对照、一次真实实验失败后的恢复继续。
+## 按提交保留的过程记录
 
-## Known limitations / Case 调查
-
-Dol UI 已提供当前 2.5.0 工程和真实旧制品/历史存档闪烁证据，同时确认该缺陷已修复，当前没有已证实仍未修复的 Core UI Bug。材料只登记为历史缺陷重放/制品对照候选，不能当作当前未修 Bug，也不为制造验收重新开发已完成补丁。新环境是否能重现旧制品仍 Unknown；当前实际 Bug 选择未定，不阻止离线 A 切片继续。具体路径、SHA 和设备历史保持在本地 Case 记录，不公开私人现场。
-
+以下是各切片当时的结果；后续更新以上方当前状态为准。旧失败/原合同保留，不用新实现回填旧成功。
 
 ### 2026-10-11 Scope / native resource generation
 
@@ -73,7 +71,7 @@ Windows 定向回归和完整 Node 回归通过；阶段化证据修正后完整
 
 真实证据 `artifacts/bites-the-dust-resource-20261011/validation-corrected.json`、各 reset manifest/分阶段文件、source diff 和备份均保留本地。首次 CLI 读取函数和未导出 opener 的调用接线问题已修复并补真实入口/生产 Action 替身回归；两次均未进入 native clear。随后 partial native 尝试只保留到了 fenced 阶段，具体原生失败原因未捕获，因此标记 Unknown，不能将后一次成功倒推为前一次成功。补阶段化错误证据后 fresh authorized rebuild 完成；保留两次 native 代次元数据。最初 verify 脚本的 JSON-proof 拒绝试验用了包含多余字段的 target，已更正为 canonical target 并核对真实 proof 拒绝错误，原日志不删除。
 
-Store schema 只在重建开始时从 2 进入 3；旧数据内容不迁移。稳定 3.0.3 不得对该 Store 继续写入；新连接拒绝 schema 3，已经打开的旧连接也不能重新取得该数据代次的 lease。原生外部 storage/cloud/shared-UID 资源不在此隔离证明内；不是完整 App/存档恢复验收。A4、真实 Recipe/Gameplay 及 B/C 仍未完成，不能据此宣布正式 4.0 完成。
+Store schema 只在重建开始时从 2 进入 3；旧数据内容不迁移。稳定 3.0.3 不得对该 Store 继续写入；新连接拒绝 schema 3，已经打开的旧连接也不能重新取得该数据代次的 lease。原生外部 storage/cloud/shared-UID 资源不在此隔离证明内；不是完整 App/存档恢复验收。这是当时的切片结论；后续实现和调整后的验收以顶部当前状态为准。
 
 ### 2026-10-11 native save cycle and retained failed attempt
 
@@ -103,9 +101,9 @@ Private `native-autosave-validation.json` records the fixed source, transaction 
 
 ### Zero-priced purchase support
 
-The reviewed clothing quote, one-item Goal, native reader, original-control operation and receipt/Goal predicates now allow an actual zero price. Explicit budget 0 still refuses positive spend. Inventory append, original moneyStats spentCount/time, moment submission, unchanged surrounding state and bound receiver/source remain required. The actual pinned native money function uses `amount > 0 ? earned : spent`, so a zero amount still increments the spent counter; unchanged currency alone cannot prove purchase. Positive-price contracts retain their previous receipt semantics. Directed regression: 32 passed; full Node: 392 passed/0 failed/0 skipped (`free-purchase-node.log`). The first directed run exposed the old zero-price rejection expectation; it was updated with a negative-price rejection instead. Real native zero-price transaction is still pending. Python is unchanged and its valid 2 passed/2 optional-dependency skips are reused.
+The reviewed clothing quote, one-item Goal, native reader, original-control operation and receipt/Goal predicates now allow an actual zero price. Explicit budget 0 still refuses positive spend. Inventory append, original moneyStats spentCount/time, moment submission, unchanged surrounding state and bound receiver/source remain required. The actual pinned native money function uses `amount > 0 ? earned : spent`, so a zero amount still increments the spent counter; unchanged currency alone cannot prove purchase. Positive-price contracts retain their previous receipt semantics. Directed regression: 32 passed; full Node: 392 passed/0 failed/0 skipped (`free-purchase-node.log`). The first directed run exposed the old zero-price rejection expectation; it was updated with a negative-price rejection instead. The later bound native trial below completed; this paragraph records the earlier implementation checkpoint. Python is unchanged and its valid 2 passed/2 optional-dependency skips are reused.
 
-Dol UI's latest source/file-only reply confirms no newly established unfixed 2.5 defect. The old flicker artifacts have verified hashes but no precise matching source commit for both intermediate ZIPs. They remain historical comparison candidates; B's current-Bug autonomous patch/build/deploy/load/verify loop remains pending and cannot be substituted with that old fix.
+Dol UI's latest source/file-only reply confirms no newly established unfixed 2.5 defect. The old flicker artifacts have verified hashes but no precise matching source commit for both intermediate ZIPs. Historical replay is cancelled by the latest user instruction. The complete Android Mod patch/build/deploy/load/verify loop is Not Validated without a current suitable case; it is not a blocker for the remaining core work.
 
 ### Real zero-price trial exposed missing one-item terminal binding
 
@@ -116,3 +114,10 @@ New one-item candidates now carry the same bounded original quote and delegate t
 Directed regression: 62 passed. Full affected Node: 393 passed/0 failed/0 skipped (`one-purchase-terminal-node-final.log`). Earlier failures identified obsolete candidate expectations and fixtures missing the actual worn-count field; logs are preserved, and negative-price/missing-witness checks remain. A fresh, genuinely independent data generation is required for another real transaction; the current generation's unresolved one-item action cannot be bypassed by Debug, a new Store or a new Session.
 
 After the verified native data rebuild, the bound one-item trial timed out before dispatch under its 60-second window and settled not-occurred; inventory did not prove a new action. A separate read-only `attestOnly` measurement completed successfully in 83,782 ms across 584 CDP calls, including cleanup. The scoped save-capable Session/Gameplay Journey now uses the already-supported bounded 120-second Journey window and still clips to the Session/caller deadline; the no-save path remains 30 seconds. No business/source guard or dispatch marker was removed to make attestation faster. Targeted regression: 56 passed; full Node: 393 passed (`measured-shop-window-node.log`). This measured adjustment permits a fresh Decision after a proven pre-dispatch failure; it never authorizes replay of the older unbound acknowledged purchase.
+
+
+### Bound native free purchase and real Action boundary checks
+
+At `467f32e15d6929e13bf2d4bc5d9fcc0bae33a146`, the explicit fresh Decision after the proven pre-dispatch timeout completed one original zero-priced hairpin purchase. The native bound operation took 93,371 ms; original inventory, moneyStats and moment witnesses passed, the effect settled occurred exactly once, and a fresh checkpoint completed the Goal with maxSpend/spent/reserved all zero. The price modifier was then restored through a separate reviewed scoped Recipe; game inventory was not rewritten. The original unbound acknowledged purchase remains unresolved under its original contract.
+
+Private `native-free-purchase-validation.json` retains the new binding, native business proof, preserved historical records and negative trial. `q1b-q2-real-action-validation.json` records four actual WebView production Action checks with cleanup and unchanged game state. Its post-marker owned DOM side effect proves that result cannot be classified as authoritative no-dispatch; it does not create or settle a game Effect, and is not a durable purchase interruption trial.
