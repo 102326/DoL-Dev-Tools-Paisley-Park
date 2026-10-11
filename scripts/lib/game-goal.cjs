@@ -51,19 +51,22 @@ function view(s){
     actionKind:semantic.intents.includes(e?.action?.kind)?e.action.kind:'unknown',
     provider:['native-dol','clothing','project-experiment'].includes(e?.action?.capability?.provider)?e.action.capability.provider:'unknown',
   }))};
-  const state=s.machine.value;return{experimental:true,runtimeVersion:2,goalId:s.id,epoch:s.epoch,revision:s.revision,status:state==='completed'?'completed':s.stopReason==='checkpoint-failed'?'failed':s.stopReason==='cancelled'?'cancelled':s.stopReason?'exhausted':state==='paused'?'paused':state==='reconciling'?'needs-result-interpretation':'active',phase:state,actions:s.actions,observations:s.observations,pending:!!effects.length,pendingEffects,proof:combinedProof,reason:s.pauseReason||s.stopReason||null,decision:decisionView(s.decision),budget:{deadline:s.deadline,maxSpend:s.config.budget.maxSpend,spent:s.spent,reserved:s.reserved,actualSpendExceeded:!withinSpend(s.spent,s.config.budget.maxSpend)},reconciliation:{reads:s.reconciliationReads??0,maxReads:8,error:s.reconciliationError??null},checkpoints:s.checkpoints,requiredCheckpoints:s.config.requiredCheckpoints||[],routes:s.routes||[],...memory};
+  const state=s.machine.value;return{experimental:true,runtimeVersion:2,goalId:s.id,epoch:s.epoch,revision:s.revision,status:state==='completed'?'completed':s.stopReason==='checkpoint-failed'?'failed':s.stopReason==='cancelled'?'cancelled':s.stopReason?'exhausted':state==='paused'?'paused':state==='reconciling'?'needs-result-interpretation':'active',phase:state,actions:s.actions,observations:s.observations,pending:!!effects.length,pendingEffects,resourceGeneration:s.resourceGeneration??null,resourceStatus:s.resource?.status??null,historicalPendingEffects:(s.historicalOpenEffects??[]).map(e=>({effectId:uuid(e.id),sessionId:uuid(e.sessionId),status:e.status,resourceGeneration:e.resourceGeneration??null})),proof:combinedProof,reason:s.pauseReason||s.stopReason||null,decision:decisionView(s.decision),budget:{deadline:s.deadline,maxSpend:s.config.budget.maxSpend,spent:s.spent,reserved:s.reserved,actualSpendExceeded:!withinSpend(s.spent,s.config.budget.maxSpend)},reconciliation:{reads:s.reconciliationReads??0,maxReads:8,error:s.reconciliationError??null},checkpoints:s.checkpoints,requiredCheckpoints:s.config.requiredCheckpoints||[],routes:s.routes||[],...memory};
 }
 async function start(options,request,overrides={}){
   request=validate(request);
   if(options.testEnvironment!==true||!options.out)throw Error('Explicit tested Goal target required');
   loadRuntime(); // Fail before ADB, output creation or a Session when Gameplay prerequisites are missing.
   const userId=(await(overrides.adb||collectors.android(options))('shell','am','get-current-user')).toString().trim();
-  if(request.goal.kind==='project-experiment')require('./game-project-provider.cjs').assertTarget(options,request.goal,userId,(await(overrides.adb||collectors.android(options))('shell','dumpsys','package',options.package)).toString());
+  const authorization=request.scope??request.goal.scope;
+  if(authorization)require('./game-scope.cjs').assertTarget(options,{scope:authorization},userId,(await(overrides.adb||collectors.android(options))('shell','dumpsys','package',options.package)).toString());
   const store=options.store||process.env.PAISLEY_PARK_STORE||path.join(process.env.LOCALAPPDATA||os.homedir(),'PaisleyPark','sessions-v2.sqlite');
   const r=open(store,overrides);let s;
   try{
+    const t={serial:options.serial,package:options.package,userId};const resource=r.resource(hash([t.serial,t.package,t.userId]));
+    const resourceProof=resource?await require('./game-resource.cjs').snapshot(overrides.adb||collectors.android(options),t,authorization,resource):undefined;
     fs.mkdirSync(path.resolve(options.out));
-    s=r.start({serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,goal:{description:request.description??request.name,...request.goal,...(request.goal.kind==='purchase-one'?{maxSpend:request.goal.maxSpend===undefined?null:request.goal.maxSpend}:{})},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:combinedLimit(request.budget.maxSpend,request.goal.maxSpend)}});
+    s=r.start({serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,...(authorization?{scope:authorization}:{}),goal:{description:request.description??request.name,...request.goal,...(request.goal.kind==='purchase-one'?{maxSpend:request.goal.maxSpend===undefined?null:request.goal.maxSpend}:{})},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:combinedLimit(request.budget.maxSpend,request.goal.maxSpend)}},{resourceProof});
     try{fs.writeFileSync(path.join(options.out,'goal.json'),JSON.stringify({format:'paisley-session-link',version:2,sessionId:s.id,store:path.resolve(store)},null,2),{flag:'wx'})}catch(e){r.stop(s.id,'session-link-write-failed');throw e}
   }finally{r.close()}
   return advance(options.out,{testEnvironment:true},overrides);
@@ -91,10 +94,11 @@ async function dispatchReady(r,s,dir,overrides={}){
   // A visible control is not a declared Outcome producer. Do not create an
   // uncloseable effect merely because the raw Action runner can click it.
   if(!approvedOwner.prepare&&typeof overrides.readOutcome!=='function')return view(r.pause(s.id,'reviewed-action-outcome-unavailable'));
-  const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,...(s.config.goal.kind==='project-experiment'?{projectGoal:s.config.goal}:{}),timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
+  const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,...(s.config.goal.kind==='project-experiment'?{projectGoal:s.config.goal}:{}),timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
     const e=r.prepare(s.id,{expected:s});if(!e)return view(r.status(s.id));
     const descriptor=e.action,selected=descriptor.selected,intent=descriptor.kind,owner=capabilities.validateDescriptor(descriptor,s.config.goal),scene=s.scene;
-    if(options.projectGoal)options.projectIntent=intent;
+    options.projectIntent=intent;
+    if(s.resourceGeneration){const proof=await require('./game-resource.cjs').snapshot(overrides.adb||collectors.android(options),s.target,options.authorization,r.resource(s.targetKey));if(proof.id!==s.resourceGeneration)throw Error('Session native data generation changed')}
     if(e.sceneRevision!==scene.revision)throw Error('Reserved Scene mismatch');
     const postReservation=r.reserveObservation(s.id);if(!postReservation)return view(r.status(s.id));
     const out=path.join(dir,'action-'+e.id);let report,binding;
@@ -125,7 +129,7 @@ async function advance(directory,settings,overrides={}){
     if(settings.resume){r.resume(s.id);s=r.status(s.id)}
     if(s.stopReason)return view(s);
     let selected;if(settings.file){selected=readJson(settings.file);validateSelection(selected,settings.intent,s.config.goal)}else if(settings.intent)throw Error('Intent requires an action');
-    const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
+    const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
     const reservation=r.reserveObservation(s.id);if(!reservation)return view(r.status(s.id));
     const observed=await site.observe({...options,out:path.join(dir,'observation-'+randomUUID())},{...overrides,probeGoal:probe(s.config.goal),probeOutcome:client=>recoverWithMaintenance(r,s,client,dir,s.openEffects),probeCapabilities:client=>capabilities.observe(client,s.config.goal)});
     if(observed.status!=='observed'||!observed.gameplay?.domAgrees||observed.goalProof?.status!=='available')return view(r.failObservation(s.id,reservation,'reliable-original-observation-unavailable'));
@@ -147,7 +151,7 @@ async function session(directory,operation,settings={},overrides={}){
     try{
       const original=r.status(l.sessionId);if(!original.openEffects.some(e=>e.sessionId===original.id))return view(original);
       reservation=r.reserveReconciliation(original.id);const s=r.status(original.id),effects=s.openEffects.filter(e=>e.sessionId===s.id);
-      const deadline=Date.now()+30000,options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,timeoutMs:30000,out:path.join(dir,'reconciliation-'+randomUUID())};
+      const deadline=Date.now()+30000,options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,timeoutMs:30000,out:path.join(dir,'reconciliation-'+randomUUID())};
       const observed=await site.observe(options,{...overrides,probeOutcome:async client=>{
         // A reviewed cleanup reader shares this transport and cannot create a new execution window.
         let timer;try{

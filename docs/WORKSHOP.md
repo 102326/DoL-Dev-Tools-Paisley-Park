@@ -85,3 +85,7 @@ node examples/workshop/verify-android-mod.cjs DEVICE_SERIAL YOUR.APP.PACKAGE PAT
 确认空白预检后，公开ModLoadController仅向此origin持久存入固定自有ZIP。每阶段新建frame document，确认IndexDB来源、版本、自有preload源SHA和20×20→48×48 CSS；不读主游戏Mod清单、存档、正文或日志。最新实机complete/exit0，4份公共格式及2份CSS payload通过标准Schema和SHA关联检查。此证据证明Android WebView隔离origin内的持久Mod重载，仍不是主游戏业务Mod、App重启、原生WebView重建或APK部署验收。
 
 自有iframe、Runtime域、HTTP及转发分别记录清理；origin内自有夹具数据可保留，不清数据。Reverse使用`--no-rebind`，只有创建ACK确认且当前pair精确匹配才移除；未知ACK不猜删。所有Workshop/Evidence/Journey的Forward清理共用完整serial/动态port/remote socket匹配与移除后确认。ADB没有原子比较删除命令，调用者不得并发重绑这些临时映射；发现已变化则停止清理并保留unknown，不自动重试。
+
+## Native data reset trials
+
+An authorized full App-user-data rebuild uses the existing Action/Journey with explicit scope and the original shared Store. See [resource generations](RESOURCE_GENERATIONS.md) for native proof, historical Unknown visibility, partial reset recovery and schema compatibility. Save a SQLite-consistent backup before first use; do not copy records into a new Store or describe a marker alone as isolation. Keep each phase Evidence and the fixed source/diff identity with the trial.

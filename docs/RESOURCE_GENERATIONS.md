@@ -1,0 +1,21 @@
+# Scoped native App data generations
+
+Bites the Dust keeps the original Android serial/package/user TargetKey, shared Store, Sessions and Effect Ledger. A new Store, page reload or recipe UUID does not prove isolation. Scope records the actual host/user grant; a JSON scope cannot create permission. General GER requests may carry `scope`; project Goals keep their existing scoped Recipe contract. Scope applies to candidate admission and the write-time target/signing check. An empty intent list is read-only capability admission, not a promise that arbitrary page JavaScript cannot write.
+
+## Authorized Debug rebuild
+
+Use the existing Action/Journey route with `{"type":"data-reset"}`, `--authorization-file <scope.json>`, `--store <original shared SQLite>` and the normal explicit serial/package/test-environment/output arguments. The scope must include `data-reset`, the exact user and signing hash, and `dataDomain: "app-user-data"`. This permanently clears that App user's native data; it is not a page reset or a backup operation. Preserve any backups the task actually requires before invoking it. No new Store may be substituted to avoid an old effect.
+
+The production path verifies ADB/device, current Android user, installed package/signing identity and `run-as` data root/UID/inode. It fences the target in a SQLite transaction before force-stopping the App. It checks all processes under that App UID, requires exact `pm clear --user` Success, rechecks absence of writers and observable removal of files/databases/shared_prefs/app_webview, then writes and rereads an owned marker in the native data root. The generation digest includes those reread native facts and marker. Marker creation alone cannot register a rebuild. Same-UID shared packages are unsupported: a surviving secondary/shared writer refuses clear.
+
+Rebuild phases go to existing Journey Evidence; native proof also persists in the original Store. Failure/interruption after fencing leaves the resource rebuilding and writes blocked. A retry performs a fresh authorized native clear; it cannot manufacture completion from JSON. All rebuild metadata history is retained. Only verified local proof objects from this implementation can finalize a resource or bind a new Session.
+
+## Continuous GER execution
+
+A new Goal on a rebuilt target needs its granted scope and a fresh native snapshot matching the registered resource. Dispatch rechecks the marker/root/UID/signing identity before binding the action; normal PID/Document changes still use explicit new execution bindings. Sessions/Effects persist their resource generation. Pending effects belonging to the verified current generation block dependent work; older effects remain visible in `historicalPendingEffects`, unchanged and unsettled. New observations cannot settle an older generation's effect. Receipt maintenance also remains generation-specific. Existing Sessions cannot silently switch generations on resume.
+
+## Store compatibility and limits
+
+Stores remain schema 2 until the first genuine rebuild begins. That transaction adds resource metadata and switches `user_version` to 3. Bites the Dust opens both versions. Stable 3.0.3 refuses schema 3; already-open legacy connections are also fenced by SQLite lease triggers. This is intentional: an older Runtime must not reacquire a lease over new data while ignoring retained Unknown. Do not downgrade the schema or copy effects into a new Store. Preserve a SQLite-consistent local backup before first use; restoring one after new experiments is not a supported merge/recovery strategy.
+
+The package signature field is Android's PackageSignatures short hash, not certificate SHA-256. APK/certificate provenance should be recorded separately for real trials. `run-as` and observable native data paths are required; a non-debuggable App or opaque profile cannot claim this reset proof. This path does not establish isolation of external accounts, another package, shared external storage, cloud data or Android users outside the scope. A new data generation does not retroactively prove an old action succeeded, failed or never happened.

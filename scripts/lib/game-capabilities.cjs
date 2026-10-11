@@ -58,7 +58,9 @@ function publicOutcome(outcome){
   return {...projected,descriptor:publicDescriptor(projected.descriptor)};
 }
 module.exports={provider,identity,capability,validateDescriptor,publicDescriptor,publicOutcome,
-  validate:request=>predicate(request?.goal).validateRequest(request),
+  validate:request=>{const {scope,...input}=request??{};if(scope!==undefined&&!require('./game-scope.cjs').validate(scope))throw Error('Invalid Goal authorization scope');
+    if(scope&&input.goal?.scope&&JSON.stringify(scope)!==JSON.stringify(input.goal.scope))throw Error('Conflicting Goal authorization scopes');
+    return {...predicate(input.goal).validateRequest(input),...(scope===undefined?{}:{scope})}},
   probe:g=>predicate(g).probe(g),observe:(client,g)=>predicate(g).observe(client,g),publicProof:s=>predicate(s.config.goal,false)?.publicProof(s)??s.scene?.goalProof??null,
   candidates(facts,epoch,proof,shop,g){const domain=g&&predicate(g),owned=domain&&domain!==native?domain.candidates(facts,epoch,proof,shop,g):[];
     const selectors=new Set(owned.filter(c=>c.selected.operation==='browse').map(c=>c.selected.selector));

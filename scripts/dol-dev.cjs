@@ -31,6 +31,9 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
     Optional: --css yes --environment yes --target-id ID --webview-socket VERIFIED_PID_SOCKET
     Optional: --timeline-ms 1000 --scope SELECTOR [--observer-instrumentation yes]
     Optional: --inspectors selector-health,accessibility,overlays,scroll,ownership,hitboxes --storage yes
+  action | journey --file LOCAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
+    Optional: --authorization-file HOST_GRANTED_SCOPE_JSON --store ORIGINAL_SHARED_SQLITE
+    data-reset clears scoped App data and records native generation proof; no Store/TargetKey substitution.
   inspect --endpoint LOCAL_HTTP_CDP --out NEW_JSON
   environment --serial SERIAL --package PACKAGE --out NEW_DIR [--target-id ID]
   capture | perf | logcat | record --serial SERIAL --package PACKAGE --out NEW_DIR [--seconds N]
@@ -221,9 +224,10 @@ async function main(args = process.argv.slice(2)) {
     write(options.out,'bounded WebView manual recorder; native actions and input content omitted',{recording:data,candidate:recorder.candidate(data,options.scope)});
     console.log('Review-required candidates saved; input placeholders cannot be executed as Journey steps.');if(data.cleanupConflicts>0)process.exitCode=1;
   } else if (['action','journey'].includes(command)) {
-    const options=parse(args,['--file','--serial','--package','--out','--plan','--test-environment','--target-id','--webview-socket']);
+    const options=parse(args,['--file','--serial','--package','--out','--plan','--authorization-file','--store','--test-environment','--target-id','--webview-socket']);
     if(!options.file || options['test-environment']!==undefined && options['test-environment']!=='yes')throw Error('Invalid execution options');
     options.testEnvironment=options['test-environment']==='yes';options.targetId=options['target-id'];options.webviewSocket=options['webview-socket'];
+    if(options['authorization-file']){options.authorization=read(options['authorization-file']);if(!require('./lib/game-scope.cjs').validate(options.authorization))throw Error('Invalid host-granted authorization scope')}
     const journey=require('./lib/journey.cjs'), loaded=journey.read(options.file,command==='action');
     const report=await journey.run(options,loaded);
     console.log(`Journey ${report.status}; inspect local manifest and checkpoints.`);

@@ -3,7 +3,7 @@ const { android } = require('./collectors.cjs');
 
 const fields = {
   'web-click': ['selector'], 'web-focus': ['selector'], 'web-input': ['selector', 'value'],
-  tap: ['x', 'y'], input: ['value'], back: [], home: [], launch: [], restart: [], wake: [], lock: [], unlock: [], rotate: ['degrees'],
+  tap: ['x', 'y'], input: ['value'], back: [], home: [], launch: [], restart: [], 'data-reset': [], wake: [], lock: [], unlock: [], rotate: ['degrees'],
 };
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 function sanitized(error, message) {
@@ -85,7 +85,8 @@ async function execute(ctx, action) {
   if (!/^\d+$/.test(userId)) throw new Error('Android user unavailable');
   if (options.expectedUserId !== undefined && options.expectedUserId !== userId) throw Object.assign(new Error('Android user changed'), { code: 'TARGET_USER_CHANGED' });
   const packageInfo = (await adb('shell', 'dumpsys', 'package', options.package)).toString();
-  if(options.projectGoal)require('./game-project-provider.cjs').assertTarget(options,options.projectGoal,userId,packageInfo);
+  const authorization=options.authorization??options.projectGoal?.scope;
+  if(authorization)require('./game-scope.cjs').assertTarget({...options,projectIntent:action.type==='data-reset'?'data-reset':options.projectIntent??'debug'},{scope:authorization},userId,packageInfo);
   const packageBlock = packageInfo.split(`Package [${options.package}]`)[1]?.split(/\n\s*Package \[/)[0];
   if (!packageBlock ||
       !(/\bversionCode=\d+\b/.test(packageBlock) || /\bversionName=[0-9A-Za-z._()+-]{1,64}\b/.test(packageBlock)) ||
@@ -197,6 +198,12 @@ async function execute(ctx, action) {
     if ((await keyguard()).showing) throw Error('Keyguard dismissal unconfirmed');
     if (!/^\s*mWakefulness=Awake\s*$/m.test((await adb('shell', 'dumpsys', 'power')).toString())) throw Error('Wake unconfirmed');
     return { status: 'completed', type: 'unlock', awake: true, keyguardShowing: false, appForeground: 'not inferred' };
+  } else if(action.type==='data-reset'){
+    if(!authorization||!options.store)throw Error('Data reset requires a host-granted scope and the original shared Store');
+    const r=require('./game-goal.cjs').open(options.store);
+    try{const proof=await require('./game-resource.cjs').rebuild(r,adb,{serial:options.serial,package:options.package,userId},authorization,{record:value=>{ctx.resourceEvidence??=[];ctx.resourceEvidence.push(value);ctx.recordResource?.(value);ctx.markSideEffect?.()}});
+      return {status:'completed',type:action.type,resourceGeneration:proof.id,nativeEvidence:ctx.resourceEvidence};
+    }finally{r.close()}
   } else if (action.type === 'launch') await launch();
   else if (action.type === 'restart') {
     const component = await launcher();

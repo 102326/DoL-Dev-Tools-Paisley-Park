@@ -62,9 +62,10 @@ function move(s,event){
 }
 function target(t){if(!strict(t,['serial','package','userId','targetId','webviewSocket'])||!text(t.serial,128)||!/^[\w.:-]+$/.test(t.serial)||!text(t.package,128)||!/^\w+(?:\.\w+)+$/.test(t.package)||!text(t.userId,10)||!/^(?:0|[1-9]\d*)$/.test(t.userId)||Number(t.userId)>2147483647||t.targetId!==undefined&&!/^[A-Za-z0-9._:-]{1,128}$/.test(t.targetId)||t.webviewSocket!==undefined&&!/^(?:browser_)?webview_devtools_remote_\d+$/.test(t.webviewSocket))throw Error('Explicit canonical target required');return copy(t)}
 function config(c,validateGoal,{stored=false}={}){
-  if(!strict(c,['goal','mode','budget','requiredCheckpoints'])||!text(c.goal?.description)||!validateGoal(c.goal)||!['gameplay','development'].includes(c.mode))throw Error('Invalid Goal configuration');
+  if(!strict(c,['goal','mode','budget','requiredCheckpoints','scope'])||!text(c.goal?.description)||!validateGoal(c.goal)||!['gameplay','development'].includes(c.mode))throw Error('Invalid Goal configuration');
   if(c.requiredCheckpoints!==undefined&&(!Array.isArray(c.requiredCheckpoints)||c.mode!=='development'||c.requiredCheckpoints.length>8||!c.requiredCheckpoints.every(v=>text(v,128))||new Set(c.requiredCheckpoints).size!==c.requiredCheckpoints.length))throw Error('Invalid required checkpoints');
   const fields=['timeoutMs','maxActions','maxObservations','maxReplans'],b=c.budget;if(!strict(b,[...fields,'maxSpend'])||!fields.every(k=>integer(b[k]))||b.timeoutMs<1000||b.timeoutMs>3600000||b.maxActions<1||b.maxActions>64||b.maxObservations<1||b.maxObservations>192||b.maxReplans<1||b.maxReplans>192||b.maxSpend!==undefined&&!validLimit(b.maxSpend))throw Error('Invalid budget');
+  if(c.scope!==undefined&&!require('./game-scope.cjs').validate(c.scope))throw Error('Invalid Session authorization scope');
   const result=copy(c);
   // Old documents with no field retain the conservative zero budget. New
   // sessions persist null explicitly. Reading does not rewrite old records.
@@ -79,17 +80,46 @@ class Runtime{
     try{
       const version=this.db.prepare('PRAGMA user_version').get().user_version;
       const tables=this.db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
-      if(version!==2&&(version!==0||tables.length))throw Error('Unsupported Store schema; no automatic migration');
+      if(![2,3].includes(version)&&(version!==0||tables.length))throw Error('Unsupported Store schema; no automatic migration');
       this.db.exec('PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA busy_timeout=1000;');
       this.db.exec(`CREATE TABLE IF NOT EXISTS targets(k TEXT PRIMARY KEY,owner TEXT,generation INTEGER NOT NULL,until_ms INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS sessions(id TEXT PRIMARY KEY,doc TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS effects(id TEXT PRIMARY KEY,target_key TEXT NOT NULL,session_id TEXT NOT NULL,status TEXT NOT NULL,doc TEXT NOT NULL);
-        CREATE INDEX IF NOT EXISTS open_effects ON effects(target_key,status); PRAGMA user_version=2;`);
+        CREATE INDEX IF NOT EXISTS open_effects ON effects(target_key,status); PRAGMA user_version=${version===3?3:2};`);
     }catch(e){this.db.close();throw e}
+  }
+  resource(k){
+    if(this.db.prepare("PRAGMA user_version").get().user_version!==3)return null;
+    const row=this.db.prepare('SELECT doc FROM resources WHERE k=? ORDER BY generation DESC LIMIT 1').get(k);return row?JSON.parse(row.doc):null;
+  }
+  resourceView(s){return {resource:this.resource(s.targetKey),historicalOpenEffects:this.effects(s.targetKey).filter(e=>(e.resourceGeneration??null)!==(s.resourceGeneration??null))}}
+  assertResource(s){const r=this.resource(s.targetKey);if(r&&(r.status!=='ready'||r.id!==s.resourceGeneration)||!r&&s.resourceGeneration)throw Object.assign(Error('Session belongs to an unavailable or different App data generation'),{code:'RESOURCE_GENERATION_CHANGED'})}
+  activeEffects(s){return this.effects(s.targetKey).filter(e=>(e.resourceGeneration??null)===(s.resourceGeneration??null))}
+  beginRebuild(value){
+    const p=require('./game-resource.cjs').checked(value,'inspection'),k=key(target(p.target));
+    return this.transaction(()=>{
+      this.db.exec('CREATE TABLE IF NOT EXISTS resources(k TEXT NOT NULL,generation INTEGER NOT NULL,doc TEXT NOT NULL,PRIMARY KEY(k,generation)); PRAGMA user_version=3;');
+      // Fence already-open legacy Runtime connections as well as new schema-2 readers.
+      for(const operation of ['INSERT','UPDATE'])this.db.exec(`CREATE TRIGGER IF NOT EXISTS resource_lease_${operation.toLowerCase()} BEFORE ${operation} ON targets
+        WHEN NEW.owner IS NOT NULL AND EXISTS(SELECT 1 FROM resources WHERE k=NEW.k)
+        AND NOT EXISTS(SELECT 1 FROM resources r JOIN sessions s ON s.id=NEW.owner
+          WHERE r.k=NEW.k AND r.generation=(SELECT MAX(generation) FROM resources WHERE k=NEW.k)
+          AND json_extract(r.doc,'$.status')='ready' AND json_extract(r.doc,'$.id')=json_extract(s.doc,'$.resourceGeneration'))
+        BEGIN SELECT RAISE(ABORT,'Native resource lease fence'); END;`);
+      const previous=this.resource(k),generation=(previous?.generation??0)+1,attempt=randomUUID();
+      this.db.prepare('INSERT INTO resources VALUES(?,?,?)').run(k,generation,json({status:'rebuilding',generation,attempt,before:p}));
+      this.db.prepare('UPDATE targets SET owner=NULL,generation=generation+1,until_ms=0 WHERE k=?').run(k);return attempt;
+    });
+  }
+  completeRebuild(value){
+    const p=require('./game-resource.cjs').checked(value,'rebuilt'),k=key(p.target);
+    return this.transaction(()=>{const r=this.resource(k);if(!r||r.status!=='rebuilding'||r.attempt!==p.attempt)throw Error('Stale native rebuild proof');
+      this.db.prepare('UPDATE resources SET doc=? WHERE k=? AND generation=?').run(json({...r,status:'ready',id:p.id,proof:p}),k,r.generation);return p.id;
+    });
   }
   close(){this.db.close()}
   transaction(fn){this.db.exec('BEGIN IMMEDIATE');try{const value=fn();this.db.exec('COMMIT');return value}catch(e){this.db.exec('ROLLBACK');throw e}}
-  load(id){const row=this.db.prepare('SELECT doc FROM sessions WHERE id=?').get(id);if(!row)throw Error('Session not found');const s=JSON.parse(row.doc);if(s.version!==2||s.id!==id||key(s.target)!==s.targetKey||!integer(s.revision)||!integer(s.actions)||!integer(s.observations)||!integer(s.replans)||!integer(s.spent)||!integer(s.reserved)||!integer(s.deadline)||!integer(s.bindingGeneration)||!integer(s.epoch)||!integer(s.planRevision)||!integer(s.memoryRevision)||!machine.states[s.machine?.value]||!Array.isArray(s.checkpoints)||s.checkpoints.length>32||s.observationAttempt!==undefined&&!/^[a-f0-9-]{36}$/.test(s.observationAttempt))throw Error('Invalid Session');target(s.target);s.config=config(s.config,this.provider.validateGoal,{stored:true});s.cognition=cognition(s.cognition??emptyCognition(),null,s.epoch,{stored:true});if(s.memoryNeedsReview!==undefined&&typeof s.memoryNeedsReview!=='boolean')throw Error('Invalid memory freshness');s.reconciliationReads??=0;if(!integer(s.reconciliationReads)||s.reconciliationReads>8||s.reconciliationAttempt!==undefined&&!/^[a-f0-9-]{36}$/.test(s.reconciliationAttempt))throw Error('Invalid reconciliation state');return s}
+  load(id){const row=this.db.prepare('SELECT doc FROM sessions WHERE id=?').get(id);if(!row)throw Error('Session not found');const s=JSON.parse(row.doc);if(s.resourceGeneration!==undefined&&!/^[a-f0-9]{64}$/.test(s.resourceGeneration))throw Error('Invalid Session resource generation');if(s.version!==2||s.id!==id||key(s.target)!==s.targetKey||!integer(s.revision)||!integer(s.actions)||!integer(s.observations)||!integer(s.replans)||!integer(s.spent)||!integer(s.reserved)||!integer(s.deadline)||!integer(s.bindingGeneration)||!integer(s.epoch)||!integer(s.planRevision)||!integer(s.memoryRevision)||!machine.states[s.machine?.value]||!Array.isArray(s.checkpoints)||s.checkpoints.length>32||s.observationAttempt!==undefined&&!/^[a-f0-9-]{36}$/.test(s.observationAttempt))throw Error('Invalid Session');target(s.target);s.config=config(s.config,this.provider.validateGoal,{stored:true});s.cognition=cognition(s.cognition??emptyCognition(),null,s.epoch,{stored:true});if(s.memoryNeedsReview!==undefined&&typeof s.memoryNeedsReview!=='boolean')throw Error('Invalid memory freshness');s.reconciliationReads??=0;if(!integer(s.reconciliationReads)||s.reconciliationReads>8||s.reconciliationAttempt!==undefined&&!/^[a-f0-9-]{36}$/.test(s.reconciliationAttempt))throw Error('Invalid reconciliation state');return s}
   save(s){this.db.prepare('INSERT INTO sessions(id,doc) VALUES(?,?) ON CONFLICT(id) DO UPDATE SET doc=excluded.doc').run(s.id,json(s))}
   effects(k){return this.db.prepare("SELECT doc FROM effects WHERE target_key=? AND status!='settled'").all(k).map(row=>JSON.parse(row.doc))}
   effect(id){const row=this.db.prepare('SELECT doc FROM effects WHERE id=?').get(id);if(!row)throw Error('Effect not found');return JSON.parse(row.doc)}
@@ -100,7 +130,7 @@ class Runtime{
     if(providers.length>16||new Set(providers).size!==providers.length||!providers.every(p=>typeof p==='string'&&/^[a-zA-Z0-9._-]{1,64}$/.test(p)))throw Error('Invalid page receipt owners');
     // Filter by namespace ownership before LIMIT: unrelated provider history
     // must not consume the whole bounded maintenance batch.
-    return this.db.prepare("SELECT doc FROM effects WHERE target_key=? AND status='settled' AND json_extract(doc,'$.result.outcome')='occurred' AND json_extract(doc,'$.executionBinding.provider') IN ("+providers.map(()=>'?').join(',')+") AND COALESCE(json_extract(doc,'$.pageReceiptRetired'),0)=0 LIMIT 64").all(s.targetKey,...providers).map(row=>JSON.parse(row.doc));
+    return this.db.prepare("SELECT doc FROM effects WHERE target_key=? AND status='settled' AND json_extract(doc,'$.result.outcome')='occurred' AND json_extract(doc,'$.executionBinding.provider') IN ("+providers.map(()=>'?').join(',')+") AND COALESCE(json_extract(doc,'$.pageReceiptRetired'),0)=0 AND json_extract(doc,'$.resourceGeneration') IS ? LIMIT 64").all(s.targetKey,...providers,s.resourceGeneration??null).map(row=>JSON.parse(row.doc));
   }
   confirmReceiptRetirements(id,ids){
     return this.transaction(()=>{
@@ -108,7 +138,7 @@ class Runtime{
       if(!Array.isArray(ids)||ids.length>64||new Set(ids).size!==ids.length)throw Error('Invalid receipt retirement batch');
       for(const effectId of ids){
         const e=this.effect(effectId);
-        if(e.targetKey!==s.targetKey||e.status!=='settled'||e.result?.outcome!=='occurred'||!e.executionBinding)throw Error('Receipt still requires recovery');
+        if(e.targetKey!==s.targetKey||(e.resourceGeneration??null)!==(s.resourceGeneration??null)||e.status!=='settled'||e.result?.outcome!=='occurred'||!e.executionBinding)throw Error('Receipt still requires recovery');
         e.pageReceiptRetired=true;
         this.saveEffect(e);
       }
@@ -120,6 +150,7 @@ class Runtime{
     return {effects:rows.map(row=>{const e=JSON.parse(row.doc);return copy({id:e.id,status:e.status,action:e.action,result:e.result,executionBinding:e.executionBinding})}),spent:s.spent,reserved:s.reserved,budget:copy(s.config.budget)};
   }
   allowedAction(s,action,context){
+    const scope=s.config.scope??s.config.goal.scope;if(scope&&!scope.intents.includes(action.kind))return false;
     if(!withinSpend(action.cost+s.spent+s.reserved,s.config.budget.maxSpend))return false;
     if(!this.provider.canPrepare)return true;
     const allowed=this.provider.canPrepare(copy(action),copy(s.config.goal),copy(context??this.outcomeContext(s)));
@@ -127,8 +158,9 @@ class Runtime{
     return allowed;
   }
   saveEffect(e){this.db.prepare('INSERT INTO effects VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET status=excluded.status,doc=excluded.doc').run(e.id,e.targetKey,e.sessionId,e.status,json(e))}
-  own(s){const lease=this.db.prepare('SELECT * FROM targets WHERE k=?').get(s.targetKey);if(!lease||lease.owner!==s.id||lease.generation!==s.bindingGeneration||lease.until_ms<=this.clock())throw Error('Target lease lost');this.db.prepare('UPDATE targets SET until_ms=? WHERE k=?').run(this.clock()+this.leaseMs,s.targetKey);return lease}
+  own(s){this.assertResource(s);const lease=this.db.prepare('SELECT * FROM targets WHERE k=?').get(s.targetKey);if(!lease||lease.owner!==s.id||lease.generation!==s.bindingGeneration||lease.until_ms<=this.clock())throw Error('Target lease lost');this.db.prepare('UPDATE targets SET until_ms=? WHERE k=?').run(this.clock()+this.leaseMs,s.targetKey);return lease}
   claim(s,force=false){
+    this.assertResource(s);
     const old=this.db.prepare('SELECT * FROM targets WHERE k=?').get(s.targetKey),now=this.clock();
     if(old&&old.owner!==s.id&&old.until_ms>now)throw Error('Target owned by another Session');
     const generation=old?(old.owner===s.id&&old.until_ms>now&&!force?old.generation:old.generation+1):1;
@@ -138,8 +170,8 @@ class Runtime{
   exhausted(s,{planning=true}={}){const b=s.config.budget;return this.clock()>=s.deadline||s.actions>=b.maxActions||s.observations>=b.maxObservations||(planning&&s.replans>=b.maxReplans)||!withinSpend(s.spent,b.maxSpend)}
   halt(s,reason){this.invalidateMemory(s);s.stopReason=reason;s.decision=null;s.proposal=null;delete s.observationAttempt;delete s.reconciliationAttempt;move(s,'STOP');this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id)}
   invalidateMemory(s){if(!s.memoryNeedsReview&&(s.beliefs.length||s.cognition.subgoals.length||s.cognition.events.length))s.memoryRevision++;s.memoryNeedsReview=true}
-  start(t,c){return this.transaction(()=>{const s={version:2,id:randomUUID(),target:target(t),config:config(c,this.provider.validateGoal),revision:0,epoch:0,planRevision:0,memoryRevision:0,actions:0,observations:0,replans:0,spent:0,reserved:0,plan:[],beliefs:[],cognition:emptyCognition(),memoryNeedsReview:false,decision:null,proposal:null,stopReason:null,goalSatisfied:false,checkpoints:[]};s.targetKey=key(s.target);s.deadline=this.clock()+s.config.budget.timeoutMs;move(s);this.claim(s);this.save(s);return s})}
-  resume(id){return this.transaction(()=>{const s=this.load(id);if(s.machine.value==='completed')throw Error('Closed Session; start a new Goal');this.claim(s,true);this.invalidateMemory(s);s.revision++;s.epoch++;s.decision=null;s.proposal=null;delete s.observationAttempt;delete s.reconciliationAttempt;delete s.pauseReason;if(!s.stopReason){if(this.effects(s.targetKey).length)move(s,'PENDING');else{if(s.machine.value==='paused')move(s,'RESUME');else if(s.machine.value==='reconciling')move(s,'SETTLED');else if(s.machine.value!=='observing')move(s,'OBSERVE')}}this.save(s);return s})}
+  start(t,c,{resourceProof}={}){return this.transaction(()=>{const s={version:2,id:randomUUID(),target:target(t),config:config(c,this.provider.validateGoal),revision:0,epoch:0,planRevision:0,memoryRevision:0,actions:0,observations:0,replans:0,spent:0,reserved:0,plan:[],beliefs:[],cognition:emptyCognition(),memoryNeedsReview:false,decision:null,proposal:null,stopReason:null,goalSatisfied:false,checkpoints:[]};s.targetKey=key(s.target);const scope=s.config.scope??s.config.goal.scope;if(scope&&['serial','package','userId'].some(k=>scope[k]!==s.target[k]))throw Error('Session authorization target mismatch');const resource=this.resource(s.targetKey);if(resource){const p=require('./game-resource.cjs').checked(resourceProof,'current');if(resource.status!=='ready'||p.id!==resource.id||key(p.target)!==s.targetKey)throw Error('Current native resource proof required');s.resourceGeneration=p.id}s.deadline=this.clock()+s.config.budget.timeoutMs;move(s);this.save(s);this.claim(s);this.save(s);return s})}
+  resume(id){return this.transaction(()=>{const s=this.load(id);if(s.machine.value==='completed')throw Error('Closed Session; start a new Goal');this.claim(s,true);this.invalidateMemory(s);s.revision++;s.epoch++;s.decision=null;s.proposal=null;delete s.observationAttempt;delete s.reconciliationAttempt;delete s.pauseReason;if(!s.stopReason){if(this.activeEffects(s).length)move(s,'PENDING');else{if(s.machine.value==='paused')move(s,'RESUME');else if(s.machine.value==='reconciling')move(s,'SETTLED');else if(s.machine.value!=='observing')move(s,'OBSERVE')}}this.save(s);return s})}
   reserveObservation(id){return this.transaction(()=>{
     const s=this.load(id);this.own(s);if(s.machine.value==='completed'||s.stopReason)return null;
     if(s.observations>=s.config.budget.maxObservations||this.clock()>=s.deadline){this.halt(s,'observation-budget-exhausted');s.revision++;this.save(s);return null}
@@ -151,17 +183,17 @@ class Runtime{
     s.revision++;s.decision=null;s.proposal=null;
     if(s.observations>=s.config.budget.maxObservations||this.clock()>=s.deadline)this.halt(s,'observation-budget-exhausted');
     else{if(!text(reason,128))throw Error('Observation failure reason required');s.pauseReason=reason;move(s,'PAUSE')}
-    this.save(s);return {...s,openEffects:this.effects(s.targetKey)};
+    this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)};
   })}
-  pause(id,reason){return this.transaction(()=>{const s=this.load(id);if(s.machine.value==='completed'||s.stopReason)throw Error('Closed Session');this.own(s);if(!text(reason,128))throw Error('Pause reason required');this.invalidateMemory(s);s.pauseReason=reason;s.decision=null;s.proposal=null;delete s.observationAttempt;s.revision++;move(s,'PAUSE');this.save(s);return {...s,openEffects:this.effects(s.targetKey)}})}
+  pause(id,reason){return this.transaction(()=>{const s=this.load(id);if(s.machine.value==='completed'||s.stopReason)throw Error('Closed Session');this.own(s);if(!text(reason,128))throw Error('Pause reason required');this.invalidateMemory(s);s.pauseReason=reason;s.decision=null;s.proposal=null;delete s.observationAttempt;s.revision++;move(s,'PAUSE');this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)}})}
   checkpointsPassed(s){return(s.config.requiredCheckpoints||[]).every(name=>s.checkpoints.some(c=>c.name===name&&c.passed))}
   stagnantRoute(s,a){const current=trace(this.provider,s.scene,s.config.goal);return !!current&&(s.routes||[]).filter(r=>r.from===current.key&&r.progress===current.progress&&r.actionKey===routeAction(a)&&!r.progressed).length>=3}
-  checkpoint(id,c,{revision}={}){return this.transaction(()=>{const s=this.load(id);this.own(s);if(revision!==undefined&&revision!==s.revision)throw Error('Stale checkpoint observation');if(s.stopReason||s.machine.value==='completed'||s.config.mode!=='development'||!strict(c,['name','attemptId','passed','source'])||!text(c.name,128)||typeof c.passed!=='boolean'||!text(c.source,256)||s.checkpoints.length>=32)throw Error('Invalid development checkpoint');if(c.attemptId&&this.effect(c.attemptId).sessionId!==s.id)throw Error('Checkpoint attempt mismatch');s.checkpoints.push({...copy(c),epoch:s.epoch,revision:s.revision});s.revision++;s.decision=null;s.proposal=null;if(['ready','waitingDecision'].includes(s.machine.value))move(s,'OBSERVE');if(!c.passed)this.halt(s,'checkpoint-failed');else if(s.goalSatisfied&&this.checkpointsPassed(s)&&!this.effects(s.targetKey).length){if(s.machine.value==='paused')move(s,'RESUME');move(s,'GOAL');s.decision=null;s.proposal=null;this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id)}this.save(s);return {...s,openEffects:this.effects(s.targetKey)}})}
+  checkpoint(id,c,{revision}={}){return this.transaction(()=>{const s=this.load(id);this.own(s);if(revision!==undefined&&revision!==s.revision)throw Error('Stale checkpoint observation');if(s.stopReason||s.machine.value==='completed'||s.config.mode!=='development'||!strict(c,['name','attemptId','passed','source'])||!text(c.name,128)||typeof c.passed!=='boolean'||!text(c.source,256)||s.checkpoints.length>=32)throw Error('Invalid development checkpoint');if(c.attemptId&&this.effect(c.attemptId).sessionId!==s.id)throw Error('Checkpoint attempt mismatch');s.checkpoints.push({...copy(c),epoch:s.epoch,revision:s.revision});s.revision++;s.decision=null;s.proposal=null;if(['ready','waitingDecision'].includes(s.machine.value))move(s,'OBSERVE');if(!c.passed)this.halt(s,'checkpoint-failed');else if(s.goalSatisfied&&this.checkpointsPassed(s)&&!this.activeEffects(s).length){if(s.machine.value==='paused')move(s,'RESUME');move(s,'GOAL');s.decision=null;s.proposal=null;this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id)}this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)}})}
   stop(id,reason='cancelled'){return this.transaction(()=>{const s=this.load(id);if(s.machine.value==='completed')throw Error('Closed Session');this.own(s);this.halt(s,reason);s.revision++;this.save(s);this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id);return s})}
-  status(id){const s=this.load(id);return {...s,...memoryView(s),openEffects:this.effects(s.targetKey)}}
+  status(id){const s=this.load(id);return {...s,...memoryView(s),...this.resourceView(s),openEffects:this.activeEffects(s)}}
   reserveReconciliation(id){return this.transaction(()=>{
     const s=this.load(id);
-    if(s.machine.value==='completed'||!s.stopReason&&this.clock()<s.deadline&&s.observations<s.config.budget.maxObservations||!this.effects(s.targetKey).some(e=>e.sessionId===s.id))throw Error('Cleanup requires an exhausted or stopped Session with its own pending effects');
+    if(s.machine.value==='completed'||!s.stopReason&&this.clock()<s.deadline&&s.observations<s.config.budget.maxObservations||!this.activeEffects(s).some(e=>e.sessionId===s.id))throw Error('Cleanup requires an exhausted or stopped Session with its own pending effects');
     if((s.reconciliationReads??0)>=8)throw Error('Reconciliation read budget exhausted');
     this.claim(s,true);this.invalidateMemory(s);s.reconciliationReads=(s.reconciliationReads??0)+1;s.epoch++;s.revision++;s.decision=null;s.proposal=null;
     delete s.observationAttempt;delete s.pauseReason;s.stopReason??=this.clock()>=s.deadline?'deadline-exhausted':'observation-budget-exhausted';
@@ -170,19 +202,19 @@ class Runtime{
   reconcile(id,resolutions,{reservation}={}){return this.transaction(()=>{
     const s=this.load(id);this.own(s);if(!reservation||s.reconciliationAttempt!==reservation||!s.stopReason||s.machine.value!=='halted')throw Error('Stale reconciliation attempt');
     this.settleResults(s,resolutions,undefined,{ownerOnly:true});delete s.reconciliationAttempt;delete s.reconciliationError;s.revision++;
-    this.halt(s,s.stopReason);this.save(s);return {...s,openEffects:this.effects(s.targetKey)};
+    this.halt(s,s.stopReason);this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)};
   })}
   failReconciliation(id,reservation,reason){return this.transaction(()=>{
     const s=this.load(id);this.own(s);if(!reservation||s.reconciliationAttempt!==reservation||!text(reason,128))throw Error('Stale or invalid reconciliation failure');
-    delete s.reconciliationAttempt;s.reconciliationError=reason;s.revision++;this.halt(s,s.stopReason);this.save(s);return {...s,openEffects:this.effects(s.targetKey)};
+    delete s.reconciliationAttempt;s.reconciliationError=reason;s.revision++;this.halt(s,s.stopReason);this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)};
   })}
   settleResults(s,resolutions,afterTrace,{ownerOnly=false}={}){
     if(!Array.isArray(resolutions)||resolutions.length>64)throw Error('Invalid resolution batch');
     // Closing prepared reservations holds the same write transaction as dispatch claiming.
-    for(const e of this.effects(s.targetKey))if(e.status==='prepared'&&(!ownerOnly||e.sessionId===s.id))resolutions=[...resolutions,{attemptId:e.id,outcome:'not-occurred',remoteClosed:true,spent:0,source:'coordinator: reservation never crossed dispatch boundary'}];
+    for(const e of this.activeEffects(s))if(e.status==='prepared'&&(!ownerOnly||e.sessionId===s.id))resolutions=[...resolutions,{attemptId:e.id,outcome:'not-occurred',remoteClosed:true,spent:0,source:'coordinator: reservation never crossed dispatch boundary'}];
     for(const r of resolutions){
       if(!strict(r,['attemptId','outcome','remoteClosed','spent','source','evidence'])||!text(r.attemptId,64)||!['occurred','not-occurred','unknown'].includes(r.outcome)||typeof r.remoteClosed!=='boolean'||!integer(r.spent)||!text(r.source,128)||r.evidence!==undefined&&(!r.evidence||typeof r.evidence!=='object'||Array.isArray(r.evidence)||Buffer.byteLength(JSON.stringify(r.evidence))>4096||!this.provider.validateReceipt))throw Error('Invalid result receipt');
-      const e=this.effect(r.attemptId);if(e.targetKey!==s.targetKey||ownerOnly&&e.sessionId!==s.id)throw Error('Result target/owner mismatch');
+      const e=this.effect(r.attemptId);if(e.targetKey!==s.targetKey||(e.resourceGeneration??null)!==(s.resourceGeneration??null)||ownerOnly&&e.sessionId!==s.id)throw Error('Result target/owner mismatch');
       if(this.provider.validateReceipt&&this.provider.validateReceipt(copy(r),copy(e))!==true)throw Error('Unverified result evidence');
       if(e.status==='settled'){
         if(r.outcome!=='unknown'&&(r.outcome!==e.result.outcome||r.spent!==e.result.spent||r.remoteClosed!==e.result.remoteClosed||JSON.stringify(r.evidence??null)!==JSON.stringify(e.result.evidence??null)))throw Error('Conflicting settled result');
@@ -202,12 +234,12 @@ class Runtime{
   observe(id,observed,resolutions=[],{reservation}={}){return this.transaction(()=>{
     const s=this.load(id);if(s.machine.value==='completed')throw Error('Closed Session; start a new Goal');this.own(s);if(reservation!==undefined&&s.observationAttempt!==reservation)throw Error('Stale observation attempt');observed=this.provider.scene(observed,s.config.goal);const afterTrace=trace(this.provider,observed,s.config.goal);
     this.settleResults(s,resolutions,afterTrace);
-    if(reservation===undefined&&s.observations>=s.config.budget.maxObservations){this.halt(s,'observation-budget-exhausted');s.revision++;this.save(s);return {...s,openEffects:this.effects(s.targetKey)}}
+    if(reservation===undefined&&s.observations>=s.config.budget.maxObservations){this.halt(s,'observation-budget-exhausted');s.revision++;this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)}}
     this.invalidateMemory(s);s.epoch++;s.memoryNeedsReview=false;s.revision++;if(reservation===undefined)s.observations++;delete s.observationAttempt;delete s.pauseReason;s.scene=observed;
     const satisfied=this.provider.satisfied(copy(observed),copy(s.config.goal),this.outcomeContext(s));
     if(typeof satisfied!=='boolean')throw Error('Synchronous reviewed Goal result required');
     s.goalSatisfied=satisfied;s.decision=null;s.proposal=null;
-    const pending=this.effects(s.targetKey);
+    const pending=this.activeEffects(s);
     if(s.stopReason){move(s,'STOP')}
     else if(pending.length){move(s,'PENDING')}
     else if(!withinSpend(s.spent,s.config.budget.maxSpend)){this.halt(s,'actual-spend-exceeded')}
@@ -220,7 +252,7 @@ class Runtime{
         move(s,'OBSERVED');s.decision={protocol:1,requestId:randomUUID(),sessionId:s.id,bindingGeneration:s.bindingGeneration,epoch:s.epoch,revision:s.revision,planRevision:s.planRevision,memoryRevision:s.memoryRevision,goal:s.config.goal,scene:{...s.scene,choices:s.scene.choices.filter(a=>this.allowedAction(s,a,context))},plan:s.plan,...memoryView(s),routes:s.routes||[],routeHints:s.scene.choices.filter(a=>this.stagnantRoute(s,a)).map(a=>({actionRef:a.ref,reason:'Repeated settled route has no observed Goal progress; consider a different experiment or replan'})),outcomes:context.effects.filter(e=>e.status==='settled').map(e=>({attemptId:e.id,kind:e.action.kind,descriptor:e.action,...e.result})),requiredCheckpoints:s.config.requiredCheckpoints||[],checkpoints:s.checkpoints,budget:{...s.config.budget,deadline:s.deadline,actions:s.actions,observations:s.observations,replans:s.replans,spent:s.spent,reserved:s.reserved}};
       }
     }
-    this.save(s);if(s.machine.value==='completed'||s.stopReason)this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id);return {...s,openEffects:pending};
+    this.save(s);if(s.machine.value==='completed'||s.stopReason)this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id);return {...s,...this.resourceView(s),openEffects:pending};
   })}
   propose(id,p){return this.transaction(()=>{
     const s=this.load(id);this.own(s);const d=s.decision;
@@ -230,7 +262,7 @@ class Runtime{
     const nextCognition=p.cognition===undefined?s.cognition:cognition(p.cognition,s.cognition,s.epoch);
     const selected=s.scene.choices.find(a=>a.ref===p.actionRef);if(!selected||selected.risk!=='normal'||!withinSpend(selected.cost+s.spent+s.reserved,s.config.budget.maxSpend))throw Error('Action unavailable or outside budget');
     if(!d.scene.choices.some(a=>a.ref===selected.ref))throw Error('Action not offered in the current decision');
-    if(this.effects(s.targetKey).length)throw Error('Target has unresolved effect');
+    if(this.activeEffects(s).length)throw Error('Target has unresolved effect');
     s.plan=copy(p.plan);s.beliefs=p.beliefs.map(({claim,sourceEpoch})=>({claim,sourceEpoch}));s.cognition=copy(nextCognition);s.memoryNeedsReview=false;s.planRevision++;s.memoryRevision++;s.replans++;s.revision++;s.proposal={action:copy(selected),sceneRevision:s.scene.revision,reason:p.reason};s.decision=null;move(s,'PROPOSED');this.save(s);return s;
   })}
   prepare(id,{expected}={}){return this.transaction(()=>{
@@ -239,10 +271,10 @@ class Runtime{
     // coordinator snapshot must still identify exactly the reserved action.
     const identity=v=>json(['id','revision','bindingGeneration','epoch','planRevision','memoryRevision','target','config','scene','proposal','machine'].map(k=>v[k]));
     if(expected!==undefined&&identity(expected)!==identity(s))throw Object.assign(Error('Stale dispatch identity'),{code:'STALE_DISPATCH_IDENTITY'});
-    this.own(s);if(s.stopReason||s.machine.value!=='ready'||!s.proposal||this.effects(s.targetKey).length)throw Error('Dispatch not ready');
+    this.own(s);if(s.stopReason||s.machine.value!=='ready'||!s.proposal||this.activeEffects(s).length)throw Error('Dispatch not ready');
     if(this.exhausted(s,{planning:false})){this.halt(s,'budget-exhausted');this.save(s);return null}
     if(!this.allowedAction(s,s.proposal.action))throw Error('Action conflicts with verified Session outcomes');
-    const e={version:2,id:randomUUID(),targetKey:s.targetKey,sessionId:s.id,generation:s.bindingGeneration,epoch:s.epoch,status:'prepared',action:s.proposal.action,sceneRevision:s.proposal.sceneRevision,reservedSpend:s.proposal.action.cost};
+    const e={version:2,id:randomUUID(),...(s.resourceGeneration?{resourceGeneration:s.resourceGeneration}:{}),targetKey:s.targetKey,sessionId:s.id,generation:s.bindingGeneration,epoch:s.epoch,status:'prepared',action:s.proposal.action,sceneRevision:s.proposal.sceneRevision,reservedSpend:s.proposal.action.cost};
     const beforeTrace=trace(this.provider,s.scene,s.config.goal);if(beforeTrace)e.trace=beforeTrace;
     if(!withinSpend(s.spent+s.reserved+e.reservedSpend,s.config.budget.maxSpend))throw Error('Spend budget exhausted');
     this.invalidateMemory(s);s.actions++;s.reserved+=e.reservedSpend;s.revision++;move(s,'DISPATCH');this.saveEffect(e);this.save(s);return e;

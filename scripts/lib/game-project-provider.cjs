@@ -3,15 +3,10 @@
 // Local modules have Node permissions; this is not an untrusted plugin sandbox.
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{createHash}=require('node:crypto');
 const native=require('./game-native-provider.cjs'),semantic=require('./game-semantic.cjs'),receipts=require('./game-receipts.cjs'),action=require('./action.cjs');
+const {validate:scope,assertTarget}=require('./game-scope.cjs');
 const id='project-experiment',hash=v=>createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v)).digest('hex');
 const keys=(v,allowed)=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).every(k=>allowed.includes(k));
 const bounded=v=>typeof v==='string'&&v.length>0&&v.length<=128&&!/[\u0000-\u001f]/.test(v);
-function scope(s){
- return keys(s,['workspace','serial','package','userId','signingHash','intents','dataDomain'])&&path.isAbsolute(s.workspace||'')&&
-  /^[\w.:-]{1,128}$/.test(s.serial||'')&&/^[A-Za-z_][\w]*(?:\.[A-Za-z_][\w]*)+$/.test(s.package||'')&&/^(0|[1-9]\d*)$/.test(s.userId||'')&&
-  /^[a-f0-9]{1,16}$/.test(s.signingHash||'')&&s.dataDomain==='app-user-data'&&Array.isArray(s.intents)&&s.intents.length>0&&
-  new Set(s.intents).size===s.intents.length&&s.intents.every(i=>semantic.intents.includes(i));
-}
 function validateGoal(g){return keys(g,['description','kind','recipe','scope','predicate','inputs'])&&g.kind===id&&path.isAbsolute(g.recipe||'')&&scope(g.scope)&&native.validateGoal(g.predicate)&&
  keys(g.inputs??{},Object.keys(g.inputs??{}))&&Buffer.byteLength(JSON.stringify(g.inputs??{}))<=4096}
 function validateRequest(r){
@@ -95,13 +90,6 @@ function validateReceipt(r,e){
  const p=r.evidence;return e.executionBinding?.provider===id&&e.executionBinding.contract==='project-recipe-v1'&&keys(p,['kind','recipeSha256','operation','before','after','executionCompleted'])&&
  p.kind===id&&p.recipeSha256===e.action.selected.recipeSha256&&p.operation===e.action.selected.operation&&p.executionCompleted===true&&
  JSON.stringify(p.before)===JSON.stringify(e.action.selected.before)&&keys(p.after,Object.keys(p.after??{}))&&Number.isSafeInteger(r.spent)&&r.spent>=0;
-}
-function assertTarget(options,g,userId,packageInfo){
- const s=g.scope;if(options.serial!==s.serial||options.package!==s.package||userId!==s.userId)throw Object.assign(Error('Project authorization target mismatch'),{code:'PROJECT_SCOPE_TARGET_CHANGED'});
- if(options.projectIntent!==undefined&&!s.intents.includes(options.projectIntent))throw Object.assign(Error('Project operation outside authorized scope'),{code:'PROJECT_SCOPE_INTENT_CHANGED'});
- const block=packageInfo.split(`Package [${options.package}]`)[1]?.split(/\n\s*Package \[/)[0];
- const signing=block?.match(/signatures=PackageSignatures\{[^\r\n]*?signatures:\[([a-f0-9]+)\]/)?.[1];
- if(signing!==s.signingHash)throw Object.assign(Error('Project signing identity changed'),{code:'PROJECT_SCOPE_SIGNER_CHANGED'});
 }
 module.exports={id,supportsGoal:g=>g?.kind===id,validateGoal,validateRequest,validateAction,validateDescriptor,legacyDescriptor,observe,candidates,prepare,operation,validateReceipt,assertTarget,
  probe:g=>native.probe(g.predicate),satisfied:(s,g,c)=>native.satisfied(s,g.predicate,c),publicProof:s=>s.scene?.goalProof??null,

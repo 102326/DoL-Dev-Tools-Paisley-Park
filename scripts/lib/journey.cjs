@@ -136,7 +136,7 @@ async function run(options, loaded, overrides = {}) {
             }
           }
         } else if(step.type==='checkpoint') await captureCheckpoint(step,index,entry);
-        else { if(['launch','restart'].includes(step.type)) await ctx.closeTransport();await (overrides.executeAction||action.execute)(ctx,step); }
+        else { ctx.recordResource=value=>{entry.artifacts??=[];entry.artifacts.push(save('resource-'+index+'-'+entry.artifacts.length,'native App data generation proof',value))};if(['launch','restart','data-reset'].includes(step.type)) await ctx.closeTransport();await (overrides.executeAction||action.execute)(ctx,step); }
         assertActive();entry.status='completed';
       } catch(error) {
         const timeout=ctx.timedOut||error?.code==='ETIMEDOUT'||error?.killed;
