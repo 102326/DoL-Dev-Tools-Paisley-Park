@@ -55,9 +55,22 @@ Q1b/Q2 已实现，真实 WebView 定向验收未执行；替身 CDP 的原生�
 
 - A3 已有离线 CLI/合同实现；真实项目 Recipe 派发、真实免费交易与更多 Goal/领域组合仍需本轮代表验证，不能据此宣布完整放权完成。
 - A4 存档/自动保存复制 guard 的实际放权与代表操作合同。
-- A6 稳定范围授权和可核验数据代次在实际写入/持久合同的接线；原 Pending/Unknown 保持可见，不能换库或虚构 UUID 绕过。
+- A6 已接入 Scope/原生数据代次和同 Store 历史可见性，并有本轮实际 App 数据重建证据；后续存档/自动保存操作继续在此基础上验证。
 - A1/Android 协作的代表性实机验证，以及 B/C 真实问题修复、旧/错制品对照、一次真实实验失败后的恢复继续。
 
 ## Known limitations / Case 调查
 
 Dol UI 已提供当前 2.5.0 工程和真实旧制品/历史存档闪烁证据，同时确认该缺陷已修复，当前没有已证实仍未修复的 Core UI Bug。材料只登记为历史缺陷重放/制品对照候选，不能当作当前未修 Bug，也不为制造验收重新开发已完成补丁。新环境是否能重现旧制品仍 Unknown；当前实际 Bug 选择未定，不阻止离线 A 切片继续。具体路径、SHA 和设备历史保持在本地 Case 记录，不公开私人现场。
+
+
+### 2026-10-11 Scope / native resource generation
+
+本地实现提交 `b9e26a5562e7d7058f8357e5dcafbba1878dd551`，实际 CLI 入口修正 `347467c8c89ddcb800b3d8f568366c71d8f5ab38` 和共享 opener 接线 `726d80eccae4c345408f00a07ab3362eb7b540b9`。后续阶段化失败证据和 scoped Debug 原生代次核对以实际 diff/提交定位。复用 Scope，不建立新权限服务或第二 Ledger。详见 [数据代次合同](RESOURCE_GENERATIONS.md)。
+
+Windows 定向回归和完整 Node 回归通过；阶段化证据修正后完整套件 373 passed/0 failed/0 skipped，新增 Debug 身份拒绝另作定向回归。Python 不涉及，复用已有 2 passed/2 skipped。原始入口失败和 partial 原生尝试都保留，未跳过或把失败改写成通过。
+
+真实测试 App/user 0/Android 17 的标准 `action data-reset` 已完成一次可核验的 native clear、空数据检查、UID/根目录/签名摘要复读和自有 marker 复读。使用原 `sessions-v2.sqlite` 和相同 TargetKey；SQLite 一致备份在本地 ignored 证据目录。81 条旧 Effect 和 21 条旧 Session 的原始 doc 摘要及状态逐条保持不变；旧 owner resume 拒绝，JSON 自报 proof 拒绝，新 Session 从原生 snapshot 建立，并在视图继续暴露旧 Unknown。没有将旧 Unknown 结清，也没有派发 Gameplay 业务。
+
+真实证据 `artifacts/bites-the-dust-resource-20261011/validation-corrected.json`、各 reset manifest/分阶段文件、source diff 和备份均保留本地。首次 CLI 读取函数和未导出 opener 的调用接线问题已修复并补真实入口/生产 Action 替身回归；两次均未进入 native clear。随后 partial native 尝试只保留到了 fenced 阶段，具体原生失败原因未捕获，因此标记 Unknown，不能将后一次成功倒推为前一次成功。补阶段化错误证据后 fresh authorized rebuild 完成；保留两次 native 代次元数据。最初 verify 脚本的 JSON-proof 拒绝试验用了包含多余字段的 target，已更正为 canonical target 并核对真实 proof 拒绝错误，原日志不删除。
+
+Store schema 只在重建开始时从 2 进入 3；旧数据内容不迁移。稳定 3.0.3 不得对该 Store 继续写入；新连接拒绝 schema 3，已经打开的旧连接也不能重新取得该数据代次的 lease。原生外部 storage/cloud/shared-UID 资源不在此隔离证明内；不是完整 App/存档恢复验收。A4、真实 Recipe/Gameplay 及 B/C 仍未完成，不能据此宣布正式 4.0 完成。

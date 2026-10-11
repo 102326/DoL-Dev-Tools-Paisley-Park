@@ -79,3 +79,10 @@ test('production Action data reset reaches the shared Runtime and persists nativ
  const k=require('node:crypto').createHash('sha256').update(JSON.stringify([target.serial,target.package,target.userId])).digest('hex');
  assert.equal(f.r.resource(k).id,result.resourceGeneration);
 });
+
+test('scoped Debug refuses an altered native generation before launch and shares the existing Store',async t=>{
+ const f=fixture(t);await resource.rebuild(f.r,f.adb,target,f.authorization);f.changeMarker();
+ const count=f.commands.length;
+ await assert.rejects(require('../scripts/lib/action.cjs').execute({options:{...target,authorization:f.authorization,store:f.file},adb:f.adb},{type:'launch'}),/generation changed/);
+ assert.ok(!f.commands.slice(count).some(c=>c.includes('resolve-activity')||c.includes('am start')));
+});

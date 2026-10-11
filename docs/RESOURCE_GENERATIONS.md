@@ -12,7 +12,7 @@ Rebuild phases go to existing Journey Evidence; native proof also persists in th
 
 ## Continuous GER execution
 
-A new Goal on a rebuilt target needs its granted scope and a fresh native snapshot matching the registered resource. Dispatch rechecks the marker/root/UID/signing identity before binding the action; normal PID/Document changes still use explicit new execution bindings. Sessions/Effects persist their resource generation. Pending effects belonging to the verified current generation block dependent work; older effects remain visible in `historicalPendingEffects`, unchanged and unsettled. New observations cannot settle an older generation's effect. Receipt maintenance also remains generation-specific. Existing Sessions cannot silently switch generations on resume.
+Scoped Debug Actions carrying the original Store verify native resource identity before dispatch and pin it for that execution context. A new Goal on a rebuilt target needs its granted scope and a fresh native snapshot matching the registered resource. Dispatch rechecks the marker/root/UID/signing identity before binding the action; normal PID/Document changes still use explicit new execution bindings. Sessions/Effects persist their resource generation. Pending effects belonging to the verified current generation block dependent work; older effects remain visible in `historicalPendingEffects`, unchanged and unsettled. New observations cannot settle an older generation's effect. Receipt maintenance also remains generation-specific. Existing Sessions cannot silently switch generations on resume.
 
 ## Store compatibility and limits
 

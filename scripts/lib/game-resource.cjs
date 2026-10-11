@@ -26,6 +26,7 @@ async function rebuild(runtime,adb,target,authorization,{record=()=>{}}={}){
  if(!scope.validate(authorization)||!authorization.intents.includes('data-reset'))throw Error('App data reset is outside authorized scope');
  const before=await inspect(adb,target,authorization),attempt=runtime.beginRebuild(proof({kind:'inspection',...before}));
  record({phase:'fenced',attempt,before});
+ let stage='force-stop';try{
  await adb('shell','am','force-stop','--user',target.userId,target.package);
  // Check all processes under the App UID, including secondary processes.
  const stopped=async()=>{
@@ -33,18 +34,19 @@ async function rebuild(runtime,adb,target,authorization,{record=()=>{}}={}){
   if(!/^\s*UID\s+PID\s+NAME/m.test(ps))throw Error('Process observation unavailable');
   if(ps.split(/\r?\n/).some(line=>line.trim().split(/\s+/)[0]===before.uid))throw Error('App still has a possible writer');
  };
- await stopped();const preClear=await inspect(adb,target,authorization);if(preClear.uid!==before.uid||preClear.inode!==before.inode)throw Error('Native root changed before clear');
- const clear=(await adb('shell','pm','clear','--user',target.userId,target.package)).toString().trim();
+ stage='writers-and-identity';await stopped();const preClear=await inspect(adb,target,authorization);if(preClear.uid!==before.uid||preClear.inode!==before.inode)throw Error('Native root changed before clear');
+ stage='native-clear';const clear=(await adb('shell','pm','clear','--user',target.userId,target.package)).toString().trim();
  record({phase:'clear-returned',attempt,clear});if(clear!=='Success')throw Error('App data clear did not confirm success');
- await stopped();const after=await inspect(adb,target,authorization);if(after.uid!==before.uid)throw Error('App UID changed during clear');
+ stage='post-clear-identity';await stopped();const after=await inspect(adb,target,authorization);if(after.uid!==before.uid)throw Error('App UID changed during clear');
  const run=(...args)=>adb('shell','run-as',target.package,'--user',target.userId,...args);
- const empty=(await run('sh','-c',"'test ! -e files && test ! -e databases && test ! -e shared_prefs && test ! -e app_webview && echo EMPTY'")).toString().trim();
+ stage='empty-data';const empty=(await run('sh','-c',"'test ! -e files && test ! -e databases && test ! -e shared_prefs && test ! -e app_webview && echo EMPTY'")).toString().trim();
  if(empty!=='EMPTY')throw Error('Rebuilt App data is not observably empty');
- const token=randomBytes(32).toString('hex');
+ stage='native-marker';const token=randomBytes(32).toString('hex');
  await run('sh','-c',`'mkdir -p files && printf %s ${token} > ${marker}'`);
  const id=hash({...after,token}),current=await snapshot(adb,target,authorization,{id});
  await stopped();
  const result=proof({...current,kind:'rebuilt',attempt,clear,empty,before,observedAt:new Date().toISOString()});
- record({phase:'verified',proof:result});runtime.completeRebuild(result);return result;
+ stage='store-registration';record({phase:'verified',proof:result});runtime.completeRebuild(result);return result;
+ }catch(error){record({phase:'failed',stage,code:typeof error.code==='string'||typeof error.code==='number'?error.code:null,stdout:String(error.stdout??'').slice(-4096),stderr:String(error.stderr??'').slice(-4096),reason:String(error.message).slice(0,512)});throw error}
 }
 module.exports={inspect,snapshot,rebuild,checked};

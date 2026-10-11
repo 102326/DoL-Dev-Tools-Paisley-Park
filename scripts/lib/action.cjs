@@ -92,6 +92,13 @@ async function execute(ctx, action) {
       !(/\bversionCode=\d+\b/.test(packageBlock) || /\bversionName=[0-9A-Za-z._()+-]{1,64}\b/.test(packageBlock)) ||
       !(new RegExp(`^\\s*User ${userId}:[^\\r\\n]*\\binstalled=true\\b`, 'm')).test(packageBlock)) throw new Error('Package unavailable');
 
+  if(authorization&&options.store&&action.type!=='data-reset'){
+    const r=require('./game-goal.cjs').open(options.store);
+    try{const t={serial:options.serial,package:options.package,userId},k=createHash('sha256').update(JSON.stringify([t.serial,t.package,t.userId])).digest('hex'),record=r.resource(k);
+      if(record){const current=await require('./game-resource.cjs').snapshot(rawAdb,t,authorization,record);if(record.status!=='ready'||ctx.resourceGeneration&&ctx.resourceGeneration!==current.id)throw Error('Debug context data generation changed');ctx.resourceGeneration=current.id}
+    }finally{r.close()}
+  }
+
   const foreground = async () => {
     const activity = (await adb('shell', 'dumpsys', 'activity', 'activities')).toString();
     const window = (await adb('shell', 'dumpsys', 'window', 'displays')).toString();
@@ -201,7 +208,7 @@ async function execute(ctx, action) {
   } else if(action.type==='data-reset'){
     if(!authorization||!options.store)throw Error('Data reset requires a host-granted scope and the original shared Store');
     const r=require('./game-goal.cjs').open(options.store);
-    try{const proof=await require('./game-resource.cjs').rebuild(r,adb,{serial:options.serial,package:options.package,userId},authorization,{record:value=>{ctx.resourceEvidence??=[];ctx.resourceEvidence.push(value);ctx.recordResource?.(value);ctx.markSideEffect?.()}});
+    try{const proof=await require('./game-resource.cjs').rebuild(r,rawAdb,{serial:options.serial,package:options.package,userId},authorization,{record:value=>{ctx.resourceEvidence??=[];ctx.resourceEvidence.push(value);ctx.recordResource?.(value);ctx.markSideEffect?.()}});
       return {status:'completed',type:action.type,resourceGeneration:proof.id,nativeEvidence:ctx.resourceEvidence};
     }finally{r.close()}
   } else if (action.type === 'launch') await launch();
