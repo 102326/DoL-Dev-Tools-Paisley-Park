@@ -1,10 +1,10 @@
 # DoL Dev Tools 4.0 — Bites the Dust 开发记录
 
-状态：开发中，未发布。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；历史资料保留，只复用与当前合同直接相关的已审实现和测试。
+状态：本轮核心研发及本地候选验收已完成，候选 `4.0.0-rc.1 — Bites the Dust`，未发布。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；历史资料保留，只复用与当前合同直接相关的已审实现和测试。
 
 ## 本轮范围与 Done
 
-按 Bites the Dust 最终执行计划书和用户的自主调试验收调整通知执行：Debug 与 GER 同批放权；既有 Runtime/Effect Ledger 内完成可选消费、项目实验、存档/自动保存、重复探索、目标重绑和真实数据代次；修复 Q1a/Q1b/Q2/Q3；落实 Android CLI/Skills/Knowledge Base 协作；收口制品身份、失败留证和恢复继续。候选制品与工作流一致性核验后，再判断本轮能力是否完成。
+按 Bites the Dust 最终执行计划书和用户的自主调试验收调整通知执行：Debug 与 GER 同批放权；既有 Runtime/Effect Ledger 内完成可选消费、项目实验、存档/自动保存、重复探索、目标重绑和真实数据代次；修复 Q1a/Q1b/Q2/Q3；落实 Android CLI/Skills/Knowledge Base 协作；收口制品身份、失败留证和恢复继续。本轮 Done 为上述核心能力落实、对应风险回归与代表性实机证明成立、候选身份/工作流一致，没有本轮未解释的阻塞；当前达到这个范围。完整 Android Mod 修复闭环按下述 Not Validated 单列。
 
 **历史故障重演已取消。** 不恢复 Soft & Wet 2.3/2.5 已修问题、不制造故障、不执行历史 Plan B。使用本轮真实源码缺陷的调查、修复和回归验证工程能力。完整 Android Mod 自主修复闭环在没有当前适合案例时标记 **Not Validated**；不冒充通过，也不阻塞其它必交实现。
 
@@ -46,10 +46,21 @@
 - arbitrary save backend/hook、全字段存档迁移/备份恢复、每个原生 producer 的实际 autosave。
 - 手机上的完整 durable GER 故障注入和 66 次真实业务容量；已有生产 Action 检查及真实失败留存分别证明其有限范围。
 
-## Remaining work / 当前收口
+## 候选制品与最终核验
 
-- 候选工具制品、CLI/Skill/文档版本和使用入口一致性；实际使用来源身份与错制品拒绝对照。
-- 最终证据矩阵与本地候选交付审查。上述未覆盖项不自动转为阻塞任务。
+候选元数据提交 `48e29d24083c3912c275aed5bd2f6509a2719863` 的源文件打包与独立解压验证：266 个 tracked 文件逐项 SHA256 匹配；没有 node_modules、APK、SQLite、存档或本地实验 Evidence。实际 `--version` / CLI banner、package/lock、显示名、Skill 的解析和文档入口一致；CLI/Skill/Store 机器身份未重命名。最终文档修订后的包由同样 git archive 路径重新生成，最终 source SHA 和完整文件摘要写在包旁 manifest，不用目录名代替版本证明。
+
+- 清空本次进程的 NODE_PATH/DOL_DEV_TOOLS_HOME 后，Generic help/version 无依赖成功；GER 缺 XState 明确报 GAMEPLAY_RUNTIME_UNAVAILABLE，目标 smoke Store 尚不存在。随后在本次独立包中 `npm ci --ignore-scripts --no-audit --no-fund --offline` 从本机缓存安装锁定 XState 5.33.2，未安装全局工具/新框架。
+- 独立解压包实际加载 game-goal、game-runtime、clothing/shop Provider、resolver，模块绝对路径与文件摘要对应包 manifest；Runtime 使用包内 XState，在本轮自有 smoke SQLite 打开/关闭。未访问原共享游戏 Store。包内定向安装/CLI/预算回归 **5 passed / 0 failed / 0 skipped**。
+- 用现有安装器向本地独立空 Skill 目录安装，实际 resolver 指向独立包、版本 4.0.0-rc.1。再次只读确认全局 Skill 仍指向原稳定 3.0.3，没有替换。
+- 将真实稳定 3.0.3 archive 与候选 manifest 比较，package 与实际修改的 clothing Provider 等内容不匹配，拒绝其充当本候选。这个负对照只证明工具制品身份，不冒充同 Bug 新旧 Mod 因果验证，也没有用旧代码打开 schema 3 Store。resolver 自身仍只验证位置，不是代码信任保证。
+- 首次 Windows Python 子进程读取 help 使用默认 GBK，解码英文破折号失败；原进程错误保留在对话记录。修正验证脚本为显式 UTF-8 后完成同一只读检查，没有重发游戏动作或改生产行为。
+
+本地 `artifacts/bites-the-dust-package-20261011/` 保留原 archive、wrong-artifact-rejection、安装日志、实际模块身份和隔离 Skill 记录；后续最终文档包另存新目录。以固定源和原证据复用 393 项 Node 全回归、未改 Python 的 2 pass/2 skip 和本轮真实 Android 结果；未为文档/版本调整重复全量或真机验收。
+
+## Remaining work / 范围内剩余实现
+
+无。本轮核心能力 **Completed**，适用环境/场景仍为上述代表范围。公开推送、正式合并、Tag/Release 尚未获单独确认，未执行；它们是外部发布关口。Not Validated 项不自动成为本轮阻塞，也不被写成已通过。
 
 ## Known limitations
 
