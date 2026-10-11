@@ -20,3 +20,13 @@ test('shipped currency Recipe proves preparation without calling it a purchase o
  const result=functions.outcome(before,functions.read(inputs),inputs);assert.equal(result.occurred,true);assert.equal(result.spent,0);assert.equal(state.variables.money,10);
  state.turns++;assert.equal(functions.outcome(before,functions.read(inputs),inputs).occurred,false);
 });
+
+test('explicit passage-transition Recipe can settle a fresh native root, while default, mismatched roots and new namespaces stay Unknown',async()=>{
+ for(const mode of ['permitted','default','mismatch','new-namespace']){
+  const old={isConnected:true},fresh={isConnected:true,getAttribute:()=>mode==='mismatch'?'Wrong':'Bedroom'},records=Object.create(null),context={nonce:'nonce',records},window={receipts:context,SugarCube:{State:{passage:'Bedroom'}}};let root=old;
+  const run=vm.runInNewContext('('+operation.toString()+')',{window,document:{querySelector:()=>root,querySelectorAll:()=>[root]},TextEncoder});
+  const result=await run(old,{namespace:'receipts',binding:{contextNonce:'nonce'},attemptId:'attempt',before:{loaded:false},inputs:{},...(mode==='default'?{}:{sceneTransition:'passage'})},
+    ()=>({loaded:root===fresh}),()=>{root=fresh;old.isConnected=false;if(mode==='new-namespace')window.receipts={nonce:'another'}},()=>({occurred:true,spent:0}),()=>{});
+  assert.equal(result.ok,mode==='permitted');assert.equal(records.attempt.status,mode==='permitted'?'terminal':'started');
+ }
+});
