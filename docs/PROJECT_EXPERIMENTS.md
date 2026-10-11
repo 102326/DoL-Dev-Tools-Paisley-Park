@@ -62,7 +62,7 @@ node scripts/dol-dev.cjs game-session --goal NEW_GOAL_DIR --operation dispatch -
 
 ## 当前验证边界
 
-Windows Node/替身 Android-CDP 的 CLI request → propose → dispatch → receipt → 原生 Predicate 已验证；源码迭代、错目标/签名、未证明结果、显式零预算与有花费的结清均有回归。真实 Android 的 Recipe 业务派发、存档操作和独立数据代次尚未验收。宣告某项 intent 不等于所有对应游戏 API 已有可靠合同；加载/重建导致 Document 丢失时，缺失旧 terminal 保持 Unknown。详见 [4.0 进度](BITES_THE_DUST_4_0.md)。
+Windows Node/替身 Android-CDP 的 CLI request → propose → dispatch → receipt → 原生 Predicate 已验证；源码迭代、错目标/签名、未证明结果、显式零预算与有花费的结清均有回归。真实 Android DoL 0.5.12.13 IDB 保存/覆盖/加载/删除及独立货币准备已通过代表性 GER CLI 验证，使用原 Store 和可核验的原生数据代次；失败的旧保存仍 Unknown。宣告某项 intent 不等于所有对应游戏 API 已有可靠合同；加载/重建导致 Document 丢失时，缺失旧 terminal 保持 Unknown。详见 [4.0 进度](BITES_THE_DUST_4_0.md)。
 
 
 ## Native save experiment Recipe

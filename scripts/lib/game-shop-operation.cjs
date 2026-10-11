@@ -1,7 +1,7 @@
 'use strict';
 // Used only after the native shop producer has bound the original control,
 // business sources and quote. Rendering timers are not a purchase witness.
-function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invokeClick=n=>n.click()){
+function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invokeClick=n=>n.click(),saveWatch=null){
   const {namespace,binding,attemptId,quote,before}=config,context=window[namespace],sc=window.SugarCube;
   const root=document.querySelector('#passages > .passage'),list=document.querySelector('#clothes-list');
   const state=sc?.State,active=state?.activeIndex,history=state?.history,entry=history?.[active];
@@ -19,6 +19,7 @@ function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invo
      JSON.stringify(before.variant)!==JSON.stringify(v))return {ok:false,guardRejected:true};
   const moment=Object.getOwnPropertyDescriptor(window,'updateMoment');
   if(!moment||typeof moment.value!=='function'||moment.writable!==true||moment.configurable!==true)return {ok:false,guardRejected:true};
+  if(saveWatch!==null)try{saveWatch.install()}catch{return {ok:false,guardRejected:true,reason:'native-save-observer-unavailable'}}
   markDispatch();
   const started=Object.freeze({...binding,attemptId,status:'started',phase:'business-started',before});
   context.records[attemptId]=started;
@@ -55,6 +56,8 @@ function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invo
   const evidence={kind:'purchase',variant:v,beforeMoney:before.money,afterMoney:after.money,beforeCount:0,afterCount:1,beforeWornCount:0,afterWornCount:0,
     turns:before.turns,contextNonce:binding.contextNonce};
   const receipt=Object.freeze({...binding,attemptId,status:'terminal',outcome:'occurred',remoteClosed:true,spent:quote.unitCost,evidence});
+  if(context.records[attemptId]!==started)return {ok:false};
+  if(saveWatch!==null)return saveWatch.finish(receipt,context,started);
   context.records[attemptId]=receipt;return {ok:true,receipt};
 }
 module.exports={operation};

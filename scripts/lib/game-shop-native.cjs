@@ -4,10 +4,10 @@ const {bind,checkBindings}=require('./game-native-business-bindings.cjs'),enviro
 const {operation}=require('./game-shop-operation.cjs'),profile=require('./game-shop-profile.json');
 const sha=s=>createHash('sha256').update(s).digest('hex');
 const button='#buy-send-home > .buy-button > .buy-button-inner',anchor=button+' > a.link-internal';
-function branch(phase){
+function branch(phase,allowSave=false){
   const s=window.SugarCube?.State,v=s?.variables,t=s?.temporary;
   if(typeof window.DoLGameUI!=='undefined'||s?.passage!=='Clothing Shop'||v?.shopName!=='clothing'||v.clothingShopSlot!=='head'||
-     v.combat!==0||v.options?.autosaveDisabled!==true||v.ironmanmode===true||v.tryOn?.value!==0)return 'native-shop-environment-unavailable';
+     v.combat!==0||!allowSave&&(v.options?.autosaveDisabled!==true||v.ironmanmode===true)||v.tryOn?.value!==0)return 'native-shop-environment-unavailable';
   if(phase==='before'){
     const item=window.setup.clothes.head[v.clothes_choice],stored=v.tryOn.ownedStored?.head;
     if(!item||!['hairpin','beanie'].includes(item.variable)||item.outfitPrimary!==undefined||item.outfitSecondary!==undefined||item.hoodposition!==undefined||
@@ -35,7 +35,7 @@ function sourceCheck(bundle,time,dateGetter){
   if(addon?._timeProxyManager?.originTime!==time||dateGetterOf(time)!==dateGetter||
      Function.prototype.toString.call(dateGetter)!=='get date() {\n\t\t\treturn currentDate;\n\t\t}')return 'native-shop-clock-owner-changed';
 }
-async function prepare(client,request,goal,attemptId,{quote,attestOnly=false}={}){
+async function prepare(client,request,goal,attemptId,{quote,attestOnly=false,scope}={}){
   shop.validate(request);
   if(request.operation!=='buy-one'||!quote||typeof attestOnly!=='boolean'||!attestOnly&&!/^[a-f0-9-]{36}$/.test(attemptId||''))throw Object.assign(Error('Native purchase contract unavailable'),{code:'MAPPING_UNAVAILABLE'});
   let mapped,held,releaseCalled=false;const groups=[];
@@ -46,14 +46,15 @@ async function prepare(client,request,goal,attemptId,{quote,attestOnly=false}={}
     mapped=await shop.prepare(client,request,goal,{quote});
     held=await control.attest(client,{kind:'menu',selected:{type:'web-click',selector:anchor}},{allowShopPropagationStops:true});
     if(held.payloadSha256!==profile.payloadSha256||JSON.stringify(held.shadowKeys)!==JSON.stringify(profile.shadowKeys))throw Error('Original purchase payload differs');
-    const env=await environment.bind(client,held,require('./game-native-intro-profile.json'));
+    const saveWatch=await require('./game-native-save.cjs').bind(client,scope,held.objectGroup);
+    const env=await environment.bind(client,held,require('./game-native-intro-profile.json'),undefined,saveWatch!==null);
     const business=await bind(client,held,profile,groups);
     const money=await contracts.member(client,business.bundleId,'this.macros.find(r=>r.name==="money").fn',held.objectGroup);
     const time=await contracts.captured(client,money,'Time','object',{maxResponseBytes:16*1024*1024});
     const dateGetter=await contracts.member(client,time,`(${dateGetterOf.toString()})(this)`,held.objectGroup);
     const compiled=`function(phase,inputs){const checkBindings=${checkBindings.toString()},dateGetterOf=${dateGetterOf.toString()};
       const reason=(${sourceCheck.toString()})(inputs[0],inputs[1],inputs[2]);if(reason!==undefined)return reason;
-      const branchReason=(${branch.toString()})(phase);if(branchReason!==undefined)return branchReason;
+      const branchReason=(${branch.toString()})(phase,${saveWatch!==null});if(branchReason!==undefined)return branchReason;
       const nativeEnvInputs=[inputs[3]];return (function(){${env.guard}})();}`;
     const guard=await client.send('Runtime.evaluate',{expression:'('+compiled+')',objectGroup:held.objectGroup,returnByValue:false});
     if(guard.exceptionDetails||!guard.result?.objectId||await contracts.functionSource(client,guard.result.objectId)!==compiled)throw Error('Native purchase guard unavailable');
@@ -63,15 +64,18 @@ async function prepare(client,request,goal,attemptId,{quote,attestOnly=false}={}
     const raw=await client.send('Runtime.callFunctionOn',{objectId:time,functionDeclaration:`function(q){return (${readCurrent.toString()})(q,this.date.timeStamp)}`,arguments:[{value:quote}],returnByValue:true});
     if(raw.exceptionDetails||!raw.result?.value)throw Error('Native purchase original snapshot unavailable');const before=raw.result.value;
     if(attestOnly){await release();return {status:'attested',actions:false,profile:profile.id,before,widgets:business.widgets,functions:business.functions,bindingCleanup:'completed'}}
-    const binding={provider:'dol-shop-native',contract:'shop-buy-one-'+sha(JSON.stringify(profile)+operation.toString()+compiled+readCurrent.toString()).slice(0,12),
+    const binding={provider:'dol-shop-native',contract:'shop-buy-one-'+(saveWatch?'save-':'')+sha(JSON.stringify(profile)+operation.toString()+compiled+readCurrent.toString()+(saveWatch?.digest||'')).slice(0,12),
       contextNonce:await receipts.context(client),requestDigest:sha(JSON.stringify({attemptId,request,quote,before,payload:held.payloadSha256}))};
     const o=held.objects,args=[{objectId:o.node},{objectId:o.click},{objectId:o.context},{objectId:guard.result.objectId},...inputs,...mapped.arguments];
+    const saveIndex=saveWatch?args.push({objectId:saveWatch.objectId})-1:null;
     const source=`if(node!==observedInputs[0].parentElement||(${control.clickReader.toString()})(observedInputs[0],true)!==observedInputs[1]||
       observedInputs[2]?.payload?.[0]?.contents!==${JSON.stringify(held.payload)})return {ok:false,guardRejected:true};
+      ${saveWatch?`if(observedInputs[${saveIndex}].check()!==undefined)return {ok:false,guardRejected:true};`:''}
       const mappedGuard=(function(observedInputs){${mapped.source}})(observedInputs.slice(8));if(mappedGuard?.guardRejected)return mappedGuard;
       try{if(observedInputs[3]('before',observedInputs.slice(4,8))!==undefined)return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`;
     const config={namespace:receipts.namespace,binding,attemptId,quote,before};
-    const operationSource=`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},function(){return (${readCurrent.toString()})(${JSON.stringify(quote)},observedInputs[5].date.timeStamp)},function(phase){return observedInputs[3](phase,observedInputs.slice(4,8))},markOperationDispatch,invokeBoundClick);`;
+    let operationSource=`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},function(){return (${readCurrent.toString()})(${JSON.stringify(quote)},observedInputs[5].date.timeStamp)},function(phase){return observedInputs[3](phase,observedInputs.slice(4,8))},markOperationDispatch,invokeBoundClick${saveWatch?`,observedInputs[${saveIndex}]`:''});`;
+    if(saveWatch)operationSource=require('./game-native-save.cjs').execution(operationSource,saveIndex);
     if(Buffer.byteLength(operationSource)>32768)throw Error('Native purchase operation bound');
     return {clickReceiverObjectId:o.node,action:{type:'web-click',selector:button},arguments:args,objectGroups:[held.objectGroup,...groups,...mapped.objectGroups],objectIds:mapped.objectIds,
       source,executionBinding:binding,interpretation:{...mapped.interpretation,provider:'dol-shop-native',contract:binding.contract,execution:'native-operation'},

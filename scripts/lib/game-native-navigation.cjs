@@ -92,13 +92,14 @@ async function attest(client,descriptor){
 // reviewEnvironment is reviewed local target code, never an Action/Proposal
 // field. Its remote objects must use held.objectGroup; on success Semantic owns
 // that group. The generic link mechanism does not certify an unknown Mod's effects.
-async function prepare(client,descriptor,goal,attemptId,reviewEnvironment){
+async function prepare(client,descriptor,goal,attemptId,reviewEnvironment,{scope}={}){
   if(typeof reviewEnvironment!=='function'||typeof attemptId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(attemptId))
     throw Object.assign(Error('Reviewed native navigation environment required'),{code:'MAPPING_UNAVAILABLE'});
   let held;
   try{
     held=await attest(client,descriptor);
-    const environment=await reviewEnvironment(client,held);
+    const saveWatch=await require('./game-native-save.cjs').bind(client,scope,held.objectGroup);
+    const environment=await reviewEnvironment(client,held,saveWatch!==null);
     if(environment?.terminalReviewed!==true||typeof environment.id!=='string'||!/^[a-zA-Z0-9._-]{1,64}$/.test(environment.id)||
        typeof environment.guard!=='string'||!environment.guard.trim()||Buffer.byteLength(environment.guard)>65536||
        environment.sceneEpochSha256!==undefined&&!/^[a-f0-9]{64}$/.test(environment.sceneEpochSha256)||
@@ -132,8 +133,9 @@ async function prepare(client,descriptor,goal,attemptId,reviewEnvironment){
        await functionSource(client,guard.result.objectId)!==guardSource)throw Error('Native environment guard compilation failed');
     const guardIndex=argumentsList.length;
     argumentsList.push({objectId:guard.result.objectId});
+    const saveIndex=saveWatch?argumentsList.push({objectId:saveWatch.objectId})-1:null;
     const contextNonce=await receipts.context(client),operationSha256=digest(operation.toString()),preflightSha256=digest(preflight.toString()),historySha256=digest(historyContract.checkHistory.toString());
-    const binding={provider:'native-dol',contract:'native-passage-'+digest(JSON.stringify({environment:environment.id,guard:environment.guard,guardTransport:'owned-function-v1',operationSha256,preflightSha256,historySha256,sources,historySources:historyContract.sources,...(held.taskReview?{taskDigest:held.taskReview.digest}:{}),...(o.callback===null?{callback:null}:{}),...(environment.monitorIndex===undefined?{}:{monitorIndex:environment.monitorIndex,monitorDigest:environment.monitorDigest})})).slice(0,12),
+    const binding={provider:'native-dol',contract:'native-passage-'+(saveWatch?'save-':'')+digest(JSON.stringify({environment:environment.id,guard:environment.guard,guardTransport:'owned-function-v1',operationSha256,preflightSha256,historySha256,sources,historySources:historyContract.sources,...(saveWatch?{saveDigest:saveWatch.digest}:{}),...(held.taskReview?{taskDigest:held.taskReview.digest}:{}),...(o.callback===null?{callback:null}:{}),...(environment.monitorIndex===undefined?{}:{monitorIndex:environment.monitorIndex,monitorDigest:environment.monitorDigest})})).slice(0,12),
       contextNonce,requestDigest:digest(JSON.stringify({attemptId,selected:descriptor.selected,destination:held.destination,before:held.before,payloadSha256:held.payloadSha256,environment:environment.id,
         ...(environment.sceneEpochSha256===undefined?{}:{sceneEpochSha256:environment.sceneEpochSha256})}))};
     const config={namespace:receipts.namespace,binding,attemptId,before:held.before,reviewedFooter:true,controlDestination:held.destination,timeoutMs:10000};
@@ -143,6 +145,7 @@ async function prepare(client,descriptor,goal,attemptId,reviewEnvironment){
     const operationArguments=`node,${JSON.stringify(config)},observedInputs[7],observedInputs[15],observedInputs[16],${addonArgument},observedInputs.slice(10,15),observedInputs[${historyIndex}]`;
     const environmentCheck=`function(nativeEnvPhase){return observedInputs[${guardIndex}](nativeEnvPhase,observedInputs.slice(${baseLength},${guardIndex}));}`;
     const source=`
+      ${saveWatch?`if(observedInputs[${saveIndex}].check()!==undefined)return {ok:false,guardRejected:true};`:''}
       if(node!==observedInputs[0]||window.SugarCube.Engine!==observedInputs[7]||observedInputs[7].play!==observedInputs[8]||window.SugarCube.Wikifier!==observedInputs[9]||window.jQuery!==observedInputs[15])return {ok:false,guardRejected:true};
       const nativeClicks=window.jQuery._data(node,'events')?.click,nativeContext=observedInputs[6];
       if(nativeClicks?.length!==1||nativeClicks[0].handler!==observedInputs[1]||nativeContext?.name!=='link'||nativeContext.payload?.length!==1||nativeContext.payload[0].contents!==${JSON.stringify(held.payload)})return {ok:false,guardRejected:true};
@@ -151,7 +154,8 @@ async function prepare(client,descriptor,goal,attemptId,reviewEnvironment){
       catch{return {ok:false,guardRejected:true};}
       if((${preflight.toString()})(${operationArguments},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument})!==null)return {ok:false,guardRejected:true};
     `;
-    const operationSource=`return (${operation.toString()})(${operationArguments},${preflight.toString()},${environmentCheck},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument},markOperationDispatch,invokeBoundClick);`;
+    let operationSource=`return (${operation.toString()})(${operationArguments},${preflight.toString()},${environmentCheck},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument},markOperationDispatch,invokeBoundClick${saveWatch?`,observedInputs[${saveIndex}]`:''});`;
+    if(saveWatch)operationSource=require('./game-native-save.cjs').execution(operationSource,saveIndex);
     if(Buffer.byteLength(operationSource)>32768)throw Error('Native navigation operation source exceeds limit');
     return {action:descriptor.selected,clickReceiverObjectId:held.objects.node,arguments:argumentsList,objectGroups:[held.objectGroup],source,executionBinding:binding,
       interpretation:{provider:'native-dol',execution:'native-operation',contract:binding.contract,environment:environment.id,destination:held.destination},

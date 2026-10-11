@@ -1,7 +1,7 @@
 'use strict';
 // Used by the reviewed local clothing producer after synchronous source/object
 // guards. No page-global command, arbitrary JS field or replay path.
-function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invokeClick=n=>n.click()){
+function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invokeClick=n=>n.click(),saveWatch=null){
   const {namespace,binding,attemptId,request,before}=config;
   const context=window[namespace],sc=window.SugarCube,root=document.querySelector('#passages > .passage'),list=document.querySelector('#wardrobeList');
   const current=readCurrent(request);
@@ -12,8 +12,9 @@ function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invo
     return {ok:false,guardRejected:true};
   const moment=Object.getOwnPropertyDescriptor(window,'updateMoment');
   if(!moment||typeof moment.value!=='function'||moment.writable!==true||moment.configurable!==true)return {ok:false,guardRejected:true};
+  if(saveWatch!==null)try{saveWatch.install()}catch{return {ok:false,guardRejected:true,reason:'native-save-observer-unavailable'}}
   markDispatch();
-  const started=Object.freeze({...binding,attemptId,status:'started',phase:'business-started',before});
+  let started=Object.freeze({...binding,attemptId,status:'started',phase:'business-started',before});
   context.records[attemptId]=started;
   let calls=0,threw=false,restored=false,installed=false;
   const observed=function(...args){
@@ -33,7 +34,7 @@ function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invo
     }
   }
   if(threw||!restored||calls!==1)return {ok:false};
-  context.records[attemptId]=Object.freeze({...started,phase:'business-returned'});
+  started=Object.freeze({...started,phase:'business-returned'});context.records[attemptId]=started;
   const variant=i=>JSON.stringify([i?.variable,i?.colour??null,i?.modder??null,i?.accessory_colour??null]);
   const equip=request.operation==='equip',afterRequest=equip?{type:'dol-wardrobe',operation:'unequip',slot:'head'}:
     {type:'dol-wardrobe',operation:'equip',slot:'head',variable:before.worn.variable,colour:before.worn.colour,accessoryColour:before.worn.accessory_colour??null,modder:before.worn.modder??null};
@@ -55,6 +56,8 @@ function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invo
     beforeWorn:JSON.parse(variant(before.worn)),afterWorn:JSON.parse(variant(worn)),inventoryBefore:before.inventory.length,inventoryAfter:inventory.length,
     originalMomentUpdates:calls,samePassage:true};
   const receipt=Object.freeze({...binding,attemptId,status:'terminal',outcome:'occurred',remoteClosed:true,spent:0,evidence});
+  if(context.records[attemptId]!==started)return {ok:false};
+  if(saveWatch!==null)return saveWatch.finish(receipt,context,started);
   context.records[attemptId]=receipt;return {ok:true,receipt};
 }
 module.exports={operation};

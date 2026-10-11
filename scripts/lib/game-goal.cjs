@@ -108,7 +108,7 @@ async function dispatchReady(r,s,dir,overrides={}){
         reserve:()=>{const claimed=claim();if(binding&&JSON.stringify(claimed.executionBinding)!==JSON.stringify(binding))throw Error('Claimed execution binding changed')},
         expectedScene:scene.facts,probeGoal:probe(s.config.goal),probeOutcome:client=>recoverWithMaintenance(r,s,client,dir,[r.effect(e.id)]),
         probeCapabilities:client=>capabilities.observe(client,s.config.goal),authorizeCostedControl:mapped=>capabilities.authorizeCostedControl(mapped,descriptor,s.config.goal),
-        ...(owner.prepare?{prepareAction:client=>owner.prepare(client,descriptor,s.config.goal,e.id)}:{})});
+        ...(owner.prepare?{prepareAction:client=>owner.prepare(client,descriptor,s.config.goal,e.id,{scope:options.authorization})}:{})});
       return{dispatch:report.dispatch,record:'action-'+e.id+'/semantic.json',reason:report.reason||report.status};
     },{deferred:true});
     // Not-dispatched is an authoritative preflight/guard rejection. Ack alone never closes a business effect.

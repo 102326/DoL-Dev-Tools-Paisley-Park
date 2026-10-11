@@ -48,10 +48,10 @@ function reader(request){
 }
 // Reviewed branch guard for original simple-head work. Source attestation is
 // separate: this does not invoke selectWardrobe, clone, widgets or controls.
-function branchGuard(phase,request){
+function branchGuard(phase,request,allowSave=false){
   const s=window.SugarCube?.State,v=s?.variables,t=s?.temporary,setup=window.setup;
   if(!['before','after'].includes(phase)||!v||!t||!setup||typeof window.DoLGameUI!=='undefined'||s.passage!=='Wardrobe'||
-     v.options?.autosaveDisabled!==true||v.ironmanmode!==false||v.passage!=='Wardrobe'||v.exposed!==0||v.alluretest!==0||v.wardrobe_location!=='wardrobe'||!v.wardrobes?.wardrobe||
+     !allowSave&&(v.options?.autosaveDisabled!==true||v.ironmanmode!==false)||v.passage!=='Wardrobe'||v.exposed!==0||v.alluretest!==0||v.wardrobe_location!=='wardrobe'||!v.wardrobes?.wardrobe||
      t.selectedWardrobe!==v.wardrobe||t.wear!=='wear_head'||v.lastWardrobeSlot!=='head'||v.wear_outfit!=='none'||v.delete_outfit!=='none'||
      v.runWardrobeSanityChecker===true||v.randomWear||t.wearAction!==undefined||![undefined,0,false].includes(t.strip_restrict)||
      document.querySelector('#oldWardrobeListDisplay'))return 'native-head-refresh-context';
@@ -109,6 +109,7 @@ async function attest(client,request){
   }
 }
 function validateReceipt(r,e){
+  const verified=require('./game-native-save.cjs').receipt(r,e);if(!verified)return false;({r,e}=verified);
   const request=e.action?.selected,binding=e.executionBinding,p=r.evidence;
   if(request?.type!=='dol-wardrobe'||binding?.provider!=='dol-wardrobe-native'||
      !new RegExp('^native-head-'+request.operation+'-[a-f0-9]{12}$').test(binding.contract))return false;

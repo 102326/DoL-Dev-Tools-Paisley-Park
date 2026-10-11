@@ -112,14 +112,14 @@ function authorizeCostedControl(mapping,descriptor,g){
     current.money===g.baselineMoney&&current.count===g.baselineCount;
 }
 
-function prepare(client,descriptor,g,attemptId){
+function prepare(client,descriptor,g,attemptId,{scope}={}){
   validateDescriptor(descriptor,g);
   const selected=descriptor.selected,mapping=validateAction(selected,descriptor.kind,g);
   if(mapping===wardrobe&&['equip','unequip'].includes(selected.operation))return require('../../integrations/soft-and-wet/native-head.cjs').prepare(client,selected,attemptId);
-  if(mapping===nativeWardrobe)return require('./game-wardrobe-native.cjs').prepare(client,selected,attemptId);
-  if(mapping===shop&&['return-menu','browse'].includes(selected.operation))return require('./game-shop-menu-native.cjs').prepare(client,selected,g,attemptId);
+  if(mapping===nativeWardrobe)return require('./game-wardrobe-native.cjs').prepare(client,selected,attemptId,{scope});
+  if(mapping===shop&&['return-menu','browse'].includes(selected.operation))return require('./game-shop-menu-native.cjs').prepare(client,selected,g,attemptId,{scope});
   const mappedGoal=descriptor.quote?{kind:'purchase-one',...descriptor.quote.variant,baselineMoney:descriptor.quote.baselineMoney,baselineCount:descriptor.quote.baselineCount,unitCost:descriptor.quote.unitCost,maxSpend:descriptor.quote.unitCost}:g;
-  if(mapping===shop&&selected.operation==='buy-one'&&descriptor.quote)return require('./game-shop-native.cjs').prepare(client,selected,mappedGoal,attemptId,{quote:descriptor.quote});
+  if(mapping===shop&&selected.operation==='buy-one'&&descriptor.quote)return require('./game-shop-native.cjs').prepare(client,selected,mappedGoal,attemptId,{quote:descriptor.quote,scope});
   return mapping.prepare(client,selected,mappedGoal,{quote:descriptor.quote});
 }
 

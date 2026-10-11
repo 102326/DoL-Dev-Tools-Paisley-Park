@@ -8,9 +8,9 @@ const sources={shadow:links.shadow,callback:'5aa51adacaad49700ed8057940822485425
   setVar:'a49466396363e391ff0fffa179a93a1f6c3c994bd2b9fe559d4f0cc997f1b107',eval:'930c34ee3b0b4a93dde917dc367b75d5ebe98ae5fd309c51cde8eb70164f90e2',
   parse:'333b835c7a6bb1152de81d2d7e241b59617048bfc55b4e8870a1ed759599a883'};
 const fields=['leftaction','rightaction','feetaction','mouthaction'];
-function inspect(node,field){
+function inspect(node,field,allowSave=false){
   const sc=window.SugarCube,s=sc?.State,roots=document.querySelectorAll('#passages > .passage'),jq=window.jQuery;
-  if(typeof window.DoLGameUI!=='undefined'||!jq||s?.variables?.combat!==1||s.variables.options?.autosaveDisabled!==true||s.variables.ironmanmode===true||
+  if(typeof window.DoLGameUI!=='undefined'||!jq||s?.variables?.combat!==1||!allowSave&&(s.variables.options?.autosaveDisabled!==true||s.variables.ironmanmode===true)||
     roots.length!==1||roots[0].getAttribute('data-passage')!==s.passage||roots[0].querySelector('.error')||!sc.Engine.isIdle()||
     !node?.isConnected||!roots[0].contains(node)||!node.matches('input.macro-radiobutton[type="radio"]')||node.disabled||
     node.parentElement?.tagName!=='LABEL'||node.parentElement.querySelectorAll('input').length!==1||node.parentElement.querySelector('select,textarea')||node.closest('form')||
@@ -28,7 +28,7 @@ function inspect(node,field){
   if(other.length>2*1024*1024)throw Error('Native radio state bound');
   return {passage:s.passage,turns:s.turns,time:s.variables.timeStamp,money:s.variables.money,other,value:s.variables[field],checked:node.checked};
 }
-function operation(node,config,epoch,check,read,markDispatch=()=>{},invokeClick=n=>n.click()){
+function operation(node,config,epoch,check,read,markDispatch=()=>{},invokeClick=n=>n.click(),saveWatch=null){
   const context=window[config.namespace],s=window.SugarCube.State;
   if(check('before')!==undefined||context?.nonce!==config.binding.contextNonce||context.version!==1||Object.getPrototypeOf(context.records)!==null||
     !Object.isExtensible(context.records)||Object.hasOwn(context.records,config.attemptId)||Object.keys(context.records).length>=64)return {ok:false,guardRejected:true};
@@ -37,6 +37,7 @@ function operation(node,config,epoch,check,read,markDispatch=()=>{},invokeClick=
   const root=document.querySelector('#passages > .passage'),active=s.active,history=s.history,index=s.activeIndex,entry=history[index],variables=s.variables,temporary=s.temporary;
   const tempKeys=Reflect.ownKeys(temporary),tempValues=tempKeys.map(k=>Object.getOwnPropertyDescriptor(temporary,k));
   if(tempKeys.length>512||tempValues.some(d=>!Object.hasOwn(d,'value')))return {ok:false,guardRejected:true};
+  if(saveWatch!==null)try{saveWatch.install()}catch{return {ok:false,guardRejected:true,reason:'native-save-observer-unavailable'}}
   markDispatch();
   const started=Object.freeze({...config.binding,attemptId:config.attemptId,status:'started',phase:'radio-started'});context.records[config.attemptId]=started;
   try{invokeClick(node);const after=read(node,config.field);
@@ -46,10 +47,11 @@ function operation(node,config,epoch,check,read,markDispatch=()=>{},invokeClick=
       !after.checked||after.value!==config.value||after.other!==before.other||
       ['passage','turns','time','money'].some(k=>after[k]!==before[k]))return {ok:false};
     const evidence={kind:'native-radio',field:config.field,from:before.value,to:after.value,passage:after.passage,turns:after.turns,time:after.time,money:after.money,otherStateStable:true};
-    const receipt=Object.freeze({...config.binding,attemptId:config.attemptId,status:'terminal',outcome:'occurred',remoteClosed:true,spent:0,evidence});context.records[config.attemptId]=receipt;return {ok:true,receipt};
+    const receipt=Object.freeze({...config.binding,attemptId:config.attemptId,status:'terminal',outcome:'occurred',remoteClosed:true,spent:0,evidence});if(saveWatch!==null)return saveWatch.finish(receipt,context,started);
+    context.records[config.attemptId]=receipt;return {ok:true,receipt};
   }catch{return {ok:false}}
 }
-async function prepare(client,descriptor,goal,attemptId){
+async function prepare(client,descriptor,goal,attemptId,{scope}={}){
   const selector=descriptor?.selected?.selector;
   if(descriptor?.kind!=='menu'||descriptor.selected.type!=='web-click'||typeof selector!=='string'||selector.length>256||!selector||descriptor.destination!=null||
     !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(attemptId))throw Object.assign(Error('Native radio descriptor unavailable'),{code:'MAPPING_UNAVAILABLE'});
@@ -70,11 +72,12 @@ async function prepare(client,descriptor,goal,attemptId){
     const setVar=await c.member(client,state,'this.setVar',group),scripting=await c.captured(client,setVar,'Scripting','object',{maxResponseBytes:8*1024*1024}),evaluate=await c.member(client,scripting,'this.evalTwineScript',group),parse=await c.captured(client,evaluate,'parse','function');
     const ids=[node,shadow,callback,state,store,context,setVar,scripting,evaluate,parse],checks=[];
     for(const [key,index] of [['shadow',1],['callback',2],['setVar',6],['eval',8],['parse',9]]){const source=await c.functionSource(client,ids[index]);if(sha(source)!==sources[key])throw Error('Native radio source changed');checks.push(`if(Function.prototype.toString.call(nativeEnvInputs[0].refs[${index}])!==${JSON.stringify(source)})return 'radio-source-changed';`)}
-    const beforeResult=await client.send('Runtime.callFunctionOn',{objectId:node,functionDeclaration:`function(){return (${inspect.toString()})(this,${JSON.stringify(field)})}`,returnByValue:true});
+    const saveWatch=await require('./game-native-save.cjs').bind(client,scope,group),readSource=`function(node,field){return (${inspect.toString()})(node,field,${saveWatch!==null})}`;
+    const beforeResult=await client.send('Runtime.callFunctionOn',{objectId:node,functionDeclaration:`function(){return (${readSource})(this,${JSON.stringify(field)})}`,returnByValue:true});
     if(beforeResult.exceptionDetails||!beforeResult.result?.value)throw Error('Original combat radio scene unavailable: '+(beforeResult.exceptionDetails?.exception?.description??beforeResult.exceptionDetails?.text??'missing result'));
     const before=beforeResult.result.value;
     if(before.checked||before.value===value.value)throw Error('Combat intent already selected');
-    const env=await generic.review(client,{objectGroup:group,objects:{state},before,destination:before.passage});
+    const env=await generic.review(client,{objectGroup:group,objects:{state},before,destination:before.passage},saveWatch!==null);
     const epoch=await client.send('Runtime.callFunctionOn',{objectId:node,objectGroup:group,returnByValue:false,arguments:[...ids.map(objectId=>({objectId})),{value:before}],functionDeclaration:'function(...args){return {refs:args.slice(0,-1),before:args.at(-1)}}'});
     if(epoch.exceptionDetails||!epoch.result?.objectId)throw Error('Radio epoch unavailable');
     const guardSource=`function(phase,...inputs){const nativeEnvPhase=phase,nativeEnvInputs=inputs.slice(1);const r=inputs[0].refs,n=r[0];
@@ -83,17 +86,18 @@ async function prepare(client,descriptor,goal,attemptId){
       ${checks.join('\n').replaceAll('nativeEnvInputs[0].refs','r')}
       ${env.guard}}`;
     const guard=await get('('+guardSource+')');
-    const args=[{objectId:epoch.result.objectId},...env.arguments],binding={provider:'native-dol',contract:'native-radio-'+sha(JSON.stringify(sources)+inspect.toString()+operation.toString()+guardSource).slice(0,12),contextNonce:await receipts.context(client),requestDigest:sha(JSON.stringify({attemptId,selected:descriptor.selected,field,value:value.value,before}))};
+    const args=[{objectId:epoch.result.objectId},...env.arguments],binding={provider:'native-dol',contract:'native-radio-'+(saveWatch?'save-':'')+sha(JSON.stringify(sources)+readSource+operation.toString()+guardSource+(saveWatch?.digest||'')).slice(0,12),contextNonce:await receipts.context(client),requestDigest:sha(JSON.stringify({attemptId,selected:descriptor.selected,field,value:value.value,before}))};
     const config={namespace:receipts.namespace,binding,attemptId,field,value:value.value};
     const argumentsList=[{objectId:node},{objectId:guard},...args];
+    const saveIndex=saveWatch?argumentsList.push({objectId:saveWatch.objectId})-1:null;
     const check='function(phase){return observedInputs[1](phase,...observedInputs.slice(2))}';
     return {action:descriptor.selected,arguments:argumentsList,objectGroups:[group],executionBinding:binding,
-      source:`if(node!==observedInputs[0].parentElement)return {ok:false,guardRejected:true};try{if((${check})('before')!==undefined||JSON.stringify((${inspect.toString()})(observedInputs[0],${JSON.stringify(field)}))!==JSON.stringify(observedInputs[2].before))return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`,
+      source:`if(node!==observedInputs[0].parentElement)return {ok:false,guardRejected:true};${saveWatch?`if(observedInputs[${saveIndex}].check()!==undefined)return {ok:false,guardRejected:true};`:''}try{if((${check})('before')!==undefined||JSON.stringify((${readSource})(observedInputs[0],${JSON.stringify(field)}))!==JSON.stringify(observedInputs[2].before))return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`,
       clickReceiverObjectId:node,interpretation:{provider:'native-dol',execution:'native-operation',contract:binding.contract,field,value:value.value},
-      operation:require('./action.cjs').reviewedOperation('native-radio',`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},observedInputs[2],${check},${inspect.toString()},markOperationDispatch,invokeBoundClick);`)};
+      operation:require('./action.cjs').reviewedOperation('native-radio',saveWatch?require('./game-native-save.cjs').execution(`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},observedInputs[2],${check},${readSource},markOperationDispatch,invokeBoundClick,observedInputs[${saveIndex}]);`,saveIndex):`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},observedInputs[2],${check},${readSource},markOperationDispatch,invokeBoundClick);`)};
   }catch(error){try{await client.send('Runtime.releaseObjectGroup',{objectGroup:group})}catch(cleanup){throw Object.assign(new AggregateError([error,cleanup],'Native radio binding cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED'})}throw Object.assign(Error('Reviewed native radio unavailable',{cause:error}),{code:'MAPPING_UNAVAILABLE'})}
 }
-function validateReceipt(r,e){const v=r.evidence;return r.outcome==='occurred'&&r.remoteClosed===true&&r.spent===0&&e?.executionBinding?.provider==='native-dol'&&/^native-radio-[a-f0-9]{12}$/.test(e.executionBinding.contract||'')&&e.action?.kind==='menu'&&e.action.cost===0&&
+function validateReceipt(r,e){const verified=require('./game-native-save.cjs').receipt(r,e);if(!verified)return false;({r,e}=verified);const v=r.evidence;return r.outcome==='occurred'&&r.remoteClosed===true&&r.spent===0&&e?.executionBinding?.provider==='native-dol'&&/^native-radio-[a-f0-9]{12}$/.test(e.executionBinding.contract||'')&&e.action?.kind==='menu'&&e.action.cost===0&&
   v&&Reflect.ownKeys(v).length===9&&Object.keys(v).every(k=>['kind','field','from','to','passage','turns','time','money','otherStateStable'].includes(k))&&v.kind==='native-radio'&&fields.includes(v.field)&&
   [v.from,v.to,v.passage].every(s=>typeof s==='string'&&s.length>0&&s.length<=128)&&v.from!==v.to&&Number.isSafeInteger(v.turns)&&v.turns>=0&&Number.isFinite(v.time)&&Number.isSafeInteger(v.money)&&v.money>=0&&v.otherStateStable===true}
 module.exports={prepare,inspect,operation,validateReceipt};

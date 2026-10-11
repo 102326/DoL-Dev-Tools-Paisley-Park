@@ -6,6 +6,13 @@ const renderTasks=require('../scripts/lib/game-native-render-tasks.cjs');
 
 const phaseNames=['passageinit','passagestart','passagerender','passagedisplay','passageend'];
 const addonNames=['whenSC2PassageInit','whenSC2PassageStart','whenSC2PassageRender','whenSC2PassageDisplay','whenSC2PassageEnd'];
+test('scoped native navigation permits save intent but waits for the save witness before terminal',async()=>{
+  const f=fixture({addon:false,saveIntent:true,changeAutosave:true});let release,installed=0;
+  const wait=new Promise(resolve=>{release=resolve}),watch={install(){installed++},async finish(receipt,context,held){await wait;assert.equal(context.records[receipt.attemptId],held);const terminal=Object.freeze({...receipt,evidence:{...receipt.evidence,save:{kind:'native-idb-save',slot:0,count:1,transactions:1,committed:true,readBack:true}}});context.records[receipt.attemptId]=terminal;return {ok:true,receipt:terminal}}};
+  try{const pending=operation(f.node,f.config,f.engine,f.jq,f.footer,null,f.tasks,f.history,preflight,()=>undefined,checkHistory,null,null,()=>{},n=>n.click(),watch);
+    await new Promise(resolve=>setImmediate(resolve));assert.equal(f.clicks,1);assert.equal(installed,1);assert.equal(f.records[f.config.attemptId].status,'started');release();assert.equal((await pending).receipt.evidence.save.count,1);
+  }finally{release();f.restore()}
+});
 function fixture({addon=true,lateEnd,saveIntent=false,badPhase=false,foreignReplacement=false,lockedTrigger=false,changeAutosave=false,redirect=false,outsideRoot=false,beforeHistory,
   historyCount=3,expiredCount=0,maxStates=5,maxExpired=100,noHistory=false,extraHistory=false,corruptHistory=false}={}){
   const previousWindow=global.window,previousDocument=global.document,tasks=Array.from({length:5},()=>Object.create(null));

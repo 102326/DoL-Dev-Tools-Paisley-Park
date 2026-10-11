@@ -18,8 +18,8 @@ function check(epoch,phase){
   if(roots.length!==1||roots[0].getAttribute('data-passage')!==s.passage||roots[0].querySelector('.error')||!sc.Engine.isIdle())return 'native-navigation-scene-unavailable';
   if(phase==='before'&&s.passage!==epoch.before)return 'native-navigation-start-changed';
 }
-async function review(client,held){
-  const env=await environment.bind(client,held,profile,navigationFlags),group=held.objectGroup;
+async function review(client,held,allowSave=false){
+  const env=await environment.bind(client,held,profile,navigationFlags,allowSave),group=held.objectGroup;
   const h=await client.send('Runtime.evaluate',{expression:'window.SugarCube.Macro.get("effects").handler',objectGroup:group,returnByValue:false});
   if(h.exceptionDetails||!h.result?.objectId||sha(await contracts.functionSource(client,h.result.objectId))!==profile.handlerSha256.effects)throw Error('Original native effects handler unavailable');
   const effects=await contracts.captured(client,h.result.objectId,'effects');

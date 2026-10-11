@@ -74,3 +74,23 @@ Windows 定向回归和完整 Node 回归通过；阶段化证据修正后完整
 真实证据 `artifacts/bites-the-dust-resource-20261011/validation-corrected.json`、各 reset manifest/分阶段文件、source diff 和备份均保留本地。首次 CLI 读取函数和未导出 opener 的调用接线问题已修复并补真实入口/生产 Action 替身回归；两次均未进入 native clear。随后 partial native 尝试只保留到了 fenced 阶段，具体原生失败原因未捕获，因此标记 Unknown，不能将后一次成功倒推为前一次成功。补阶段化错误证据后 fresh authorized rebuild 完成；保留两次 native 代次元数据。最初 verify 脚本的 JSON-proof 拒绝试验用了包含多余字段的 target，已更正为 canonical target 并核对真实 proof 拒绝错误，原日志不删除。
 
 Store schema 只在重建开始时从 2 进入 3；旧数据内容不迁移。稳定 3.0.3 不得对该 Store 继续写入；新连接拒绝 schema 3，已经打开的旧连接也不能重新取得该数据代次的 lease。原生外部 storage/cloud/shared-UID 资源不在此隔离证明内；不是完整 App/存档恢复验收。A4、真实 Recipe/Gameplay 及 B/C 仍未完成，不能据此宣布正式 4.0 完成。
+
+### 2026-10-11 native save cycle and retained failed attempt
+
+At `bbdfb2148236b95b4854079512660920c3166500`, the authorized Android DoL 0.5.12.13 IndexedDB target completed the standard GER CLI create → overwrite → independent currency preparation → load → delete trials. Every trial dispatched once, independently proved its native Outcome, settled in the original shared Store, and passed a fresh original-state checkpoint. Autosave stayed enabled. These are native archive/player projections, not full-field migration or backup-recovery proof.
+
+The first save attempt under `512a9bb…` genuinely wrote a slot, then its history-only reader rejected the native delta archive. Its original Effect remains started/Unknown under its original Recipe binding. The reader now pins and uses the original native delta decoder and marshal-for-save projection; no new reader reinterprets that old Effect. A second authorized, verified native App-data rebuild established the next resource generation before the new trials; no new Store/TargetKey was substituted.
+
+Private `artifacts/bites-the-dust-resource-20261011/save-cycle-validation.json` records the five CLI trials and native results. All original 81 Effect docs/statuses and 21 Session docs remain unchanged; the newer failed-save Effect also matches its consistent backup byte for byte. Both historical Unknowns remain visible. The completed load restored the independently prepared money state from the native saved record.
+
+Full affected Node regression at this source: 381 passed, 0 failed, 0 skipped (`save-delta-node.log`); unchanged Python results reused: 2 passed, 2 optional-dependency skips. No full suite was repeated merely to report these real trials. The copied native autosave/ironman guards still require the A4 scoped contract change; these Recipe trials alone do not close A4 or formal 4.0.
+
+### Scoped native autosave contract (implementation, real trial pending)
+
+A4 now passes the persisted host Scope into native navigation, radio and the existing shop/head-wardrobe producers. With explicit `save` authority, autosave/ironman flags describe gameplay rather than an unconditional ban. This does not waive business, receiver, history or source guards. The original native environment profile remains the compatibility reference; only save policy fields are normalized for scoped producers. Without save authority, its original no-save behavior remains.
+
+Reviewed DoL 0.5.12.13 IDB observation uses the native onSave callback and actual `IDBObjectStore.add` transaction complete/abort events. Immutable Save/idb methods are not replaced; `idb.lock` is not completion proof (openDB clears it before write completion). The finite owned observer correlates the native autosave projection/date, original `saves`/`details` transaction and independent native archive readback. Its callback/prototype observation is restored before terminal publication; conflict, abort, unmatched write or unproven readback keeps Unknown. Current native gameplay observer supports slot 0 autosave; explicit numbered save operations use the reviewed Recipe. Other save backends/hook versions require reviewed Provider support, not an invented permission denial.
+
+New producer contracts use a distinct `-save-` form and require their additional save witness. Legacy receipts never inherit that permission or witness. The narrowly reviewed legacy street recovery retains its frozen no-save conditions. No new Runtime/Ledger or background service was added.
+
+Offline directed observer/navigation tests: 29 passed. Full affected Node suite: 388 passed/0 failed/0 skipped (`scoped-save-node.log`). Real Android read-only observer binding/source/receiver review succeeded; this is not an autosave transaction trial. Python is unaffected; reuse 2 passed/2 optional dependency skips.

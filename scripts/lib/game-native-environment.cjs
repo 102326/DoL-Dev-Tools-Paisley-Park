@@ -182,7 +182,8 @@ function normalizedMetadata(rows) {
   return [...rows.filter(r=>r.mode!=='event'),...rows.filter(r=>r.mode==='event'&&r.functionName!=='updateCaptionTooltip'),
     ...rows.filter(r=>r.mode==='event'&&r.functionName==='updateCaptionTooltip')].map(clean);
 }
-async function bind(client,held,profile,flagsMatch=sameFlags) {
+function saveFlagsMatch(a,b,base,saveFlags){return saveFlags(a,a)&&base({...a,autosaveDisabled:b.autosaveDisabled,ironmanmode:b.ironmanmode,engineAutosave:b.engineAutosave},b);}
+async function bind(client,held,profile,flagsMatch=sameFlags,allowSave=false) {
   const {createHash}=require('node:crypto');
   const sha=value=>createHash('sha256').update(value).digest('hex');
   if(!profile||profile.terminalReviewed!==true||typeof profile.id!=='string'||!Array.isArray(profile.functions)||!Array.isArray(profile.texts)||typeof flagsMatch!=='function')
@@ -195,7 +196,8 @@ async function bind(client,held,profile,flagsMatch=sameFlags) {
   if(result.exceptionDetails||!value)throw Error('Native environment metadata unavailable');
   const functions=value.functions.map(({source,...row})=>({...row,sha256:source===null?null:sha(source)}));
   const texts=value.texts.map(({name,value})=>({name,sha256:sha(value)}));
-  if(flagsMatch(value.flags,profile.flags)!==true||!tooltipMovesAllowed(functions,profile.functions)||JSON.stringify(normalizedMetadata(functions))!==JSON.stringify(normalizedMetadata(profile.functions))||JSON.stringify(texts)!==JSON.stringify(profile.texts))
+  const compare=(a,b)=>allowSave?saveFlagsMatch(a,b,flagsMatch,require('./game-native-save.cjs').flags):flagsMatch(a,b);
+  if(compare(value.flags,profile.flags)!==true||!tooltipMovesAllowed(functions,profile.functions)||JSON.stringify(normalizedMetadata(functions))!==JSON.stringify(normalizedMetadata(profile.functions))||JSON.stringify(texts)!==JSON.stringify(profile.texts))
     throw Error('Native environment differs from reviewed profile');
   const member=async key=>{
     const r=await client.send('Runtime.callFunctionOn',{objectId:bundle,functionDeclaration:`function(){return this[${JSON.stringify(key)}]}`,returnByValue:false,objectGroup:held.objectGroup});
@@ -203,6 +205,6 @@ async function bind(client,held,profile,flagsMatch=sameFlags) {
   };
   return {id:profile.id,terminalReviewed:true,arguments:[{objectId:bundle}],
     objects:{jq:await member('jq'),footer:await member('footer'),...(value.hasAddon===true?{addon:await member('addon')}:{})},
-    guard:`const collect=${collect.toString()},ordered=${ordered.toString()},tooltipMovesAllowed=${tooltipMovesAllowed.toString()},sameFlags=${sameFlags.toString()};return (${check.toString()})(collect(),nativeEnvInputs[0],${flagsMatch.toString()});`};
+    guard:`const collect=${collect.toString()},ordered=${ordered.toString()},tooltipMovesAllowed=${tooltipMovesAllowed.toString()},sameFlags=${sameFlags.toString()};return (${check.toString()})(collect(),nativeEnvInputs[0],${allowSave?`function(a,b){return (${saveFlagsMatch.toString()})(a,b,${flagsMatch.toString()},${require('./game-native-save.cjs').flags.toString()})}`:flagsMatch.toString()});`};
 }
 module.exports={collect,ordered,check,tooltipMovesAllowed,capture,metadata,normalizedMetadata,bind,sameFlags};

@@ -55,6 +55,7 @@ function candidates(facts,epoch){
 }
 function validateAction(selected,intent){action.validate(selected);if(selected.type!=='web-click'||intent==='buy')throw Error('Unsupported native Gameplay action')}
 function validateReceipt(r,e){
+  const verified=require('./game-native-save.cjs').receipt(r,e);if(!verified)return false;({r,e}=verified);
   const v=r.evidence;
   if(v?.kind==='native-radio')return require('./game-native-radio.cjs').validateReceipt(r,e);
   // Old fixture/guard results have no native producer binding. A dispatched
@@ -111,5 +112,5 @@ const traceProgress=p=>p?.kind==='native-knowledge'?[p.satisfied,p.known,p.passa
 module.exports={id:'native-dol',supportsGoal:g=>['reach-passage','native-state','native-knowledge'].includes(g?.kind),validateGoal,validateRequest,reader,probe,candidates,validateAction,
   satisfied:scene=>scene.goalProof.satisfied===true,validateReceipt,canPrepare:()=>true,
   attestNavigation:(client,descriptor)=>require('./game-native-navigation.cjs').attest(client,descriptor),
-  prepare:(client,descriptor,goal,attemptId)=>descriptor.kind==='menu'?require('./game-native-radio.cjs').prepare(client,descriptor,goal,attemptId):require('./game-native-navigation.cjs').prepare(client,descriptor,goal,attemptId,require('./game-native-profile.cjs').review),
+  prepare:(client,descriptor,goal,attemptId,context)=>descriptor.kind==='menu'?require('./game-native-radio.cjs').prepare(client,descriptor,goal,attemptId,context):require('./game-native-navigation.cjs').prepare(client,descriptor,goal,attemptId,require('./game-native-profile.cjs').review,context),
   observe:async()=>({}),publicProof:s=>s.scene?.goalProof??null,traceProgress,traceDistances};

@@ -1,0 +1,24 @@
+{
+  "version": "0.5.12.13",
+  "methods": {
+    "saveState": "f35abcbe76ccd74d28a3300a397c449bd74beddfcd3f4350c4f8cb6e29191e2f",
+    "getItem": "7c1fa8060caa027c8422492a14767c2828c17ecd27386ee98162a0912ab708cf",
+    "getSaveDetails": "f1e21b4d159c98d752320b7f03753c60f64c762cad30542dd08528ac1308de9a",
+    "deleteItem": "4f874cda73746c0112c51da9651bffc0ae101556dc3ef817f6cf850e1f925d8a",
+    "loadState": "288f4b96c0abd12fd5f7d6d7b7aa230ec06fd507d7f28b13ee04e9b501745143"
+  },
+  "hooks": {
+    "onSave": [
+      "713654e04d9b4c52124c283336f179209a9adb010ff90c20beb32c16bb6729cc"
+    ],
+    "onLoad": [
+      "61a5beebff0ef7c888496ae87483b87e7be1b8cf09c0dc5ffdfe1c27eb285286"
+    ]
+  },
+  "marshal": "3addcaa1f4d36f3be1bfda23a00e9ebc27ce193e4200d8ad6deb20903408e1ba",
+  "decoder": "108e0f5429d35e5751af086705425e7c0607530525b0260a0747d22c164ddd99",
+  "setItem": "e2741ad66d760d21a1afff6e2811ed63d0e37c2e038e97b050c49dcb74dabb65",
+  "makePromise": "974f4ba280f35935d11d887c467354bebd72e93534c274c2c8beef329512969d",
+  "openDB": "6692bee85437af1e8edb2accf8199a1e0a0a9c80c7c7de45b5d1f70b819dfcec",
+  "dbNameGetter": "()=>_dbName"
+}

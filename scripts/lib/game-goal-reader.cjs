@@ -41,6 +41,7 @@ function quoteFromShop(shop,g){
   return validateQuote(q,g)?q:null;
 }
 function validatePurchaseReceipt(r,e){
+  const verified=require('./game-native-save.cjs').receipt(r,e);if(!verified)return false;({r,e}=verified);
   const q=e.action?.quote;
   if(!q||e.action.kind!=='buy')return r.evidence===undefined;
   if(r.outcome!=='occurred'||!r.remoteClosed)return r.evidence===undefined;

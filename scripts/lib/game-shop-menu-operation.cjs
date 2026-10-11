@@ -9,10 +9,11 @@ function preflight(node,config,readCurrent,checkSources){
      checkSources('before')!==undefined||JSON.stringify(readCurrent())!==JSON.stringify(config.before))return 'shop-menu-preflight-unavailable';
   return null;
 }
-function operation(node,config,readCurrent,checkSources,check=preflight,markDispatch=()=>{},invokeClick=n=>n.click()){
+function operation(node,config,readCurrent,checkSources,check=preflight,markDispatch=()=>{},invokeClick=n=>n.click(),saveWatch=null){
   if(check(node,config,readCurrent,checkSources)!==null)return {ok:false,guardRejected:true};
   const sc=window.SugarCube,s=sc.State,context=window[config.namespace],root=document.querySelector('#passages > .passage'),container=document.querySelector('#clothingShop-div');
   const active=s.active,history=s.history,entry=history[s.activeIndex],index=s.activeIndex,before=config.before;
+  if(saveWatch!==null)try{saveWatch.install()}catch{return {ok:false,guardRejected:true,reason:'native-save-observer-unavailable'}}
   markDispatch();
   const started=Object.freeze({...config.binding,attemptId:config.attemptId,status:'started',phase:'menu-started'});
   context.records[config.attemptId]=started;
@@ -27,6 +28,7 @@ function operation(node,config,readCurrent,checkSources,check=preflight,markDisp
      JSON.stringify(after.inventory)!==JSON.stringify(before.inventory)||JSON.stringify(after.worn)!==JSON.stringify(before.worn)||checkSources('after')!==undefined)return {ok:false};
   const evidence={kind:'shop-menu',from:before.view,to:after.view,turns:after.turns,time:after.time,money:after.money,businessStable:true};
   const receipt=Object.freeze({...config.binding,attemptId:config.attemptId,status:'terminal',outcome:'occurred',remoteClosed:true,spent:0,evidence});
+  if(saveWatch!==null)return saveWatch.finish(receipt,context,started);
   context.records[config.attemptId]=receipt;return {ok:true,receipt};
 }
 module.exports={preflight,operation};

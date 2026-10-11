@@ -47,7 +47,7 @@ function preflight(node, config, engine, jq, footer, addon, tasks, history, hist
 }
 
 // Browser-only reviewed operation; serialized callers supply the same guard.
-async function operation(node, config, engine, jq, footer, addon = null, tasks, history, check = preflight, environmentCheck = () => undefined, historyCheck=checkHistory, monitor=null,taskReview=null,markDispatch=()=>{},invokeClick=n=>n.click()) {
+async function operation(node, config, engine, jq, footer, addon = null, tasks, history, check = preflight, environmentCheck = () => undefined, historyCheck=checkHistory, monitor=null,taskReview=null,markDispatch=()=>{},invokeClick=n=>n.click(),saveWatch=null) {
   const rejected=check(node,config,engine,jq,footer,addon,tasks,history,historyCheck,monitor,taskReview);
   if(rejected)return {ok:false,guardRejected:true,reason:rejected};
   try{if(environmentCheck('before')!==undefined)return {ok:false,guardRejected:true,reason:'native-environment-changed'}}
@@ -111,8 +111,8 @@ async function operation(node, config, engine, jq, footer, addon = null, tasks, 
     // before State.create/:passagestart. Its cleanup is still pending at init.
     if(taskReview===null?!tasksEmpty():taskReview.check(index===0?'before':'after')!==undefined){fail('native-lifecycle-tasks-changed');throw Error('Unreviewed native lifecycle tasks')}
     const fresh=window.SugarCube,autosave=fresh?.Config?.saves?.autosave,tags=passage?.tags;
-    if(fresh?.State?.variables?.ironmanmode===true||
-      !(autosave===false||Array.isArray(autosave)&&Array.isArray(tags)&&!autosave.some(tag=>tags.includes(tag)))){
+    if(saveWatch===null&&(fresh?.State?.variables?.ironmanmode===true||
+      !(autosave===false||Array.isArray(autosave)&&Array.isArray(tags)&&!autosave.some(tag=>tags.includes(tag))))){
       fail('unreviewed-save-intent');throw Error('Unreviewed native save intent');
     }
   }
@@ -132,7 +132,7 @@ async function operation(node, config, engine, jq, footer, addon = null, tasks, 
       if(witness?.ok!==true){fail('native-history-changed');throw Error('Native history witness changed')}
       if(index===1){createdMoment=witness.moment;historyWitness=witness.evidence}
       engineSaveGuard(passage,index);
-      if(index===0&&window.SugarCube?.State?.temporary?.autosavehere){fail('unreviewed-save-intent');throw Error('Unreviewed native save intent')}
+      if(saveWatch===null&&index===0&&window.SugarCube?.State?.temporary?.autosavehere){fail('unreviewed-save-intent');throw Error('Unreviewed native save intent')}
       phaseIndex++;
       persist();
       const prior=activePhase;activePhase=index;
@@ -142,10 +142,10 @@ async function operation(node, config, engine, jq, footer, addon = null, tasks, 
     });
     install(footer,'processText',original=>function(...args){
       footerCalls++;
-      if(this!==footer||footerCalls!==1||saveIntent()){fail('footer-save-intent');throw Error('Unreviewed native footer save intent')}
+      if(this!==footer||footerCalls!==1||saveWatch===null&&saveIntent()){fail('footer-save-intent');throw Error('Unreviewed native footer save intent')}
       try{
         const result=Reflect.apply(original,this,args);
-        if(saveIntent()){fail('footer-save-intent');throw Error('Native footer processing changed save intent')}
+        if(saveWatch===null&&saveIntent()){fail('footer-save-intent');throw Error('Native footer processing changed save intent')}
         return result;
       }catch(error){fail('footer-threw');throw error}
     });
@@ -169,6 +169,7 @@ async function operation(node, config, engine, jq, footer, addon = null, tasks, 
     const clean=restore();
     return {ok:false,...(clean?{guardRejected:true}:{}),reason:clean?'navigation-observer-unavailable':'observer-ownership-conflict'};
   }
+  if(saveWatch!==null)try{saveWatch.install()}catch{restore();return {ok:false,guardRejected:true,reason:'native-save-observer-unavailable'}}
   markDispatch();
   started=Object.freeze({...binding,attemptId,status:'started'});
   context.records[attemptId]=started;
@@ -223,6 +224,7 @@ async function operation(node, config, engine, jq, footer, addon = null, tasks, 
     ...(monitor===null?{}:{time:timeWitness}),...(taskReview===null?{}:{tasks:taskWitness})};
   const receipt=Object.freeze({...binding,attemptId,status:'terminal',outcome:'occurred',remoteClosed:true,
     spent:Math.max(0,before.money-v.money),evidence});
+  if(saveWatch!==null)return saveWatch.finish(receipt,context,started);
   context.records[attemptId]=receipt;
   return {ok:true,receipt};
 }

@@ -52,7 +52,7 @@ const sha=s=>createHash('sha256').update(s).digest('hex');
 
 // Finite native landings independent of UI/Maple. This is a receiving envelope,
 // not a Journey controller; other scenes need their own relevant evidence.
-async function reviewNativeLanding(client,held,landing) {
+async function reviewNativeLanding(client,held,landing,allowSave=false) {
   const duration=(landing.timeSeconds||0)/60;
   const crossHour=duration>0&&await client.evaluate(`Time.minute+${duration}>=60`);
   const reviewed={...nativeIntro,...landing,widgets:{...landing.widgets,...(crossHour?hourly.widgets:{})},
@@ -62,7 +62,7 @@ async function reviewNativeLanding(client,held,landing) {
   const before=landing.before||'Start2';
   if(held.before.passage!==before||held.destination!==reviewed.receiving.passage||held.payload.trim()!==(landing.payload||''))
     throw Error('Native destination/payload not yet reviewed');
-  const environment=await bind(client,held,reviewed);
+  const environment=await bind(client,held,reviewed,undefined,allowSave);
   const widgets=[],globals=[],closures=[];let failure;
   async function retainCaptured(id,captures){
     for(const [key,expected] of Object.entries(captures||{})){
@@ -162,7 +162,7 @@ async function reviewNativeLanding(client,held,landing) {
   }
   environment.guard=`const sc=window.SugarCube,scene=sc.State,e=nativeEnvInputs[1],p=sc.Story.get(${JSON.stringify(reviewed.receiving.passage)});
     ${crossHour?`const hourReason=(${checkHour.toString()})(nativeEnvPhase);if(hourReason!==undefined)return hourReason;`:''}
-    if(typeof window.DoLGameUI!=='undefined'||scene.variables.options?.autosaveDisabled!==true||scene.variables.ironmanmode!==false)return 'native-profile-flags-changed';
+    if(typeof window.DoLGameUI!=='undefined'${allowSave?'':"||scene.variables.options?.autosaveDisabled!==true||scene.variables.ironmanmode!==false"})return 'native-profile-flags-changed';
     if(nativeEnvPhase==='after'?scene.passage!==${JSON.stringify(reviewed.receiving.passage)}:scene.passage!==${JSON.stringify(before)})return 'native-receiving-scene-unreviewed';
     ${[nativeBedroom,nativeBedroomReturn,nativeBedroomFromBathroom,nativeBedroomFromWardrobe].includes(landing)?`const v=scene.variables;
     if(!Number.isFinite(v.stress)||!Number.isFinite(v.stressmax)||v.stress>=v.stressmax||v.possessed||v.passout||v.combat||v.replayScene||v.passageOverride||v.christmas||v.nextPassageCheck||
@@ -199,7 +199,7 @@ async function reviewNativeLanding(client,held,landing) {
 
 // Specific activity envelopes keep their stronger business proof. Ordinary
 // navigation reuses the original engine/Scene contract instead of a route list.
-async function review(client,held) {
+async function review(client,held,allowSave=false) {
   if(await client.evaluate('typeof window.DoLGameUI==="undefined"')){
     const landings=[nativeIntro,nativeBedroom,nativeBedroomReturn,nativeBedroomFromBathroom,nativeBedroomFromWardrobe,nativeKitchen,
       nativeHall,nativeHallFromBedroom,nativeHallContinue,nativeHallSettled,nativeBathroom,nativeBrush,nativeBrushContinue,
@@ -215,13 +215,13 @@ async function review(client,held) {
     // not need a bespoke handler for every newly encountered Passage, and it
     // cannot certify a domain activity or settle an older unresolved action.
     if(!route||ordinaryStreet)
-      return require('./game-native-generic-landing.cjs').review(client,held);
-    return reviewNativeLanding(client,held,route);
+      return require('./game-native-generic-landing.cjs').review(client,held,allowSave);
+    return reviewNativeLanding(client,held,route,allowSave);
   }
   const cleanup=held.before.passage==='Wardrobe'&&held.payloadSha256==='977ccb610b9cdb5931d651de1390c4bcaf15768d8b4c9ba5ca3908e49ccba63e';
   if(held.destination!=='Bedroom'||held.payload.trim()!==''&&!cleanup)throw Error('Native destination/payload not yet reviewed');
   if(cleanup)await require('./game-contract.cjs').attestWidget(client,'cleanupOnWardrobeExit','7a9d7e768b59beb3ee231529ee5ab9c180a62acd358e751201dd116330b9c0a0');
-  const environment=await bind(client,held,profile);
+  const environment=await bind(client,held,profile,undefined,allowSave);
   // The operation closes a finite actual navigation, never the whole Mod world.
   // A different receiving Scene stays unknown until its own envelope is reviewed.
   environment.guard=`const scene=window.SugarCube.State;

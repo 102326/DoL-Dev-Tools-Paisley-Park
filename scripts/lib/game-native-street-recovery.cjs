@@ -3,6 +3,7 @@ const {createHash,randomUUID}=require('node:crypto'),receipts=require('./game-re
 const sha=s=>createHash('sha256').update(s).digest('hex');
 // One withdrawn development producer had the wrong NPC container assertion.
 // Do not repair its page record or turn any started receipt into a terminal.
+// Frozen legacy no-save contract: new scoped save permission cannot reinterpret it.
 function readClosed(name,effect){
  const binding=effect.executionBinding,context=window[name],r=context?.records?.[effect.id],s=window.SugarCube?.State,c=window.SugarCube?.Config?.history;
  const d=r?.diagnostics,h=s?.history,x=s?.expired,root=document.querySelectorAll('#passages > .passage');
