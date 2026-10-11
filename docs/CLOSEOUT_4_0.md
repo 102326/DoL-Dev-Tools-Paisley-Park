@@ -1,6 +1,6 @@
 # DoL Dev Tools 4.0.0 — Bites the Dust 技术说明与收口
 
-产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 修订候选尚未获准远程发布，见 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
+产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 独立验货修订已在本地收口；用户随后明确授权更新 Skill 与上传 GitHub，本轮采用 4.0.1 发布，保留原 4.0.0 制品。见 [4.0.1 更新说明](RELEASE_4.0.1.md)与 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
 
 ## Delivered
 
@@ -51,4 +51,4 @@ Android 三剑客实测来源：CLI 1.0.16486076 的实际版本和 native-layou
 - 手机上 durable GER 故障注入与 66 次业务容量；这些已有离线/受控验证，不能冒充真机业务覆盖。
 - Skill 显式定位/安装验证不保证每个自然语言提示都自动触发；resolver 验证位置，不提供代码信任保证。
 
-原始 SQLite、存档、APK、截图、完整设备标识、机器配置和私有执行日志仅保留在 ignored 本地证据目录，不随公开包或 Release 上传。现场事实、项目解释和能力完成状态保持分开；覆盖有限不自动构成剩余研发任务。本地发布准备时的 Go 不等于远程发布；原 2026-10-11 发布已有用户单独确认；这不授权 2026-10-12 修订候选的推送、正式合并、Tag 或 Release。后续发布仍需对应授权。
+原始 SQLite、存档、APK、截图、完整设备标识、机器配置和私有执行日志仅保留在 ignored 本地证据目录，不随公开包或 Release 上传。现场事实、项目解释和能力完成状态保持分开；覆盖有限不自动构成剩余研发任务。本地发布准备时的 Go 不等于远程发布；原 2026-10-11 发布已有用户单独确认；原定向修复阶段不包含远程发布；后续用户已明确授权更新本地 Skill 与上传 GitHub，因此本轮按 4.0.1 发布。今后的发布仍需对应授权。

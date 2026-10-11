@@ -11,21 +11,21 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装后从下一次对话回合开始发现；当前回合显式读取可以验证行为，但不能冒充宿主自动发现验收。
 
-## 4.0.0 安装与升级
+## 4.0.1 安装与升级
 
-正式产品名为 DoL Dev Tools，版本代号 Bites the Dust。CLI 文件名和 Skill 标识仍使用原名称，已有入口继续有效。正式 ZIP 见 [4.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0)；历史 3.0.3 下载不是 4.0。
+正式产品名为 DoL Dev Tools，版本代号 Bites the Dust。CLI 文件名和 Skill 标识仍使用原名称，已有入口继续有效。正式 ZIP 见 [4.0.1 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1)；历史 3.0.3 下载不是 4.0。
 
-1. 将 `DoL-Dev-Tools-4.0.0.zip` 解压到新的长期保留目录，核对发布时随附的 SHA-256。
-2. 在该 Tools 根目录运行 `.\DoL-Dev.cmd --version` 和 `.\DoL-Dev.cmd --help`，确认 `--version` 返回 `4.0.0`，`--help` 首行显示 `DoL Dev Tools 4.0.0 — Bites the Dust` 及用途说明。Node.js 要求 22.12+。
+1. 将 `DoL-Dev-Tools-4.0.1.zip` 解压到新的长期保留目录，核对发布时随附的 SHA-256。
+2. 在该 Tools 根目录运行 `.\DoL-Dev.cmd --version` 和 `.\DoL-Dev.cmd --help`，确认 `--version` 返回 `4.0.1`，`--help` 首行显示 `DoL Dev Tools 4.0.1 — Bites the Dust` 及用途说明。Node.js 要求 22.12+。
 3. 仅使用普通诊断时无需 npm 依赖。使用 Gameplay 时，在同一 Tools 根目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，按锁文件安装 XState 5.33.2。缺少依赖时 Gameplay 会在启动阶段明确拒绝，不会静默使用另一份 Runtime。
-4. 完整备份旧 Skill 并将其移出原路径，保留旧 Tools；首次安装则直接使用空目标。按下面命令安装，再检查 resolver 指向新的 Tools 根目录与 4.0.0。安装器拒绝覆盖已有目录。
+4. 完整备份旧 Skill 并将其移出原路径，保留旧 Tools；首次安装则直接使用空目标。按下面命令安装，再检查 resolver 指向新的 Tools 根目录与 4.0.1。安装器拒绝覆盖已有目录。
 
 ```powershell
 .\DoL-Dev.cmd install-skill --out "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park"
 node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
 ```
 
-本轮发布准备只在独立目录验证，**没有替换本机稳定 3.0.3 或全局 Skill**。依赖命令仅影响所选 Tools 目录，不全局安装工具。Android 现场另需已有 ADB、USB 调试及支持调试的目标 WebView；详见 [连接说明](DIAGNOSTICS.md#快速入口)。
+更新前保留旧 Tools 与 Skill 副本，安装后核对 resolver。依赖命令仅影响所选 Tools 目录，不全局安装工具。Android 现场另需已有 ADB、USB 调试及支持调试的目标 WebView；详见 [连接说明](DIAGNOSTICS.md#快速入口)。
 
 升级不迁移旧私有 journal、不清空共享执行记录，也不自动结清结果未知的动作。使用 4.0 原生数据重建功能前，对 SQLite 执行记录做一致备份；一旦升级为 schema 3，3.0.3 不得继续写入同一 Store，也不得用它恢复 4.0 的新 Session。直接复制正在写入的 SQLite 主文件可能遗漏 WAL 数据，不能当成一致备份；可在所有写入者关闭后保留数据库及相关文件，或使用 SQLite 备份 API。没有验证过的自动降级或历史合并流程。详见 [技术兼容说明](CLOSEOUT_4_0.md)。
 

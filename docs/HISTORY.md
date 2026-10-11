@@ -4,6 +4,7 @@
 
 | 历史版本 | 记录 |
 | --- | --- |
+| 4.0.1 / v4.0.1 — Bites the Dust | [验货修订说明](RELEASE_4.0.1.md)、[定向修复与验证](F1_F5_CLOSEOUT_4_0.md) |
 | 4.0.0 / v4.0.0 — Bites the Dust | [更新说明](RELEASE_4.0.0.md)、[收口与兼容](CLOSEOUT_4_0.md) |
 | 3.0.3 / v3.0.3 | [实战诊断体验补丁](RELEASE_3.0.3.md)、[历史收口](CLOSEOUT_3_0_3.md) |
 | 3.0.2 / v3.0.2 | [Gold Experience Requiem 发布说明](RELEASE_3.0.2.md)、[3.0.2 验收与限制](CLOSEOUT_3_0_2.md) |

@@ -1,10 +1,10 @@
 # DoL Dev Tools
 
-**4.0.0 — Bites the Dust**
+**4.0.1 — Bites the Dust**
 
-本工作树包含 2026-10-12 的[验货修订候选](docs/F1_F5_CLOSEOUT_4_0.md)。公开下载尚未替换；本轮仅准备本地包，发布需另行授权。
+4.0.1 修复独立验货发现的保存权限、执行记录并发、观察器清理与任务身份问题。数量调整和衣柜选槽暂不进入 GER 自动派发，避免点击后无法证明结果。详见[修订与验证边界](docs/F1_F5_CLOSEOUT_4_0.md)。
 
-[获取 4.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) · [更新说明](docs/RELEASE_4.0.0.md) · [技术验证与兼容说明](docs/CLOSEOUT_4_0.md)
+[获取 4.0.1](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1) · [更新说明](docs/RELEASE_4.0.1.md) · [技术验证与兼容说明](docs/CLOSEOUT_4_0.md)
 
 面向 DoL Mod 生态的本地开发工具系统。连接真实 Android / WebView，帮助开发者和 Agent 查看运行现场、调查问题、复现操作，并在修改、构建和部署后验证结果。
 
@@ -64,9 +64,9 @@
 
 ## 快速开始
 
-从 [4.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 获取 `DoL-Dev-Tools-4.0.0.zip`。取得发布包后核对随附 SHA-256，将 ZIP 解压到新的长期保留目录。更新时保留旧 Tools 和 Skill 副本，不直接覆盖；详见 [安装与升级](docs/SKILL_INSTALL.md)。包不包含游戏、APK、设备工具、node_modules 或私人证据。
+从 [4.0.1 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1) 获取 `DoL-Dev-Tools-4.0.1.zip`。取得发布包后核对随附 SHA-256，将 ZIP 解压到新的长期保留目录。更新时保留旧 Tools 和 Skill 副本，不直接覆盖；详见 [安装与升级](docs/SKILL_INSTALL.md)。包不包含游戏、APK、设备工具、node_modules 或私人证据。
 
-在解压后的 Tools 根目录运行 `.\DoL-Dev.cmd --version`，应返回 `4.0.0`；`--help` 首行应为 `DoL Dev Tools 4.0.0 — Bites the Dust`，随后是用途说明。现有 `Paisley-Park.cmd` 入口仍可使用。
+在解压后的 Tools 根目录运行 `.\DoL-Dev.cmd --version`，应返回 `4.0.1`；`--help` 首行应为 `DoL Dev Tools 4.0.1 — Bites the Dust`，随后是用途说明。现有 `Paisley-Park.cmd` 入口仍可使用。
 
 需要 **Node.js 22.12+**。Android 现场需要已有 **ADB、USB 调试授权和明确的设备 serial / App package**；先手动打开目标 App。WebView 内部观察还需要 App 开启调试支持。ADB 不在 PATH 时，在当前进程设置 `DOL_ADB` 为已有 `adb.exe` 的绝对路径；详见 [环境与连接说明](docs/DIAGNOSTICS.md#快速入口)。
 
@@ -110,7 +110,7 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 - **证据与结论分开**：Evidence 的 complete / partial / failed 描述本次采集。结构可能截断，像素差异不等于兼容失败，内存增长不等于泄漏，采集完整不等于业务通过。
 - **本地资料与代码权限**：私有截图、日志、存档与游戏数据不自动上传，分享前须审查。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 能执行传入的页面 JavaScript，“只读”是内置 Probe 的使用约束。
 
-使用数据重建功能前，一致备份执行记录；升级后的记录不允许 3.0.3 继续写入。实验 Recipe 是经过审核、拥有实际 Node 权限的本地脚本，不是安全沙箱。详见 [升级提醒](docs/RELEASE_4.0.0.md#重要注意事项)。
+使用数据重建功能前，一致备份执行记录；升级后的记录不允许 3.0.3 继续写入。实验 Recipe 是经过审核、拥有实际 Node 权限的本地脚本，不是安全沙箱。详见 [升级提醒](docs/RELEASE_4.0.1.md#重要注意事项)。
 
 当前支持范围、旧未决动作和未覆盖项见 [4.0 技术说明](docs/CLOSEOUT_4_0.md)；[稳定版收口](docs/CLOSEOUT_3_0_3.md)保留历史证据。规划中的能力与已交付功能分开记录。
 
