@@ -189,7 +189,7 @@ async function session(directory,operation,settings={},overrides={}){
     throw Error('Unsupported Session operation');
   }finally{r.close()}
 }
-module.exports={validate,provider,rejectionReceipts,start,advance,status,view,session,candidates};
+module.exports={open,validate,provider,rejectionReceipts,start,advance,status,view,session,candidates};
 // Compatibility for direct local probe callers; new native sessions never load
 // the clothing reader or optional integration through this legacy export.
 Object.defineProperty(module.exports,'goalReader',{enumerable:true,get:()=>require('./game-goal-reader.cjs').goalReader});

@@ -71,3 +71,11 @@ test('actual Action CLI consumes the granted scope file before planning without 
  assert.equal(run.status,0,run.stderr);assert.equal(JSON.parse(fs.readFileSync(path.join(out,'manifest.json'),'utf8')).status,'planned');
  assert.equal(f.r.db.prepare('PRAGMA user_version').get().user_version,2);
 });
+
+test('production Action data reset reaches the shared Runtime and persists native evidence',async t=>{
+ const f=fixture(t),events=[],ctx={options:{...target,authorization:f.authorization,store:f.file},adb:f.adb,recordResource:r=>events.push(r),markSideEffect(){}};
+ const result=await require('../scripts/lib/action.cjs').execute(ctx,{type:'data-reset'});
+ assert.equal(result.status,'completed');assert.equal(f.clears,1);assert.deepEqual(events.map(e=>e.phase),['fenced','clear-returned','verified']);
+ const k=require('node:crypto').createHash('sha256').update(JSON.stringify([target.serial,target.package,target.userId])).digest('hex');
+ assert.equal(f.r.resource(k).id,result.resourceGeneration);
+});
