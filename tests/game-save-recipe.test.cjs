@@ -2,14 +2,14 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),{createHash,webcrypto}=require('node:crypto');
 const recipe=require('../docs/recipes/dol-save-state.cjs'),hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 function realm(){
- const state={passage:'Bedroom',turns:2,variables:{money:500,timeStamp:60,options:{autosaveDisabled:false},ironmanmode:false}},records=new Map(),details=new Map();let release=null,calls=0,ackOnly=false,entered=[];
+ const state={marshalForSave:function(){return {index:0,history:[{title:this.passage,variables:{money:this.variables.money,timeStamp:this.variables.timeStamp}}]}},deltaDecode:function(delta){return structuredClone(delta)},passage:'Bedroom',turns:2,variables:{money:500,timeStamp:60,options:{autosaveDisabled:false},ironmanmode:false}},records=new Map(),details=new Map();let release=null,calls=0,ackOnly=false,entered=[];
  const idb={active:true,
-  async saveState(slot,_title,metadata){calls++;for(const r of entered.splice(0))r();if(ackOnly)return true;await new Promise(resolve=>{release=resolve});records.set(slot,{slot,data:{index:0,history:[{title:state.passage,variables:{money:state.variables.money,timeStamp:state.variables.timeStamp}}]}});details.set(slot,{slot,data:{metadata}});return true},
+  async saveState(slot,_title,metadata){calls++;for(const r of entered.splice(0))r();if(ackOnly)return true;await new Promise(resolve=>{release=resolve});records.set(slot,{slot,data:{index:0,delta:[{title:state.passage,variables:{money:state.variables.money,timeStamp:state.variables.timeStamp}}]}});details.set(slot,{slot,data:{metadata}});return true},
   async getItem(slot){return records.get(slot)},async getSaveDetails(){return [...details.values()]},async deleteItem(slot){records.delete(slot);details.delete(slot)},
-  async loadState(slot){const row=records.get(slot),saved=row.data.history[row.data.index];state.variables.money=saved.variables.money;state.variables.timeStamp=saved.variables.timeStamp;state.passage=saved.title;state.turns++},
+  async loadState(slot){const row=records.get(slot),saved=row.data.delta[row.data.index];state.variables.money=saved.variables.money;state.variables.timeStamp=saved.variables.timeStamp;state.passage=saved.title;state.turns++},
  };
  const window={StartConfig:{version:'0.5.12.13'},idb,SugarCube:{State:state,Save:{onSave:{handlers:[]},onLoad:{handlers:[]}}}},context={window,crypto:webcrypto,TextEncoder};
- const inputs={gameVersion:'0.5.12.13',slot:1,trial:'save-test',operation:'save',apiDigest:hash({sources:Object.fromEntries(['saveState','getItem','getSaveDetails','deleteItem','loadState'].map(k=>[k,idb[k].toString()])),hooks:{onSave:[],onLoad:[]}})};
+ const inputs={gameVersion:'0.5.12.13',slot:1,trial:'save-test',operation:'save',marshalDigest:hash(state.marshalForSave.toString()),decoderDigest:hash(state.deltaDecode.toString()),apiDigest:hash({sources:Object.fromEntries(['saveState','getItem','getSaveDetails','deleteItem','loadState'].map(k=>[k,idb[k].toString()])),hooks:{onSave:[],onLoad:[]}})};
  const functions=o=>Object.fromEntries(['read','quote','execute','outcome'].map(k=>[k,vm.runInNewContext('('+o[k].toString()+')',context)]));
  return {state,idb,context,inputs,functions,records,get calls(){return calls},entered(){return new Promise(r=>entered.push(r))},release(){release()},ackOnly(){ackOnly=true}};
 }

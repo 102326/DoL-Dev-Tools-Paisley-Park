@@ -30,3 +30,19 @@ test('explicit passage-transition Recipe can settle a fresh native root, while d
   assert.equal(result.ok,mode==='permitted');assert.equal(records.attempt.status,mode==='permitted'?'terminal':'started');
  }
 });
+
+test('post-action read failure retains completed execution as a fact without inventing business Outcome',async()=>{
+ const node={isConnected:true},records=Object.create(null),context={nonce:'nonce',records},window={receipts:context};let reads=0;
+ const run=vm.runInNewContext('('+operation.toString()+')',{window,document:{querySelector:()=>node},TextEncoder});
+ await assert.rejects(run(node,{namespace:'receipts',binding:{contextNonce:'nonce'},attemptId:'attempt',before:{value:1},inputs:{}},()=>{if(reads++)throw Error('Unknown post-state shape');return {value:1}},async()=>{},()=>({occurred:true,spent:0}),()=>{}),/Unknown post-state/);
+ assert.equal(records.attempt.status,'started');assert.equal(records.attempt.executionCompleted,true);assert.equal(records.attempt.phase,'project-script-completed');assert.equal(records.attempt.outcome,undefined);
+});
+
+test('project script or observer replacing its owned record cannot be overwritten into terminal success',async()=>{
+ for(const phase of ['execute','outcome']){
+ const node={isConnected:true},records=Object.create(null),context={nonce:'nonce',records},window={receipts:context},replacement={status:'foreign'};
+ const run=vm.runInNewContext('('+operation.toString()+')',{window,document:{querySelector:()=>node},TextEncoder});
+ const result=await run(node,{namespace:'receipts',binding:{contextNonce:'nonce'},attemptId:'attempt',before:{value:1},inputs:{}},()=>({value:1}),async()=>{if(phase==='execute')records.attempt=replacement},()=>{if(phase==='outcome')records.attempt=replacement;return {occurred:true,spent:0}},()=>{});
+ assert.equal(result.ok,false);assert.equal(records.attempt,replacement);
+ }
+});
