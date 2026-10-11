@@ -94,8 +94,8 @@ async function dispatchReady(r,s,dir,overrides={}){
   // A visible control is not a declared Outcome producer. Do not create an
   // uncloseable effect merely because the raw Action runner can click it.
   if(!approvedOwner.prepare&&typeof overrides.readOutcome!=='function')return view(r.pause(s.id,'reviewed-action-outcome-unavailable'));
-  // Measured native save preparation takes 27s; retain time for its transaction witness.
-  const authorization=s.config.scope??s.config.goal.scope,executionWindow=require('./game-native-save.cjs').authorized(authorization)?60000:30000;
+  // Measured native shop attestation takes 84s; retain the existing bounded Journey window.
+  const authorization=s.config.scope??s.config.goal.scope,executionWindow=require('./game-native-save.cjs').authorized(authorization)?120000:30000;
   const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization,...(s.config.goal.kind==='project-experiment'?{projectGoal:s.config.goal}:{}),timeoutMs:Math.max(1,Math.min(executionWindow,s.deadline-Date.now()))};
     const e=r.prepare(s.id,{expected:s});if(!e)return view(r.status(s.id));
     const descriptor=e.action,selected=descriptor.selected,intent=descriptor.kind,owner=capabilities.validateDescriptor(descriptor,s.config.goal),scene=s.scene;
