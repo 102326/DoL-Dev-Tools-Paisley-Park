@@ -16,7 +16,7 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
   --version
   game-goal-start --file REVIEWED_GOAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     Native Gameplay Goals: reach-passage, native-state conditions, or native-knowledge membership with optional return Passage; clothing Goals belong to a domain provider.
-  game-goal-step --goal GOAL_DIR --test-environment yes [--file REVIEWED_ACTION_JSON --intent navigation|dialogue|combat|buy|sell|equip|unequip|sleep|menu|settings|load-save]
+  game-goal-step --goal GOAL_DIR --test-environment yes [--file REVIEWED_ACTION_JSON --intent navigation|dialogue|combat|buy|sell|equip|unequip|sleep|menu|settings|load-save|experiment|save|delete-save]
     Gameplay: reviewed native navigation/activity/combat selection; dol-shop browse/return/buy-one, native simple-head or optional sw-wardrobe. Host Agent supplies Decisions. No file: observe/check original Goal state.
     Unknown results stay pending until a reviewed terminal Outcome reader verifies closure and original effects.
     --store ABSOLUTE_SQLITE selects an isolated Store at start; normal use shares the local target ledger. --resume yes renews the binding at step.

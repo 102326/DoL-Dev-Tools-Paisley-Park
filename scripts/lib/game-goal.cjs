@@ -49,7 +49,7 @@ function view(s){
     effectId:uuid(e?.id),sessionId:uuid(e?.sessionId),owner:uuid(e?.sessionId)?e.sessionId===s.id?'current-session':'other-session':'unknown',
     status:['prepared','dispatching','acknowledged'].includes(e?.status)?e.status:'unknown',
     actionKind:semantic.intents.includes(e?.action?.kind)?e.action.kind:'unknown',
-    provider:['native-dol','clothing'].includes(e?.action?.capability?.provider)?e.action.capability.provider:'unknown',
+    provider:['native-dol','clothing','project-experiment'].includes(e?.action?.capability?.provider)?e.action.capability.provider:'unknown',
   }))};
   const state=s.machine.value;return{experimental:true,runtimeVersion:2,goalId:s.id,epoch:s.epoch,revision:s.revision,status:state==='completed'?'completed':s.stopReason==='checkpoint-failed'?'failed':s.stopReason==='cancelled'?'cancelled':s.stopReason?'exhausted':state==='paused'?'paused':state==='reconciling'?'needs-result-interpretation':'active',phase:state,actions:s.actions,observations:s.observations,pending:!!effects.length,pendingEffects,proof:combinedProof,reason:s.pauseReason||s.stopReason||null,decision:decisionView(s.decision),budget:{deadline:s.deadline,maxSpend:s.config.budget.maxSpend,spent:s.spent,reserved:s.reserved,actualSpendExceeded:!withinSpend(s.spent,s.config.budget.maxSpend)},reconciliation:{reads:s.reconciliationReads??0,maxReads:8,error:s.reconciliationError??null},checkpoints:s.checkpoints,requiredCheckpoints:s.config.requiredCheckpoints||[],routes:s.routes||[],...memory};
 }
@@ -58,6 +58,7 @@ async function start(options,request,overrides={}){
   if(options.testEnvironment!==true||!options.out)throw Error('Explicit tested Goal target required');
   loadRuntime(); // Fail before ADB, output creation or a Session when Gameplay prerequisites are missing.
   const userId=(await(overrides.adb||collectors.android(options))('shell','am','get-current-user')).toString().trim();
+  if(request.goal.kind==='project-experiment')require('./game-project-provider.cjs').assertTarget(options,request.goal,userId,(await(overrides.adb||collectors.android(options))('shell','dumpsys','package',options.package)).toString());
   const store=options.store||process.env.PAISLEY_PARK_STORE||path.join(process.env.LOCALAPPDATA||os.homedir(),'PaisleyPark','sessions-v2.sqlite');
   const r=open(store,overrides);let s;
   try{
@@ -90,9 +91,10 @@ async function dispatchReady(r,s,dir,overrides={}){
   // A visible control is not a declared Outcome producer. Do not create an
   // uncloseable effect merely because the raw Action runner can click it.
   if(!approvedOwner.prepare&&typeof overrides.readOutcome!=='function')return view(r.pause(s.id,'reviewed-action-outcome-unavailable'));
-  const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
+  const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,...(s.config.goal.kind==='project-experiment'?{projectGoal:s.config.goal}:{}),timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
     const e=r.prepare(s.id,{expected:s});if(!e)return view(r.status(s.id));
     const descriptor=e.action,selected=descriptor.selected,intent=descriptor.kind,owner=capabilities.validateDescriptor(descriptor,s.config.goal),scene=s.scene;
+    if(options.projectGoal)options.projectIntent=intent;
     if(e.sceneRevision!==scene.revision)throw Error('Reserved Scene mismatch');
     const postReservation=r.reserveObservation(s.id);if(!postReservation)return view(r.status(s.id));
     const out=path.join(dir,'action-'+e.id);let report,binding;

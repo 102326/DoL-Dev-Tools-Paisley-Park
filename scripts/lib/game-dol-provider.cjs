@@ -202,6 +202,15 @@ async function act(options, selected, intent, overrides = {}) {
         const bound = await client.send('Runtime.evaluate', { expression: `(() => { const n=document.querySelectorAll(${JSON.stringify(step.selector)}); return n.length===1?n[0]:null; })()`, returnByValue: false });
         objectId = bound?.result?.objectId;
         if (!objectId || bound.exceptionDetails) { report.reason = 'target-not-unique'; throw Error('Target unavailable'); }
+        if(mapping?.projectExperiment===true){
+          const scene=await client.evaluate(`(${gameplayReader.toString()})(${controlReader.toString()})`);
+          if(!options.projectGoal||!scene?.domAgrees||overrides.expectedScene&&JSON.stringify(scene)!==JSON.stringify(overrides.expectedScene))throw Error('Project Scene/authorization changed');
+          report.before={passage:scene.passage,domAgrees:true};
+          ctx.webGuard={objectId,operation:mapping.operation,source:`
+            if(node!==observedRoot||node!==document.querySelector('#passages > .passage')||
+              JSON.stringify((${gameplayReader.toString()})(${controlReader.toString()}))!==${JSON.stringify(JSON.stringify(scene))})return {ok:false,guardRejected:true};
+          `};
+        }else{
         const raw = await client.send('Runtime.callFunctionOn', { objectId, functionDeclaration: `function() { return (${controlReader.toString()})(this); }`, returnByValue: true });
         const before = raw?.result?.value;
         if (raw.exceptionDetails || !before || !before.domAgrees || before.turns === null || before.time === null) throw Error('Scene observation unavailable');
@@ -243,6 +252,7 @@ async function act(options, selected, intent, overrides = {}) {
             return {ok:false,guardRejected:true};
           ${mapping?.source || ''}
         ` };
+        }
         const mark = ctx.markSideEffect;
         ctx.markSideEffect = () => { overrides.reserve?.(); mark(); report.dispatch = 'unknown'; };
         try {

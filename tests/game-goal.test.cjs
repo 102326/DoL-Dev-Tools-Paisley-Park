@@ -8,7 +8,7 @@ function fixture(t,config={}) {
   if(native.prepare){t.mock.method(native,'prepare');native.prepare=undefined;}
   const base=fs.mkdtempSync(path.join(os.tmpdir(),'dol-goal-'));
   t.after(()=>{assert.ok(path.resolve(base).startsWith(path.resolve(os.tmpdir())+path.sep));fs.rmSync(base,{recursive:true,force:true})});
-  const state={passage:'Bedroom',turns:1,variables:{location:'home',timeStamp:100,worn:{head:{variable:'naked',colour:null}}}};
+  const state={passage:'Bedroom',turns:1,variables:{...(config.project?{money:5}:{}),location:'home',timeStamp:100,worn:{head:{variable:'naked',colour:null}}}};
   Object.defineProperty(state.variables,'wardrobe',{get(){if(config.purchaseInventory)return{head:config.purchaseInventory};throw Error('Full inventory must not be read by Goal coordinator')}});
   let clicks=0,forward=false,lost=false,user='0',evaluations=0,quoted=false;
   class Element {
@@ -22,7 +22,7 @@ function fixture(t,config={}) {
     click(){clicks++;state.passage=config.routes?.shift()||'Wardrobe';state.turns++;state.variables.timeStamp++;if(config.equip)state.variables.worn.head={variable:'test_cap',colour:'black'}}
   }
   const root=new Element(),node=new Element(),html={children:[root],classList:{contains:()=>false}};root.tagName='DIV';root.parentElement=html;root.children=[node];node.parentElement=root;node.children=[];
-  const globals={window:{SugarCube:{State:state}},HTMLElement:Element,innerWidth:400,innerHeight:700,
+  const globals={TextEncoder,window:{SugarCube:{State:state}},HTMLElement:Element,innerWidth:400,innerHeight:700,
     getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1',pointerEvents:'auto'}),
     document:{documentElement:html,querySelector:()=>root,
       querySelectorAll:s=>s.startsWith('html > ')?[node]:s==='#passages > .passage'?[root]:s.includes('data-passage="Wardrobe"')?(state.passage==='Bedroom'?[node]:[]):s==='#choice'?[node]:[],elementFromPoint:()=>node}};
@@ -31,7 +31,7 @@ function fixture(t,config={}) {
     const c=args.join(' ');
     if(c==='get-state')return Buffer.from('device');
     if(c==='shell am get-current-user')return Buffer.from(user);
-    if(c.startsWith('shell dumpsys package'))return Buffer.from(`Package [com.example.game]\nversionName=1.0 versionCode=1\n User ${user}: installed=true`);
+    if(c.startsWith('shell dumpsys package'))return Buffer.from(`Package [com.example.game]\nversionName=1.0 versionCode=1\n signatures=PackageSignatures{fixture version:3, signatures:[${config.signingHash||'a11ce'}], past signatures:[]}\n User ${user}: installed=true`);
     if(c.includes('dumpsys activity'))return Buffer.from(`mResumedActivity: ActivityRecord{ u${user} com.example.game/.Main }`);
     if(c.includes('dumpsys window displays'))return Buffer.from(`mCurrentFocus=Window{ u${user} com.example.game/.Main }`);
     if(c==='shell pidof com.example.game')return Buffer.from('123');
@@ -44,10 +44,10 @@ function fixture(t,config={}) {
   const connect=async(_e,_t,onEvent)=>require('./fixtures/document-client.cjs')({close(){},isOpen:()=>true,
     async evaluate(expression){evaluations++;return vm.runInNewContext(expression,globals)},
     async send(method,params){
-      if(method==='Runtime.evaluate')return{result:{objectId:'node'}};
+      if(method==='Runtime.evaluate')return{result:{objectId:config.project&&params.expression.includes('#passages > .passage')?'project-root':'node'}};
       if(method!=='Runtime.callFunctionOn')return{};
       if(config.commerceDrift&&params.functionDeclaration.includes('const observedRoot'))quoted=true;
-      const result=vm.runInNewContext(`(${params.functionDeclaration})`,globals).call(node);
+      const result=await vm.runInNewContext(`(${params.functionDeclaration})`,globals).call(params.objectId==='project-root'?root:node);
       if(config.nativeAckLost&&result?.receipt&&!lost){lost=true;throw Error('Native acknowledgement lost')}
       if(config.nativeContextLost&&result?.receipt&&!lost){lost=true;globals.window={SugarCube:globals.window.SugarCube}}
       if(config.userDrift && !params.functionDeclaration.includes('observedRoot'))user='1';
@@ -61,6 +61,94 @@ function fixture(t,config={}) {
     stats:()=>({clicks,forward,evaluations}),request:{name:'wardrobe',mode:'gameplay',goal:{kind:'reach-passage',passage:'Wardrobe'},budget:{timeoutMs:60000,maxActions:8,maxObservations:20}}};
 }
 const step=f=>({testEnvironment:true,file:f.file,intent:'navigation'});
+function projectFixture(t,config={}){
+ const f=fixture(t,{...config,project:true}),file=path.join(f.base,'project.cjs');
+ const source=`module.exports={schemaVersion:1,operations:[{id:'prepare-money',label:'Prepare test currency',intent:'experiment',
+  read:()=>({money:window.SugarCube.State.variables.money}),quote:()=>0,
+  execute:async inputs=>{window.__projectRuns=(window.__projectRuns||0)+1;await Promise.resolve();window.SugarCube.State.variables.money=inputs.amount;return 'script returned'},
+  outcome:(before,after,inputs)=>({occurred:after.money===inputs.amount,spent:0})}]}`;
+ fs.writeFileSync(file,source);
+ f.request.goal={kind:'project-experiment',recipe:file,inputs:{amount:10},
+  scope:{workspace:f.base,serial:f.options.serial,package:f.options.package,userId:'0',signingHash:'a11ce',intents:['experiment'],dataDomain:'app-user-data'},
+  predicate:{kind:'native-state',conditions:[{field:'money',op:'eq',value:10}]}};
+ return {...f,source,recipe:file};
+}
+async function projectProposal(f,current){
+ const d=current.decision,a=d.scene.choices.find(a=>a.capability.provider==='project-experiment');assert.ok(a);
+ const p={...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:a.ref,reason:'Prepare authorized project state',plan:[],beliefs:[]};
+ const file=path.join(f.base,'project-proposal.json');fs.writeFileSync(file,JSON.stringify(p));return file;
+}
+test('project experiment is reachable through existing CLI request/propose/dispatch with separate original predicate and settled receipt',async t=>{
+ const f=projectFixture(t),{main}=require('../scripts/dol-dev.cjs'),start=goal.start,session=goal.session;
+ t.mock.method(goal,'start',(o,r)=>start(o,r,f.overrides));t.mock.method(goal,'session',(d,o,s)=>session(d,o,s,f.overrides));
+ const file=path.join(f.base,'request.json');fs.writeFileSync(file,JSON.stringify(f.request));
+ await main(['game-goal-start','--file',file,'--serial',f.options.serial,'--package',f.options.package,'--out',f.options.out,'--store',f.options.store,'--test-environment','yes']);
+ let current=goal.view(goal.status(f.options.out));assert.equal(current.proof.satisfied,false);assert.equal(current.pending,false);
+ const proposal=await projectProposal(f,current);
+ await main(['game-session','--goal',f.options.out,'--operation','propose','--file',proposal,'--test-environment','yes']);
+ await main(['game-session','--goal',f.options.out,'--operation','dispatch','--test-environment','yes']);
+ current=goal.status(f.options.out);assert.equal(current.machine.value,'completed');assert.equal(current.actions,1);assert.equal(current.spent,0);assert.equal(current.openEffects.length,0);
+ assert.equal(f.state.variables.money,10);assert.equal(f.globals.window.__projectRuns,1);assert.equal(f.stats().clicks,0);
+ const {Runtime}=require('../scripts/lib/game-runtime.cjs'),r=new Runtime(f.options.store,{provider:goal.provider});try{
+  const e=r.outcomeContext(current).effects[0];assert.equal(e.result.evidence.kind,'project-experiment');assert.equal(e.result.evidence.before.money,5);assert.equal(e.result.evidence.after.money,10);
+ }finally{r.close()}
+});
+test('project script acknowledgement without independently confirmed side effect remains pending even when Goal predicate is satisfied',async t=>{
+ const f=projectFixture(t);fs.writeFileSync(f.recipe,f.source.replace('occurred:after.money===inputs.amount','occurred:false'));
+ const current=await goal.start(f.options,f.request,f.overrides),file=await projectProposal(f,current);
+ await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);
+ const result=await goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides);
+ assert.equal(result.pending,true);assert.equal(result.proof.satisfied,true);assert.notEqual(result.status,'completed');assert.equal(f.globals.window.__projectRuns,1);
+ // Changing current Recipe code cannot retroactively close the old started attempt.
+ fs.writeFileSync(f.recipe,f.source);
+ const resumed=await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides);
+ assert.equal(resumed.pending,true);assert.equal(resumed.actions,1);assert.equal(f.globals.window.__projectRuns,1);
+});
+test('project effect completion is separate from Goal completion and virtual spend uses observed cost with explicit zero respected',async t=>{
+ for(const limit of [undefined,0,1]){
+  const f=projectFixture(t);f.request.goal.inputs.amount=4;f.request.goal.predicate.conditions[0].value=0;
+  fs.writeFileSync(f.recipe,f.source.replace('quote:()=>0','quote:before=>before.money-4').replace('spent:0','spent:before.money-after.money'));
+  if(limit!==undefined)f.request.budget.maxSpend=limit;
+  const current=await goal.start(f.options,f.request,f.overrides);
+  assert.ok(current.decision.scene.choices.every(a=>a.kind==='experiment'),'native actions outside this scope are not offered');
+  if(limit===0){assert.equal(current.decision.scene.choices.length,0);assert.equal(f.globals.window.__projectRuns,undefined);continue}
+  const file=await projectProposal(f,current);await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);
+  const after=await goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides);
+  assert.equal(after.pending,false);assert.equal(after.status,'active');assert.equal(after.proof.satisfied,false);assert.equal(after.budget.spent,1);assert.equal(f.state.variables.money,4);
+ }
+});
+test('project scope target, signer and source changes refuse before script dispatch without hidden retry',async t=>{
+ const wrong=projectFixture(t);wrong.request.goal.scope.serial='other-device';
+ await assert.rejects(goal.start(wrong.options,wrong.request,wrong.overrides),{code:'PROJECT_SCOPE_TARGET_CHANGED'});assert.equal(fs.existsSync(wrong.options.out),false);
+ const signer=projectFixture(t,{signingHash:'bad'});await assert.rejects(goal.start(signer.options,signer.request,signer.overrides),{code:'PROJECT_SCOPE_SIGNER_CHANGED'});
+ const f=projectFixture(t),current=await goal.start(f.options,f.request,f.overrides),file=await projectProposal(f,current);
+ await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);fs.appendFileSync(f.recipe,'\n// authorized source iteration\n');
+ await assert.rejects(goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides),/Recipe changed/);
+ assert.equal(goal.status(f.options.out).actions,0);assert.equal(f.globals.window.__projectRuns,undefined);
+ const next=await goal.session(f.options.out,'request',{testEnvironment:true},f.overrides);assert.ok(next.decision.scene.choices.some(a=>a.capability.provider==='project-experiment'));
+});
+test('project Recipe must resolve inside the authorized workspace and expose all independent evidence functions',t=>{
+ const f=projectFixture(t);f.request.goal.scope.workspace=path.join(f.base,'missing');assert.throws(()=>goal.validate(f.request));
+ f.request.goal.scope.workspace=f.base;fs.writeFileSync(f.recipe,'module.exports={schemaVersion:1,operations:[{id:"execute-only",label:"No evidence",intent:"experiment",execute:()=>true}]}');
+ assert.throws(()=>goal.validate(f.request),/independent/);
+});
+test('old project terminal survives host interruption and missing current Recipe without using new code to reinterpret it',async t=>{
+ const f=projectFixture(t),{Runtime}=require('../scripts/lib/game-runtime.cjs'),observe=Runtime.prototype.observe;
+ let interrupted=false;
+ t.mock.method(Runtime.prototype,'observe',function(id,scene,resolutions,...rest){
+  if(!interrupted&&resolutions?.some(r=>r.evidence?.kind==='project-experiment')){interrupted=true;throw Error('Controlled host interruption before durable settlement')}
+  return observe.call(this,id,scene,resolutions,...rest);
+ });
+ const current=await goal.start(f.options,f.request,f.overrides),file=await projectProposal(f,current);
+ await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);
+ await assert.rejects(goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides),/Controlled host interruption/);
+ assert.equal(goal.status(f.options.out).openEffects.length,1);assert.equal(f.globals.window.__projectRuns,1);
+ fs.unlinkSync(f.recipe);
+ const resumed=await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides);
+ assert.equal(resumed.status,'completed');assert.equal(resumed.pending,false);assert.equal(resumed.actions,1);assert.equal(f.globals.window.__projectRuns,1);
+ const observations=fs.readdirSync(f.options.out).filter(f=>f.startsWith('observation-')).map(dir=>JSON.parse(fs.readFileSync(path.join(f.options.out,dir,'semantic.json'))));
+ assert.ok(observations.some(o=>o.capabilities.project.status==='failed'&&o.capabilities.project.reason==='recipe-file-unavailable'));
+});
 test('Goal entry normalizes omitted spend to explicit null while zero survives request, view and resume',async t=>{
  for(const limit of [undefined,null,0,100]){
   const f=fixture(t);if(limit!==undefined)f.request.budget.maxSpend=limit;

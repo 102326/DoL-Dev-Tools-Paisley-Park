@@ -120,6 +120,7 @@ class Runtime{
     return {effects:rows.map(row=>{const e=JSON.parse(row.doc);return copy({id:e.id,status:e.status,action:e.action,result:e.result,executionBinding:e.executionBinding})}),spent:s.spent,reserved:s.reserved,budget:copy(s.config.budget)};
   }
   allowedAction(s,action,context){
+    if(!withinSpend(action.cost+s.spent+s.reserved,s.config.budget.maxSpend))return false;
     if(!this.provider.canPrepare)return true;
     const allowed=this.provider.canPrepare(copy(action),copy(s.config.goal),copy(context??this.outcomeContext(s)));
     if(typeof allowed!=='boolean')throw Error('Synchronous reviewed action constraint required');

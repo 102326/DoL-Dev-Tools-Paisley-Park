@@ -10,7 +10,7 @@ node scripts/dol-dev.cjs journey --file docs/journey.example.json --serial DEVIC
 node scripts/dol-dev.cjs action --file reviewed-action.json --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/action-001 --test-environment yes
 ```
 
-必须先核对目标测试环境和具体动作语义。`--test-environment yes` 不授权真实存档/云数据的删除覆盖、正式数据清空或凭据修改。作者先检查实际按钮/输入目标；tap/click 不能自动证明业务动作无破坏性。
+必须先核对目标测试环境和具体动作语义。`--test-environment yes` 只表达入口意图，不自行产生存档、数据清空、云端或凭据权限。本轮明确授权可覆盖指定测试数据的保存、覆盖、删除、重建及独立状态准备；范围内不逐操作重新询问。未获授权的目标/账户仍需对应范围。作者先检查实际按钮/输入目标；tap/click 不自动证明业务结果，也不能绕过同一历史未决副作用。
 
 `--plan` 只验证静态完整计划并保存脱敏摘要，不连接设备或执行动作。未来步骤的控件可能尚未出现，selector 的实际匹配/可用性在执行时重新检查；plan 不宣称所有 selector 已在现场唯一匹配。
 

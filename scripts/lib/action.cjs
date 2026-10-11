@@ -85,6 +85,7 @@ async function execute(ctx, action) {
   if (!/^\d+$/.test(userId)) throw new Error('Android user unavailable');
   if (options.expectedUserId !== undefined && options.expectedUserId !== userId) throw Object.assign(new Error('Android user changed'), { code: 'TARGET_USER_CHANGED' });
   const packageInfo = (await adb('shell', 'dumpsys', 'package', options.package)).toString();
+  if(options.projectGoal)require('./game-project-provider.cjs').assertTarget(options,options.projectGoal,userId,packageInfo);
   const packageBlock = packageInfo.split(`Package [${options.package}]`)[1]?.split(/\n\s*Package \[/)[0];
   if (!packageBlock ||
       !(/\bversionCode=\d+\b/.test(packageBlock) || /\bversionName=[0-9A-Za-z._()+-]{1,64}\b/.test(packageBlock)) ||
