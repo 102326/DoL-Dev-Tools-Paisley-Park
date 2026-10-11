@@ -1,6 +1,6 @@
 # DoL Dev Tools 4.0 — Bites the Dust 开发记录
 
-状态：核心研发和已审 RC 验收完成，当前为正式 `4.0.0 — Bites the Dust` 本地制品，远程未发布。[正式版更新说明](RELEASE_4.0.0.md)与[收口/兼容说明](CLOSEOUT_4_0.md)为当前入口；下方 RC 号及切片记录保留当时的真实身份。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；历史资料保留，只复用与当前合同直接相关的已审实现和测试。
+状态：核心研发和已审 RC 验收完成，当前收口为正式 `4.0.0 — Bites the Dust`，发布状态和制品身份以 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[正式版更新说明](RELEASE_4.0.0.md)与[收口/兼容说明](CLOSEOUT_4_0.md)为当前入口；下方 RC 号及切片记录保留当时的真实身份。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；历史资料保留，只复用与当前合同直接相关的已审实现和测试。
 
 ## 本轮范围与 Done
 
@@ -8,7 +8,7 @@
 
 **历史故障重演已取消。** 不恢复 Soft & Wet 2.3/2.5 已修问题、不制造故障、不执行历史 Plan B。使用本轮真实源码缺陷的调查、修复和回归验证工程能力。完整 Android Mod 自主修复闭环在没有当前适合案例时标记 **Not Validated**；不冒充通过，也不阻塞其它必交实现。
 
-保留 CLI/Skill/Store/TargetKey 身份。用户已授权指定测试 App 及数据内操作；写前重新核对设备/user/package/签名和数据域。重载自动继承有效授权，但执行绑定必须显式重新建立。正式 3.0.3、已安装稳定 Skill、历史 Tusk 和未决事实保留。推送、正式合并、Tag/Release 和公开现场证据仍需另行确认。
+保留 CLI/Skill/Store/TargetKey 身份。用户已授权指定测试 App 及数据内操作；写前重新核对设备/user/package/签名和数据域。重载自动继承有效授权，但执行绑定必须显式重新建立。正式 3.0.3、已安装稳定 Skill、历史 Tusk 和未决事实保留。本次正式版推送、正式合并、Tag/Release 已取得用户单独确认；公开私人现场证据不在授权内。
 
 ## Delivered / 当前实现
 

@@ -13,7 +13,7 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 ## 4.0.0 安装与升级
 
-正式产品名为 DoL Dev Tools，版本代号 Bites the Dust（败者食尘）。CLI 文件名和 Skill 标识仍使用原名称，已有入口继续有效。本地正式 ZIP 准备完成后仍须等待单独远程发布；不要把历史 3.0.3 下载当成 4.0。
+正式产品名为 DoL Dev Tools，版本代号 Bites the Dust。CLI 文件名和 Skill 标识仍使用原名称，已有入口继续有效。正式 ZIP 见 [4.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0)；历史 3.0.3 下载不是 4.0。
 
 1. 将 `DoL-Dev-Tools-4.0.0.zip` 解压到新的长期保留目录，核对发布时随附的 SHA-256。
 2. 在该 Tools 根目录运行 `.\DoL-Dev.cmd --version` 和 `.\DoL-Dev.cmd --help`，确认 `--version` 返回 `4.0.0`，`--help` 首行显示 `DoL Dev Tools 4.0.0 — Bites the Dust` 及用途说明。Node.js 要求 22.12+。

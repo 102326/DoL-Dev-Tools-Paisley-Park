@@ -1,4 +1,4 @@
-# DoL Dev Tools 4.0.0 — Bites the Dust（败者食尘）
+# DoL Dev Tools 4.0.0 — Bites the Dust
 
 DoL Dev Tools 是面向 DoL Mod 作者和开发者的本地工具包。它连接 Android、WebView 和项目源码，帮助你查看现场、复现问题、保留证据，并在修改后验证结果。通用诊断不要求安装 Soft & Wet 或其它特定 Mod。
 

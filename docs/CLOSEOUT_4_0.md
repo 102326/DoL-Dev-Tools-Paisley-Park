@@ -1,6 +1,6 @@
 # DoL Dev Tools 4.0.0 — Bites the Dust 技术说明与收口
 
-产品名为 **DoL Dev Tools**，代号 **Bites the Dust（败者食尘）**。本轮仅将已审 RC 准备为本地正式 4.0.0，远程推送、main 合并、Tag、Release 和附件上传均等待单独指令。[面向使用者的更新说明](RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
+产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本版将已审 RC 收口为正式 4.0.0，并在用户单独确认后发布。下方记录本地收口的交付与验证范围，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
 
 ## Delivered
 
@@ -51,4 +51,4 @@ Android 三剑客实测来源：CLI 1.0.16486076 的实际版本和 native-layou
 - 手机上 durable GER 故障注入与 66 次业务容量；这些已有离线/受控验证，不能冒充真机业务覆盖。
 - Skill 显式定位/安装验证不保证每个自然语言提示都自动触发；resolver 验证位置，不提供代码信任保证。
 
-原始 SQLite、存档、APK、截图、完整设备标识、机器配置和私有执行日志仅保留在 ignored 本地证据目录，不随公开包或 Release 上传。现场事实、项目解释和能力完成状态保持分开；覆盖有限不自动构成剩余研发任务。发布准备的 Go 只授权请求最终发布批准，不表示已远程发布。
+原始 SQLite、存档、APK、截图、完整设备标识、机器配置和私有执行日志仅保留在 ignored 本地证据目录，不随公开包或 Release 上传。现场事实、项目解释和能力完成状态保持分开；覆盖有限不自动构成剩余研发任务。本地发布准备时的 Go 不等于远程发布；本次发布已取得用户单独确认。后续发布仍需对应授权。

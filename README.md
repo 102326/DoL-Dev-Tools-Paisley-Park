@@ -1,8 +1,8 @@
 # DoL Dev Tools
 
-**4.0.0 — Bites the Dust（败者食尘）**
+**4.0.0 — Bites the Dust**
 
-本地正式版；远程尚未发布，发布须单独确认。[更新说明](docs/RELEASE_4.0.0.md) · [技术验证与兼容说明](docs/CLOSEOUT_4_0.md)
+[获取 4.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) · [更新说明](docs/RELEASE_4.0.0.md) · [技术验证与兼容说明](docs/CLOSEOUT_4_0.md)
 
 面向 DoL Mod 生态的本地开发工具系统。连接真实 Android / WebView，帮助开发者和 Agent 查看运行现场、调查问题、复现操作，并在修改、构建和部署后验证结果。
 
@@ -62,7 +62,7 @@
 
 ## 快速开始
 
-正式包名称为 `DoL-Dev-Tools-4.0.0.zip`；本地发布准备阶段尚未上传。取得发布包后核对随附 SHA-256，将 ZIP 解压到新的长期保留目录。更新时保留旧 Tools 和 Skill 副本，不直接覆盖；详见 [安装与升级](docs/SKILL_INSTALL.md)。包不包含游戏、APK、设备工具、node_modules 或私人证据。
+从 [4.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 获取 `DoL-Dev-Tools-4.0.0.zip`。取得发布包后核对随附 SHA-256，将 ZIP 解压到新的长期保留目录。更新时保留旧 Tools 和 Skill 副本，不直接覆盖；详见 [安装与升级](docs/SKILL_INSTALL.md)。包不包含游戏、APK、设备工具、node_modules 或私人证据。
 
 在解压后的 Tools 根目录运行 `.\DoL-Dev.cmd --version`，应返回 `4.0.0`；`--help` 首行应为 `DoL Dev Tools 4.0.0 — Bites the Dust`，随后是用途说明。现有 `Paisley-Park.cmd` 入口仍可使用。
 
