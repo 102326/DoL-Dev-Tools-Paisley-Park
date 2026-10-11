@@ -1,12 +1,12 @@
-# DoL Dev Tools: Paisley Park
+# DoL Dev Tools
 
-**3.0 — Gold Experience Requiem · 当前发行版 3.0.3**
+**4.0 — Bites the Dust · 本地候选 4.0.0-rc.1 · 未发布**
 
 面向 DoL Mod 生态的本地开发工具系统。连接真实 Android / WebView，帮助开发者和 Agent 查看运行现场、调查问题、复现操作，并在修改、构建和部署后验证结果。
 
-除了诊断，3.0 还支持 Agent 根据游戏目标持续观察、决策和行动，在普通事件中调整路线，并在中断后接着完成原任务。Gameplay 可用于真实业务验收，也可用于有边界的游玩。
+在一次明确的工作区、设备、App 与数据范围授权内，Agent 可自主调查、修改、构建、部署和复验。普通 Debug 使用现有 Action/Journey/evaluator；需要长期目标、预算、副作用记录和恢复时使用共享 GER Runtime。正常阶段切换不需要重复确认；公网发布与范围外资源需另行授权。
 
-[下载 3.0.3](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) · [快速开始](#快速开始) · [文档导航](#文档导航)
+[稳定版 3.0.3（历史基线）](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) · [快速开始](#快速开始) · [文档导航](#文档导航)
 
 ## 能做什么
 
@@ -26,7 +26,16 @@
 
 这些能力由同一套诊断、执行和证据流程连接起来：记录明确的设备与 App、每步结果和制品来源，支持前后比较、检查点和恢复。直接 CDP / ADB 查询仍可用于更灵活的调查；已有标准能力能覆盖问题时，优先复用它，减少临时脚本与重复采集。
 
-## 3.0 — Gold Experience Requiem
+## 4.0 — Bites the Dust
+
+- **两条执行路径**：普通调试不强制建立 Gameplay Goal；长期 GER Session 可执行受授权本地项目 Recipe、状态准备和受支持存档操作。
+- **预算可选**：不设虚拟消费上限时记录实际消费而不设置隐含零预算；显式零/有限值和子目标限额继续生效。免费购买仍需真实库存与业务证明。
+- **可靠恢复**：绑定真实目标与文档，区分未派发、执行回执和 Outcome；已结清路线可以重复探索，历史 Unknown 不被重放或隐藏。真实 App 数据重建使用原 Store 内可核验资源代次。
+- **Android 工具协作**：复用已安装 Android CLI、适用官方 Skills 和 Knowledge Base，并分别记录 ADB/CDP、工具来源与实际结果。
+
+本轮已验证真实 Android 文档绑定、native save/create/overwrite/load/delete、原生 autosave transaction 和受控零价购买。完整 Android Mod 自主修复闭环 **Not Validated**，没有通过恢复旧 Bug 制造验收。当前证据、兼容限制及候选状态见 [4.0 开发记录](docs/BITES_THE_DUST_4_0.md)。
+
+### 继承的 Gameplay 核心
 
 3.0 在指定步骤的工具执行之上，加入了目标驱动的 Gameplay Runtime。宿主 Agent 负责理解场景与决策，Tools 负责可靠地执行、保存进度和核对结果：
 
@@ -41,7 +50,7 @@
 
 玩法目标与当前版本的执行细节分层：`Goal → Semantic → Capability Provider → Execution → Outcome`。原生 DoL 是主要对象；商店和衣柜是领域 Provider，Soft & Wet 等 Mod 提供可选映射。实现协议与支持范围见 [Gameplay 指南](docs/GAMEPLAY.md)。
 
-## 已验证的例子
+## 历史稳定版代表性例子（不计入本轮新通过数）
 
 **Mod 更新与界面复验。** 在独立 Android 测试 App 中，将 DoLGameUI 2.0.3 更新为 2.1.0，核对持久加载来源与 JS/CSS 哈希，打开/关闭真实设置并比较限定范围 CSS；重启后再次确认加载与行为。这证明了真实发行包更新和设置复验，不代表工具能自动修复任意项目源码。见 [业务 Mod 更新记录](docs/BUSINESS_MOD_UPDATE.md) 和 [开发工作流](docs/WORKSHOP.md)。
 
@@ -51,7 +60,7 @@
 
 ## 快速开始
 
-从 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) 下载 `DoL-Dev-Tools-Paisley-Park-3.0.3.zip`，核对随附 SHA256，解压到稳定目录并进入工具根目录。包不包含游戏、APK 或设备工具。
+本开发线的本地候选包须与随附 Git SHA、文件摘要和版本核对，解压到新目录；不要覆盖正式 3.0.3 或已安装稳定 Skill。正式稳定版仍可从 [3.0.3 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) 获取。包不包含游戏、APK、设备工具、node_modules 或私人证据。
 
 需要 **Node.js 22.12+**。Android 现场需要已有 **ADB、USB 调试授权和明确的设备 serial / App package**；先手动打开目标 App。WebView 内部观察还需要 App 开启调试支持。ADB 不在 PATH 时，在当前进程设置 `DOL_ADB` 为已有 `adb.exe` 的绝对路径；详见 [环境与连接说明](docs/DIAGNOSTICS.md#快速入口)。
 
@@ -91,11 +100,11 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 
 - **通用诊断与可选 Integration 分离**：Generic 不依赖 Soft & Wet、MapleBirch、ModHub 或特定 UI Runtime；Integration 缺失、不支持或失败会独立记录，不使已成功的 Generic 采集失效。
 - **Gameplay 覆盖有边界**：需要宿主 Agent 与已审阅的动作/结果合同，尚未支持全部 Passage、版本、Mod 和业务。正常事件可重新规划；缺少可靠执行或结果证明时拒绝派发。旧 Foundation journal 不自动迁移。
-- **存档与未知结果受保护**：删除或覆盖已有存档默认禁止。恢复不会重置累计预算或盲目重放未决副作用；新合同不能无依据结清旧动作。
+- **存档操作遵守实际授权**：保存、读取、覆盖、删除和数据重建需属于用户授权的数据范围及受支持合同；一次范围授权内不逐项审批。恢复不会重置累计预算或盲目重放未决副作用；新合同不能无依据结清旧动作。
 - **证据与结论分开**：Evidence 的 complete / partial / failed 描述本次采集。结构可能截断，像素差异不等于兼容失败，内存增长不等于泄漏，采集完整不等于业务通过。
 - **本地资料与代码权限**：私有截图、日志、存档与游戏数据不自动上传，分享前须审查。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 能执行传入的页面 JavaScript，“只读”是内置 Probe 的使用约束。
 
-具体支持范围、旧未决 effect 和后续覆盖见 [当前验收与已知限制](docs/CLOSEOUT_3_0_3.md)。规划中的能力与已交付功能分开记录。
+当前支持范围、旧未决 effect 和未覆盖项见 [4.0 开发记录](docs/BITES_THE_DUST_4_0.md)；[稳定版收口](docs/CLOSEOUT_3_0_3.md)保留历史证据。规划中的能力与已交付功能分开记录。
 
 ## 文档导航
 
@@ -108,7 +117,7 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 | 安装与使用 Agent Skill | [安装指南](docs/SKILL_INSTALL.md) · [Skill 源码](.agents/skills/dol-dev-tools-paisley-park/SKILL.md) |
 | 接入项目专属诊断 | [Integration Contract](docs/INTEGRATIONS.md) |
 | 修改、构建、部署与贡献 | [Workshop](docs/WORKSHOP.md) · [项目规则](AGENTS.md) · [架构边界](docs/ARCHITECTURE.md) |
-| 查询真实验收和安全限制 | [当前收口](docs/CLOSEOUT_3_0_3.md) · [验证记录](docs/VALIDATION.md) |
+| 查询当前验收与历史依据 | [4.0 开发记录](docs/BITES_THE_DUST_4_0.md) · [3.0.3 收口](docs/CLOSEOUT_3_0_3.md) · [历史验证](docs/VALIDATION.md) |
 | 了解版本演进与未来方向 | [历史索引](docs/HISTORY.md) · [能力蓝图](docs/BLUEPRINT.md) |
 
 贡献时使用目标模块的最小充分检查；Tools 的离线检查入口为 `npm test` 和 `python -m unittest discover -s tests -p "test_*.py"`。离线通过不能代替真机或游戏业务证明。

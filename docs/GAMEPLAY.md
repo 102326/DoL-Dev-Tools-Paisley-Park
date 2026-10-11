@@ -1,17 +1,17 @@
-# DoL Dev Tools: Paisley Park — Gold Experience Requiem 工作流
+# DoL Dev Tools — Gameplay 工作流
 
-当前版本 3.0.3 Gold Experience Requiem提供共享 Gameplay Runtime 与宿主 Decision 协议。Agent 理解当前原生 Scene、选择动作与动态重规划；Tools 持久保存 Goal、Memory、预算、Effect Ledger、checkpoint 与 Outcome，协调同 Session 中断恢复。S1/S2 代表性实机验收与本轮维护检查见[收口](CLOSEOUT_3_0_3.md)。原 v3.0.0 Foundation 已撤回；本页后半保留旧接口作为明确历史，不能用旧 journal 模型解释新 Session。Gameplay 私有记录不属于 Generic Schema 1，不自动跨版本恢复或上传。
+本开发线继承正式 3.0.3 Gold Experience Requiem的共享 Gameplay Runtime 与宿主 Decision 协议。Agent 理解当前原生 Scene、选择动作与动态重规划；Tools 持久保存 Goal、Memory、预算、Effect Ledger、checkpoint 与 Outcome，协调同 Session 中断恢复。S1/S2 代表性实机验收与本轮维护检查见[收口](CLOSEOUT_3_0_3.md)。原 v3.0.0 Foundation 已撤回；本页后半保留旧接口作为明确历史，不能用旧 journal 模型解释新 Session。Gameplay 私有记录不属于 Generic Schema 1，不自动跨版本恢复或上传。
 
 
 ## Bites the Dust 开发线的合同变化
 
 本工作树以正式 3.0.3 为基线；4.0 尚未完成或发布。新 Session 的 `budget.maxSpend` 省略时持久化为 `null`，表示无虚拟消费上限；显式 `0` 为零上限，有限数值继续约束报价成本、预留与真实累计花费，子 purchase-one 的显式限额不会被未设上限的父预算覆盖。步骤、观察、重规划与时间仍有技术上限。实际花费超过有限预算的事实仍写入账本，不能回写为零或改为成功。
 
-SQLite Schema/TargetKey 保持原义；旧 Session 缺失 maxSpend 在读取时按零解释，旧数字零/有限值不改写。新 null 预算可 JSON/SQLite 往返与新宿主恢复；旧 3.0.3 不能读取这种新合同，禁止让旧执行器恢复新 Session。读取旧记录本身不重写原始文档。
+TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见 [代次合同](RESOURCE_GENERATIONS.md)）；稳定 3.0.3 不得继续写入该 Store。旧 Session 缺失 maxSpend 在读取时按零解释，旧数字零/有限值不改写。新 null 预算可 JSON/SQLite 往返与新宿主恢复；旧 3.0.3 不能读取这种新合同，禁止让旧执行器恢复新 Session。读取旧记录本身不重写原始文档。
 
 已结清的重复路线保留 routeHints，不再在第三次后硬封路；不可凭此重放 started/Unknown。派发在既有 SQLite 事务中比较宿主已批准的 revision/提案/场景身份，成功预留后使用该 Effect 的动作。页面回执只在原终态可靠持久结算后精确回收；started、Unknown、未结算与其它 namespace 的记录保留。维护失败保留记录，下次观察按同一已提交事实处理，不改写业务结论。
 
-以上为离线合同实现；真实实验能力、存档合同、实际 callable 身份、独立数据代次和最终实战验收进度见 [4.0 开发记录](BITES_THE_DUST_4_0.md)。
+项目 Recipe、实际 callable/receiver、scoped IDB 保存/自动保存与真实数据代次合同已接入；离线和真实 Android 代表性证据及其限制分别见 [4.0 开发记录](BITES_THE_DUST_4_0.md)。
 
 ## 当前 Runtime 与冻结 Foundation 的区别
 
@@ -78,7 +78,7 @@ SQLite Schema/TargetKey 保持原义；旧 Session 缺失 maxSpend 在读取时�
 
 条件为AND，1—8项；field只接受hunger/thirst/tiredness/stress/hygiene/physique/money/timeStamp，op为eq/lte/gte，value为绝对值≤1e12的有限number。数值单位来自当前原游戏，示例不代表当前目标或现场。读取缺失/非数值为unavailable，不能当0；最终满足不证明曾执行某项活动，初始满足可以直接完成，pending effect仍阻止Session完成。消费和期限独立受父预算限制。原生数值Goal的路线进展要求全部条件不退步且至少一项改善，资源取舍可能记未进展；这不是完整振荡检测。只读谓词本身不证明活动发生；S2 由独立原活动 Outcome 与同 Goal 连续路径证明。
 
-首次使用 `game-goal-start` 创建 Session，随后使用 `game-session --goal DIR --operation ... --test-environment yes`。新宿主接管既有任务先对原 DIR 执行 resume，再取新 Request，不再次 start 替代原 Session。这不是第二执行引擎；propose/dispatch/恢复共用原 Action/Journey 和 effect ledger。S1/S2 同 Goal 代表性验收已通过；正式包及本机安装按 3.0.3 收口记录核对。
+首次使用 `game-goal-start` 创建 Session，随后使用 `game-session --goal DIR --operation ... --test-environment yes`。新宿主接管既有任务先对原 DIR 执行 resume，再取新 Request，不再次 start 替代原 Session。这不是第二执行引擎；propose/dispatch/恢复共用原 Action/Journey 和 effect ledger。S1/S2 为稳定版历史代表性验收；本开发线新增合同、候选制品与本机稳定安装分别按 4.0 记录和 3.0.3 历史收口核对。
 
 ```powershell
 # 初次创建；REQ/PROPOSAL/DIR 等路径与设备参数须换成当前目标

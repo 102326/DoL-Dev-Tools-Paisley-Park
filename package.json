@@ -1,7 +1,7 @@
 {
   "name": "dol-dev-tools-paisley-park",
-  "displayName": "DoL Dev Tools: Paisley Park",
-  "version": "3.0.3",
+  "displayName": "DoL Dev Tools",
+  "version": "4.0.0-rc.1",
   "private": true,
   "license": "MIT",
   "engines": {
@@ -13,5 +13,5 @@
   "dependencies": {
     "xstate": "5.33.2"
   },
-  "releaseName": "Gold Experience Requiem"
+  "releaseName": "Bites the Dust"
 }

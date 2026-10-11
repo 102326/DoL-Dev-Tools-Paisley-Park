@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),{execFileSync}=require('node:child_process');
-const {install}=require('../scripts/lib/install-skill.cjs'),{resolve}=require('../.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs');
+const {install}=require('../scripts/lib/install-skill.cjs'),{resolve,validateRoot}=require('../.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs');
 test('installed Skill resolves verified Tools outside its directory, preserves existing files and rejects stale location',t=>{
  const base=fs.mkdtempSync(path.join(os.tmpdir(),'dol-skill with spaces-'));t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
  const dest=path.join(base,'global skills/dol-dev-tools-paisley-park'),result=install(dest),env={...process.env};delete env.DOL_DEV_TOOLS_HOME;
@@ -9,4 +9,6 @@ test('installed Skill resolves verified Tools outside its directory, preserves e
  const invalid=path.join(base,'bad/dol-dev-tools-paisley-park');assert.throws(()=>install(invalid,path.join(base,'missing')));assert.equal(fs.existsSync(invalid),false);
  const help=execFileSync(process.execPath,[actual.cli,'--help'],{env,encoding:'utf8'});assert.ok(help.startsWith(actual.name+' '+actual.version));
  const wrongRoot=path.join(base,'wrong-package');fs.mkdirSync(path.join(wrongRoot,'scripts'),{recursive:true});fs.mkdirSync(path.join(wrongRoot,'docs'));fs.writeFileSync(path.join(wrongRoot,'scripts/dol-dev.cjs'),'');fs.writeFileSync(path.join(wrongRoot,'docs/DIAGNOSTICS.md'),'');fs.writeFileSync(path.join(wrongRoot,'package.json'),JSON.stringify({...require('../package.json'),name:'dol-dev-tools'}));assert.throws(()=>install(path.join(base,'wrong-global/dol-dev-tools-paisley-park'),wrongRoot),/Invalid Tools root/);
+ fs.writeFileSync(path.join(wrongRoot,'package.json'),JSON.stringify({...require('../package.json'),displayName:'DoL Dev Tools: Paisley Park',version:'3.0.3'}));assert.equal(validateRoot(wrongRoot).version,'3.0.3');
+ fs.writeFileSync(path.join(wrongRoot,'package.json'),JSON.stringify({...require('../package.json'),displayName:'Unrelated Tools'}));assert.throws(()=>validateRoot(wrongRoot),/Invalid Tools root/);
 });
