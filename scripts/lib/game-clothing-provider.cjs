@@ -58,7 +58,8 @@ function candidates(facts,epoch,proof,shopState,g){
   }
   if(g?.kind==='purchase-one'&&shopState?.status==='available'&&shopState.variable===g.variable&&shopState.colour===g.colour&&shopState.accessoryColour===g.accessoryColour&&(shopState.modder??null)===(g.modder??null)&&shopState.pattern==null&&shopState.destination==='wardrobe'&&shopState.money===g.baselineMoney&&shopState.count===g.baselineCount&&shopState.cost===g.unitCost&&withinSpend(shopState.cost,g.maxSpend)&&shopState.space>=1){
     const buy=shopState.quantity===1,selected={type:'dol-shop',operation:buy?'buy-one':'quantity-one'};
-    commerce.push({ref:hash([epoch,selected,shopState]),kind:buy?'buy':'menu',cost:buy?shopState.cost:0,risk:'normal',label:buy?'Buy one '+g.variable:'Set original quantity to one',selected,capability:{provider:id,name:'shop'}});
+    const quote=predicates.quoteFromShop(shopState,{kind:'purchase-and-equip',slot:'head',colour:g.colour});
+    if(quote)commerce.push({ref:hash([epoch,selected,quote]),kind:buy?'buy':'menu',cost:buy?shopState.cost:0,risk:'normal',label:buy?'Buy one '+g.variable:'Set original quantity to one',selected,quote,capability:{provider:id,name:'shop'}});
   }
   return [...equipment,...commerce,...browse].slice(0,64);
 }
@@ -85,7 +86,8 @@ function validateDescriptor(c,g){
   if(!name||!keys(c.capability,['provider','name'])||c.capability.provider!==id||c.capability.name!==name)throw Error('Invalid clothing capability');
   validateAction(c.selected,c.kind,g);
   if(['return-menu','browse'].includes(c.selected.operation)&&(c.cost!==0||c.quote!==undefined))throw Error('Invalid shop menu cost/quote');
-  if(c.quote!==undefined&&(g.kind!=='purchase-and-equip'||!predicates.validateQuote(c.quote,g)||c.selected.type!=='dol-shop'||c.cost!==(c.kind==='buy'?c.quote.unitCost:0))||g.kind==='purchase-and-equip'&&c.kind==='buy'&&!c.quote||g.kind==='purchase-one'&&c.kind==='buy'&&c.cost!==g.unitCost)throw Error('Invalid reviewed candidate');
+  if(c.quote!==undefined&&(!purchase(g)||!predicates.validateQuote(c.quote,g)||c.selected.type!=='dol-shop'||c.cost!==(c.kind==='buy'?c.quote.unitCost:0)||
+    g.kind==='purchase-one'&&(c.quote.variant.variable!==g.variable||c.quote.variant.accessoryColour!==g.accessoryColour||c.quote.variant.modder!==(g.modder??null)||c.quote.baselineMoney!==g.baselineMoney||c.quote.baselineCount!==g.baselineCount||c.quote.unitCost!==g.unitCost))||g.kind==='purchase-and-equip'&&c.kind==='buy'&&!c.quote||g.kind==='purchase-one'&&c.kind==='buy'&&c.cost!==g.unitCost)throw Error('Invalid reviewed candidate');
   return c;
 }
 
@@ -96,14 +98,15 @@ function legacyDescriptor(selected,intent,g,ref){
 }
 
 function authorizeCostedControl(mapping,descriptor,g){
+  try{validateDescriptor(descriptor,g)}catch{return false}
   const selected=descriptor?.selected;
   const current=mapping?.interpretation;
   if(selected?.type!=='dol-shop'||selected.operation!=='buy-one'||descriptor.kind!=='buy'||!purchase(g)||
     mapping.action?.type!=='web-click'||mapping.action.selector!=='#buy-send-home > .buy-button > .buy-button-inner'||
     current?.operation!=='buy-one'||!Number.isSafeInteger(current.cost)||current.cost!==descriptor.cost)return false;
-  if(g.kind==='purchase-and-equip'){
+  if(g.kind==='purchase-and-equip'||descriptor.quote){
     const q=descriptor.quote,v=q?.variant;
-    return !!q&&predicates.validateQuote(q,g)&&descriptor.cost===q.unitCost&&current.variable===v.variable&&current.colour===v.colour&&
+    return !!q&&predicates.validateQuote(q,g)&&descriptor.cost===q.unitCost&&(g.kind!=='purchase-one'||withinSpend(descriptor.cost,g.maxSpend))&&current.variable===v.variable&&current.colour===v.colour&&
       current.accessoryColour===v.accessoryColour&&(current.modder??null)===v.modder&&current.money===q.baselineMoney&&
       current.count===q.baselineCount&&current.wornCount===q.baselineWornCount;
   }
@@ -120,6 +123,8 @@ function prepare(client,descriptor,g,attemptId,{scope}={}){
   if(mapping===shop&&['return-menu','browse'].includes(selected.operation))return require('./game-shop-menu-native.cjs').prepare(client,selected,g,attemptId,{scope});
   const mappedGoal=descriptor.quote?{kind:'purchase-one',...descriptor.quote.variant,baselineMoney:descriptor.quote.baselineMoney,baselineCount:descriptor.quote.baselineCount,unitCost:descriptor.quote.unitCost,maxSpend:descriptor.quote.unitCost}:g;
   if(mapping===shop&&selected.operation==='buy-one'&&descriptor.quote)return require('./game-shop-native.cjs').prepare(client,selected,mappedGoal,attemptId,{quote:descriptor.quote,scope});
+  // Legacy unquoted attempts keep their original history; new writes require terminal proof.
+  if(mapping===shop&&selected.operation==='buy-one')throw Object.assign(Error('Native purchase terminal quote unavailable'),{code:'MAPPING_UNAVAILABLE'});
   return mapping.prepare(client,selected,mappedGoal,{quote:descriptor.quote});
 }
 

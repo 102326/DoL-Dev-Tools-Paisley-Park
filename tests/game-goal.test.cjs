@@ -428,7 +428,7 @@ test('native commerce cannot become a zero-cost menu candidate; original quote b
   const facts={choices:[{safe:true,requiresQuote:true,centerActionable:true,selector:'#buy-send-home',label:'Buy',index:0}]};
   assert.equal(goal.candidates(facts,1).length,0);
   const g={kind:'purchase-one',slot:'head',variable:'hairpin',colour:'black',accessoryColour:'black',baselineMoney:1000,baselineCount:0,unitCost:500,maxSpend:500};
-  const shop={status:'available',variable:'hairpin',colour:'black',accessoryColour:'black',money:1000,count:0,cost:500,quantity:1,destination:'wardrobe',space:2};
+  const shop={status:'available',variable:'hairpin',colour:'black',accessoryColour:'black',money:1000,count:0,wornCount:0,cost:500,quantity:1,destination:'wardrobe',space:2};
   const quote=goal.candidates(facts,1,null,shop,g)[0];assert.equal(quote.kind,'buy');assert.equal(quote.cost,500);assert.equal(quote.selected.type,'dol-shop');
   for(const changed of [{cost:501},{money:999},{count:1},{destination:'worn'},{colour:'white'},{space:0}])assert.equal(goal.candidates(facts,1,null,{...shop,...changed},g).length,0);
   const quantity=goal.candidates(facts,1,null,{...shop,quantity:2},g)[0];assert.equal(quantity.kind,'menu');assert.equal(quantity.cost,0);assert.equal(quantity.selected.operation,'quantity-one');

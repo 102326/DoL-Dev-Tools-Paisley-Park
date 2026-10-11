@@ -5,7 +5,7 @@ const clothing=require('../scripts/lib/game-clothing-provider.cjs');
 
 const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const purchaseGoal={kind:'purchase-one',slot:'head',variable:'hairpin',colour:'black',accessoryColour:'black',baselineMoney:1000,baselineCount:0,unitCost:500,maxSpend:500};
-const shop={status:'available',variable:'hairpin',colour:'black',accessoryColour:'black',money:1000,count:0,cost:500,quantity:1,destination:'wardrobe',space:2};
+const shop={status:'available',variable:'hairpin',colour:'black',accessoryColour:'black',money:1000,count:0,wornCount:0,cost:500,quantity:1,destination:'wardrobe',space:2};
 const prepared=state=>({action:{type:'web-click',selector:'#buy-send-home > .buy-button > .buy-button-inner'},interpretation:{...state,operation:'buy-one'}});
 
 test('clothing provider owns only reviewed clothing Goals and retains browser predicate validation',()=>{
@@ -22,7 +22,7 @@ test('clothing provider owns only reviewed clothing Goals and retains browser pr
 test('candidate refs and quote semantics match legacy clothing choices, with durable capability',()=>{
   const [buy]=clothing.candidates({},3,null,shop,purchaseGoal);
   assert.deepEqual(buy.capability,{provider:'clothing',name:'shop'});
-  assert.equal(buy.ref,digest([3,buy.selected,shop]));
+  assert.equal(buy.ref,digest([3,buy.selected,buy.quote]));
   assert.equal(buy.cost,500);
   assert.equal(clothing.validateDescriptor(buy,purchaseGoal),buy);
   assert.equal(clothing.authorizeCostedControl(prepared(shop),buy,purchaseGoal),true);
@@ -53,8 +53,9 @@ test('reserved buy-one cost and conditional quote cannot be laundered into a men
   assert.equal(clothing.authorizeCostedControl(mapping,{...buy,selected:{type:'dol-shop',operation:'quantity-one'},kind:'menu',cost:0},purchaseGoal),false);
   assert.throws(()=>clothing.validateAction({type:'dol-shop',operation:'buy-one'},'buy',{kind:'equip'}),/Shop intent\/Goal mismatch/);
   const conditional={kind:'purchase-and-equip',slot:'head',colour:'black'};
-  assert.throws(()=>clothing.validateDescriptor({...buy,capability:{provider:'clothing',name:'shop'}},conditional),/Invalid reviewed candidate/);
-  assert.equal(clothing.authorizeCostedControl(mapping,buy,conditional),false);
+  assert.equal(clothing.validateDescriptor(buy,conditional),buy);
+  assert.equal(clothing.authorizeCostedControl(mapping,buy,conditional),true);
+  assert.throws(()=>clothing.validateDescriptor(buy,{...purchaseGoal,variable:'beanie'}),/Invalid reviewed candidate/);
   const [quoted]=clothing.candidates({},1,null,{...shop,wornCount:0,modder:null},conditional);
   assert.equal(quoted.cost,500);
   assert.equal(clothing.validateDescriptor(quoted,conditional),quoted);
@@ -89,4 +90,18 @@ test('a quoted conditional purchase delegates its actual attempt to the native p
     assert.equal(concrete.kind,'purchase-one');assert.equal(concrete.unitCost,descriptor.quote.unitCost);return mapping;
   });
   assert.equal(await clothing.prepare(client,descriptor,g,attempt),mapping);assert.equal(JSON.stringify(g),before);
+});
+
+test('new one-item free candidates carry a terminal quote; unquoted legacy writes refuse instead of dispatching without a receipt',async t=>{
+ const native=require('../scripts/lib/game-shop-native.cjs'),g={...purchaseGoal,unitCost:0,maxSpend:0,baselineMoney:0};
+ const [d]=clothing.candidates({},1,null,{...shop,money:0,cost:0},g),scope={granted:'test'};
+ assert.equal(d.quote.unitCost,0);assert.equal(d.cost,0);
+ t.mock.method(native,'prepare',async(client,selected,concrete,attempt,options)=>{
+  assert.equal(concrete.kind,'purchase-one');assert.equal(concrete.unitCost,0);assert.equal(options.quote,d.quote);assert.equal(options.scope,scope);
+  return {executionBinding:{provider:'dol-shop-native',contract:'shop-buy-one-free-fixture'}};
+ });
+ assert.equal((await clothing.prepare({},d,g,'123e4567-e89b-42d3-a456-426614174000',{scope})).executionBinding.provider,'dol-shop-native');
+ const legacy={...d};delete legacy.quote;
+ assert.throws(()=>clothing.prepare({},legacy,g,'123e4567-e89b-42d3-a456-426614174000'),{code:'MAPPING_UNAVAILABLE'});
+ for(const change of [{wornCount:1},{wornCount:undefined},{count:1}])assert.equal(clothing.candidates({},1,null,{...shop,...change,money:0,cost:0},g).length,0);
 });

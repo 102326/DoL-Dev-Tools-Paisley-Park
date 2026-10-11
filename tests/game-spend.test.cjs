@@ -11,7 +11,7 @@ test('explicit unlimited and finite parent/child limits combine without erasing 
 test('unlimited one-item Goals can discover and authorize a quote; finite child limits remain binding',()=>{
  const budget={timeoutMs:1000,maxActions:2,maxObservations:4,maxSpend:null},request={name:'buy',mode:'gameplay',goal:{...purchase,maxSpend:null},budget};
  assert.equal(predicates.validate(request).budget.maxSpend,null);assert.equal(clothing.validateGoal({...request.goal,description:'buy one'}),true);
- const state={status:'available',variable:'hairpin',colour:'black',accessoryColour:'white',modder:null,pattern:null,destination:'wardrobe',money:1000,count:0,cost:500,space:1,quantity:1};
+ const state={status:'available',variable:'hairpin',colour:'black',accessoryColour:'white',modder:null,pattern:null,destination:'wardrobe',money:1000,count:0,wornCount:0,cost:500,space:1,quantity:1};
  const choices=clothing.candidates({choices:[]},1,null,state,request.goal);assert.equal(choices.length,1);assert.equal(choices[0].cost,500);
  assert.equal(clothing.authorizeCostedControl({action:{type:'web-click',selector:'#buy-send-home > .buy-button > .buy-button-inner'},interpretation:{...state,operation:'buy-one'}},choices[0],request.goal),true);
  assert.equal(clothing.candidates({choices:[]},1,null,state,{...purchase,maxSpend:499}).length,0);
