@@ -108,6 +108,8 @@ For an ordinary user's issue, project a local Evidence Bundle using `support`; s
 - Keep successful evidence when another collector fails. No infinite retries, replacing baselines automatically, or upgrading to full/heavy capture without a concrete unresolved question.
 - Change only the implicated source or adapter after enough evidence exists. Verify the affected behavior with the smallest relevant check; do not trigger whole-project or device tests merely because a diagnostic command ran.
 
+Explicit save authority also applies to reviewed native Gameplay producers. The supported native IDB autosave contract waits for actual transaction completion, independently reads the original archive and removes its owned finite observer before publishing terminal evidence. A returned save flag, `idb.lock`, or transport acknowledgement is not write completion. Other backends/hooks require reviewed support; old no-save receipts and unresolved actions retain their original contracts. Zero-priced transactions still require a reviewed quote and actual inventory/business proof; an explicit zero budget forbids positive spending, not free operations.
+
 ## Fix and verify loop
 
 After evidence establishes an actionable issue, locate the implicated source in the user-selected project. Make the scoped change, use that project's existing build/deploy workflow when authorized by the task, verify the same affected page/action on the identified test target, and retain before/after evidence. Source tests, build success, deployment version and actual device behavior are separate proof levels. Do not edit unknown third-party code or assume every Mod has Soft & Wet's Adapter model.

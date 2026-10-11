@@ -58,6 +58,17 @@ test('purchase truth requires bounded original debit and exact inventory increas
  f.v.wardrobe.head.push({...f.v.wardrobe.head[0]});assert.equal(f.proof().satisfied,false);
  f.v.wardrobe.head=null;assert.equal(f.proof().status,'unavailable');
 });
+
+test('explicit zero budget permits a reviewed zero quote but unchanged inventory never proves a free purchase',()=>{
+ const f=fixture();f.request.goal.unitCost=0;f.request.goal.maxSpend=0;f.request.budget.maxSpend=0;f.state.temporary.clothingCost=0;
+ f.globals.window.getClothingCost=()=>0;
+ assert.equal(goal.validate(f.request).goal.unitCost,0);assert.equal(f.read().status,'available');assert.equal(f.read().cost,0);
+ assert.equal(f.proof().satisfied,false);
+ f.v.wardrobe.head.push({variable:'hairpin',colour:'black',accessory_colour:'white'});assert.equal(f.proof().satisfied,true);
+ f.v.money--;assert.equal(f.proof().satisfied,false);
+ const predicates=require('../scripts/lib/game-goal-reader.cjs'),g={kind:'purchase-and-equip',slot:'head',colour:'black'},q={variant:{slot:'head',variable:'hairpin',colour:'black',accessoryColour:'white',modder:null},baselineMoney:1000,baselineCount:0,baselineWornCount:0,unitCost:0};
+ assert.equal(predicates.validateQuote(q,g),true);assert.equal(predicates.validateQuote({...q,unitCost:-1},g),false);
+});
 test('unsupported price-reader binding releases every owned remote object and does not run page cost or dispatch',async()=>{
  const released=[];let called=0;
  const client={async send(method,p){if(method==='Runtime.evaluate')return{result:{objectId:String(++called)}};

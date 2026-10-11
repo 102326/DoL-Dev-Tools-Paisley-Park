@@ -55,6 +55,16 @@ async function dispatch(r,s){
   r.bindExecution(e.id,binding);await r.dispatch(e.id,async()=>({dispatch:'acknowledged'}));return r.effect(e.id);
 }
 
+test('a zero-budget free quote reserves, dispatches and settles without treating an unchanged state as purchase success',async t=>{
+ const c={...config,budget:{...config.budget,maxSpend:0}},free={...buy,cost:0,quote:{...quote,unitCost:0}};
+ const {r,s}=fixture(t,goal.provider,c);const observed=r.observe(s.id,scene({choices:[free]}));
+ assert.equal(observed.goalSatisfied,false);r.propose(s.id,proposal(observed,free.ref));const e=r.prepare(s.id);assert.equal(e.reservedSpend,0);
+ r.bindExecution(e.id,binding);await r.dispatch(e.id,async()=>({dispatch:'acknowledged'}));
+ const done=r.observe(s.id,scene({worn:true,passage:'Bedroom',choices:[]}),[receipt(e,0)]);
+ assert.equal(done.machine.value,'completed');assert.equal(done.spent,0);assert.equal(done.reserved,0);assert.equal(r.effect(e.id).status,'settled');
+ assert.equal(goal.view({...done,openEffects:[]}).budget.maxSpend,0);
+});
+
 test('condition Goal takes a parent budget and quotes preserve the user condition and zero original ownership',()=>{
   assert.equal(goal.validate({name:'new-black',mode:'gameplay',goal:condition,budget:config.budget}).goal.colour,'black');
   for(const changed of [{...condition,variable:'beanie'},{...condition,baselineMoney:1000}])assert.throws(()=>goal.validate({name:'new',mode:'gameplay',goal:changed,budget:config.budget}));

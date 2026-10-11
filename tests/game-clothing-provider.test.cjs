@@ -13,7 +13,8 @@ test('clothing provider owns only reviewed clothing Goals and retains browser pr
   for(const kind of ['equip','equip-matching','purchase-one','purchase-and-equip'])assert.equal(clothing.supportsGoal({kind}),true);
   assert.equal(clothing.supportsGoal({kind:'reach-passage',passage:'Bedroom'}),false);
   assert.equal(clothing.validateGoal({...purchaseGoal,description:'buy one'}),true);
-  assert.equal(clothing.validateGoal({...purchaseGoal,unitCost:0}),false);
+  assert.equal(clothing.validateGoal({...purchaseGoal,unitCost:0,maxSpend:0}),true);
+  assert.equal(clothing.validateGoal({...purchaseGoal,unitCost:-1}),false);
   assert.equal(clothing.validateGoal({kind:'reach-passage',passage:'Bedroom'}),false);
   assert.equal(clothing.validateRequest({name:'x',mode:'gameplay',goal:purchaseGoal,budget:{timeoutMs:1000,maxActions:1,maxObservations:1,maxSpend:500}}).goal.kind,'purchase-one');
 });

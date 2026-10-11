@@ -11,7 +11,7 @@ function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invo
      checkSources('before')!==undefined||JSON.stringify(readCurrent())!==JSON.stringify(before))return {ok:false,guardRejected:true};
   const v=quote?.variant,validVariant=v&&v.slot==='head'&&['hairpin','beanie'].includes(v.variable)&&
     typeof v.colour==='string'&&!['random','custom'].includes(v.colour)&&typeof v.accessoryColour==='string'&&!['random','custom'].includes(v.accessoryColour);
-  if(!validVariant||!Number.isSafeInteger(quote.unitCost)||quote.unitCost<=0||quote.unitCost>quote.baselineMoney||
+  if(!validVariant||!Number.isSafeInteger(quote.unitCost)||quote.unitCost<0||quote.unitCost>quote.baselineMoney||
      quote.baselineCount!==0||quote.baselineWornCount!==0||before.money!==quote.baselineMoney||before.count!==0||before.wornCount!==0||
      !Number.isSafeInteger(before.clock)||!Array.isArray(before.inventory)||before.inventory.length>511||!before.stats||
      ['spent','spentCount','earned','earnedCount'].some(k=>!Number.isSafeInteger(before.stats[k])||before.stats[k]<0)||

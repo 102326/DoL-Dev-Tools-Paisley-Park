@@ -37,7 +37,7 @@ function reader(goal,costFunction) {
   if(!goal){
     if(!Array.isArray(list)||list.length>512||list.includes(undefined)||list.some(i=>!i||typeof i.variable!=='string')||!v.worn?.head||!Number.isSafeInteger(v.money)||costFunction!==window.getClothingCost||typeof costFunction!=='function')return no('bounded-shop-state-or-price-reader-unavailable');
     const cost=costFunction(temp,'head');
-    if(!Number.isSafeInteger(cost)||cost<=0||cost!==t.clothingCost)return no('original-price-inconsistent');
+    if(!Number.isSafeInteger(cost)||cost<0||cost!==t.clothingCost)return no('original-price-inconsistent');
     return {status:'available',source:'original DoL selected head shop state and reviewed price reader',index:v.clothes_choice,variable:item.variable,modder:item.modder??null,
       colour:v.colouraction??null,accessoryColour:v.accessorycolouraction??null,pattern:v.patternaction??null,quantity:v.buyMultiple,destination:v.wardrobes?.shopReturn??null,
       money:v.money,cost,space:t.spaceLeft,count:list.filter(i=>i?.variable===item.variable&&(i.colour??null)===(v.colouraction??null)&&
@@ -52,7 +52,7 @@ function reader(goal,costFunction) {
     return no('purchase-baseline-changed');
   if(costFunction!==window.getClothingCost || typeof costFunction!=='function')return no('reviewed-price-reader-unavailable');
   const cost=costFunction(temp,'head');
-  if(!Number.isSafeInteger(cost)||cost<=0||cost!==goal.unitCost||(goal.maxSpend!==null&&(!Number.isSafeInteger(goal.maxSpend)||cost>goal.maxSpend))||v.money<cost||t.clothingCost!==cost||!Number.isFinite(t.spaceLeft)||t.spaceLeft<1)
+  if(!Number.isSafeInteger(cost)||cost<0||cost!==goal.unitCost||(goal.maxSpend!==null&&(!Number.isSafeInteger(goal.maxSpend)||cost>goal.maxSpend))||v.money<cost||t.clothingCost!==cost||!Number.isFinite(t.spaceLeft)||t.spaceLeft<1)
     return no('price-funds-or-capacity-mismatch');
   const controls=document.querySelectorAll('#buy-send-home > .buy-button > .buy-button-inner');
   if(controls.length!==1||controls[0].classList.contains('disabled')||controls[0].querySelectorAll('a.link-internal').length!==1)return no('native-buy-control-unavailable');
