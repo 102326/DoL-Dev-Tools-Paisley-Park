@@ -29,6 +29,7 @@ function fixture(t,config={}) {
   if(config.progressingNarrative)globals.document.createTreeWalker=()=>{let read=false;return{nextNode:()=>read?null:(read=true,{parentElement:root,textContent:'Ordinary conversation stage '+clicks})}};
   const adb=async(...args)=>{
     const c=args.join(' ');
+    if(c.includes('run-as')){if(c.endsWith(' pwd'))return Buffer.from('/data/user/0/com.example.game');if(c.endsWith(' id -u'))return Buffer.from('10042');if(c.endsWith('stat -c %d:%i .'))return Buffer.from('1:42');if(c.includes('files/.paisley-data-generation'))return Buffer.from('ABSENT')}
     if(c==='get-state')return Buffer.from('device');
     if(c==='shell am get-current-user')return Buffer.from(user);
     if(c.startsWith('shell dumpsys package'))return Buffer.from(`Package [com.example.game]\nversionName=1.0 versionCode=1\n signatures=PackageSignatures{fixture version:3, signatures:[${config.signingHash||'a11ce'}], past signatures:[]}\n User ${user}: installed=true`);
@@ -78,6 +79,110 @@ async function projectProposal(f,current){
  const p={...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:a.ref,reason:'Prepare authorized project state',plan:[],beliefs:[]};
  const file=path.join(f.base,'project-proposal.json');fs.writeFileSync(file,JSON.stringify(p));return file;
 }
+
+test('save-only scope accepts a structurally valid multi-operation Recipe and never observes or dispatches load/delete',async t=>{
+ const f=projectFixture(t);delete f.overrides.readOutcome;f.request.goal.scope.intents=['save'];
+ fs.writeFileSync(f.recipe,f.source.replace("intent:'experiment'","intent:'save'").replace(/\]\}$/,`,{id:'load',label:'Load',intent:'load-save',read:()=>{throw Error('Unauthorized load read')},quote:()=>0,execute:()=>{},outcome:()=>({occurred:true,spent:0})},{id:'delete',label:'Delete',intent:'delete-save',read:()=>{throw Error('Unauthorized delete read')},quote:()=>0,execute:()=>{},outcome:()=>({occurred:true,spent:0})}]}`));
+ const current=await goal.start(f.options,f.request,f.overrides);
+ assert.deepEqual(current.decision.scene.choices.map(a=>a.kind),['save']);
+ const file=await projectProposal(f,current);await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);
+ const done=await goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides);
+ assert.equal(done.status,'completed');assert.equal(done.actions,1);assert.equal(done.pending,false);assert.equal(f.globals.window.__projectRuns,1);
+ const p=require('../scripts/lib/game-project-provider.cjs'),sha=require('node:crypto').createHash('sha256').update(fs.readFileSync(f.recipe,'utf8')).digest('hex');
+ for(const [operation,intent] of [['load','load-save'],['delete','delete-save']])assert.throws(()=>p.validateAction({type:p.id,operation,recipeSha256:sha,sourceHash:'a'.repeat(64),before:{},cost:0},intent,f.request.goal),/scope/);
+ const broken=fs.readFileSync(f.recipe,'utf8').replace("id:'delete'","id:'load'");fs.writeFileSync(f.recipe,broken);
+ assert.throws(()=>p.validateRequest(f.request),/Invalid/,'out-of-scope exports still receive structural validation');
+});
+
+test('completion observations verify native marker/root generation while fresh document connections remain automatic',async t=>{
+ for(const mode of ['same-generation','marker','root','during-observation','checkpoint']){
+  const f=projectFixture(t);delete f.overrides.readOutcome;
+  const crypto=require('node:crypto'),target={serial:f.options.serial,package:f.options.package,userId:'0'},facts={target,signingHash:'a11ce',root:'/data/user/0/com.example.game',uid:'10042',inode:'1:42'};
+  let token='a'.repeat(64),inode=facts.inode,connections=0,drift=false;
+  const id=crypto.createHash('sha256').update(JSON.stringify({...facts,token})).digest('hex'),k=crypto.createHash('sha256').update(JSON.stringify([target.serial,target.package,target.userId])).digest('hex');
+  const adb=f.overrides.adb,connect=f.overrides.connect;
+  f.overrides.adb=async(...args)=>{const c=args.join(' ');if(c.includes('run-as')){if(c.endsWith(' pwd'))return facts.root;if(c.endsWith(' id -u'))return facts.uid;if(c.endsWith('stat -c %d:%i .'))return inode;if(c.endsWith('cat files/.paisley-data-generation'))return token}return adb(...args)};
+  f.overrides.connect=async(...args)=>{connections++;const client=await connect(...args),evaluate=client.evaluate.bind(client);client.evaluate=async expression=>{const value=await evaluate(expression);if(drift&&mode==='during-observation')token='b'.repeat(64);return value};return client};
+  const r=goal.open(f.options.store);try{r.db.exec('CREATE TABLE resources(k TEXT NOT NULL,generation INTEGER NOT NULL,doc TEXT NOT NULL,PRIMARY KEY(k,generation)); PRAGMA user_version=3');r.db.prepare('INSERT INTO resources VALUES(?,?,?)').run(k,1,JSON.stringify({status:'ready',generation:1,id}))}finally{r.close()}
+  if(mode==='checkpoint'){f.request.mode='development';f.request.requiredCheckpoints=['saved-state']}
+  const started=await goal.start(f.options,f.request,f.overrides);assert.equal(started.status,'active');f.state.variables.money=10;drift=true;
+  if(mode==='marker'||mode==='checkpoint')token='b'.repeat(64);if(mode==='root')inode='1:43';
+  if(mode==='same-generation'){const done=await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides);assert.equal(done.status,'completed');assert.equal(done.actions,0);assert.equal(connections,2,'new observation connection binds current document automatically')}
+  else{let operation='request',settings={testEnvironment:true};if(mode==='checkpoint'){operation='checkpoint';settings.file=path.join(f.base,'checkpoint.json');fs.writeFileSync(settings.file,JSON.stringify({name:'saved-state',predicate:'goal-satisfied'}))}
+   await assert.rejects(goal.session(f.options.out,operation,settings,f.overrides),/generation changed/);
+   const state=goal.status(f.options.out);assert.notEqual(state.machine.value,'completed');assert.equal(state.checkpoints.length,0);assert.equal(state.actions,0);
+  }
+ }
+});
+
+test('unsupported quantity/slot preparation is refused before creating SQLite effects; a production Recipe can then settle and continue',async t=>{
+ const f=projectFixture(t);delete f.overrides.readOutcome;
+ const initial=await goal.start(f.options,f.request,f.overrides);
+ for(const selected of [{type:'dol-shop',operation:'quantity-one'},{type:'sw-wardrobe',operation:'select-slot',slot:'head'}]){
+  fs.writeFileSync(f.file,JSON.stringify(selected));
+  await assert.rejects(goal.advance(f.options.out,{testEnvironment:true,file:f.file,intent:'menu'},f.overrides),{code:'MAPPING_UNAVAILABLE'});
+  const r=goal.open(f.options.store);try{assert.equal(r.db.prepare('SELECT COUNT(*) AS n FROM effects').get().n,0);assert.equal(r.status(initial.goalId).actions,0)}finally{r.close()}
+ }
+ const fresh=await goal.session(f.options.out,'request',{testEnvironment:true},f.overrides),file=await projectProposal(f,fresh);
+ await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);
+ const completed=await goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides);
+ assert.equal(completed.status,'completed');assert.equal(completed.pending,false);assert.equal(completed.actions,1);assert.equal(f.globals.window.__projectRuns,1);
+});
+
+test('shipped native save Recipe runs through production coordinator with save-only scope and its own durable operation witness',async t=>{
+ const f=projectFixture(t);delete f.overrides.readOutcome;const records=new Map(),details=new Map();let saves=0,loads=0,deletes=0;
+ Object.assign(f.state,{marshalForSave:function(){return {index:0,history:[{title:this.passage,variables:{money:this.variables.money,timeStamp:this.variables.timeStamp}}]}},deltaDecode:function(delta){return structuredClone(delta)}});
+ const idb={active:true,async saveState(slot,_title,metadata){saves++;await Promise.resolve();records.set(slot,{slot,data:f.state.marshalForSave()});details.set(slot,{slot,data:{metadata}})},async getItem(slot){return records.get(slot)},async getSaveDetails(){return [...details.values()]},async deleteItem(){deletes++},async loadState(){loads++}};
+ Object.assign(f.globals,{crypto:require('node:crypto').webcrypto,structuredClone});Object.assign(f.globals.window,{idb,StartConfig:{version:'0.5.12.13'}});f.globals.window.SugarCube.Save={onSave:{handlers:[]},onLoad:{handlers:[]}};
+ const sha=v=>require('node:crypto').createHash('sha256').update(JSON.stringify(v)).digest('hex');
+ const inputs={gameVersion:'0.5.12.13',slot:1,trial:'save-only-production',operation:'save',marshalDigest:sha(f.state.marshalForSave.toString()),decoderDigest:sha(f.state.deltaDecode.toString()),apiDigest:sha({sources:Object.fromEntries(['saveState','getItem','getSaveDetails','deleteItem','loadState'].map(k=>[k,idb[k].toString()])),hooks:{onSave:[],onLoad:[]}})};
+ f.request.goal.recipe=path.resolve(__dirname,'../docs/recipes/dol-save-state.cjs');f.request.goal.scope.workspace=path.resolve(__dirname,'..');f.request.goal.scope.intents=['save'];f.request.goal.inputs=inputs;
+ // An initially true state predicate is intentional. This workflow requires a
+ // settled save witness before recording its requested development checkpoint.
+ f.request.goal.predicate.conditions[0]={field:'money',op:'gte',value:0};f.request.mode='development';f.request.requiredCheckpoints=['save-witness'];
+ const initial=await goal.start(f.options,f.request,f.overrides);assert.equal(initial.proof.satisfied,true);assert.equal(initial.actions,0);assert.deepEqual(initial.decision.scene.choices.map(a=>a.kind),['save']);
+ const file=await projectProposal(f,initial);await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);
+ const after=await goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides);assert.equal(after.pending,false);assert.equal(after.actions,1);assert.equal(saves,1);assert.equal(loads,0);assert.equal(deletes,0);
+ const r=goal.open(f.options.store);try{const e=r.outcomeContext(r.status(initial.goalId)).effects[0];assert.equal(e.status,'settled');assert.equal(e.action.kind,'save');assert.equal(e.result.evidence.operation,'save-slot');assert.equal(e.result.evidence.executionCompleted,true);assert.equal(e.result.evidence.after.exists,true);assert.equal(e.result.evidence.after.metadata,inputs.trial)}finally{r.close()}
+ const checkpoint=path.join(f.base,'save-checkpoint.json');fs.writeFileSync(checkpoint,JSON.stringify({name:'save-witness',predicate:'goal-satisfied'}));
+ const done=await goal.session(f.options.out,'checkpoint',{testEnvironment:true,file:checkpoint},f.overrides);assert.equal(done.status,'completed');assert.equal(done.pending,false);
+});
+
+test('a persisted ready legacy slot proposal is refused before production dispatch creates an Effect',async t=>{
+ const f=fixture(t,{project:true,purchaseInventory:[]});delete f.overrides.readOutcome;
+ f.request.goal={kind:'purchase-one',slot:'head',variable:'hairpin',colour:'black',accessoryColour:'black',baselineMoney:5,baselineCount:0,unitCost:1,maxSpend:1};
+ const initial=await goal.start(f.options,f.request,f.overrides),r=goal.open(f.options.store);
+ try{const old=r.status(initial.goalId),a={ref:'legacy-slot',kind:'menu',cost:0,risk:'normal',selected:{type:'sw-wardrobe',operation:'select-slot',slot:'head'},capability:{provider:'clothing',name:'wardrobe'}};
+  const d=r.observe(old.id,{...old.scene,revision:old.epoch+1,choices:[a]}).decision;
+  r.propose(old.id,{...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:a.ref,reason:'Persisted old preparation proposal',plan:[],beliefs:[]});
+ }finally{r.close()}
+ await assert.rejects(goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides),{code:'MAPPING_UNAVAILABLE'});
+ const after=goal.open(f.options.store);try{assert.equal(after.db.prepare('SELECT COUNT(*) AS n FROM effects').get().n,0);assert.equal(after.status(initial.goalId).actions,0)}finally{after.close()}
+});
+
+test('schema-2 Android Sessions also reject native root/marker replacement without resetting data or upgrading the Store',async t=>{
+ for(const mode of ['same','root','marker','legacy']){
+  const f=fixture(t);delete f.overrides.readOutcome;const adb=f.overrides.adb;let inode='1:42',marker='ABSENT';
+  f.overrides.adb=async(...args)=>{const c=args.join(' ');if(c.includes('run-as')){if(c.endsWith(' pwd'))return '/data/user/0/com.example.game';if(c.endsWith(' id -u'))return '10042';if(c.endsWith('stat -c %d:%i .'))return inode;if(c.includes('files/.paisley-data-generation'))return marker}return adb(...args)};
+  const initial=await goal.start(f.options,f.request,f.overrides);f.state.passage='Wardrobe';
+  if(mode==='root')inode='1:43';if(mode==='marker')marker='b'.repeat(64);
+  if(mode==='legacy'){const r=goal.open(f.options.store);try{const s=r.load(initial.goalId);delete s.nativeIdentity;r.save(s)}finally{r.close()}}
+  if(mode==='same'){assert.equal((await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides)).status,'completed')}
+  else{await assert.rejects(goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides),/identity unavailable|generation changed/);assert.notEqual(goal.status(f.options.out).machine.value,'completed')}
+  const r=goal.open(f.options.store);try{assert.equal(r.db.prepare('PRAGMA user_version').get().user_version,2);assert.equal(r.db.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE name='resources'").get().n,0)}finally{r.close()}
+ }
+});
+
+test('checkpoint checks native identity again after the fresh observation and before committing completion',async t=>{
+ const f=projectFixture(t);delete f.overrides.readOutcome;f.request.mode='development';f.request.requiredCheckpoints=['state'];
+ const adb=f.overrides.adb;let inode='1:42',markers=0,tamper=false;
+ f.overrides.adb=async(...args)=>{const c=args.join(' ');if(c.endsWith('stat -c %d:%i .'))return inode;
+  if(c.includes('files/.paisley-data-generation')){markers++;if(tamper&&markers===5)inode='1:43';return 'ABSENT'}return adb(...args)};
+ await goal.start(f.options,f.request,f.overrides);assert.equal(markers,3);f.state.variables.money=10;tamper=true;
+ const file=path.join(f.base,'checkpoint.json');fs.writeFileSync(file,JSON.stringify({name:'state',predicate:'goal-satisfied'}));
+ await assert.rejects(goal.session(f.options.out,'checkpoint',{testEnvironment:true,file},f.overrides),/generation changed/);
+ const s=goal.status(f.options.out);assert.notEqual(s.machine.value,'completed');assert.equal(s.checkpoints.length,0);assert.equal(s.actions,0);assert.equal(markers,6);
+});
 test('project experiment is reachable through existing CLI request/propose/dispatch with separate original predicate and settled receipt',async t=>{
  const f=projectFixture(t),{main}=require('../scripts/dol-dev.cjs'),start=goal.start,session=goal.session;
  t.mock.method(goal,'start',(o,r)=>start(o,r,f.overrides));t.mock.method(goal,'session',(d,o,s)=>session(d,o,s,f.overrides));
@@ -277,8 +382,8 @@ test('ack and Goal true never clear unknown outcome; model reconciliation is rej
 
 test('preflight failure closes unclaimed reservation, preserves budgets and allows replanning',async t=>{
   const f=fixture(t);await goal.start(f.options,f.request,f.overrides);
-  fs.writeFileSync(f.file,JSON.stringify({type:'sw-wardrobe',operation:'select-slot',slot:'head'}));
-  const r=await goal.advance(f.options.out,{testEnvironment:true,file:f.file,intent:'menu'},f.overrides);
+  fs.writeFileSync(f.file,JSON.stringify({type:'sw-wardrobe',operation:'equip',slot:'head',variable:'hairpin',colour:'black'}));
+  const r=await goal.advance(f.options.out,{testEnvironment:true,file:f.file,intent:'equip'},f.overrides);
   assert.equal(r.status,'active');assert.equal(r.pending,false);assert.equal(r.actions,1);assert.equal(f.stats().clicks,0);assert.equal(goal.status(f.options.out).reserved,0);
 });
 
@@ -431,7 +536,7 @@ test('native commerce cannot become a zero-cost menu candidate; original quote b
   const shop={status:'available',variable:'hairpin',colour:'black',accessoryColour:'black',money:1000,count:0,wornCount:0,cost:500,quantity:1,destination:'wardrobe',space:2};
   const quote=goal.candidates(facts,1,null,shop,g)[0];assert.equal(quote.kind,'buy');assert.equal(quote.cost,500);assert.equal(quote.selected.type,'dol-shop');
   for(const changed of [{cost:501},{money:999},{count:1},{destination:'worn'},{colour:'white'},{space:0}])assert.equal(goal.candidates(facts,1,null,{...shop,...changed},g).length,0);
-  const quantity=goal.candidates(facts,1,null,{...shop,quantity:2},g)[0];assert.equal(quantity.kind,'menu');assert.equal(quantity.cost,0);assert.equal(quantity.selected.operation,'quantity-one');
+  assert.equal(goal.candidates(facts,1,null,{...shop,quantity:2},g).length,0,'quantity adjustment without a terminal contract is not offered');
 });
 
 test('final guard blocks a control becoming commerce outside the observed candidate window',async t=>{

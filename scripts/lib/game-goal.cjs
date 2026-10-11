@@ -65,13 +65,26 @@ async function start(options,request,overrides={}){
   try{
     const t={serial:options.serial,package:options.package,userId};const resource=r.resource(hash([t.serial,t.package,t.userId]));
     const resourceProof=resource?await require('./game-resource.cjs').snapshot(overrides.adb||collectors.android(options),t,authorization,resource):undefined;
+    const nativeIdentityProof=resource?undefined:await require('./game-resource.cjs').identity(overrides.adb||collectors.android(options),t,authorization);
     fs.mkdirSync(path.resolve(options.out));
-    s=r.start({serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,...(authorization?{scope:authorization}:{}),goal:{description:request.description??request.name,...request.goal,...(request.goal.kind==='purchase-one'?{maxSpend:request.goal.maxSpend===undefined?null:request.goal.maxSpend}:{})},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:combinedLimit(request.budget.maxSpend,request.goal.maxSpend)}},{resourceProof});
+    s=r.start({serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,...(authorization?{scope:authorization}:{}),goal:{description:request.description??request.name,...request.goal,...(request.goal.kind==='purchase-one'?{maxSpend:request.goal.maxSpend===undefined?null:request.goal.maxSpend}:{})},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:combinedLimit(request.budget.maxSpend,request.goal.maxSpend)}},{resourceProof,nativeIdentityProof});
     try{fs.writeFileSync(path.join(options.out,'goal.json'),JSON.stringify({format:'paisley-session-link',version:2,sessionId:s.id,store:path.resolve(store)},null,2),{flag:'wx'})}catch(e){r.stop(s.id,'session-link-write-failed');throw e}
   }finally{r.close()}
   return advance(options.out,{testEnvironment:true},overrides);
 }
 function rejectionReceipts(effects){return effects.filter(e=>e.status==='dispatching'&&e.ack?.dispatch==='not-dispatched').map(e=>({attemptId:e.id,outcome:'not-occurred',remoteClosed:true,spent:0,source:'reviewed claimed synchronous guard rejection'}))}
+async function verifyResource(r,s,options,overrides){
+  r.assertResource(s);
+  if(!s.resourceGeneration){
+    if(!s.nativeIdentity)throw Error('Original native resource identity unavailable for this historical Session');
+    const proof=await require('./game-resource.cjs').identity(overrides.adb||collectors.android(options),s.target,options.authorization);
+    if(proof.id!==s.nativeIdentity)throw Error('Native data generation changed');
+    r.assertResource(s);return;
+  }
+  const proof=await require('./game-resource.cjs').snapshot(overrides.adb||collectors.android(options),s.target,options.authorization,r.resource(s.targetKey));
+  if(proof.id!==s.resourceGeneration)throw Error('Session native data generation changed');
+  r.assertResource(s);
+}
 async function recoverWithMaintenance(r,s,client,dir,effects){
   const candidates=r.receiptRetirements(s.id);
   if(candidates.length){
@@ -91,16 +104,17 @@ async function recoverWithMaintenance(r,s,client,dir,effects){
 async function dispatchReady(r,s,dir,overrides={}){
   if(s.machine.value!=='ready'||!s.proposal)throw Error('No current accepted Decision');
   const approvedOwner=capabilities.validateDescriptor(s.proposal.action,s.config.goal);
+  approvedOwner.assertTerminalSupport?.(s.proposal.action.selected);
   // A visible control is not a declared Outcome producer. Do not create an
   // uncloseable effect merely because the raw Action runner can click it.
   if(!approvedOwner.prepare&&typeof overrides.readOutcome!=='function')return view(r.pause(s.id,'reviewed-action-outcome-unavailable'));
   // Measured native shop attestation takes 84s; retain the existing bounded Journey window.
   const authorization=s.config.scope??s.config.goal.scope,executionWindow=require('./game-native-save.cjs').authorized(authorization)?120000:30000;
   const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization,...(s.config.goal.kind==='project-experiment'?{projectGoal:s.config.goal}:{}),timeoutMs:Math.max(1,Math.min(executionWindow,s.deadline-Date.now()))};
+    await verifyResource(r,s,options,overrides);
     const e=r.prepare(s.id,{expected:s});if(!e)return view(r.status(s.id));
     const descriptor=e.action,selected=descriptor.selected,intent=descriptor.kind,owner=capabilities.validateDescriptor(descriptor,s.config.goal),scene=s.scene;
     options.projectIntent=intent;
-    if(s.resourceGeneration){const proof=await require('./game-resource.cjs').snapshot(overrides.adb||collectors.android(options),s.target,options.authorization,r.resource(s.targetKey));if(proof.id!==s.resourceGeneration)throw Error('Session native data generation changed')}
     if(e.sceneRevision!==scene.revision)throw Error('Reserved Scene mismatch');
     const postReservation=r.reserveObservation(s.id);if(!postReservation)return view(r.status(s.id));
     const out=path.join(dir,'action-'+e.id);let report,binding;
@@ -120,6 +134,7 @@ async function dispatchReady(r,s,dir,overrides={}){
     if(!post)return view(r.failObservation(s.id,postReservation,'reliable-post-action-observation-unavailable'));
     const after={...scene,revision:s.epoch+1,choices:capabilities.choicesFrom(post,s.epoch+1,s.config.goal),facts:post.gameplay,location:post.gameplay.location||'unknown',goalProof:post.goalProof};
     if(overrides.readOutcome)closing.push(...await overrides.readOutcome([effect],report,s));
+    await verifyResource(r,s,options,overrides);
     s=r.observe(s.id,after,closing,{reservation:postReservation});if(['blocked','paused'].includes(report?.status)&&!s.stopReason&&s.machine.value!=='completed')s=r.pause(s.id,report.reason||'execution-interrupted');return view(s);
 }
 async function advance(directory,settings,overrides={}){
@@ -132,6 +147,7 @@ async function advance(directory,settings,overrides={}){
     if(s.stopReason)return view(s);
     let selected;if(settings.file){selected=readJson(settings.file);validateSelection(selected,settings.intent,s.config.goal)}else if(settings.intent)throw Error('Intent requires an action');
     const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
+    await verifyResource(r,s,options,overrides);
     const reservation=r.reserveObservation(s.id);if(!reservation)return view(r.status(s.id));
     const observed=await site.observe({...options,out:path.join(dir,'observation-'+randomUUID())},{...overrides,probeGoal:probe(s.config.goal),probeOutcome:client=>recoverWithMaintenance(r,s,client,dir,s.openEffects),probeCapabilities:client=>capabilities.observe(client,s.config.goal)});
     if(observed.status!=='observed'||!observed.gameplay?.domAgrees||observed.goalProof?.status!=='available')return view(r.failObservation(s.id,reservation,'reliable-original-observation-unavailable'));
@@ -139,6 +155,7 @@ async function advance(directory,settings,overrides={}){
     const scene={source:'original DoL semantic provider',revision:s.epoch+1,location:observed.gameplay.location||'unknown',choices,facts:observed.gameplay,goalProof:observed.goalProof};
     // Only reviewed local Outcome readers can close dispatched attempts; CLI model narratives cannot.
     const resolutions=[...rejectionReceipts(s.openEffects),...(observed.effectReceipts||[]),...(overrides.readOutcome?await overrides.readOutcome(s.openEffects,observed,s):[])];
+    await verifyResource(r,s,options,overrides);
     s=r.observe(s.id,scene,resolutions,{reservation});if(s.machine.value!=='waitingDecision'||!selected)return view(s);
     const d=s.decision,p={...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:choices[0].ref,reason:'Reviewed legacy command adapted to the current Session request',plan:['Execute selected current action','Observe original state and replan'],beliefs:[]};
     s=r.propose(s.id,p);return await dispatchReady(r,s,dir,overrides);
@@ -186,6 +203,8 @@ async function session(directory,operation,settings={},overrides={}){
     if(operation==='dispatch')return await dispatchReady(r,r.status(l.sessionId),dir,overrides);
     if(operation==='cancel')return view({...r.stop(l.sessionId),openEffects:r.status(l.sessionId).openEffects});
     if(operation==='checkpoint'){
+      const s=r.status(l.sessionId);
+      await verifyResource(r,s,{...s.target,authorization:s.config.scope??s.config.goal.scope},overrides);
       return view(r.checkpoint(l.sessionId,{name:checkpoint.name,passed:checkpointObservation.passed,source:'fresh original DoL state: '+checkpoint.predicate},{revision:checkpointObservation.revision}));
     }
     throw Error('Unsupported Session operation');

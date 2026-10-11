@@ -27,9 +27,7 @@ test('candidate refs and quote semantics match legacy clothing choices, with dur
   assert.equal(clothing.validateDescriptor(buy,purchaseGoal),buy);
   assert.equal(clothing.authorizeCostedControl(prepared(shop),buy,purchaseGoal),true);
   assert.equal(clothing.candidates({},3,null,{...shop,cost:501},purchaseGoal).length,0);
-  const [quantity]=clothing.candidates({},3,null,{...shop,quantity:2},purchaseGoal);
-  assert.equal(quantity.kind,'menu');assert.equal(quantity.cost,0);
-  assert.equal(clothing.authorizeCostedControl(prepared(shop),quantity,purchaseGoal),false);
+  assert.deepEqual(clothing.candidates({},3,null,{...shop,quantity:2},purchaseGoal),[],'unproved quantity control must not enter normal dispatch');
   const request={type:'sw-wardrobe',operation:'equip',slot:'head',variable:'hairpin',colour:'black',accessoryColour:'black',modder:null};
   const [equip]=clothing.candidates({},3,{equipmentActions:[{request,label:'Hairpin'}]},null,{kind:'equip-matching',slot:'head',colour:'black'});
   assert.equal(equip.ref,digest([3,request]));assert.deepEqual(equip.capability,{provider:'clothing',name:'wardrobe'});

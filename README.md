@@ -2,6 +2,8 @@
 
 **4.0.0 — Bites the Dust**
 
+本工作树包含 2026-10-12 的[验货修订候选](docs/F1_F5_CLOSEOUT_4_0.md)。公开下载尚未替换；本轮仅准备本地包，发布需另行授权。
+
 [获取 4.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) · [更新说明](docs/RELEASE_4.0.0.md) · [技术验证与兼容说明](docs/CLOSEOUT_4_0.md)
 
 面向 DoL Mod 生态的本地开发工具系统。连接真实 Android / WebView，帮助开发者和 Agent 查看运行现场、调查问题、复现操作，并在修改、构建和部署后验证结果。

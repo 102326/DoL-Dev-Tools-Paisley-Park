@@ -1,6 +1,6 @@
 # DoL Dev Tools 4.0.0 — Bites the Dust 技术说明与收口
 
-产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本版将已审 RC 收口为正式 4.0.0，并在用户单独确认后发布。下方记录本地收口的交付与验证范围，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
+产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 修订候选尚未获准远程发布，见 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
 
 ## Delivered
 
@@ -34,7 +34,7 @@ Recipe 是经过审核的本地 Node 脚本，拥有实际文件/网络权限，
 
 ## Validated：证据继承边界
 
-本轮元数据与文档不改变运行行为。独立 RC 审查固定源码 `3213bea663dcadf9fa01b7ed25da68ae94ebb776`，结论为预发布 Go、正式版 Conditional Go，无 Blocker/Must Fix。正式版本身份和包核验在本轮实际执行，记录于本地包旁 `validation.json`；下列是继承的有效证据，**不记为本轮新运行**：
+以下记录属于原 4.0 发布收口；2026-10-12 行为修订及新回归见 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。原发布阶段的元数据与文档不改变运行行为。独立 RC 审查固定源码 `3213bea663dcadf9fa01b7ed25da68ae94ebb776`，结论为预发布 Go、正式版 Conditional Go，无 Blocker/Must Fix。正式版本身份和包核验在本轮实际执行，记录于本地包旁 `validation.json`；下列是继承的有效证据，**不记为本轮新运行**：
 
 - `467f32e15d6929e13bf2d4bc5d9fcc0bae33a146` 完整 Node **393 passed / 0 failed / 0 skipped**，定向 window 56 passed；未改 Python，复用 **2 passed / 2 optional-dependency skips**。锁定 XState 5.33.2。
 - 实际 Android 17 / WebView 154.0.8037.58 / DoL 0.5.12.13：10 项真实 Document 重载检查、旧 client 拒绝、显式新绑定与自有 forward 清理；PID/target/URL 不变也不证明文档相同。
@@ -51,4 +51,4 @@ Android 三剑客实测来源：CLI 1.0.16486076 的实际版本和 native-layou
 - 手机上 durable GER 故障注入与 66 次业务容量；这些已有离线/受控验证，不能冒充真机业务覆盖。
 - Skill 显式定位/安装验证不保证每个自然语言提示都自动触发；resolver 验证位置，不提供代码信任保证。
 
-原始 SQLite、存档、APK、截图、完整设备标识、机器配置和私有执行日志仅保留在 ignored 本地证据目录，不随公开包或 Release 上传。现场事实、项目解释和能力完成状态保持分开；覆盖有限不自动构成剩余研发任务。本地发布准备时的 Go 不等于远程发布；本次发布已取得用户单独确认。后续发布仍需对应授权。
+原始 SQLite、存档、APK、截图、完整设备标识、机器配置和私有执行日志仅保留在 ignored 本地证据目录，不随公开包或 Release 上传。现场事实、项目解释和能力完成状态保持分开；覆盖有限不自动构成剩余研发任务。本地发布准备时的 Go 不等于远程发布；原 2026-10-11 发布已有用户单独确认；这不授权 2026-10-12 修订候选的推送、正式合并、Tag 或 Release。后续发布仍需对应授权。

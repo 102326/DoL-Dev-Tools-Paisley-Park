@@ -22,7 +22,7 @@ function recipe(g,expected){
  delete require.cache[require.resolve(file)];const value=require(file);
  if(!keys(value,['schemaVersion','operations'])||value.schemaVersion!==1||!Array.isArray(value.operations)||!value.operations.length||value.operations.length>16)throw Error('Invalid reviewed project Recipe');
  const seen=new Set(),operations=value.operations.map(o=>{
-  if(!keys(o,['id','label','intent','read','quote','execute','outcome','sceneTransition'])||!/^[a-z][a-z0-9-]{0,63}$/.test(o.id||'')||seen.has(o.id)||!bounded(o.label)||!g.scope.intents.includes(o.intent)||o.sceneTransition!==undefined&&o.sceneTransition!=='passage')throw Error('Invalid or out-of-scope project operation');
+  if(!keys(o,['id','label','intent','read','quote','execute','outcome','sceneTransition'])||!/^[a-z][a-z0-9-]{0,63}$/.test(o.id||'')||seen.has(o.id)||!bounded(o.label)||!semantic.intents.includes(o.intent)||o.sceneTransition!==undefined&&o.sceneTransition!=='passage')throw Error('Invalid project operation');
   seen.add(o.id);const sources={};for(const k of ['read','quote','execute','outcome']){
    if(typeof o[k]!=='function')throw Error('Recipe requires independent read, quote, execute and Outcome functions');
    const source=Function.prototype.toString.call(o[k]);if(Buffer.byteLength(source)>8192)throw Error('Oversized project operation');
@@ -34,12 +34,13 @@ function recipe(g,expected){
 }
 function validateAction(a,intent,g){
  if(!keys(a,['type','operation','recipeSha256','sourceHash','before','cost','sceneTransition'])||a.type!==id||!/^[a-f0-9]{64}$/.test(a.recipeSha256||'')||!/^[a-f0-9]{64}$/.test(a.sourceHash||'')||!Number.isSafeInteger(a.cost)||a.cost<0||!keys(a.before,Object.keys(a.before??{}))||Buffer.byteLength(JSON.stringify(a.before))>2048)throw Error('Invalid project experiment selection');
- const r=recipe(g,a.recipeSha256),o=r.operations.find(o=>o.id===a.operation);if(!o||o.intent!==intent||o.sourceHash!==a.sourceHash||o.sceneTransition!==a.sceneTransition)throw Error('Project operation identity mismatch');return o;
+ const r=recipe(g,a.recipeSha256),o=r.operations.find(o=>o.id===a.operation);if(!g.scope.intents.includes(intent))throw Error('Project operation outside scope');if(!o||o.intent!==intent||o.sourceHash!==a.sourceHash||o.sceneTransition!==a.sceneTransition)throw Error('Project operation identity mismatch');return o;
 }
 async function observe(client,g){
  try{
  const r=recipe(g),operations=[];
  for(const o of r.operations){
+  if(!g.scope.intents.includes(o.intent))continue;
   const before=await client.evaluate(`(${o.sources.read})(${JSON.stringify(g.inputs??{})})`);
   if(!keys(before,Object.keys(before??{}))||Buffer.byteLength(JSON.stringify(before))>2048)throw Error('Project original-state snapshot unavailable');
   const cost=await client.evaluate(`(${o.sources.quote})(${JSON.stringify(before)},${JSON.stringify(g.inputs??{})})`);
@@ -54,7 +55,7 @@ async function observe(client,g){
  }
 }
 function candidates(_facts,epoch,_proof,observed,g){
- return (observed?.operations??[]).map(o=>{const selected={type:id,operation:o.operation,recipeSha256:o.recipeSha256,sourceHash:o.sourceHash,before:o.before,cost:o.cost,...(o.sceneTransition?{sceneTransition:o.sceneTransition}:{})};
+ return (observed?.operations??[]).filter(o=>g.scope.intents.includes(o.intent)).map(o=>{const selected={type:id,operation:o.operation,recipeSha256:o.recipeSha256,sourceHash:o.sourceHash,before:o.before,cost:o.cost,...(o.sceneTransition?{sceneTransition:o.sceneTransition}:{})};
   return {ref:hash([epoch,selected]),kind:o.intent,cost:o.cost,risk:'normal',label:o.label,selected,capability:{provider:id,name:'recipe'}}});
 }
 function validateDescriptor(c,g){const o=validateAction(c.selected,c.kind,g);if(c.cost!==c.selected.cost||c.quote!==undefined||c.capability?.provider!==id||c.capability?.name!=='recipe')throw Error('Project candidate/cost mismatch');return o}

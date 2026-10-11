@@ -6,6 +6,16 @@ const renderTasks=require('../scripts/lib/game-native-render-tasks.cjs');
 
 const phaseNames=['passageinit','passagestart','passagerender','passagedisplay','passageend'];
 const addonNames=['whenSC2PassageInit','whenSC2PassageStart','whenSC2PassageRender','whenSC2PassageDisplay','whenSC2PassageEnd'];
+
+test('save observer installation failure reports navigation cleanup ownership conflict instead of safe rejection',async()=>{
+ for(const conflict of [false,true]){const f=fixture({addon:false}),original=f.jq.event.trigger,foreign=()=>{};
+  try{const watch={install(){if(conflict)f.jq.event.trigger=foreign;throw Error('Installation failed')}};
+   const result=await operation(f.node,f.config,f.engine,f.jq,f.footer,null,f.tasks,f.history,preflight,()=>undefined,checkHistory,null,null,()=>{},n=>n.click(),watch);
+   assert.equal(f.clicks,0);assert.equal(result.guardRejected,conflict?undefined:true);assert.equal(result.reason,conflict?'observer-ownership-conflict':'native-save-observer-unavailable');
+   assert.equal(f.jq.event.trigger,conflict?foreign:original);assert.deepEqual(Object.keys(f.records),[]);
+  }finally{f.restore()}
+ }
+});
 test('scoped native navigation permits save intent but waits for the save witness before terminal',async()=>{
   const f=fixture({addon:false,saveIntent:true,changeAutosave:true});let release,installed=0;
   const wait=new Promise(resolve=>{release=resolve}),watch={install(){installed++},async finish(receipt,context,held){await wait;assert.equal(context.records[receipt.attemptId],held);const terminal=Object.freeze({...receipt,evidence:{...receipt.evidence,save:{kind:'native-idb-save',slot:0,count:1,transactions:1,committed:true,readBack:true}}});context.records[receipt.attemptId]=terminal;return {ok:true,receipt:terminal}}};

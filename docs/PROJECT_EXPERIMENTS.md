@@ -10,7 +10,7 @@ Scope 是宿主把已经获得的用户授权落实为工作区、设备、App�
 
 ## Recipe 与请求
 
-模块只导出 `schemaVersion: 1` 和最多 16 个 `operations`。每项提供 `id`、`label`、`intent` 和四个自包含页面函数：
+模块只导出 `schemaVersion: 1` 和最多 16 个 `operations`。每项提供 `id`、`label`、`intent` 和四个自包含页面函数。结构校验覆盖全部导出；观察前按已有 Scope 过滤操作，选择与执行再次核对具体 intent。只授予 `save` 时可直接使用原保存/读取/删除 Recipe，不需要同时授权其它功能或复制单功能模块：
 
 | 函数 | 合同 |
 | --- | --- |
@@ -76,3 +76,9 @@ Save Outcome requires a real changed record or new stored trial metadata, native
 Unsupported backends, mismatched API/hook digests or unexpected stored shapes are unavailable capabilities; do not install another backend or rewrite old receipts to make them pass. Scope comes from the actual user/host grant, including overwrite/delete/load and any indirect save effects. Native API metadata reads may update its in-memory metadata cache; they are not game actions or proof of purely immutable JavaScript.
 
 A completed execution phase is retained when a subsequent state read fails, but it remains a started/Unknown receipt until an original independent Outcome is available. Neither a new reader version nor a source fix rewrites the old attempt. Replaced namespace/owned receipt records refuse terminal publication.
+
+## 状态满足与本次执行的证明
+
+`project-experiment` 是状态 Goal：初始谓词已经成立时，零动作完成是有效结果。它不证明本 Session 执行过保存。要求“这次保存已完成”的工作流应采用 development Goal 与既有 required checkpoint，在写入该 checkpoint 前核对本 Session 的 settled Effect：action.kind 为 save，原 Recipe 操作为 save-slot，独立 Outcome 为 occurred，executionCompleted 为 true，slot/metadata/原状态读回与本次输入一致。
+
+核对来源是既有 `Runtime.outcomeContext(session)` 的持久 Effect 与对应动作证据；不得只看 actions 数、ACK 或当前状态为真。checkpoint 本身是状态断言，不会自动替你补足操作 witness。不要为状态已经满足的普通 Goal 强制重复动作。

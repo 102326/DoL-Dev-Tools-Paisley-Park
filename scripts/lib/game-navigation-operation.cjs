@@ -169,7 +169,7 @@ async function operation(node, config, engine, jq, footer, addon = null, tasks, 
     const clean=restore();
     return {ok:false,...(clean?{guardRejected:true}:{}),reason:clean?'navigation-observer-unavailable':'observer-ownership-conflict'};
   }
-  if(saveWatch!==null)try{saveWatch.install()}catch{restore();return {ok:false,guardRejected:true,reason:'native-save-observer-unavailable'}}
+  if(saveWatch!==null)try{saveWatch.install()}catch{const clean=restore();return {ok:false,...(clean?{guardRejected:true}:{}),reason:clean?'native-save-observer-unavailable':'observer-ownership-conflict'}}
   markDispatch();
   started=Object.freeze({...binding,attemptId,status:'started'});
   context.records[attemptId]=started;

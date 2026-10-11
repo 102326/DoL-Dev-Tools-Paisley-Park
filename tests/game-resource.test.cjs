@@ -86,3 +86,30 @@ test('scoped Debug refuses an altered native generation before launch and shares
  await assert.rejects(require('../scripts/lib/action.cjs').execute({options:{...target,authorization:f.authorization,store:f.file},adb:f.adb},{type:'launch'}),/generation changed/);
  assert.ok(!f.commands.slice(count).some(c=>c.includes('resolve-activity')||c.includes('am start')));
 });
+
+test('Store open cannot downgrade a concurrent genuine schema-3 upgrade or erase its native lease fence',async t=>{
+ for(const pauseAt of [1,2]){
+ const f=fixture(t),old=unresolved(f.r);let inspection;
+ const begin=f.r.beginRebuild.bind(f.r);
+ f.r.beginRebuild=p=>{inspection=p;throw Error('Capture verified inspection before writes')};
+ await assert.rejects(resource.rebuild(f.r,f.adb,target,f.authorization),/Capture verified/);f.r.beginRebuild=begin;
+ const vm=require('node:vm'),{createRequire}=require('node:module'),{DatabaseSync}=require('node:sqlite');
+ const sourceFile=path.resolve(__dirname,'../scripts/lib/game-runtime.cjs'),realRequire=createRequire(sourceFile);let interleaved=false,blocked=false,versionReads=0;
+ class PausedDatabase{
+  constructor(file){const db=new DatabaseSync(file);return new Proxy(db,{get(_target,name){
+   if(name==='prepare')return sql=>{const st=db.prepare(sql);if(sql==='PRAGMA user_version')return {get(){const result=st.get();if(++versionReads===pauseAt){interleaved=true;try{begin(inspection)}catch(e){assert.match(e.message,/locked|busy/i);blocked=true}}return result}};return st};
+   const value=db[name];return typeof value==='function'?value.bind(db):value;
+  }})}
+ }
+ const module={exports:{}},req=name=>name==='node:sqlite'?{DatabaseSync:PausedDatabase}:realRequire(name);
+ vm.runInNewContext('(function(require,module){'+fs.readFileSync(sourceFile,'utf8')+'\n})',{process,Buffer})(req,module);
+ const opened=new module.exports.Runtime(f.file,{provider});
+ try{
+  assert.ok(interleaved);if(blocked)begin(inspection);
+  assert.equal(opened.db.prepare('PRAGMA user_version').get().user_version,3,'ordinary open must not write stale schema 2 over schema 3');
+  assert.equal(opened.resource(old.s.targetKey).generation,1);
+  assert.throws(()=>f.r.resume(old.s.id),/different App data/);assert.equal(f.r.effect(old.e.id).status,'dispatching');
+ }finally{opened.close()}
+ const reopened=f.open();assert.equal(reopened.db.prepare('PRAGMA user_version').get().user_version,3);
+ }
+});

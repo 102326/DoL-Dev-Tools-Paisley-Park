@@ -52,14 +52,14 @@ function candidates(facts,epoch,proof,shopState,g){
     commerce.push({ref:hash([epoch,selected]),kind:'menu',cost:0,risk:'normal',label:'Return through original shop menu',selected,capability:{provider:id,name:'shop'}});
   }
   const quote=predicates.quoteFromShop(shopState,g||{});
-  if(quote){
-    const buy=shopState.quantity===1,selected={type:'dol-shop',operation:buy?'buy-one':'quantity-one'};
-    commerce.push({ref:hash([epoch,selected,quote]),kind:buy?'buy':'menu',cost:buy?quote.unitCost:0,risk:'normal',label:buy?'Buy one '+quote.variant.variable:'Set original quantity to one',selected,quote,capability:{provider:id,name:'shop'}});
+  if(quote&&shopState.quantity===1){
+    const selected={type:'dol-shop',operation:'buy-one'};
+    commerce.push({ref:hash([epoch,selected,quote]),kind:'buy',cost:quote.unitCost,risk:'normal',label:'Buy one '+quote.variant.variable,selected,quote,capability:{provider:id,name:'shop'}});
   }
-  if(g?.kind==='purchase-one'&&shopState?.status==='available'&&shopState.variable===g.variable&&shopState.colour===g.colour&&shopState.accessoryColour===g.accessoryColour&&(shopState.modder??null)===(g.modder??null)&&shopState.pattern==null&&shopState.destination==='wardrobe'&&shopState.money===g.baselineMoney&&shopState.count===g.baselineCount&&shopState.cost===g.unitCost&&withinSpend(shopState.cost,g.maxSpend)&&shopState.space>=1){
-    const buy=shopState.quantity===1,selected={type:'dol-shop',operation:buy?'buy-one':'quantity-one'};
+  if(g?.kind==='purchase-one'&&shopState?.status==='available'&&shopState.quantity===1&&shopState.variable===g.variable&&shopState.colour===g.colour&&shopState.accessoryColour===g.accessoryColour&&(shopState.modder??null)===(g.modder??null)&&shopState.pattern==null&&shopState.destination==='wardrobe'&&shopState.money===g.baselineMoney&&shopState.count===g.baselineCount&&shopState.cost===g.unitCost&&withinSpend(shopState.cost,g.maxSpend)&&shopState.space>=1){
+    const selected={type:'dol-shop',operation:'buy-one'};
     const quote=predicates.quoteFromShop(shopState,{kind:'purchase-and-equip',slot:'head',colour:g.colour});
-    if(quote)commerce.push({ref:hash([epoch,selected,quote]),kind:buy?'buy':'menu',cost:buy?shopState.cost:0,risk:'normal',label:buy?'Buy one '+g.variable:'Set original quantity to one',selected,quote,capability:{provider:id,name:'shop'}});
+    if(quote)commerce.push({ref:hash([epoch,selected,quote]),kind:'buy',cost:shopState.cost,risk:'normal',label:'Buy one '+g.variable,selected,quote,capability:{provider:id,name:'shop'}});
   }
   return [...equipment,...commerce,...browse].slice(0,64);
 }
@@ -92,9 +92,14 @@ function validateDescriptor(c,g){
 }
 
 function legacyDescriptor(selected,intent,g,ref){
+  assertTerminalSupport(selected);
   const descriptor={ref,kind:intent,cost:intent==='buy'?g.unitCost:0,risk:'normal',selected,
     capability:{provider:id,name:['sw-wardrobe','dol-wardrobe'].includes(selected?.type)?'wardrobe':'shop'}};
   return validateDescriptor(descriptor,g);
+}
+
+function assertTerminalSupport(selected){
+  if(selected?.type==='dol-shop'&&selected.operation==='quantity-one'||selected?.type==='sw-wardrobe'&&selected.operation==='select-slot')throw Object.assign(Error('This preparation control has no reviewed terminal Outcome. GER supports purchases with quantity already one and wardrobe actions with the slot already selected. Existing Unknown effects remain unresolved.'),{code:'MAPPING_UNAVAILABLE'});
 }
 
 function authorizeCostedControl(mapping,descriptor,g){
@@ -116,6 +121,7 @@ function authorizeCostedControl(mapping,descriptor,g){
 }
 
 function prepare(client,descriptor,g,attemptId,{scope}={}){
+  assertTerminalSupport(descriptor.selected);
   validateDescriptor(descriptor,g);
   const selected=descriptor.selected,mapping=validateAction(selected,descriptor.kind,g);
   if(mapping===wardrobe&&['equip','unequip'].includes(selected.operation))return require('../../integrations/soft-and-wet/native-head.cjs').prepare(client,selected,attemptId);
@@ -140,4 +146,4 @@ function publicOutcome(effectResult){
 }
 const traceProgress=proof=>[proof.satisfied,proof.worn??null,proof.count??null,proof.wornMatches??null,proof.owned??null];
 
-module.exports={id,supportsGoal,validateRequest,validateGoal,probe,observe,candidates,validateAction,validateDescriptor,legacyDescriptor,authorizeCostedControl,prepare,satisfied,validateReceipt,canPrepare,publicProof,publicOutcome,traceProgress};
+module.exports={id,supportsGoal,validateRequest,validateGoal,probe,observe,candidates,validateAction,validateDescriptor,legacyDescriptor,assertTerminalSupport,authorizeCostedControl,prepare,satisfied,validateReceipt,canPrepare,publicProof,publicOutcome,traceProgress};

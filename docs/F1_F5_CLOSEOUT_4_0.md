@@ -1,0 +1,49 @@
+# 4.0.0 — Bites the Dust：独立验货定向修订
+
+本轮从已发布源码 `4be4cfc180ed4e7a4c21761a38ab829a3b827655` 做有限修复，版本保持 4.0.0。交付本地候选包及其固定源码、SHA-256 和 manifest；不推送、合并、打 Tag 或替换 GitHub Release。此前发布授权和记录属于历史事实，不代表本轮已获发布批准。
+
+## Delivered
+
+| 项目 | 确认原因 | 本轮处理与边界 |
+| --- | --- | --- |
+| F1 | 数量调整与衣柜选槽可以触发原控件，却没有独立可靠的终态合同。 | 采用任务书允许的支持范围收窄：不再生成数量调整候选；显式请求和持久化的旧 ready 提案在创建 Effect 前拒绝这两类操作。购买要求数量已为 1，衣柜穿脱要求槽位已选好。不宣称自动「2 → 1 → 购买」或「选槽 → 下一步」已实现。历史未决动作不改变。 |
+| F2 | 校验多操作 Recipe 时把全部导出操作都套用当前权限，save-only 因读取或删除导出而被拒绝。 | 全部导出做结构校验；观察和候选只包含授权操作，选定及执行时再核对具体 intent。原存档 Recipe 无须拆分，保存授权不会开放读取和删除。 |
+| F3 | 双连接实验确认：事务外读到 schema 2，另一连接完成真实重建升级后，旧构造器把版本写回 2。 | 初始化与决定版本的读取放入同一个短写事务；事务外读取仅用于提前拒绝不支持的 Store。并发打开后仍保留 schema 3、原生代次、旧 owner 隔离和历史 Unknown。 |
+| F4 | 事务完成后的读回 Promise 不受完整生命周期期限约束，可能永久保留页面 hook 和 prototype。 | 安装后有界存活，finish 的事务等待与读回共用期限；超时、抛错和迟到结果都清理自有监听及原 hook，并禁止迟到成功发布。不取消底层读回，也不把超时当作保存未发生。 |
+| F5 | 完成型观察缺少原生资源身份比对；未登记重建的普通 Session 也没有启动身份，可能误认替换后的 App 数据。 | 已登记代次复用原证明；普通新 Session 保存只读 root/UID/inode/signer/marker 摘要。观察前后、派发前和 checkpoint 提交前比对。文档重载自动建立显式新执行绑定，无须额外批准。 |
+
+次级 A：安装保存观察器失败时，导航 restore 的所有权冲突现在如实报告，不再错误标为安全的执行前拒绝。
+
+次级 B：初始状态已满足时仍允许零动作完成。声称「本 Session 已执行保存」的工作流必须核对本 Session 的已结清 save-slot receipt 和执行见证；必要 checkpoint 可要求这个证明，不强迫所有状态 Goal 重复动作。
+
+Debug 和受支持 GER 操作继续使用原授权、预算、重复探索、存档及原生重建合同。未增加 Runtime、Ledger、权限服务或逐项审批；未改写或清除历史 Unknown，也未触碰共享私人 Store 或 3.0.3 稳定基线。
+
+## Validated
+
+以下为本轮 Windows 本地运行，非历史 CI 或其它平台结果。Node.js 24.19.0、npm 11.17.0、Python 3.14.7；锁定 XState 5.33.2。
+
+- 修复前证据：原 Provider 暴露无终态数量候选；原 save-only Recipe 校验抛错；双 SQLite 连接实际降写版本；保存读回挂起遗留观察器；原生 root/marker 替换后错误完成；导航清理冲突被隐藏。均保留在本轮私有实验目录，不随公开 ZIP 分发。
+- 完整 Node 回归：406 Passed，0 Failed，0 Skipped。受影响模块定向回归 117 Passed；随后加强了双连接交错与两种永久挂起读回的用例，专项 18 Passed。
+- Python：2 Passed，2 Skipped，0 Failed。跳过原因是缺少可选 jsonschema/rfc3339-validator 和 Pillow，未安装额外依赖。
+- F1 使用生产 coordinator、原 mapping 与 SQLite：未支持操作在派发前拒绝，无远端点击和新 Effect；原来支持的项目操作仍执行、结清并继续。本轮没有为两个准备操作补造 Outcome。
+- F2 使用未修改的原存档 Recipe、生产 coordinator 和 SQLite，无测试专用 readOutcome。save-only 能保存并正确结清；未授权读取和删除不可选、不可执行。原生 IndexedDB 为受控替身，不是真机保存证明。
+- F3 双连接分别控制事务外读取和事务内读取的交错；真实 beginRebuild 升级与 owner fence、历史 Unknown 保持正确。
+- F4 页面 Promise 替身覆盖 getItem/getSaveDetails 永不返回、超时迟到、正常延迟、抛错、hook 集合更换；不会留下自有观察器或迟到成功终态。
+- F5 生产调用链受控替身覆盖正常文档重载、登记/未登记原生代次、root/marker 改变、旧 owner 和 checkpoint 提交间隙。原生身份不一致时不能完成旧目标。
+- 代表性真实 Android：精确绑定已授权测试 App，在 Start 页面执行一次 Page.reload；旧客户端拒绝、新显式绑定可读、原生身份摘要不变，自有 transport 清理完成。未修改存档、未重建数据、未执行业务。重载后的游戏初始化没有在该探针中验证。
+
+最终候选的固定 SHA、完整日志摘要、文件哈希、安装与 Skill resolver 检查由随附 `artifact-manifest.json` 和独立验货记录给出。设备实验对应其实际使用的源码文件哈希，不将整个 dirty 工作区冒充固定提交的已运行证据。
+
+## Not validated
+
+本轮未重新执行真实数量调整、衣柜选槽、购买、穿戴、保存/删除或 App 数据替换；完整 Android Mod 自主修复与部署闭环仍未验证。其它设备、存档后端、游戏/Mod 组合属于后续覆盖。未发布或替换远端资产。
+
+## Known limitations
+
+- GER 数量调整和 Soft & Wet 选槽暂不支持；不能在尚有需恢复的 Unknown 时通过另换 Store 或直接操作规避它。
+- 缺少原始原生身份的历史 Session 可查询或按原回执恢复；不能事后用当前实例补造原始身份并完成目标。处理旧未决事实后可在原授权内开始新 Goal。
+- Android 完成证明依赖可读取原生 root/身份的测试 App；不可 run-as 的宿主不具备这项证明，通用诊断仍可使用。
+- 清理观察器不会取消底层保存或读回。无法证明保存结果时保留 Unknown，超时不表示操作没有发生。
+- ZIP 不捆绑 node_modules；Gameplay 使用前须按锁文件安装 XState。缺依赖应在创建 Store 前清楚拒绝。
+
+在上述公开缩小的能力范围内，本轮未发现剩余发布阻断。实际远程发布仍需另行授权。
