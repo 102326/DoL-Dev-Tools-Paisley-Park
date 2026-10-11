@@ -19,6 +19,7 @@
 | Q1b 实际调用 | 点击型原生 producer 绑定实际 DOM receiver 与原生 click callable；最终边界复核，使用捕获函数与明确 receiver 调用；替换/getter 在调用前拒绝，跨开始标记后的错误仍 Unknown。Soft & Wet 原生 head 的 UI 回调继续使用已有捕获函数/对象合同。普通 Debug click 不被强制加入这些认证。 |
 | Q2 零派发与 Unknown | 已审本地操作通过不可序列化的进程内 provenance 与显式开始标记保留可信 preflight 拒绝；标记后失败不降级。任意操作返回 guardRejected、复制 operation 对象或页面声明零效果均不能取得该语义。不是权限旗标、脚本沙箱或新的审批。 |
 | Android layout | ENOENT 单独 unsupported；权限拒绝/进程终止/执行失败/输出超限/无效 JSON/无效布局分别 failed；不输出私人 stdout/stderr，不从错误文本猜测目标状态。 |
+| Android Document | execution-context 复用已有不可变 frame/loader/unique context 合同；同 PID/target 重载也拒绝旧持有者。仅显式 closeTransport 或新上下文建立新绑定；不静默重连，不改变 TargetKey/历史账本，不引入 ChromeHost。 |
 | Skill/Workshop | 明确 Debug 路由、一次范围授权、禁止伪造证据与允许独立状态准备的区别；Android 工具/Skill/KB 来源分别记录；未实现的 GER 合同不由授权旗标代替。 |
 
 这张表为离线实现状态。没有把 Node/替身 DOM/合成历史测试当成本轮真实 Android 或 Gameplay 通过。
@@ -30,6 +31,7 @@
 - 定向回归先执行，再全套。首轮保留一条旧“必须填写消费上限”断言失败，按新约定替换为零/有限/不限及旧记录测试。新增报价授权夹具首次输入格式不完整已修正；回执容量实验首次未在普通 request 观察入口执行维护，已接线并通过。不用跳过、吞错或重复跑至绿隐藏原因。
 - 日志在本轮 ignored `artifacts/bites-the-dust-offline-20261011/`，依代码变化更新实际结果；目录不包含游戏存档/资源。独立测试所建 SQLite 连接先关闭，目录后清理。
 - Android CLI 实际版本 1.0.16486076；本轮运行 version、docs help、skills help，未运行设备动作或 KB query。help 显示存在 search/fetch 与 Skill 管理入口，不能将其写成 KB 查询或实机采集通过。
+- Android 文档绑定变更：定向 68 passed；完整 Node 359 passed、0 failed、0 skipped。复用的 Android 修复来自历史 Tusk 源码，仅取 Android 分支；首轮移植混入 Chrome 分支及 Python 默认编码失败已修正，失败日志保留。后续失败来自旧替身连接重复使用已关闭客户端、未转交事件参数及旧“零身份事件”断言，已更新夹具；不放松生产绑定。Python 未涉及，复用前述结果。
 
 ## Not validated / 本轮未覆盖
 

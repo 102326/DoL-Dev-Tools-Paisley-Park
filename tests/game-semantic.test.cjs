@@ -79,7 +79,7 @@ function fixture(t, variant = '') {
     return Buffer.alloc(0);
   };
   return { options: { serial: 'test-device', package: 'com.example.game', out: path.join(directory, 'result'), testEnvironment: true },
-    overrides: { adb, connect: async () => client },
+    overrides: { adb, connect: async (_e,_t,onEvent) => { closed=false;return require('./fixtures/document-client.cjs')(client,onEvent) } },
     state, globals, stats: () => ({ clicks, released, forwarded, closed, ...(variant.startsWith('scroll-') ? {scrolls} : {}) }) };
 }
 
@@ -117,7 +117,7 @@ test('read-only observation projects only allowed original scene metadata, indep
     return client;
   };
   const r = await site.observe(f.options, f.overrides);
-  assert.deepEqual(enabled, [], 'observation must not enable CDP capture domains');
+  assert.deepEqual(enabled, ['Page.enable','Runtime.enable'], 'identity domains are required; observation must not enable Network capture');
   assert.equal(r.status, 'observed'); assert.deepEqual(r.observation.availableActions, ['open-wardrobe']);
   assert.equal(r.actions, false); assert.equal(f.stats().clicks, 0); assert.equal(f.stats().forwarded, false);
   const saved = fs.readFileSync(path.join(f.options.out, 'semantic.json'), 'utf8');
@@ -245,8 +245,8 @@ test('offscreen preparation rejects disabled, hidden, occluded, changed Scene an
 test('prepared capabilities resolve their current control in the site Provider without a raw Goal selector',async t=>{
   const f=fixture(t),selector='html > a:nth-child(1) > a:nth-child(1)',queries=[];
   const connect=f.overrides.connect;
-  f.overrides.connect=async()=>{const client=await connect(),send=client.send;client.send=async(method,params)=>{
-    if(method==='Runtime.evaluate')queries.push(params.expression);
+  f.overrides.connect=async(...args)=>{const client=await connect(...args),send=client.send;client.send=async(method,params)=>{
+    if(method==='Runtime.evaluate'&&params.returnByValue!==true)queries.push(params.expression);
     return send.call(client,method,params);
   };return client};
   let prepared=0,reserved=0,bound=0;

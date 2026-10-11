@@ -41,7 +41,7 @@ function fixture(t,config={}) {
     if(c==='forward --remove tcp:55555')forward=false;
     return Buffer.alloc(0);
   };
-  const connect=async()=>({close(){},isOpen:()=>true,
+  const connect=async(_e,_t,onEvent)=>require('./fixtures/document-client.cjs')({close(){},isOpen:()=>true,
     async evaluate(expression){evaluations++;return vm.runInNewContext(expression,globals)},
     async send(method,params){
       if(method==='Runtime.evaluate')return{result:{objectId:'node'}};
@@ -53,7 +53,7 @@ function fixture(t,config={}) {
       if(config.userDrift && !params.functionDeclaration.includes('observedRoot'))user='1';
       if(config.disconnect && clicks && !lost){lost=true;throw Error('Acknowledgement lost')}
       return{result:{value:result}};
-    }});
+    }},onEvent);
   const file=path.join(base,'action.json');fs.writeFileSync(file,JSON.stringify({type:'web-click',selector:'#choice'}));
   // Explicit reviewed local receiver hook; returning no proof deliberately
   // exercises unknown/pending without claiming that the mock click is terminal.

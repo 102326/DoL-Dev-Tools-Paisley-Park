@@ -1,5 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const journey=require('../scripts/lib/journey.cjs');
+const documentClient=require('./fixtures/document-client.cjs');
 function fixture(t){const root=fs.mkdtempSync(path.join(os.tmpdir(),'dol-journey-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root}
 const options=out=>({serial:'offline-device',package:'com.example.game',out,testEnvironment:true});
 function adbFixture(){
@@ -35,7 +36,7 @@ test('Journey validates the full plan before output and plan mode makes no devic
 test('Journey preserves successful checkpoint files and stops after a later failed collector',async t=>{
   const root=fixture(t),f=adbFixture();let actions=0;
   const report=await journey.run(options(path.join(root,'capture')),load([{type:'checkpoint',scope:'#x',capture:['screenshot','dom']},{type:'home'}]),{
-    adb:f.adb,connect:async()=>({close(){},send:async()=>({}),evaluate:async()=>{throw Error('private exception')}}),executeAction:async()=>{actions++},
+    adb:f.adb,connect:async(_e,_t,onEvent)=>documentClient({close(){},send:async()=>({}),evaluate:async()=>{throw Error('private exception')}},onEvent),executeAction:async()=>{actions++},
   });
   assert.equal(report.status,'partial');assert.equal(actions,0);assert.equal(report.steps.length,1);
   assert.equal(report.steps[0].artifacts[0].filename,'step-0-screenshot.png');
@@ -46,19 +47,19 @@ test('Journey preserves successful checkpoint files and stops after a later fail
 
 test('Journey preserves incomplete requested timeline and stops subsequent actions',async t=>{
  const root=fixture(t),f=adbFixture();let actions=0;
- const report=await journey.run(options(path.join(root,'timeline-failure')),load([{type:'checkpoint',scope:'#x',capture:['timeline'],timelineMs:20},{type:'home'}]),{adb:f.adb,connect:async()=>({close(){},send:async()=>({}),evaluate:async()=>({capabilities:{cleanupConflicts:1}})}),executeAction:async()=>actions++});
+ const report=await journey.run(options(path.join(root,'timeline-failure')),load([{type:'checkpoint',scope:'#x',capture:['timeline'],timelineMs:20},{type:'home'}]),{adb:f.adb,connect:async(_e,_t,onEvent)=>documentClient({close(){},send:async()=>({}),evaluate:async()=>({capabilities:{cleanupConflicts:1}})},onEvent),executeAction:async()=>actions++});
  assert.equal(report.status,'partial');assert.equal(report.steps[0].status,'failed');assert.equal(actions,0);assert.ok(fs.existsSync(path.join(root,'timeline-failure/step-0-timeline.json')));
 });
 
 test('Journey detached checkpoint forwards its bounded CDP response option and continues after cleanup',async t=>{
  const root=fixture(t),f=adbFixture(),calls=[];let actions=0;
  const report=await journey.run(options(path.join(root,'detached')),load([{type:'checkpoint',capture:['leak-probe']},{type:'home'}]),{
-  adb:f.adb,connect:async()=>({close(){},send:async(method,params,settings)=>{
+  adb:f.adb,connect:async(_e,_t,onEvent)=>documentClient({close(){},send:async(method,params,settings)=>{
    calls.push({method,settings});
    if(method==='Performance.getMetrics')return{metrics:[{name:'JSHeapUsedSize',value:10}]};
    if(method==='Memory.getDOMCounters')return{nodes:20,documents:1,jsEventListeners:2};
    if(method==='DOM.getDetachedDomNodes')return{detachedNodes:[]};return{};
-  }}),executeAction:async()=>actions++
+  }},onEvent),executeAction:async()=>actions++
  });
  assert.equal(report.status,'complete');assert.equal(actions,1);
  assert.equal(calls.find(c=>c.method==='DOM.getDetachedDomNodes').settings.maxResponseBytes,64*1024*1024);
