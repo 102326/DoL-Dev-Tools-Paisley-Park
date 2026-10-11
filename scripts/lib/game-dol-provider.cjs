@@ -185,7 +185,8 @@ async function act(options, selected, intent, overrides = {}) {
   if (selected === null && typeof overrides.prepareAction === 'function') selected = {type:'web-click',selector:rootSelector};
   validateTarget(options); action.validate(selected);
   if (selected.type !== 'web-click' || !intents.includes(intent)) throw Error('Unsupported gameplay action or intent');
-  const plan = { schemaVersion: 1, name: 'gameplay-fragment', timeoutMs: Math.min(30000, options.timeoutMs ?? 30000), steps: [selected] };
+  const windowMs=require('./game-native-save.cjs').authorized(options.authorization)?60000:30000;
+  const plan = { schemaVersion: 1, name: 'gameplay-fragment', timeoutMs: Math.min(windowMs, options.timeoutMs ?? windowMs), steps: [selected] };
   const report = { experimental: true, operation: intent, scope: 'one reviewed game action; not overall Goal completion', status: 'replan-required', dispatch: 'not-dispatched' };
   const result = await journey.run(options, { plan, sha256: createHash('sha256').update(JSON.stringify(plan)).digest('hex') }, {
     ...overrides,
