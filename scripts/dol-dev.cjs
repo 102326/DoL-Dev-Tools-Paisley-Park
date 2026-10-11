@@ -227,7 +227,7 @@ async function main(args = process.argv.slice(2)) {
     const options=parse(args,['--file','--serial','--package','--out','--plan','--authorization-file','--store','--test-environment','--target-id','--webview-socket']);
     if(!options.file || options['test-environment']!==undefined && options['test-environment']!=='yes')throw Error('Invalid execution options');
     options.testEnvironment=options['test-environment']==='yes';options.targetId=options['target-id'];options.webviewSocket=options['webview-socket'];
-    if(options['authorization-file']){options.authorization=read(options['authorization-file']);if(!require('./lib/game-scope.cjs').validate(options.authorization))throw Error('Invalid host-granted authorization scope')}
+    if(options['authorization-file']){if(fs.statSync(options['authorization-file']).size>8192)throw Error('Oversized authorization scope');options.authorization=JSON.parse(fs.readFileSync(options['authorization-file'],'utf8'));if(!require('./lib/game-scope.cjs').validate(options.authorization))throw Error('Invalid host-granted authorization scope')}
     const journey=require('./lib/journey.cjs'), loaded=journey.read(options.file,command==='action');
     const report=await journey.run(options,loaded);
     console.log(`Journey ${report.status}; inspect local manifest and checkpoints.`);

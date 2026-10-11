@@ -63,3 +63,11 @@ test('scope applies to ordinary GER candidates and retains missing-scope histori
  assert.deepEqual(f.r.observe(s.id,{choices:[a],revision:1}).decision.scene.choices,[]);
  const r=f.open();assert.deepEqual(r.load(s.id).config.scope.intents,[]);
 });
+
+test('actual Action CLI consumes the granted scope file before planning without touching Android',t=>{
+ const f=fixture(t),scopeFile=path.join(f.dir,'scope.json'),actionFile=path.join(f.dir,'action.json'),out=path.join(f.dir,'plan');
+ fs.writeFileSync(scopeFile,JSON.stringify(f.authorization));fs.writeFileSync(actionFile,JSON.stringify({type:'data-reset'}));
+ const run=require('node:child_process').spawnSync(process.execPath,['scripts/dol-dev.cjs','action','--file',actionFile,'--serial',target.serial,'--package',target.package,'--out',out,'--authorization-file',scopeFile,'--store',f.file,'--plan'],{cwd:path.resolve(__dirname,'..'),encoding:'utf8',env:{...process.env,DOL_ADB:'nonexistent-adb-to-prove-no-device-access'}});
+ assert.equal(run.status,0,run.stderr);assert.equal(JSON.parse(fs.readFileSync(path.join(out,'manifest.json'),'utf8')).status,'planned');
+ assert.equal(f.r.db.prepare('PRAGMA user_version').get().user_version,2);
+});
