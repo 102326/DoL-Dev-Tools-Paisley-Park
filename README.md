@@ -1,10 +1,12 @@
 # DoL Dev Tools
 
-**4.0 — Bites the Dust · 本地候选 4.0.0-rc.1 · 未发布**
+**4.0.0 — Bites the Dust（败者食尘）**
+
+本地正式版；远程尚未发布，发布须单独确认。[更新说明](docs/RELEASE_4.0.0.md) · [技术验证与兼容说明](docs/CLOSEOUT_4_0.md)
 
 面向 DoL Mod 生态的本地开发工具系统。连接真实 Android / WebView，帮助开发者和 Agent 查看运行现场、调查问题、复现操作，并在修改、构建和部署后验证结果。
 
-在一次明确的工作区、设备、App 与数据范围授权内，Agent 可自主调查、修改、构建、部署和复验。普通 Debug 使用现有 Action/Journey/evaluator；需要长期目标、预算、副作用记录和恢复时使用共享 GER Runtime。正常阶段切换不需要重复确认；公网发布与范围外资源需另行授权。
+在一次明确的工作区、设备、App 与数据范围授权内，Agent 可自主调查、修改、构建、部署和复验。普通调试可直接执行已审步骤或脚本；需要持续游戏目标和中断恢复时，使用共享 Gameplay Runtime（GER）保存进度与动作结果。正常阶段切换不需要重复确认；公网发布与范围外资源需另行授权。
 
 [稳定版 3.0.3（历史基线）](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) · [快速开始](#快速开始) · [文档导航](#文档导航)
 
@@ -33,7 +35,7 @@
 - **可靠恢复**：绑定真实目标与文档，区分未派发、执行回执和 Outcome；已结清路线可以重复探索，历史 Unknown 不被重放或隐藏。真实 App 数据重建使用原 Store 内可核验资源代次。
 - **Android 工具协作**：复用已安装 Android CLI、适用官方 Skills 和 Knowledge Base，并分别记录 ADB/CDP、工具来源与实际结果。
 
-本轮已验证真实 Android 文档绑定、native save/create/overwrite/load/delete、原生 autosave transaction 和受控零价购买。完整 Android Mod 自主修复闭环 **Not Validated**，没有通过恢复旧 Bug 制造验收。当前证据、兼容限制及候选状态见 [4.0 开发记录](docs/BITES_THE_DUST_4_0.md)。
+代表性 Android 测试已覆盖页面身份、原生存档的创建/覆盖/读取/删除、一次真实自动保存和一次受控免费购买。完整 Android Mod 自动修复、构建、部署与复验闭环仍未验证。支持环境和证据边界见 [技术验证与兼容说明](docs/CLOSEOUT_4_0.md)。
 
 ### 继承的 Gameplay 核心
 
@@ -60,7 +62,9 @@
 
 ## 快速开始
 
-本开发线的本地候选包须与随附 Git SHA、文件摘要和版本核对，解压到新目录；不要覆盖正式 3.0.3 或已安装稳定 Skill。正式稳定版仍可从 [3.0.3 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) 获取。包不包含游戏、APK、设备工具、node_modules 或私人证据。
+正式包名称为 `DoL-Dev-Tools-4.0.0.zip`；本地发布准备阶段尚未上传。取得发布包后核对随附 SHA-256，将 ZIP 解压到新的长期保留目录。更新时保留旧 Tools 和 Skill 副本，不直接覆盖；详见 [安装与升级](docs/SKILL_INSTALL.md)。包不包含游戏、APK、设备工具、node_modules 或私人证据。
+
+在解压后的 Tools 根目录运行 `.\DoL-Dev.cmd --version`，应返回 `4.0.0`；`--help` 首行应为 `DoL Dev Tools 4.0.0 — Bites the Dust`，随后是用途说明。现有 `Paisley-Park.cmd` 入口仍可使用。
 
 需要 **Node.js 22.12+**。Android 现场需要已有 **ADB、USB 调试授权和明确的设备 serial / App package**；先手动打开目标 App。WebView 内部观察还需要 App 开启调试支持。ADB 不在 PATH 时，在当前进程设置 `DOL_ADB` 为已有 `adb.exe` 的绝对路径；详见 [环境与连接说明](docs/DIAGNOSTICS.md#快速入口)。
 
@@ -104,7 +108,9 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 - **证据与结论分开**：Evidence 的 complete / partial / failed 描述本次采集。结构可能截断，像素差异不等于兼容失败，内存增长不等于泄漏，采集完整不等于业务通过。
 - **本地资料与代码权限**：私有截图、日志、存档与游戏数据不自动上传，分享前须审查。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 能执行传入的页面 JavaScript，“只读”是内置 Probe 的使用约束。
 
-当前支持范围、旧未决 effect 和未覆盖项见 [4.0 开发记录](docs/BITES_THE_DUST_4_0.md)；[稳定版收口](docs/CLOSEOUT_3_0_3.md)保留历史证据。规划中的能力与已交付功能分开记录。
+使用数据重建功能前，一致备份执行记录；升级后的记录不允许 3.0.3 继续写入。实验 Recipe 是经过审核、拥有实际 Node 权限的本地脚本，不是安全沙箱。详见 [升级提醒](docs/RELEASE_4.0.0.md#重要注意事项)。
+
+当前支持范围、旧未决动作和未覆盖项见 [4.0 技术说明](docs/CLOSEOUT_4_0.md)；[稳定版收口](docs/CLOSEOUT_3_0_3.md)保留历史证据。规划中的能力与已交付功能分开记录。
 
 ## 文档导航
 

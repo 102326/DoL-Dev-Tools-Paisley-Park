@@ -1,6 +1,6 @@
 # DoL Dev Tools 4.0 — Bites the Dust 开发记录
 
-状态：本轮核心研发及本地候选验收已完成，候选 `4.0.0-rc.1 — Bites the Dust`，未发布。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；历史资料保留，只复用与当前合同直接相关的已审实现和测试。
+状态：核心研发和已审 RC 验收完成，当前为正式 `4.0.0 — Bites the Dust` 本地制品，远程未发布。[正式版更新说明](RELEASE_4.0.0.md)与[收口/兼容说明](CLOSEOUT_4_0.md)为当前入口；下方 RC 号及切片记录保留当时的真实身份。稳定基线为正式 3.0.3，`c5363060efdde8b724a5bbc8df3dd5140c32ca09`；开发分支 `development/bites-the-dust-4.0`。Tusk ACT4/3.5 不再作为研发计划；历史资料保留，只复用与当前合同直接相关的已审实现和测试。
 
 ## 本轮范围与 Done
 
@@ -17,7 +17,7 @@
 | A1 Debug | 复用 Action/Journey/evaluator，自主调查、状态准备、导航和已授权数据重建；不为普通读取/点击强制创建 GER Goal。授权范围变化与易变执行句柄变化分开。 |
 | A2 可选消费 | 新请求缺上限为 null；显式零/有限预算、父子有效限额、候选/派发/结算/完成/view/resume 一致；旧缺字段按零读取。零价交易需要实际 quote/库存/moneyStats/moment 和 terminal，不以不扣钱代替购买证明。 |
 | A3 项目实验 | 复用 GER CLI 的单一 reviewed Recipe Provider，范围/源码摘要/独立 Outcome/原生 Goal Predicate；源码迭代不追认旧未决操作。见 [配方合同](PROJECT_EXPERIMENTS.md)。 |
-| A4 存档 | 明确 save Scope 传到原生 producer；支持 reviewed IDB autosave transaction/readback，独立 numbered save/create/overwrite/load/delete Recipe。不同后端/hook 仍需 reviewed 支持，历史 no-save 恢复合同冻结。 |
+| A4 存档 | 明确 save Scope 传到原生 producer；支持 reviewed IDB autosave transaction/readback，独立 numbered save（创建/覆盖/读取/删除）Recipe。不同后端/hook 仍需 reviewed 支持，历史 no-save 恢复合同冻结。 |
 | A5 重复探索 | 三次无进展改为提示；第四/第五次已终结实验及 resume 可继续，未知效果不盲重放。 |
 | A6 资源代次 | 原 Store/TargetKey 内表达获证实 native App-user-data 重建，旧记录继续可见；自报 UUID/换库不构成隔离。见 [代次合同](RESOURCE_GENERATIONS.md)。 |
 | Q1a | SQLite 事务内 approved snapshot CAS；执行成功预留 Effect 的同一动作，双连接竞争拒绝 stale Decision。 |
@@ -30,7 +30,7 @@
 - 源码与最后行为回归固定 `467f32e15d6929e13bf2d4bc5d9fcc0bae33a146`：Node **393 passed / 0 failed / 0 skipped**；定向 window 回归 56 passed。未改 Python，复用有效 **2 passed / 2 optional-dependency skips**（Pillow、JSON Schema/date-time）。Node 24.19.0、Python 3.14.7、锁定 XState 5.33.2，复用已有依赖，不新增安装。
 - 同一获授权 Android 17 / WebView 154.0.8037.58 / user 0 的 DoL 0.5.12.13 测试包：真实文档重载 10 项身份检查、显式新绑定及自有 forward 清理；PID/target 不变仍拒绝旧 Document client。
 - Android CLI 1.0.16486076 实际 version/help、标准 native-layout；实际安装 Skill list、相关内容身份；真实 KB search/fetch 及返回文档/时间/Android 适用性记录。layout 不证明全部控件或 trusted touch。
-- GER 标准 CLI 完成五项 native save/create/overwrite/独立货币准备/load/delete 试验；真实状态恢复、terminal、fresh checkpoint 一致。另有真实 native navigation autosave **1 个 transaction commit + original archive readback**，owned observer 恢复；其它 count 0 导航不算写档试验。
+- GER 标准 CLI 完成五项试验：创建/写入 → 覆盖 → 独立货币状态准备 → 读取 → 删除；其中四项是存档操作，货币准备不是购买，读取不是写入。真实状态恢复、terminal、fresh checkpoint 一致。另有真实 native navigation autosave **1 个 transaction commit + original archive readback**，owned observer 恢复；其它 count 0 导航不算写档试验。
 - 原生真实零价购买：受审准备使原成本设置报价为零；实际 inventory 0→1、money 0→0、spentCount/time 改变，bound receipt occurred/settled、Goal completed、预算 0。随后恢复原成本设置为 1。它不是原经济中天然免费商品。
 - 本轮真实缺陷：one-item 候选缺 quote/terminal binding，实际购买 ACK 后无法结清。修复复用已有原生购买 producer；新候选绑定，旧 unquoted 写入在派发前拒绝。旧 ACK 不追认。原 60s preflight 失败未派发；只读测量 83,782ms/584 CDP calls 后使用既有有界 120s window，显式 resume + fresh Decision 的后续真实购买完成。
 - Q1b/Q2 真实 WebView 生产 Action 边界 4 检查：callable 替换前拒绝且零调用；trusted pre-marker 拒绝保留 notDispatched；复制 provenance 不取得零派发；post-marker 自有 DOM 变化后不伪称未派发。清理 owned 属性/callable，原游戏 money/passage/turn/time 不变。它是受控 Action 夹具，不是购买中断或 durable GER 崩溃试验。

@@ -1,4 +1,4 @@
-# DoL Dev Tools: Paisley Park — 独立 Skill 安装
+# DoL Dev Tools — Skill 安装与升级
 
 Tools保存采集器、CLI和格式；Skill选择诊断/复现/开发路径，调用同一份Tools与目标项目自己的构建部署命令。仓库内Skill可直接使用，也可装入本机Codex Skill目录，不复制Runtime或第三方项目。
 
@@ -11,7 +11,25 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装后从下一次对话回合开始发现；当前回合显式读取可以验证行为，但不能冒充宿主自动发现验收。
 
-已安装稳定版保留为 3.0.3 Gold Experience Requiem；本开发线为 4.0.0-rc.1 Bites the Dust。候选可用现有 install-skill 在独立空目录核验，不应覆盖日常稳定安装。先在新的稳定 Tools 目录准备 Gameplay 依赖；完整备份旧 Skill，再向空目标执行上方安装命令，核对 resolver、生成文档链接和实际 CLI 版本。旧 v3.0.0 Foundation 与[撤版记录](WITHDRAWAL_3.0.0.md)保留；稳定版[收口](CLOSEOUT_3_0_3.md)为历史依据，候选范围以[4.0 记录](BITES_THE_DUST_4_0.md)和[工作流](GAMEPLAY.md)为准。安装不迁移旧私有 journal、不清共享 Store/未决 effect，也不保证每种自然语言提示都会自动触发 Skill。
+## 4.0.0 安装与升级
+
+正式产品名为 DoL Dev Tools，版本代号 Bites the Dust（败者食尘）。CLI 文件名和 Skill 标识仍使用原名称，已有入口继续有效。本地正式 ZIP 准备完成后仍须等待单独远程发布；不要把历史 3.0.3 下载当成 4.0。
+
+1. 将 `DoL-Dev-Tools-4.0.0.zip` 解压到新的长期保留目录，核对发布时随附的 SHA-256。
+2. 在该 Tools 根目录运行 `.\DoL-Dev.cmd --version` 和 `.\DoL-Dev.cmd --help`，确认 `--version` 返回 `4.0.0`，`--help` 首行显示 `DoL Dev Tools 4.0.0 — Bites the Dust` 及用途说明。Node.js 要求 22.12+。
+3. 仅使用普通诊断时无需 npm 依赖。使用 Gameplay 时，在同一 Tools 根目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，按锁文件安装 XState 5.33.2。缺少依赖时 Gameplay 会在启动阶段明确拒绝，不会静默使用另一份 Runtime。
+4. 完整备份旧 Skill 并将其移出原路径，保留旧 Tools；首次安装则直接使用空目标。按下面命令安装，再检查 resolver 指向新的 Tools 根目录与 4.0.0。安装器拒绝覆盖已有目录。
+
+```powershell
+.\DoL-Dev.cmd install-skill --out "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park"
+node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
+```
+
+本轮发布准备只在独立目录验证，**没有替换本机稳定 3.0.3 或全局 Skill**。依赖命令仅影响所选 Tools 目录，不全局安装工具。Android 现场另需已有 ADB、USB 调试及支持调试的目标 WebView；详见 [连接说明](DIAGNOSTICS.md#快速入口)。
+
+升级不迁移旧私有 journal、不清空共享执行记录，也不自动结清结果未知的动作。使用 4.0 原生数据重建功能前，对 SQLite 执行记录做一致备份；一旦升级为 schema 3，3.0.3 不得继续写入同一 Store，也不得用它恢复 4.0 的新 Session。直接复制正在写入的 SQLite 主文件可能遗漏 WAL 数据，不能当成一致备份；可在所有写入者关闭后保留数据库及相关文件，或使用 SQLite 备份 API。没有验证过的自动降级或历史合并流程。详见 [技术兼容说明](CLOSEOUT_4_0.md)。
+
+旧 v3.0.0 Foundation 与[撤版记录](WITHDRAWAL_3.0.0.md)保留；3.0.3 [收口](CLOSEOUT_3_0_3.md)是历史依据，不代表 4.0 的新通过数。
 
 移动Tools或恢复安装时，先核对新路径，再在当前进程设置`DOL_DEV_TOOLS_HOME`；它优先于安装记录和仓库相对位置。旧记录失效会停止，不扫描私有目录或自行下载替代包。搬迁后说明中的机器专属链接也可能过期，以解析结果中的docs为准；更新安装前保留旧目录，再向新的空目标安装。
 

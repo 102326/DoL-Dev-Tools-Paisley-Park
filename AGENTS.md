@@ -1,4 +1,4 @@
-# DoL Dev Tools: Paisley Park project rules
+# DoL Dev Tools project rules
 
 - Read [.agents/skills/dol-dev-tools-paisley-park/SKILL.md](.agents/skills/dol-dev-tools-paisley-park/SKILL.md) and only the relevant command/architecture documents before work. Keep this file short; the Skill owns detailed workflows.
 - Define scoped Done from the task: deliverables, required behavior, acceptance environments, material risks and completion conditions. Do not add exhaustive ecosystem acceptance at the end.

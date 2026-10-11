@@ -3,9 +3,9 @@
 本开发线继承正式 3.0.3 Gold Experience Requiem的共享 Gameplay Runtime 与宿主 Decision 协议。Agent 理解当前原生 Scene、选择动作与动态重规划；Tools 持久保存 Goal、Memory、预算、Effect Ledger、checkpoint 与 Outcome，协调同 Session 中断恢复。S1/S2 代表性实机验收与本轮维护检查见[收口](CLOSEOUT_3_0_3.md)。原 v3.0.0 Foundation 已撤回；本页后半保留旧接口作为明确历史，不能用旧 journal 模型解释新 Session。Gameplay 私有记录不属于 Generic Schema 1，不自动跨版本恢复或上传。
 
 
-## Bites the Dust 开发线的合同变化
+## 4.0 Bites the Dust 的合同变化
 
-本工作树以正式 3.0.3 为基线；4.0.0-rc.1 已完成本轮核心能力与代表性本地候选验收，尚未发布。新 Session 的 `budget.maxSpend` 省略时持久化为 `null`，表示无虚拟消费上限；显式 `0` 为零上限，有限数值继续约束报价成本、预留与真实累计花费，子 purchase-one 的显式限额不会被未设上限的父预算覆盖。步骤、观察、重规划与时间仍有技术上限。实际花费超过有限预算的事实仍写入账本，不能回写为零或改为成功。
+4.0.0 以正式 3.0.3 为基线，已完成核心能力与代表性验收；本地正式制品和远程发布状态见 [4.0 收口](CLOSEOUT_4_0.md)。新 Session 的 `budget.maxSpend` 省略时持久化为 `null`，表示无虚拟消费上限；显式 `0` 为零上限，有限数值继续约束报价成本、预留与真实累计花费，子 purchase-one 的显式限额不会被未设上限的父预算覆盖。步骤、观察、重规划与时间仍有技术上限。实际花费超过有限预算的事实仍写入账本，不能回写为零或改为成功。
 
 TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见 [代次合同](RESOURCE_GENERATIONS.md)）；稳定 3.0.3 不得继续写入该 Store。旧 Session 缺失 maxSpend 在读取时按零解释，旧数字零/有限值不改写。新 null 预算可 JSON/SQLite 往返与新宿主恢复；旧 3.0.3 不能读取这种新合同，禁止让旧执行器恢复新 Session。读取旧记录本身不重写原始文档。
 
