@@ -17,12 +17,27 @@ function scene({worn=false,passage='Clothing Shop',context=binding.contextNonce,
 function receipt(e,spent=450){return {attemptId:e.id,outcome:'occurred',remoteClosed:true,spent,source:'reviewed isolated purchase receiver fixture',
   evidence:{kind:'purchase',variant,beforeMoney:1000,afterMoney:1000-spent,beforeCount:0,afterCount:1,beforeWornCount:0,afterWornCount:0,turns:1,contextNonce:binding.contextNonce}}}
 function proposal(s,ref){return {...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,s.decision[k]])),actionRef:ref,reason:'Current original quote meets the immutable Goal',plan:['Purchase once','Return and wear the purchased variant'],beliefs:[]}}
-function fixture(t,provider=goal.provider){
+function fixture(t,provider=goal.provider,c=config){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-purchase-')),store=path.join(dir,'sessions.sqlite');
   const r=new Runtime(store,{provider}),runtimes=[r];t.after(()=>{for(const handle of runtimes.reverse())handle.close();assert.ok(dir.startsWith(os.tmpdir()+path.sep));fs.rmSync(dir,{recursive:true,force:true})});
-  const s=r.start({serial:'fixture',package:'com.example.game',userId:'0'},config);
+  const s=r.start({serial:'fixture',package:'com.example.game',userId:'0'},c);
   return {r,s,store,runtimes};
 }
+test('unlimited conditional purchase keeps its verified witness, exact original outcome and recorded debit',async t=>{
+ for(const maxSpend of [undefined,null]){
+  const budget={...config.budget};if(maxSpend===undefined)delete budget.maxSpend;else budget.maxSpend=maxSpend;
+  const {r,s}=fixture(t,goal.provider,{...config,budget}),e=await dispatch(r,s);
+  const done=r.observe(s.id,scene({worn:true,passage:'Bedroom',choices:[]}),[receipt(e)]);
+  assert.equal(done.machine.value,'completed');assert.equal(done.spent,450);assert.equal(done.config.budget.maxSpend,null);assert.equal(goal.view({...done,openEffects:[]}).budget.actualSpendExceeded,false);
+ }
+});
+test('an unlimited parent does not erase an explicit one-item child limit in the stored Runtime budget',t=>{
+ const one={description:'Buy one',kind:'purchase-one',...variant,baselineMoney:1000,baselineCount:0,unitCost:500,maxSpend:500};
+ for(const parent of [undefined,null,400,600]){
+  const budget={...config.budget};if(parent===undefined)delete budget.maxSpend;else budget.maxSpend=parent;
+  const {r,s}=fixture(t,goal.provider,{...config,goal:one,budget});assert.equal(r.load(s.id).config.budget.maxSpend,parent===400?400:500);assert.equal(r.load(s.id).config.goal.maxSpend,500);
+ }
+});
 
 test('a fresh receipt reader preserves bounded purchase evidence without repairing missing or started records',async()=>{
   const receipts=require('../scripts/lib/game-receipts.cjs'),id='123e4567-e89b-42d3-a456-426614174001';
@@ -43,7 +58,7 @@ async function dispatch(r,s){
 test('condition Goal takes a parent budget and quotes preserve the user condition and zero original ownership',()=>{
   assert.equal(goal.validate({name:'new-black',mode:'gameplay',goal:condition,budget:config.budget}).goal.colour,'black');
   for(const changed of [{...condition,variable:'beanie'},{...condition,baselineMoney:1000}])assert.throws(()=>goal.validate({name:'new',mode:'gameplay',goal:changed,budget:config.budget}));
-  assert.throws(()=>goal.validate({name:'new',mode:'gameplay',goal:condition,budget:{timeoutMs:60000,maxActions:8,maxObservations:20}}),/spend budget/);
+  for(const maxSpend of [undefined,null,0,500])assert.doesNotThrow(()=>goal.validate({name:'new',mode:'gameplay',goal:condition,budget:{timeoutMs:60000,maxActions:8,maxObservations:20,...(maxSpend===undefined?{}:{maxSpend})}}));
   const shop={status:'available',variable:'beanie',colour:'black',accessoryColour:'white',modder:null,money:1000,cost:500,count:0,wornCount:0,quantity:1,space:1,destination:'wardrobe',pattern:null};
   assert.deepEqual(predicates.quoteFromShop(shop,condition),quote);
   for(const changed of [{colour:'white'},{count:1},{wornCount:1},{quantity:0},{space:0},{accessoryColour:'random'},{variable:'unknown'}])assert.equal(predicates.quoteFromShop({...shop,...changed},condition),null);

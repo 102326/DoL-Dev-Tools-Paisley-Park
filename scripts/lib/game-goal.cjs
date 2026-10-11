@@ -3,6 +3,7 @@ const {randomUUID,createHash}=require('node:crypto');
 const semantic=require('./game-semantic.cjs'),site=require('./game-dol-provider.cjs'),collectors=require('./collectors.cjs');
 const receipts=require('./game-receipts.cjs');
 const capabilities=require('./game-capabilities.cjs');
+const {withinSpend,combinedLimit}=require('./game-spend.cjs');
 const {validate,provider,probe,candidates}=capabilities;
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const keys=(v,allowed)=>v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).every(k=>allowed.includes(k));
@@ -50,7 +51,7 @@ function view(s){
     actionKind:semantic.intents.includes(e?.action?.kind)?e.action.kind:'unknown',
     provider:['native-dol','clothing'].includes(e?.action?.capability?.provider)?e.action.capability.provider:'unknown',
   }))};
-  const state=s.machine.value;return{experimental:true,runtimeVersion:2,goalId:s.id,epoch:s.epoch,revision:s.revision,status:state==='completed'?'completed':s.stopReason==='checkpoint-failed'?'failed':s.stopReason==='cancelled'?'cancelled':s.stopReason?'exhausted':state==='paused'?'paused':state==='reconciling'?'needs-result-interpretation':'active',phase:state,actions:s.actions,observations:s.observations,pending:!!effects.length,pendingEffects,proof:combinedProof,reason:s.pauseReason||s.stopReason||null,decision:decisionView(s.decision),budget:{deadline:s.deadline,maxSpend:s.config.budget.maxSpend,spent:s.spent,reserved:s.reserved,actualSpendExceeded:s.spent>s.config.budget.maxSpend},reconciliation:{reads:s.reconciliationReads??0,maxReads:8,error:s.reconciliationError??null},checkpoints:s.checkpoints,requiredCheckpoints:s.config.requiredCheckpoints||[],routes:s.routes||[],...memory};
+  const state=s.machine.value;return{experimental:true,runtimeVersion:2,goalId:s.id,epoch:s.epoch,revision:s.revision,status:state==='completed'?'completed':s.stopReason==='checkpoint-failed'?'failed':s.stopReason==='cancelled'?'cancelled':s.stopReason?'exhausted':state==='paused'?'paused':state==='reconciling'?'needs-result-interpretation':'active',phase:state,actions:s.actions,observations:s.observations,pending:!!effects.length,pendingEffects,proof:combinedProof,reason:s.pauseReason||s.stopReason||null,decision:decisionView(s.decision),budget:{deadline:s.deadline,maxSpend:s.config.budget.maxSpend,spent:s.spent,reserved:s.reserved,actualSpendExceeded:!withinSpend(s.spent,s.config.budget.maxSpend)},reconciliation:{reads:s.reconciliationReads??0,maxReads:8,error:s.reconciliationError??null},checkpoints:s.checkpoints,requiredCheckpoints:s.config.requiredCheckpoints||[],routes:s.routes||[],...memory};
 }
 async function start(options,request,overrides={}){
   request=validate(request);
@@ -61,27 +62,45 @@ async function start(options,request,overrides={}){
   const r=open(store,overrides);let s;
   try{
     fs.mkdirSync(path.resolve(options.out));
-    s=r.start({serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,goal:{description:request.description??request.name,...request.goal},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:request.budget.maxSpend??request.goal.maxSpend??0}});
+    s=r.start({serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,goal:{description:request.description??request.name,...request.goal,...(request.goal.kind==='purchase-one'?{maxSpend:request.goal.maxSpend===undefined?null:request.goal.maxSpend}:{})},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:combinedLimit(request.budget.maxSpend,request.goal.maxSpend)}});
     try{fs.writeFileSync(path.join(options.out,'goal.json'),JSON.stringify({format:'paisley-session-link',version:2,sessionId:s.id,store:path.resolve(store)},null,2),{flag:'wx'})}catch(e){r.stop(s.id,'session-link-write-failed');throw e}
   }finally{r.close()}
   return advance(options.out,{testEnvironment:true},overrides);
 }
 function rejectionReceipts(effects){return effects.filter(e=>e.status==='dispatching'&&e.ack?.dispatch==='not-dispatched').map(e=>({attemptId:e.id,outcome:'not-occurred',remoteClosed:true,spent:0,source:'reviewed claimed synchronous guard rejection'}))}
+async function recoverWithMaintenance(r,s,client,dir,effects){
+  const candidates=r.receiptRetirements(s.id);
+  if(candidates.length){
+    let summary;
+    try{
+      const result=await require('./game-receipts.cjs').cleanup(client,candidates);
+      r.confirmReceiptRetirements(s.id,result.retired);
+      summary={status:result.available?'available':'unavailable',candidates:candidates.length,retired:result.retired.length,remaining:result.remaining,capacity:result.capacity};
+    }catch{
+      summary={status:'failed',candidates:candidates.length,retired:0,capacity:64};
+    }
+    // Maintenance is after durable settlement; failure neither settles nor replays.
+    fs.writeFileSync(path.join(dir,'receipt-maintenance-'+randomUUID()+'.json'),JSON.stringify(summary,null,2),{flag:'wx'});
+  }
+  return receipts.recover(client,effects);
+}
 async function dispatchReady(r,s,dir,overrides={}){
   if(s.machine.value!=='ready'||!s.proposal)throw Error('No current accepted Decision');
-  const descriptor=s.proposal.action,selected=descriptor.selected,intent=descriptor.kind,owner=capabilities.validateDescriptor(descriptor,s.config.goal),scene=s.scene;
+  const approvedOwner=capabilities.validateDescriptor(s.proposal.action,s.config.goal);
   // A visible control is not a declared Outcome producer. Do not create an
   // uncloseable effect merely because the raw Action runner can click it.
-  if(!owner.prepare&&typeof overrides.readOutcome!=='function')return view(r.pause(s.id,'reviewed-action-outcome-unavailable'));
+  if(!approvedOwner.prepare&&typeof overrides.readOutcome!=='function')return view(r.pause(s.id,'reviewed-action-outcome-unavailable'));
   const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
-    const e=r.prepare(s.id);if(!e)return view(r.status(s.id));
+    const e=r.prepare(s.id,{expected:s});if(!e)return view(r.status(s.id));
+    const descriptor=e.action,selected=descriptor.selected,intent=descriptor.kind,owner=capabilities.validateDescriptor(descriptor,s.config.goal),scene=s.scene;
+    if(e.sceneRevision!==scene.revision)throw Error('Reserved Scene mismatch');
     const postReservation=r.reserveObservation(s.id);if(!postReservation)return view(r.status(s.id));
     const out=path.join(dir,'action-'+e.id);let report,binding;
     await r.dispatch(e.id,async(attempt,claim)=>{
       report=await site.act({...options,out},owner.prepare?null:selected,intent,{...overrides,
         bindExecution:value=>{binding=r.bindExecution(e.id,value).executionBinding},
         reserve:()=>{const claimed=claim();if(binding&&JSON.stringify(claimed.executionBinding)!==JSON.stringify(binding))throw Error('Claimed execution binding changed')},
-        expectedScene:scene.facts,probeGoal:probe(s.config.goal),probeOutcome:client=>receipts.recover(client,[r.effect(e.id)]),
+        expectedScene:scene.facts,probeGoal:probe(s.config.goal),probeOutcome:client=>recoverWithMaintenance(r,s,client,dir,[r.effect(e.id)]),
         probeCapabilities:client=>capabilities.observe(client,s.config.goal),authorizeCostedControl:mapped=>capabilities.authorizeCostedControl(mapped,descriptor,s.config.goal),
         ...(owner.prepare?{prepareAction:client=>owner.prepare(client,descriptor,s.config.goal,e.id)}:{})});
       return{dispatch:report.dispatch,record:'action-'+e.id+'/semantic.json',reason:report.reason||report.status};
@@ -89,7 +108,7 @@ async function dispatchReady(r,s,dir,overrides={}){
     // Not-dispatched is an authoritative preflight/guard rejection. Ack alone never closes a business effect.
     const effect=r.effect(e.id),closing=[...rejectionReceipts([effect]),...(report?.effectReceipts||[])];
     let post=report?.after?.domAgrees&&report.goalProof?.status==='available'?{gameplay:report.after,goalProof:report.goalProof,capabilities:report.capabilities}:null;
-    if(!post){const reread=await site.observe({...options,out:path.join(dir,'observation-'+randomUUID())},{...overrides,probeGoal:probe(s.config.goal),probeOutcome:client=>receipts.recover(client,[effect]),probeCapabilities:client=>capabilities.observe(client,s.config.goal)});if(reread.status==='observed'&&reread.gameplay?.domAgrees&&reread.goalProof?.status==='available'){post=reread;closing.push(...(reread.effectReceipts||[]))}}
+    if(!post){const reread=await site.observe({...options,out:path.join(dir,'observation-'+randomUUID())},{...overrides,probeGoal:probe(s.config.goal),probeOutcome:client=>recoverWithMaintenance(r,s,client,dir,[effect]),probeCapabilities:client=>capabilities.observe(client,s.config.goal)});if(reread.status==='observed'&&reread.gameplay?.domAgrees&&reread.goalProof?.status==='available'){post=reread;closing.push(...(reread.effectReceipts||[]))}}
     if(!post)return view(r.failObservation(s.id,postReservation,'reliable-post-action-observation-unavailable'));
     const after={...scene,revision:s.epoch+1,choices:capabilities.choicesFrom(post,s.epoch+1,s.config.goal),facts:post.gameplay,location:post.gameplay.location||'unknown',goalProof:post.goalProof};
     if(overrides.readOutcome)closing.push(...await overrides.readOutcome([effect],report,s));
@@ -106,7 +125,7 @@ async function advance(directory,settings,overrides={}){
     let selected;if(settings.file){selected=readJson(settings.file);validateSelection(selected,settings.intent,s.config.goal)}else if(settings.intent)throw Error('Intent requires an action');
     const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
     const reservation=r.reserveObservation(s.id);if(!reservation)return view(r.status(s.id));
-    const observed=await site.observe({...options,out:path.join(dir,'observation-'+randomUUID())},{...overrides,probeGoal:probe(s.config.goal),probeOutcome:client=>receipts.recover(client,s.openEffects),probeCapabilities:client=>capabilities.observe(client,s.config.goal)});
+    const observed=await site.observe({...options,out:path.join(dir,'observation-'+randomUUID())},{...overrides,probeGoal:probe(s.config.goal),probeOutcome:client=>recoverWithMaintenance(r,s,client,dir,s.openEffects),probeCapabilities:client=>capabilities.observe(client,s.config.goal)});
     if(observed.status!=='observed'||!observed.gameplay?.domAgrees||observed.goalProof?.status!=='available')return view(r.failObservation(s.id,reservation,'reliable-original-observation-unavailable'));
     const choices=selected?[capabilities.legacyDescriptor(selected,settings.intent,s.config.goal,hash([selected,settings.intent]))]:capabilities.choicesFrom(observed,s.epoch+1,s.config.goal);
     const scene={source:'original DoL semantic provider',revision:s.epoch+1,location:observed.gameplay.location||'unknown',choices,facts:observed.gameplay,goalProof:observed.goalProof};

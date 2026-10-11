@@ -3,6 +3,7 @@
 // Domain providers can contribute actions without changing this Scene model.
 const {createHash}=require('node:crypto');
 const action=require('./action.cjs');
+const {validLimit}=require('./game-spend.cjs');
 const keys=(v,allowed)=>!!v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).every(k=>allowed.includes(k));
 const bounded=v=>typeof v==='string'&&v.length>0&&v.length<=128&&!/[\u0000-\u001f]/.test(v);
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
@@ -22,7 +23,7 @@ function validateRequest(request){
   if(!keys(request.goal,['kind','passage','conditions','collection','entry'])||!validateGoal(request.goal))throw Error('Invalid native Goal');
   const b=request.budget;
   if(!keys(b,['timeoutMs','maxActions','maxObservations','maxReplans','maxSpend'])||!Number.isInteger(b.timeoutMs)||b.timeoutMs<1000||b.timeoutMs>3600000||!Number.isInteger(b.maxActions)||b.maxActions<1||b.maxActions>64||!Number.isInteger(b.maxObservations)||b.maxObservations<1||b.maxObservations>192)throw Error('Invalid Goal budget');
-  if(b.maxReplans!==undefined&&(!Number.isSafeInteger(b.maxReplans)||b.maxReplans<1||b.maxReplans>192)||b.maxSpend!==undefined&&(!Number.isSafeInteger(b.maxSpend)||b.maxSpend<0||b.maxSpend>100000000))throw Error('Invalid additional Goal budget');
+  if(b.maxReplans!==undefined&&(!Number.isSafeInteger(b.maxReplans)||b.maxReplans<1||b.maxReplans>192)||b.maxSpend!==undefined&&!validLimit(b.maxSpend))throw Error('Invalid additional Goal budget');
   const checkpoints=request.requiredCheckpoints;
   if(checkpoints!==undefined&&(request.mode!=='development'||!Array.isArray(checkpoints)||checkpoints.length>8||!checkpoints.every(bounded)||new Set(checkpoints).size!==checkpoints.length))throw Error('Invalid required checkpoints');
   return JSON.parse(JSON.stringify(request));

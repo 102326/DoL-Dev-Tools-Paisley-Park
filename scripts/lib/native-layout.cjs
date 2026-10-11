@@ -18,7 +18,18 @@ function project(input){
 async function collect(ctx,run=execute){
  if(ctx.options.allowHelper!==true)throw Error('Android layout helper side effects must be explicitly selected');
  const args=['--no-metrics',...(process.env.DOL_ANDROID_SDK?[`--sdk=${process.env.DOL_ANDROID_SDK}`]:[]),'layout',`--device=${ctx.options.serial}`,'--flat','--full','--no-idle'];
- try{const result=await run(process.env.DOL_ANDROID_CLI||'android',args,{encoding:'utf8',timeout:15000,maxBuffer:2*1024*1024,windowsHide:true});return project(JSON.parse(result.stdout))}
- catch(e){return {schemaVersion:1,source:'Native layout',collectorStatus:'unsupported',reason:e?.code==='ENOENT'?'android-cli-unavailable':'native-layout-unavailable',rawContent:'omitted'}}
+ const failure=(reason,extra={})=>({schemaVersion:1,source:'Native layout',collectorStatus:'failed',reason,rawContent:'omitted',...extra});
+ let result;
+ try{result=await run(process.env.DOL_ANDROID_CLI||'android',args,{encoding:'utf8',timeout:15000,maxBuffer:2*1024*1024,windowsHide:true})}
+ catch(e){
+  if(e?.code==='ENOENT')return {...failure('android-cli-unavailable'),collectorStatus:'unsupported'};
+  if(e?.code==='ERR_CHILD_PROCESS_STDIO_MAXBUFFER')return failure('native-layout-output-limit');
+  if(e?.killed===true)return failure('native-layout-process-terminated',{signal:typeof e.signal==='string'&&/^SIG[A-Z]+$/.test(e.signal)?e.signal:null});
+  if(e?.code==='EACCES'||e?.code==='EPERM')return failure('native-layout-process-permission-denied');
+  return failure('native-layout-execution-failed',{exitCode:Number.isInteger(e?.code)?e.code:null});
+ }
+ let input;
+ try{input=JSON.parse(result.stdout)}catch{return failure('native-layout-invalid-json')}
+ try{return project(input)}catch{return failure('native-layout-invalid-data')}
 }
 module.exports={collect,project};

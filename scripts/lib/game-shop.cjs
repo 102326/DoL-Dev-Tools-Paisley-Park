@@ -52,7 +52,7 @@ function reader(goal,costFunction) {
     return no('purchase-baseline-changed');
   if(costFunction!==window.getClothingCost || typeof costFunction!=='function')return no('reviewed-price-reader-unavailable');
   const cost=costFunction(temp,'head');
-  if(!Number.isSafeInteger(cost)||cost<=0||cost!==goal.unitCost||cost>goal.maxSpend||v.money<cost||t.clothingCost!==cost||!Number.isFinite(t.spaceLeft)||t.spaceLeft<1)
+  if(!Number.isSafeInteger(cost)||cost<=0||cost!==goal.unitCost||(goal.maxSpend!==null&&(!Number.isSafeInteger(goal.maxSpend)||cost>goal.maxSpend))||v.money<cost||t.clothingCost!==cost||!Number.isFinite(t.spaceLeft)||t.spaceLeft<1)
     return no('price-funds-or-capacity-mismatch');
   const controls=document.querySelectorAll('#buy-send-home > .buy-button > .buy-button-inner');
   if(controls.length!==1||controls[0].classList.contains('disabled')||controls[0].querySelectorAll('a.link-internal').length!==1)return no('native-buy-control-unavailable');

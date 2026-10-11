@@ -7,7 +7,7 @@ node scripts/dol-dev.cjs native-layout --serial DEVICE_SERIAL --package YOUR.APP
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/facts-with-layout --layout yes --allow-helper yes
 ```
 
-`--allow-helper yes` 显式选择 Android CLI 可能安装/运行其辅助 APK 的副作用；未选择时在创建输出前拒绝。工具不会自动安装或更新 Android CLI。可用进程环境 DOL_ANDROID_CLI 指定已有可执行文件、DOL_ANDROID_SDK 指定已有 SDK；没有 CLI 或输出不支持时保留 unsupported。不要将 layout 作为失败的只读 CDP 采集的自动后备。
+`--allow-helper yes` 显式选择 Android CLI 可能安装/运行其辅助 APK 的副作用；本轮范围授权已包含 helper 时自动带入，不逐次询问。未选择时在创建输出前拒绝。工具不会自动安装或更新 Android CLI。可用进程环境 DOL_ANDROID_CLI 指定已有可执行文件、DOL_ANDROID_SDK 指定已有 SDK。仅启动返回 ENOENT 记为 unsupported / android-cli-unavailable；进程权限拒绝、退出失败、输出超限、进程被终止、无效 JSON 或无效布局分别记为 failed。进程被终止不证明远端 helper 已停止；非零退出不能从未经审查的 stderr 推断设备拒绝或目标变化。不要将 layout 作为失败的只读 CDP 采集的自动后备。
 
 固定运行参数为 `--no-metrics layout --device=... --flat --full --no-idle`，15秒/2MiB 输出上限。投影最多200节点，记录 class、resourceId 哈希、text/contentDesc 是否存在、矩形、有限 interaction/state 和 off-screen；原始文本、描述、stderr、resourceId 明文不写入包。布局是当前设备窗口，可能包含系统 UI；指定 package 不证明每个节点属于该 App。flat 不重建父子关系，截断不冒充完整。
 

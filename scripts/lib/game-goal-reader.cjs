@@ -1,4 +1,5 @@
 // Reviewed original-state predicates shared by Runtime and direct probes.
+const {validLimit,withinSpend}=require('./game-spend.cjs');
 const keys=(v,allowed)=>!!v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).every(k=>allowed.includes(k));
 const bounded=v=>typeof v==='string'&&v.length>0&&v.length<=128&&!/[\u0000-\u001f]/.test(v);
 function validate(request) {
@@ -16,14 +17,15 @@ function validate(request) {
       !(g.accessoryColour===undefined||g.accessoryColour===null||g.accessoryColour===0||bounded(g.accessoryColour))) throw Error('Invalid equipment Goal');
     if(g.kind==='purchase-one' && (g.slot!=='head'||!bounded(g.colour)||!bounded(g.accessoryColour)||['random','custom'].includes(g.colour)||['random','custom'].includes(g.accessoryColour)||
        !Number.isSafeInteger(g.baselineMoney)||g.baselineMoney<0||!Number.isSafeInteger(g.baselineCount)||g.baselineCount<0||g.baselineCount>511||
-       !Number.isSafeInteger(g.unitCost)||g.unitCost<1||!Number.isSafeInteger(g.maxSpend)||g.maxSpend<g.unitCost||g.maxSpend>g.baselineMoney))throw Error('Invalid one-item purchase Goal');
+       !Number.isSafeInteger(g.unitCost)||g.unitCost<1||g.unitCost>g.baselineMoney||g.maxSpend!==undefined&&(!validLimit(g.maxSpend)||!withinSpend(g.unitCost,g.maxSpend))))throw Error('Invalid one-item purchase Goal');
   } else throw Error('Unsupported Goal kind');
   const b = request.budget;
   if (!keys(b, ['timeoutMs', 'maxActions', 'maxObservations','maxReplans','maxSpend']) || !Number.isInteger(b.timeoutMs) || b.timeoutMs < 1000 || b.timeoutMs > 3600000 ||
     !Number.isInteger(b.maxActions) || b.maxActions < 1 || b.maxActions > 64 || !Number.isInteger(b.maxObservations) || b.maxObservations < 1 || b.maxObservations > 192) throw Error('Invalid Goal budget');
-  if(b.maxReplans!==undefined&&(!Number.isSafeInteger(b.maxReplans)||b.maxReplans<1||b.maxReplans>192)||b.maxSpend!==undefined&&(!Number.isSafeInteger(b.maxSpend)||b.maxSpend<0||b.maxSpend>100000000))throw Error('Invalid additional Goal budget');
-  if(g.kind==='purchase-and-equip'&&(!Number.isSafeInteger(b.maxSpend)||b.maxSpend<1))throw Error('Conditional purchase requires an explicit parent spend budget');
-  return JSON.parse(JSON.stringify(request));
+  if(b.maxReplans!==undefined&&(!Number.isSafeInteger(b.maxReplans)||b.maxReplans<1||b.maxReplans>192)||b.maxSpend!==undefined&&!validLimit(b.maxSpend))throw Error('Invalid additional Goal budget');
+  const result=JSON.parse(JSON.stringify(request));
+  if(g.kind==='purchase-one'&&g.maxSpend===undefined)result.goal.maxSpend=null;
+  return result;
 }
 const nonnegative=v=>Number.isSafeInteger(v)&&v>=0;
 const variantKeys=['slot','variable','colour','accessoryColour','modder'];
@@ -64,7 +66,7 @@ function purchaseSatisfied(scene,g,context){
   const e=bought[0],variant=e.action.quote.variant;
   const inventory=p.owned.find(i=>JSON.stringify(i.variant)===JSON.stringify([variant.variable,variant.colour,variant.modder,variant.accessoryColour]));
   return validateQuote(e.action.quote,g)&&p.receiptContext===e.executionBinding.contextNonce&&nonnegative(p.turns)&&p.turns>=e.result.evidence.turns&&
-    sameVariant({slot:'head',...p.worn},variant)&&(inventory?.count??0)===0&&context.spent<=context.budget.maxSpend&&context.reserved===0;
+    sameVariant({slot:'head',...p.worn},variant)&&(inventory?.count??0)===0&&withinSpend(context.spent,context.budget.maxSpend)&&context.reserved===0;
 }
 // Facts come from the game; this journal never owns inventory or a shadow worn state.
 function goalReader(goal) {
@@ -100,7 +102,7 @@ function goalReader(goal) {
     if(!Array.isArray(list)||list.length>512||!Number.isSafeInteger(v.money))return {status:'unavailable',satisfied:null,source:'bounded original purchase state unavailable'};
     const count=list.filter(i=>i?.variable===goal.variable&&(i.colour??null)===goal.colour&&(i.accessory_colour??null)===goal.accessoryColour&&(i.modder??null)===(goal.modder??null)&&i.pattern==null).length;
     const spent=goal.baselineMoney-v.money;
-    return {status:'available',satisfied:spent>0 && spent<=goal.maxSpend && count===goal.baselineCount+1,priceMatches:spent===goal.unitCost,
+    return {status:'available',satisfied:spent>0 && (goal.maxSpend===null||Number.isSafeInteger(goal.maxSpend)&&spent<=goal.maxSpend) && count===goal.baselineCount+1,priceMatches:spent===goal.unitCost,
       source:'original SugarCube currency and exact variant head inventory count',money:v.money,count,spent,quotedCost:goal.unitCost,passage:state.passage};
   } else {
     const worn = state.variables?.worn;

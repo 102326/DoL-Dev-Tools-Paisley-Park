@@ -3,6 +3,16 @@
 当前版本 3.0.3 Gold Experience Requiem提供共享 Gameplay Runtime 与宿主 Decision 协议。Agent 理解当前原生 Scene、选择动作与动态重规划；Tools 持久保存 Goal、Memory、预算、Effect Ledger、checkpoint 与 Outcome，协调同 Session 中断恢复。S1/S2 代表性实机验收与本轮维护检查见[收口](CLOSEOUT_3_0_3.md)。原 v3.0.0 Foundation 已撤回；本页后半保留旧接口作为明确历史，不能用旧 journal 模型解释新 Session。Gameplay 私有记录不属于 Generic Schema 1，不自动跨版本恢复或上传。
 
 
+## Bites the Dust 开发线的合同变化
+
+本工作树以正式 3.0.3 为基线；4.0 尚未完成或发布。新 Session 的 `budget.maxSpend` 省略时持久化为 `null`，表示无虚拟消费上限；显式 `0` 为零上限，有限数值继续约束报价成本、预留与真实累计花费，子 purchase-one 的显式限额不会被未设上限的父预算覆盖。步骤、观察、重规划与时间仍有技术上限。实际花费超过有限预算的事实仍写入账本，不能回写为零或改为成功。
+
+SQLite Schema/TargetKey 保持原义；旧 Session 缺失 maxSpend 在读取时按零解释，旧数字零/有限值不改写。新 null 预算可 JSON/SQLite 往返与新宿主恢复；旧 3.0.3 不能读取这种新合同，禁止让旧执行器恢复新 Session。读取旧记录本身不重写原始文档。
+
+已结清的重复路线保留 routeHints，不再在第三次后硬封路；不可凭此重放 started/Unknown。派发在既有 SQLite 事务中比较宿主已批准的 revision/提案/场景身份，成功预留后使用该 Effect 的动作。页面回执只在原终态可靠持久结算后精确回收；started、Unknown、未结算与其它 namespace 的记录保留。维护失败保留记录，下次观察按同一已提交事实处理，不改写业务结论。
+
+以上为离线合同实现；真实实验能力、存档合同、实际 callable 身份、独立数据代次和最终实战验收进度见 [4.0 开发记录](BITES_THE_DUST_4_0.md)。
+
 ## 当前 Runtime 与冻结 Foundation 的区别
 
 3.0.3 的 `game-goal` 使用共享 XState/SQLite 核心，以下旧接口说明保留为冻结 Foundation 历史。Gameplay 需要根目录 `npm ci --ignore-scripts --no-audit --no-fund`；Node 22 运行时加 `--experimental-sqlite`，Windows launcher 已包含，Generic 可独立使用。参见[共享核心设计记录](GOLD_EXPERIENCE_REAUDIT.md#10-m2共享内核迁移进展)。

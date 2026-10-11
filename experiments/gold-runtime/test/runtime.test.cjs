@@ -202,9 +202,29 @@ test('unavailable and dangerous actions cannot be smuggled into a valid scene',t
   const f=fixture(t),s=f.r.start(target,config);for(const bad of [{...f.receiver.observe(),choices:[{ref:'delete',kind:'buy',cost:0,risk:'delete-existing-save',destination:'Home'}]},{...f.receiver.observe(),javascript:'window.deleteSave()'}])assert.throws(()=>f.r.observe(s.id,bad));
   assert.equal(f.r.status(s.id).observations,0);assert.equal(f.receiver.calls(),0);
 });
-test('required budget fields and target types cannot be omitted/coerced',t=>{
-  const f=fixture(t);for(const name of Object.keys(config.budget)){const b={...config.budget};delete b[name];assert.throws(()=>f.r.start(target,{...config,budget:b}),/budget/)}
+test('required technical budget fields and target types cannot be omitted/coerced',t=>{
+  const f=fixture(t);for(const name of Object.keys(config.budget).filter(k=>k!=='maxSpend')){const b={...config.budget};delete b[name];assert.throws(()=>f.r.start(target,{...config,budget:b}),/budget/)}
   assert.throws(()=>f.r.start({...target,userId:0},config),/target/);assert.equal(f.receiver.calls(),0);
+});
+test('optional spend survives SQLite and new hosts; finite and zero limits still fence real cost',async t=>{
+  for(const limit of [undefined,null,0,39,40]){
+    const f=fixture(t),budget={...config.budget};if(limit===undefined)delete budget.maxSpend;else budget.maxSpend=limit;
+    let s=f.r.start(target,{...config,budget});s=f.r.observe(s.id,f.receiver.observe());
+    assert.equal(s.config.budget.maxSpend,limit===undefined?null:limit);
+    assert.equal(JSON.parse(f.r.db.prepare('SELECT doc FROM sessions WHERE id=?').get(s.id).doc).config.budget.maxSpend,limit===undefined?null:limit);
+    if(limit===0||limit===39){assert.throws(()=>f.r.propose(s.id,proposal(s.decision)),/outside budget/);assert.equal(f.receiver.calls(),0);assert.equal(f.r.status(s.id).actions,0);continue}
+    f.r.propose(s.id,proposal(s.decision));const e=f.r.prepare(s.id);assert.equal(e.reservedSpend,40);
+    await f.r.dispatch(e.id,a=>f.receiver.dispatch(a));s=observe(f,s.id);assert.equal(s.spent,40);assert.equal(s.reserved,0);
+    const next=f.open();s=next.resume(s.id);assert.equal(s.spent,40);assert.equal(s.config.budget.maxSpend,limit===undefined?null:limit);
+    assert.equal(require('../../../scripts/lib/game-goal.cjs').view({...s,openEffects:[]}).budget.actualSpendExceeded,false);
+  }
+});
+test('legacy omitted spend remains zero on load without rewriting history; invalid limits never become unlimited',t=>{
+  const f=fixture(t),s=f.r.start(target,config),old=f.r.load(s.id);delete old.config.budget.maxSpend;f.r.save(old);
+  const raw=f.r.db.prepare('SELECT doc FROM sessions WHERE id=?').get(s.id).doc;
+  assert.equal(f.open().load(s.id).config.budget.maxSpend,0);assert.equal(f.r.db.prepare('SELECT doc FROM sessions WHERE id=?').get(s.id).doc,raw);
+  const resumed=f.r.resume(s.id);assert.equal(resumed.config.budget.maxSpend,0);const observed=f.r.observe(s.id,f.receiver.observe());assert.throws(()=>f.r.propose(s.id,proposal(observed.decision)),/outside budget/);
+  for(const maxSpend of [false,'0',-1,Infinity,NaN,100000001])assert.throws(()=>f.r.start({...target,serial:'other'},{...config,budget:{...config.budget,maxSpend}}),/budget/);
 });
 test('unsupported Store/Session version fails without automatic migration',t=>{
   const f=fixture(t),{s}=decision(f);const original=f.r.load(s.id);f.r.save({...original,version:999});assert.throws(()=>f.r.resume(s.id),/Session/);f.r.save(original);

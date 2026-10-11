@@ -33,3 +33,14 @@ test('a matching durable terminal receipt survives a new host; identity, cost an
     assert.equal((await receipts.recover(f.client, effects)).length, 0);
   }
 });
+
+test('retirement selects only matching settled terminals; lost response can safely repeat deletion',async()=>{
+ const f=fixture(),nonce=await receipts.context(f.client),binding={provider:'native-dol',contract:'reviewed-v1',contextNonce:nonce,requestDigest:'a'.repeat(64)},records=f.globals.window[receipts.namespace].records;
+ const e={id:attemptId,status:'settled',executionBinding:binding,result:{outcome:'occurred',remoteClosed:true,spent:0,evidence:{kind:'fixture'}}};
+ const terminal={...binding,attemptId,status:'terminal',outcome:'occurred',remoteClosed:true,spent:0,evidence:{kind:'fixture'}};
+ for(const change of [{status:'started'},{requestDigest:'b'.repeat(64)},{evidence:{kind:'other'}}]){records[attemptId]={...terminal,...change};const result=await receipts.cleanup(f.client,[e]);assert.equal(result.retired.length,0);assert.equal(Object.hasOwn(records,attemptId),true)}
+ await assert.rejects(receipts.cleanup(f.client,[{...e,status:'dispatching'}]),/requires recovery/);
+ records[attemptId]=terminal;const lost={evaluate:async exp=>{await f.client.evaluate(exp);throw Error('acknowledgement lost')}};
+ await assert.rejects(receipts.cleanup(lost,[e]));assert.equal(Object.hasOwn(records,attemptId),false);
+ const retry=await receipts.cleanup(f.client,[e]);assert.deepEqual(Array.from(retry.retired),[attemptId]);assert.equal(retry.remaining,0);
+});

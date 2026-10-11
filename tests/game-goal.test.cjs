@@ -61,6 +61,34 @@ function fixture(t,config={}) {
     stats:()=>({clicks,forward,evaluations}),request:{name:'wardrobe',mode:'gameplay',goal:{kind:'reach-passage',passage:'Wardrobe'},budget:{timeoutMs:60000,maxActions:8,maxObservations:20}}};
 }
 const step=f=>({testEnvironment:true,file:f.file,intent:'navigation'});
+test('Goal entry normalizes omitted spend to explicit null while zero survives request, view and resume',async t=>{
+ for(const limit of [undefined,null,0,100]){
+  const f=fixture(t);if(limit!==undefined)f.request.budget.maxSpend=limit;
+  const first=await goal.start(f.options,f.request,f.overrides);assert.equal(first.budget.maxSpend,limit===undefined?null:limit);assert.equal(first.budget.actualSpendExceeded,false);
+  const resumed=await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides);assert.equal(resumed.budget.maxSpend,first.budget.maxSpend);assert.equal(resumed.decision.budget.maxSpend,first.budget.maxSpend);assert.equal(resumed.budget.deadline,first.budget.deadline);assert.equal(f.stats().clicks,0);
+ }
+});
+
+test('coordinator rejects a decision replaced by another SQLite connection between status and prepare',async t=>{
+  const f=fixture(t),{Runtime}=require('../scripts/lib/game-runtime.cjs');
+  await goal.start(f.options,f.request,f.overrides);
+  const propose=(r,id,ref)=>{const d=r.status(id).decision;return r.propose(id,{...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:ref,reason:'reviewed decision',plan:[],beliefs:[]})};
+  const r2=new Runtime(f.options.store,{provider:goal.provider,leaseMs:120000});
+  // Close the second connection before the fixture's directory cleanup hook.
+  try{
+    const s=goal.status(f.options.out);propose(r2,s.id,s.scene.choices[0].ref);
+    const original=Runtime.prototype.prepare;let interposed=false;
+    t.mock.method(Runtime.prototype,'prepare',function(id,...args){
+      if(!interposed){interposed=true;r2.resume(id);const changed=structuredClone(s.scene);changed.revision++;changed.choices[0].ref='replacement-B';changed.choices[0].selected.selector='#other';r2.observe(id,changed);propose(r2,id,'replacement-B')}
+      return original.call(this,id,...args);
+    });
+    let failure;try{await goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides)}catch(e){failure=e}
+    const after=r2.status(s.id);t.diagnostic(JSON.stringify({clicks:f.stats().clicks,ledgerActions:after.openEffects.map(e=>e.action.selected.selector),actions:after.actions}));
+    assert.match(failure?.message||'',/Stale dispatch identity/);
+    assert.equal(interposed,true);assert.equal(f.stats().clicks,0);assert.equal(after.actions,0);assert.equal(after.openEffects.length,0);assert.equal(after.proposal.action.selected.selector,'#other');
+  }finally{r2.close()}
+});
+
 
 test('target pending summary identifies another Session without clearing its effect or exposing bindings',async t=>{
   const f=fixture(t);await goal.start(f.options,f.request,f.overrides);await goal.advance(f.options.out,step(f),f.overrides);
@@ -293,17 +321,19 @@ test('development wardrobe check uses the same host/effect path and cannot compl
   g.state.passage='Wardrobe';assert.equal((await goal.session(g.options.out,'resume',{testEnvironment:true},g.overrides)).status,'failed');assert.equal(g.stats().clicks,0);
 });
 
-test('rolling route memory survives host rebinding and rejects a no-progress loop while a new event remains actionable',async t=>{
-  const f=terminal(fixture(t,{routes:['Bedroom','Bedroom','Bedroom']}));let current=await goal.start(f.options,f.request,f.overrides);
-  for(let i=0;i<3;i++){
-    const d=current.decision,file=path.join(f.base,'loop-'+i+'.json');fs.writeFileSync(file,JSON.stringify({...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:d.scene.choices[0].ref,reason:'Try current route',plan:['Continue target'],beliefs:[]}));
+test('settled no-progress routes remain actionable after four repetitions and resume, with a persistent hint',async t=>{
+  const f=terminal(fixture(t,{routes:Array(5).fill('Bedroom')}));let current=await goal.start(f.options,f.request,f.overrides);
+  for(let i=0;i<4;i++){
+    assert.equal(current.decision.scene.choices.length,1);
+    const d=current.decision,file=path.join(f.base,'loop-'+i+'.json');fs.writeFileSync(file,JSON.stringify({...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:d.scene.choices[0].ref,reason:'Repeat settled experiment',plan:['Compare the same scene'],beliefs:[]}));
     await goal.session(f.options.out,'propose',{testEnvironment:true,file},f.overrides);current=await goal.session(f.options.out,'dispatch',{testEnvironment:true},f.overrides);
+    assert.equal(current.pending,false);
   }
-  assert.equal(current.phase,'waitingDecision');assert.equal(current.decision.scene.choices.length,0);assert.equal(current.decision.routes.length,3);assert.equal(f.stats().clicks,3);
-  const before=goal.status(f.options.out);current=await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides);assert.equal(current.decision.routes.length,3);assert.equal(current.decision.scene.choices.length,0);assert.equal(current.actions,before.actions);assert.equal(goal.status(f.options.out).deadline,before.deadline);
-  const d=current.decision,s=goal.status(f.options.out),forged=path.join(f.base,'blocked-route.json');fs.writeFileSync(forged,JSON.stringify({...Object.fromEntries(['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'].map(k=>[k,d[k]])),actionRef:s.scene.choices[0].ref,reason:'Retry hidden route',plan:[],beliefs:[]}));
-  await assert.rejects(goal.session(f.options.out,'propose',{testEnvironment:true,file:forged},f.overrides),/no original goal progress/);assert.equal(f.stats().clicks,3);
-  f.state.passage='New Normal Event';current=await goal.session(f.options.out,'request',{testEnvironment:true},f.overrides);assert.equal(current.phase,'waitingDecision');assert.equal(current.decision.scene.choices.length,1);assert.equal(current.decision.routes.length,3);
+  assert.equal(current.decision.routes.length,4);assert.equal(current.decision.scene.choices.length,1);assert.equal(current.decision.routeHints.length,1);assert.equal(f.stats().clicks,4);
+  const before=goal.status(f.options.out);current=await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides);
+  assert.equal(current.decision.scene.choices.length,1);assert.equal(current.decision.routeHints.length,1);assert.equal(current.actions,before.actions);assert.equal(current.budget.deadline,before.deadline);
+  current=await goal.advance(f.options.out,step(f),f.overrides);assert.equal(f.stats().clicks,5);assert.equal(current.pending,false);
+  f.state.passage='New Normal Event';current=await goal.session(f.options.out,'request',{testEnvironment:true},f.overrides);assert.equal(current.decision.routeHints.length,0);
 });
 
 test('native commerce cannot become a zero-cost menu candidate; original quote binds the purchase reference',()=>{
@@ -371,4 +401,31 @@ test('native binding failures prevent operation; a durable terminal survives los
       }
     }
   });
+});
+
+test('same page completes 66 independent Sessions with committed receipt retirement and protects unknown evidence',async t=>{
+  const f=fixture(t),{Runtime}=require('../scripts/lib/game-runtime.cjs'),native=require('../integrations/soft-and-wet/native-head.cjs'),receipts=require('../scripts/lib/game-receipts.cjs');
+  fs.writeFileSync(f.file,JSON.stringify({type:'sw-wardrobe',operation:'equip',slot:'head',variable:'hairpin',colour:'black'}));let startedOnly=false;
+  t.mock.method(native,'prepare',async(client,request,attemptId)=>{
+    const binding={provider:'soft-and-wet-native-head',contract:'fixture-sync',contextNonce:await receipts.context(client),requestDigest:'a'.repeat(64)};
+    const record={...binding,attemptId,status:startedOnly?'started':'terminal',outcome:'occurred',remoteClosed:true,spent:0};
+    return {action:{type:'web-click',selector:'#choice'},arguments:[],objectGroups:[],source:`if(Object.keys(window[${JSON.stringify(receipts.namespace)}].records).length>=64)return {ok:false,guardRejected:true};`,executionBinding:binding,
+      operation:{name:'fixture-native',source:`window.SugarCube.State.passage='Wardrobe';window[${JSON.stringify(receipts.namespace)}].records[${JSON.stringify(attemptId)}]=Object.freeze(${JSON.stringify(record)});return {ok:true};`}};
+  });
+  for(let i=0;i<66;i++){
+    f.state.passage='Bedroom';const out=path.join(f.base,'session-'+i);await goal.start({...f.options,out},f.request,f.overrides);
+    const result=await goal.advance(out,{...step(f),intent:'equip'},f.overrides);if(i===63||result.status!=='completed')t.diagnostic(JSON.stringify({session:i+1,receipts:Object.keys(f.globals.window[receipts.namespace].records).length,status:result.status,pending:result.pending}));assert.equal(result.status,'completed');assert.equal(result.pending,false);assert.ok(Object.keys(f.globals.window[receipts.namespace].records).length<=64);
+  }
+  assert.equal(Object.keys(f.globals.window[receipts.namespace].records).length,1);
+  // DB commit has happened; page deletion has not. A failed cleanup is retained
+  // and retried, rather than converting a known or unknown effect into success.
+  const cleanup=receipts.cleanup;let failed=false;t.mock.method(receipts,'cleanup',async(...args)=>{if(!failed){failed=true;throw Error('transport lost')}return cleanup(...args)});
+  const confirm=Runtime.prototype.confirmReceiptRetirements;let confirmationLost=false;
+  t.mock.method(Runtime.prototype,'confirmReceiptRetirements',function(...args){if(!confirmationLost){confirmationLost=true;throw Error('confirmation interrupted after page deletion')}return confirm.apply(this,args)});
+  startedOnly=true;f.state.passage='Bedroom';const pendingDir=path.join(f.base,'pending');await goal.start({...f.options,out:pendingDir},f.request,f.overrides);
+  const unknown=await goal.advance(pendingDir,{...step(f),intent:'equip'},f.overrides);assert.equal(unknown.pending,true);
+  const effect=goal.status(pendingDir).openEffects[0];assert.equal(f.globals.window[receipts.namespace].records[effect.id].status,'started');
+  await goal.session(pendingDir,'cancel',{testEnvironment:true},f.overrides);const other=await goal.start({...f.options,out:path.join(f.base,'other')},f.request,f.overrides);assert.equal(other.pending,true);assert.equal(f.globals.window[receipts.namespace].records[effect.id].status,'started');
+  assert.equal(failed,true);assert.equal(confirmationLost,true);assert.equal(Object.keys(f.globals.window[receipts.namespace].records).length,1);
+  const r=new Runtime(f.options.store,{provider:goal.provider});try{assert.equal(r.effect(effect.id).status,'acknowledged');assert.throws(()=>r.confirmReceiptRetirements(effect.sessionId,[effect.id]),/requires recovery/);assert.equal(r.receiptRetirements(effect.sessionId).length,0)}finally{r.close()}
 });

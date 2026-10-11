@@ -35,6 +35,7 @@ function receiptOwner(e){
   return owner;
 }
 const provider={
+  pageReceiptProviders:['native-dol','dol-shop-native','dol-wardrobe-native','soft-and-wet-native-head'],
   validateGoal(g){try{return predicate(g).validateGoal(g)===true}catch{return false}},
   scene(v,g){
     if(!keys(v,['source','revision','location','choices','facts','goalProof'])||v.source!=='original DoL semantic provider'||!Number.isSafeInteger(v.revision)||v.revision<0||!Array.isArray(v.choices)||v.choices.length>64||!v.facts?.domAgrees||v.goalProof?.status!=='available'||typeof v.goalProof.satisfied!=='boolean')throw Error('Reliable original scene/predicate required');

@@ -1,5 +1,6 @@
 const {createHash}=require('node:crypto');
 const predicates=require('./game-goal-reader.cjs');
+const {withinSpend}=require('./game-spend.cjs');
 const semantic=require('./game-semantic.cjs');
 const shop=require('./game-shop.cjs');
 const wardrobe=require('../../integrations/soft-and-wet/gameplay.cjs');
@@ -15,7 +16,7 @@ const validateRequest=predicates.validate;
 function validateGoal(g){
   if(!supportsGoal(g)||!keys(g,['description','kind','passage','slot','variable','colour','modder','accessoryColour','baselineMoney','baselineCount','unitCost','maxSpend']))return false;
   try{
-    validateRequest({name:'predicate',mode:'gameplay',goal:Object.fromEntries(Object.entries(g).filter(([key])=>key!=='description')),budget:{timeoutMs:1000,maxActions:1,maxObservations:1,maxSpend:purchase(g)?Math.max(1,g.maxSpend||1):1}});
+    validateRequest({name:'predicate',mode:'gameplay',goal:Object.fromEntries(Object.entries(g).filter(([key])=>key!=='description')),budget:{timeoutMs:1000,maxActions:1,maxObservations:1,maxSpend:g.maxSpend===undefined?null:g.maxSpend}});
     return true;
   }catch{return false}
 }
@@ -55,7 +56,7 @@ function candidates(facts,epoch,proof,shopState,g){
     const buy=shopState.quantity===1,selected={type:'dol-shop',operation:buy?'buy-one':'quantity-one'};
     commerce.push({ref:hash([epoch,selected,quote]),kind:buy?'buy':'menu',cost:buy?quote.unitCost:0,risk:'normal',label:buy?'Buy one '+quote.variant.variable:'Set original quantity to one',selected,quote,capability:{provider:id,name:'shop'}});
   }
-  if(g?.kind==='purchase-one'&&shopState?.status==='available'&&shopState.variable===g.variable&&shopState.colour===g.colour&&shopState.accessoryColour===g.accessoryColour&&(shopState.modder??null)===(g.modder??null)&&shopState.pattern==null&&shopState.destination==='wardrobe'&&shopState.money===g.baselineMoney&&shopState.count===g.baselineCount&&shopState.cost===g.unitCost&&shopState.cost<=g.maxSpend&&shopState.space>=1){
+  if(g?.kind==='purchase-one'&&shopState?.status==='available'&&shopState.variable===g.variable&&shopState.colour===g.colour&&shopState.accessoryColour===g.accessoryColour&&(shopState.modder??null)===(g.modder??null)&&shopState.pattern==null&&shopState.destination==='wardrobe'&&shopState.money===g.baselineMoney&&shopState.count===g.baselineCount&&shopState.cost===g.unitCost&&withinSpend(shopState.cost,g.maxSpend)&&shopState.space>=1){
     const buy=shopState.quantity===1,selected={type:'dol-shop',operation:buy?'buy-one':'quantity-one'};
     commerce.push({ref:hash([epoch,selected,shopState]),kind:buy?'buy':'menu',cost:buy?shopState.cost:0,risk:'normal',label:buy?'Buy one '+g.variable:'Set original quantity to one',selected,capability:{provider:id,name:'shop'}});
   }
@@ -106,7 +107,7 @@ function authorizeCostedControl(mapping,descriptor,g){
       current.accessoryColour===v.accessoryColour&&(current.modder??null)===v.modder&&current.money===q.baselineMoney&&
       current.count===q.baselineCount&&current.wornCount===q.baselineWornCount;
   }
-  return descriptor.quote===undefined&&descriptor.cost===g.unitCost&&descriptor.cost<=g.maxSpend&&current.variable===g.variable&&
+  return descriptor.quote===undefined&&descriptor.cost===g.unitCost&&withinSpend(descriptor.cost,g.maxSpend)&&current.variable===g.variable&&
     current.colour===g.colour&&current.accessoryColour===g.accessoryColour&&(current.modder??null)===(g.modder??null)&&
     current.money===g.baselineMoney&&current.count===g.baselineCount;
 }

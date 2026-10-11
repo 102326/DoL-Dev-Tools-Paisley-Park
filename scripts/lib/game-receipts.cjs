@@ -9,7 +9,7 @@ function validate(binding) {
 }
 function initialize(name, nonce) {
   if (!Object.prototype.hasOwnProperty.call(window, name)) {
-    // ponytail: at most 64 receipts per page context, matching the Session action cap; no silent eviction.
+    // At most 64 live receipts per document; only committed terminal proof may retire.
     const value = Object.freeze({ version: 1, nonce, records: Object.create(null) });
     Object.defineProperty(window, name, { value, configurable: false, enumerable: false, writable: false });
   }
@@ -49,4 +49,26 @@ async function recover(client, effects) {
   if (!Array.isArray(result) || result.length > selected.length) throw Error('Gameplay receipts unavailable');
   return result;
 }
-module.exports = { namespace, validate, context, recover };
+function retire(name,effects){
+  const current=window[name];
+  if(current?.version!==1||!current.records||Object.getPrototypeOf(current.records)!==null)return {available:false,retired:[],remaining:null,capacity:64};
+  const retired=[];
+  for(const e of effects){
+    const b=e.executionBinding,r=current.records[e.id];
+    // A committed result owns the proof now. Never select an unresolved attempt.
+    if(e.status!=='settled'||e.result?.outcome!=='occurred'||!b)continue;
+    if(current.nonce!==b.contextNonce||!Object.hasOwn(current.records,e.id)){retired.push(e.id);continue}
+    if(r?.status!=='terminal'||r.outcome!=='occurred'||r.remoteClosed!==true||r.attemptId!==e.id||r.spent!==e.result.spent||
+      ['provider','contract','contextNonce','requestDigest'].some(k=>r[k]!==b[k])||JSON.stringify(r.evidence??null)!==JSON.stringify(e.result.evidence??null))continue;
+    if(Reflect.deleteProperty(current.records,e.id))retired.push(e.id);
+  }
+  return {available:true,retired,remaining:Object.keys(current.records).length,capacity:64};
+}
+async function cleanup(client,effects){
+  if(!Array.isArray(effects)||effects.length>64)throw Error('Invalid receipt retirement batch');
+  const selected=effects.map(e=>{if(!uuid(e.id)||e.status!=='settled'||e.result?.outcome!=='occurred')throw Error('Receipt still requires recovery');return {id:e.id,status:e.status,executionBinding:validate(e.executionBinding),result:e.result}});
+  const result=await client.evaluate(`(${retire.toString()})(${JSON.stringify(namespace)},${JSON.stringify(selected)})`);
+  if(!result||typeof result.available!=='boolean'||result.capacity!==64||!Array.isArray(result.retired)||new Set(result.retired).size!==result.retired.length||result.retired.some(id=>!selected.some(e=>e.id===id))||result.remaining!==null&&(!Number.isSafeInteger(result.remaining)||result.remaining<0))throw Error('Invalid receipt retirement response');
+  return result;
+}
+module.exports = { namespace, validate, context, recover, cleanup };

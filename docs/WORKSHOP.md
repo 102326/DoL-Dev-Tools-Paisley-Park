@@ -14,6 +14,14 @@ Workshop 是 Skill 的开发闭环：用 Tools 观察现场，用目标项目自
 
 Activity/WebView 原生 recreate、凭据解锁或专有 Mod 热替换依赖目标项目自己的公开能力和权限；没有桥时报告 conditional/unsupported。不能用普通 Page.reload 冒充原生 WebView 重建。
 
+## Android platform provenance
+
+复用已安装 Android CLI、适用官方 Android Skills 和 CLI Knowledge Base，不另建 Registry。项目 Recipe/已有 Evidence 中按实际使用记录：工具版本及 help、Skill 路径/内容身份与调用范围、KB query/返回 kb URL/文档 URL/访问时间/适用 Android 版本、明确设备/user/package/签名与 Document，以及读取、准备、动作、后态各阶段的来源。只读帮助或 Skill 文件可用不等于设备能力已验证。
+
+CLI screen/layout 提供画面/结构；ADB 输入、CDP DOM click、trusted touch 分别记录，不混称。官方网页查阅标为 official-web，不冒充运行过 KB。CLI 示例与本机 help 有漂移时，保留真实失败并按本机支持的命令调整，不自动安装升级。授权范围包含 helper 时自动选择 allow-helper；普通诊断不要求每次调用全套工具。
+
+授权的独立 Debug 准备可改变虚拟金钱、物品、剧情、时间或测试存档，必须与原 Bug 触发条件、真实购买结果和已有未决事实分开记录。目标包/签名/user/数据范围复核后执行；PID/Document 变化重新绑定，同一有效授权不逐动作重新确认。旧 Unknown 不因重载或更换 Store 消失；真实重建需可核验代次，未实现相应合同不能宣称已隔离。
+
 ## 可运行的独立夹具
 
 仓库提供 [examples/workshop](../examples/workshop/verify.cjs)。它只复制自有 HTML/build/deploy 到调用者指定的新目录，使用已有 Chromium 浏览器和 localhost。无需 npm 依赖；不会修改任何真实 Mod 或 Android App。默认使用 Windows 已安装 Edge，可用进程环境 DOL_WORKSHOP_BROWSER 明确指定已有 Chromium 浏览器。
