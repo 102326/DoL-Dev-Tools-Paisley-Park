@@ -37,16 +37,17 @@ function stateReader(request, interpret, slots) {
   if (new TextEncoder().encode(raw).length > 16384) return unavailable('bounded-head-operation-state-unavailable');
   return { ...mapped, before: JSON.parse(raw), nativeListSelector: '#wardrobeList' };
 }
-async function operation(request, uiAction, wardrobe, entry, uiHost, getEnabled, measured, measure, outfit, sync, bridge, originalAction, originalMessage) {
+async function operation(request, uiAction, wardrobe, entry, uiHost, getEnabled, measured, measure, outfit, sync, bridge, originalAction, originalMessage, markDispatch=()=>{}) {
   const { namespace, binding, attemptId, index, before, operation = 'equip', errorMessages, operationSha256 } = request;
   const context = window[namespace];
   const descriptor = Object.getOwnPropertyDescriptor(bridge, 'action');
   if (context?.nonce !== binding.contextNonce || !context.records || Object.hasOwn(context.records, attemptId) || Object.keys(context.records).length >= 64 ||
       window.DoLWardrobeUI !== uiHost || uiHost?.getEnabled !== getEnabled || getEnabled() !== true ||
       measured?.measure !== measure || outfit?.sync !== sync || bridge?.message !== originalMessage ||
-      !descriptor || descriptor.writable !== true || descriptor.configurable !== true || descriptor.value !== originalAction) return { ok: false };
+      !descriptor || descriptor.writable !== true || descriptor.configurable !== true || descriptor.value !== originalAction) return { ok: false, guardRejected:true };
   // This point follows every synchronous guard. Existing started/terminal records
   // reject in the guard; neither is an authorization to run the recipe again.
+  markDispatch();
   const started = { ...binding, attemptId, status: 'started', before, operationSha256 };
   context.records[attemptId] = Object.freeze(started);
   const list = document.querySelector('#wardrobeList'), parent = list?.parentNode;
@@ -314,11 +315,11 @@ async function prepare(client, request, attemptId, {attestOnly = false, recovery
     if (!bound.result?.objectId || bound.exceptionDetails) throw Error('Native receipt namespace unavailable');
     append(bound.result.objectId, ref => `if(window[${JSON.stringify(receipts.namespace)}]!==${ref}||${ref}.nonce!==${JSON.stringify(contextNonce)}||Object.keys(${ref}.records).length>=64||Object.hasOwn(${ref}.records,${JSON.stringify(attemptId)}))return {ok:false,guardRejected:true};`);
     guard += `\nconst nativeCurrent=(${stateReader.toString()})(${JSON.stringify(request)},${mapping.reader.toString()},${JSON.stringify(slots)});if(nativeCurrent.status!=='available'||JSON.stringify(nativeCurrent.before)!==${JSON.stringify(JSON.stringify(current.before))})return {ok:false,guardRejected:true};`;
-    const operationSource = 'return (' + operation.toString() + ')(' + JSON.stringify({ namespace: receipts.namespace, binding, attemptId, index: current.index, before: current.before, operation:request.operation, errorMessages: profile.uiBinding[request.operation==='equip'?'head':'strip'].errorMessages, operationSha256 }) + ',observedInputs[' + ui.functionIndex + '],observedInputs[' + ui.contextIndex + '],' + (ui.entryIndex===null?'undefined':'observedInputs['+ui.entryIndex+']') + ',observedInputs[' + ui.hostIndex + '],observedInputs[' + ui.enabledIndex + '],observedInputs[' + ui.measuredIndex + '],observedInputs[' + ui.measureIndex + '],observedInputs[' + ui.outfitIndex + '],observedInputs[' + ui.syncIndex + '],observedInputs[' + ui.bridgeIndex + '],observedInputs[' + ui.actionIndex + '],observedInputs[' + ui.messageIndex + ']);';
+    const operationSource = 'return (' + operation.toString() + ')(' + JSON.stringify({ namespace: receipts.namespace, binding, attemptId, index: current.index, before: current.before, operation:request.operation, errorMessages: profile.uiBinding[request.operation==='equip'?'head':'strip'].errorMessages, operationSha256 }) + ',observedInputs[' + ui.functionIndex + '],observedInputs[' + ui.contextIndex + '],' + (ui.entryIndex===null?'undefined':'observedInputs['+ui.entryIndex+']') + ',observedInputs[' + ui.hostIndex + '],observedInputs[' + ui.enabledIndex + '],observedInputs[' + ui.measuredIndex + '],observedInputs[' + ui.measureIndex + '],observedInputs[' + ui.outfitIndex + '],observedInputs[' + ui.syncIndex + '],observedInputs[' + ui.bridgeIndex + '],observedInputs[' + ui.actionIndex + '],observedInputs[' + ui.messageIndex + '],markOperationDispatch);';
     if (Buffer.byteLength(operationSource, 'utf8') > 32768) throw Error('Native operation source exceeds reviewed limit');
     return { ...result, arguments: inputs, objectGroups: groups, source: guard, executionBinding: binding,
       interpretation: { ...result.interpretation, execution: 'native-operation', contract: binding.contract },
-      operation: { name: request.operation==='equip'?'native-head-wear':'native-head-strip', source: operationSource } };
+      operation: require('../../scripts/lib/action.cjs').reviewedOperation(request.operation==='equip'?'native-head-wear':'native-head-strip',operationSource) };
   } catch (error) {
     if(error.code==='NATIVE_BINDING_CLEANUP_FAILED')throw error;
     try { await release(); } catch(cleanup) { throw Object.assign(new AggregateError([error,cleanup], 'Native profile preparation and cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED',bindingCleanup:'failed'}); }

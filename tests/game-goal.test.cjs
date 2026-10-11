@@ -429,3 +429,16 @@ test('same page completes 66 independent Sessions with committed receipt retirem
   assert.equal(failed,true);assert.equal(confirmationLost,true);assert.equal(Object.keys(f.globals.window[receipts.namespace].records).length,1);
   const r=new Runtime(f.options.store,{provider:goal.provider});try{assert.equal(r.effect(effect.id).status,'acknowledged');assert.throws(()=>r.confirmReceiptRetirements(effect.sessionId,[effect.id]),/requires recovery/);assert.equal(r.receiptRetirements(effect.sessionId).length,0)}finally{r.close()}
 });
+test('reviewed operation rejection settles not-dispatched; a marked partial operation remains pending',async t=>{
+ const native=require('../integrations/soft-and-wet/native-head.cjs'),receipts=require('../scripts/lib/game-receipts.cjs'),{reviewedOperation}=require('../scripts/lib/action.cjs');
+ for(const marked of [false,true]){
+  const f=fixture(t);f.globals.operationEffects=0;
+  fs.writeFileSync(f.file,JSON.stringify({type:'sw-wardrobe',operation:'equip',slot:'head',variable:'hairpin',colour:'black'}));
+  t.mock.method(native,'prepare',async(client,request,attemptId)=>({action:{type:'web-click',selector:'#choice'},arguments:[],objectGroups:[],source:'',executionBinding:{provider:'soft-and-wet-native-head',contract:'fixture-sync',contextNonce:await receipts.context(client),requestDigest:'a'.repeat(64)},operation:reviewedOperation('reviewed-test',`${marked?'markOperationDispatch();operationEffects++;':''}return {ok:false,guardRejected:true};`)}));
+  await goal.start(f.options,f.request,f.overrides);const result=await goal.advance(f.options.out,{...step(f),intent:'equip'},f.overrides);
+  assert.equal(f.globals.operationEffects,marked?1:0);assert.equal(result.pending,marked);assert.equal(result.budget.reserved,0);assert.equal(f.stats().clicks,0);
+  const state=goal.status(f.options.out);assert.equal(state.actions,1);
+  if(!marked){const {Runtime}=require('../scripts/lib/game-runtime.cjs'),r=new Runtime(f.options.store,{provider:goal.provider});try{const rows=r.db.prepare('SELECT doc FROM effects WHERE session_id=?').all(state.id);assert.equal(JSON.parse(rows[0].doc).result.outcome,'not-occurred')}finally{r.close()}}
+  else{assert.equal(state.openEffects.length,1);assert.equal(state.openEffects[0].ack.dispatch,'unknown');assert.equal((await goal.session(f.options.out,'resume',{testEnvironment:true},f.overrides)).pending,true);assert.equal(f.globals.operationEffects,1)}
+ }
+});

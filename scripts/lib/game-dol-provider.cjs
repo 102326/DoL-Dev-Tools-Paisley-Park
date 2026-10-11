@@ -190,7 +190,7 @@ async function act(options, selected, intent, overrides = {}) {
   const result = await journey.run(options, { plan, sha256: createHash('sha256').update(JSON.stringify(plan)).digest('hex') }, {
     ...overrides,
     async executeAction(ctx, step) {
-      const client = await ctx.ensureWebview(); let objectId, mapping;
+      const client = await ctx.ensureWebview(); let objectId, mapping, invocation;
       try {
         if (overrides.prepareAction) {
           mapping = await overrides.prepareAction(client);
@@ -232,7 +232,8 @@ async function act(options, selected, intent, overrides = {}) {
           }catch{report.reason='viewport-preparation-failed';throw Error('Viewport preparation failed')}
         }
         else if (!before.actionable) { report.reason = 'target-not-actionable'; throw Error('Target unavailable'); }
-        ctx.webGuard = { objectId, arguments: mapping?.arguments, ...(mapping?.operation?{operation:mapping.operation}:{}), source: `
+        if(step.type==='web-click'&&mapping&&(mapping.clickReceiverObjectId||!mapping.operation))invocation=await require('./game-native-invocation.cjs').bind(client,mapping.clickReceiverObjectId||objectId);
+        ctx.webGuard = { objectId, ...(invocation?{invocation}:{}), arguments: mapping?.arguments, ...(mapping?.operation?{operation:mapping.operation}:{}), source: `
           ${guardScene?`if(JSON.stringify((${gameplayReader.toString()})(${controlReader.toString()}))!==${JSON.stringify(JSON.stringify(guardScene))})return {ok:false,guardRejected:true};`:''}
           ${guardMoney===undefined?'':`if(window.SugarCube?.State?.variables?.money!==${JSON.stringify(guardMoney)})return {ok:false,guardRejected:true};`}
           const current=(${controlReader.toString()})(node);
@@ -268,6 +269,7 @@ async function act(options, selected, intent, overrides = {}) {
         if (report.dispatch === 'acknowledged' && !report.after?.domAgrees) { report.status = 'paused'; report.reason = 'reliable-post-action-observation-unavailable'; }
         throw error;
       } finally {
+        if(invocation){try{await client.send('Runtime.releaseObject',{objectId:invocation.callableId});report.invocationCleanup='completed'}catch{report.invocationCleanup='failed';report.mappingCleanup='failed'}}
         for (const objectGroup of mapping?.objectGroups || []) {
           try { await client.send('Runtime.releaseObjectGroup', { objectGroup }); }
           catch { report.mappingCleanup = 'failed'; }

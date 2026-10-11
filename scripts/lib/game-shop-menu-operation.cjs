@@ -9,13 +9,14 @@ function preflight(node,config,readCurrent,checkSources){
      checkSources('before')!==undefined||JSON.stringify(readCurrent())!==JSON.stringify(config.before))return 'shop-menu-preflight-unavailable';
   return null;
 }
-function operation(node,config,readCurrent,checkSources,check=preflight){
+function operation(node,config,readCurrent,checkSources,check=preflight,markDispatch=()=>{},invokeClick=n=>n.click()){
   if(check(node,config,readCurrent,checkSources)!==null)return {ok:false,guardRejected:true};
   const sc=window.SugarCube,s=sc.State,context=window[config.namespace],root=document.querySelector('#passages > .passage'),container=document.querySelector('#clothingShop-div');
   const active=s.active,history=s.history,entry=history[s.activeIndex],index=s.activeIndex,before=config.before;
+  markDispatch();
   const started=Object.freeze({...config.binding,attemptId:config.attemptId,status:'started',phase:'menu-started'});
   context.records[config.attemptId]=started;
-  try{node.click()}catch{return {ok:false}}
+  try{invokeClick(node)}catch{return {ok:false}}
   const after=readCurrent(),expected=config.expectedView??(before.view==='item'?'catalogue':'main');
   if(window.SugarCube!==sc||sc.State!==s||s.active!==active||s.history!==history||s.activeIndex!==index||history[index]!==entry||
      window[config.namespace]!==context||context.records[config.attemptId]!==started||

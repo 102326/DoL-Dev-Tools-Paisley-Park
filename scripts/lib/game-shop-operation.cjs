@@ -1,7 +1,7 @@
 'use strict';
 // Used only after the native shop producer has bound the original control,
 // business sources and quote. Rendering timers are not a purchase witness.
-function operation(node,config,readCurrent,checkSources){
+function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invokeClick=n=>n.click()){
   const {namespace,binding,attemptId,quote,before}=config,context=window[namespace],sc=window.SugarCube;
   const root=document.querySelector('#passages > .passage'),list=document.querySelector('#clothes-list');
   const state=sc?.State,active=state?.activeIndex,history=state?.history,entry=history?.[active];
@@ -19,6 +19,7 @@ function operation(node,config,readCurrent,checkSources){
      JSON.stringify(before.variant)!==JSON.stringify(v))return {ok:false,guardRejected:true};
   const moment=Object.getOwnPropertyDescriptor(window,'updateMoment');
   if(!moment||typeof moment.value!=='function'||moment.writable!==true||moment.configurable!==true)return {ok:false,guardRejected:true};
+  markDispatch();
   const started=Object.freeze({...binding,attemptId,status:'started',phase:'business-started',before});
   context.records[attemptId]=started;
   let calls=0,threw=false,restored=false,installed=false;
@@ -26,7 +27,7 @@ function operation(node,config,readCurrent,checkSources){
     if(++calls!==1||args.length!==0)throw Error('Unexpected original shop moment update');
     const result=Reflect.apply(moment.value,this,args);if(result!==undefined)throw Error('Unexpected shop moment result');return result;
   };
-  try{Object.defineProperty(window,'updateMoment',{...moment,value:observed});installed=true;node.click()}
+  try{Object.defineProperty(window,'updateMoment',{...moment,value:observed});installed=true;invokeClick(node)}
   catch{threw=true}
   finally{if(installed){const now=Object.getOwnPropertyDescriptor(window,'updateMoment');
     if(now?.value===observed&&now.writable===moment.writable&&now.configurable===moment.configurable&&now.enumerable===moment.enumerable){

@@ -16,6 +16,8 @@
 | A5 重复探索 | 三次无进展改为 routeHints；第四、第五次已结清实验可继续，resume 不恢复硬封路；未决副作用限制保留。 |
 | Q1a 决策预留 | 复用 SQLite 事务内 approved snapshot CAS；预留后执行 Effect 的 action；两个 SQLite 连接替换 A/B 提案时零点击、零新增 effect。 |
 | Q3 回执生命周期 | 仅回收可靠持久结清后匹配的 terminal；按 namespace owner 在 LIMIT 前筛选，避免异类历史占满候选；同页面 66 Session 连续执行，清理响应丢失和清理后确认中断可恢复，started/Unknown 保留。 |
+| Q1b 实际调用 | 点击型原生 producer 绑定实际 DOM receiver 与原生 click callable；最终边界复核，使用捕获函数与明确 receiver 调用；替换/getter 在调用前拒绝，跨开始标记后的错误仍 Unknown。Soft & Wet 原生 head 的 UI 回调继续使用已有捕获函数/对象合同。普通 Debug click 不被强制加入这些认证。 |
+| Q2 零派发与 Unknown | 已审本地操作通过不可序列化的进程内 provenance 与显式开始标记保留可信 preflight 拒绝；标记后失败不降级。任意操作返回 guardRejected、复制 operation 对象或页面声明零效果均不能取得该语义。不是权限旗标、脚本沙箱或新的审批。 |
 | Android layout | ENOENT 单独 unsupported；权限拒绝/进程终止/执行失败/输出超限/无效 JSON/无效布局分别 failed；不输出私人 stdout/stderr，不从错误文本猜测目标状态。 |
 | Skill/Workshop | 明确 Debug 路由、一次范围授权、禁止伪造证据与允许独立状态准备的区别；Android 工具/Skill/KB 来源分别记录；未实现的 GER 合同不由授权旗标代替。 |
 
@@ -23,8 +25,8 @@
 
 ## Validated / 2026-10-11 Windows 本地
 
-- Node 24.19.0、Python 3.14.7、锁定 XState 5.33.2；复用正式基线的已有 node_modules，以每次进程的 NODE_PATH 指定，不安装新依赖。
-- 核心跨模块变化执行完整离线 Node 套件：347 passed、0 failed、0 skipped。Python：2 passed、2 skipped，Pillow 与 JSON Schema/date-time 可选开发依赖缺失；未补装。
+- Node 24.19.0、Python 3.14.7、锁定 XState 5.33.2；复用正式基线的已有 node_modules，以每次进程的 NODE_PATH 指定，不安装新依赖。首批实现本地提交 `70eef54f9cdafe3e71b074be5a605d695522d543`；后续 Q1b/Q2 在同一开发分支提交，以实际 HEAD 和日志定位。
+- 核心跨模块变化执行完整离线 Node 套件：首批 347 passed；Q1b/Q2 新变更后的最终结果 352 passed、0 failed、0 skipped。Python：2 passed、2 skipped，Pillow 与 JSON Schema/date-time 可选开发依赖缺失；代码未受后续变更影响，复用已有结果，未补装。
 - 定向回归先执行，再全套。首轮保留一条旧“必须填写消费上限”断言失败，按新约定替换为零/有限/不限及旧记录测试。新增报价授权夹具首次输入格式不完整已修正；回执容量实验首次未在普通 request 观察入口执行维护，已接线并通过。不用跳过、吞错或重复跑至绿隐藏原因。
 - 日志在本轮 ignored `artifacts/bites-the-dust-offline-20261011/`，依代码变化更新实际结果；目录不包含游戏存档/资源。独立测试所建 SQLite 连接先关闭，目录后清理。
 - Android CLI 实际版本 1.0.16486076；本轮运行 version、docs help、skills help，未运行设备动作或 KB query。help 显示存在 search/fetch 与 Skill 管理入口，不能将其写成 KB 查询或实机采集通过。
@@ -33,12 +35,13 @@
 
 当前变更的真机验收、正式构建/部署/加载身份、真实游戏业务及存档、APK/数据恢复、Android KB 实际查询尚未执行。现有真实现场属于历史证据，不计入本轮通过。
 
+Q1b/Q2 已实现，真实 WebView 定向验收未执行；替身 CDP 的原生源码文本断言仅验证本地合同，不替代真实宿主验证。Q1b 首轮新增测试语法错误及旧 toy CDP 不支持函数 object 的失败已定位修正，原失败日志保留为 q1b-targeted.log / q1b-node.log，最终通过另存 q1b-node-final.log。
+
 ## Remaining implementation / 尚需完成
 
 - A3 经 CLI 可达的受控项目实验 capability，以及异步执行/后态/业务完成的独立合同。
 - A4 存档/自动保存复制 guard 的实际放权与代表操作合同。
 - A6 稳定范围授权和可核验数据代次在实际写入/持久合同的接线；原 Pending/Unknown 保持可见，不能换库或虚构 UUID 绕过。
-- Q1b 最终 callable/receiver 身份、Q2 可信执行前拒绝与动作后 Unknown 的严格区分。
 - A1/Android 协作的代表性实机验证，以及 B/C 真实问题修复、旧/错制品对照、一次真实实验失败后的恢复继续。
 
 ## Known limitations / Case 调查

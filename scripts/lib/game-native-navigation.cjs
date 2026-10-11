@@ -151,11 +151,11 @@ async function prepare(client,descriptor,goal,attemptId,reviewEnvironment){
       catch{return {ok:false,guardRejected:true};}
       if((${preflight.toString()})(${operationArguments},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument})!==null)return {ok:false,guardRejected:true};
     `;
-    const operationSource=`return (${operation.toString()})(${operationArguments},${preflight.toString()},${environmentCheck},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument});`;
+    const operationSource=`return (${operation.toString()})(${operationArguments},${preflight.toString()},${environmentCheck},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument},markOperationDispatch,invokeBoundClick);`;
     if(Buffer.byteLength(operationSource)>32768)throw Error('Native navigation operation source exceeds limit');
-    return {action:descriptor.selected,arguments:argumentsList,objectGroups:[held.objectGroup],source,executionBinding:binding,
+    return {action:descriptor.selected,clickReceiverObjectId:held.objects.node,arguments:argumentsList,objectGroups:[held.objectGroup],source,executionBinding:binding,
       interpretation:{provider:'native-dol',execution:'native-operation',contract:binding.contract,environment:environment.id,destination:held.destination},
-      operation:{name:'native-passage',source:operationSource}};
+      operation:require('./action.cjs').reviewedOperation('native-passage',operationSource)};
   }catch(error){
     if(held)try{await held.release()}catch(cleanup){throw Object.assign(new AggregateError([error,cleanup],'Native navigation preparation and cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED'})}
     if(error.code==='NATIVE_BINDING_CLEANUP_FAILED')throw error;

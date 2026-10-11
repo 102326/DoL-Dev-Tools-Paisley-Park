@@ -1,7 +1,7 @@
 'use strict';
 // Used by the reviewed local clothing producer after synchronous source/object
 // guards. No page-global command, arbitrary JS field or replay path.
-function operation(node,config,readCurrent,checkSources){
+function operation(node,config,readCurrent,checkSources,markDispatch=()=>{},invokeClick=n=>n.click()){
   const {namespace,binding,attemptId,request,before}=config;
   const context=window[namespace],sc=window.SugarCube,root=document.querySelector('#passages > .passage'),list=document.querySelector('#wardrobeList');
   const current=readCurrent(request);
@@ -12,6 +12,7 @@ function operation(node,config,readCurrent,checkSources){
     return {ok:false,guardRejected:true};
   const moment=Object.getOwnPropertyDescriptor(window,'updateMoment');
   if(!moment||typeof moment.value!=='function'||moment.writable!==true||moment.configurable!==true)return {ok:false,guardRejected:true};
+  markDispatch();
   const started=Object.freeze({...binding,attemptId,status:'started',phase:'business-started',before});
   context.records[attemptId]=started;
   let calls=0,threw=false,restored=false,installed=false;
@@ -22,7 +23,7 @@ function operation(node,config,readCurrent,checkSources){
     if(result!==undefined)throw Error('Original moment update returned an unexpected result');
     return result;
   };
-  try{Object.defineProperty(window,'updateMoment',{...moment,value:observed});installed=true;node.click()}
+  try{Object.defineProperty(window,'updateMoment',{...moment,value:observed});installed=true;invokeClick(node)}
   catch{threw=true}
   finally{
     if(installed){const now=Object.getOwnPropertyDescriptor(window,'updateMoment');

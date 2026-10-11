@@ -36,7 +36,11 @@ function summary(action) {
   return result;
 }
 
-function webExpression(action, guard = '', operation, hasGuard = false) {
+// Private in-process provenance. A page result or Action JSON cannot opt into
+// authoritative zero-dispatch semantics. Local producers remain reviewed code.
+const reviewedOperations=new WeakSet();
+function reviewedOperation(name,source){const value=Object.freeze({name,source});reviewedOperations.add(value);return value}
+function webExpression(action, guard = '', operation, hasGuard = false, invocation=false) {
   const rejected = hasGuard ? '{ok:false,guardRejected:true}' : '{ok:false}';
   return `(() => {
     const nodes = document.querySelectorAll(${JSON.stringify(action.selector)});
@@ -46,9 +50,14 @@ function webExpression(action, guard = '', operation, hasGuard = false) {
         !node.getClientRects().length) return ${rejected};
     const style = getComputedStyle(node);
     if (style.display === 'none' || style.visibility !== 'visible' || style.opacity === '0') return ${rejected};
+    ${invocation?`const currentClick=()=>{for(let p=boundReceiver,i=0;p&&i<16;p=Object.getPrototypeOf(p),i++){const d=Object.getOwnPropertyDescriptor(p,'click');if(d)return Object.hasOwn(d,'value')?d.value:null}return null};
+    if(!(boundReceiver instanceof HTMLElement)||!boundReceiver.isConnected||typeof boundCallable!=='function'||currentClick()!==boundCallable)return ${rejected};
+    const invokeBoundClick=receiver=>{if(receiver!==boundReceiver||currentClick()!==boundCallable)throw Error('Native invocation identity changed');return Reflect.apply(boundCallable,boundReceiver,[])};`:''}
     ${guard}
-    ${operation ? `const operated=(function(){ ${operation.source} })();
-    const completed=result=>({...result,guardRejected:false});
+    ${operation ? `let operationDispatched=false;
+    const markOperationDispatch=()=>{operationDispatched=true;};
+    const operated=(function(){ ${operation.source} })();
+    const completed=result=>({...result,guardRejected:${reviewedOperations.has(operation)}&&result?.guardRejected===true&&!operationDispatched});
     return operated&&typeof operated.then==='function'?Promise.resolve(operated).then(completed):completed(operated);` : ''}
     if (${JSON.stringify(action.type)} === 'web-input') {
       const input = node instanceof HTMLInputElement, area = node instanceof HTMLTextAreaElement;
@@ -58,7 +67,7 @@ function webExpression(action, guard = '', operation, hasGuard = false) {
       setter.call(node, ${JSON.stringify(action.value || '')});
       node.dispatchEvent(new Event('input', {bubbles:true}));
       node.dispatchEvent(new Event('change', {bubbles:true}));
-    } else if (${JSON.stringify(action.type)} === 'web-click') node.click();
+    } else if (${JSON.stringify(action.type)} === 'web-click') ${invocation?'invokeBoundClick(node)':'node.click()'};
     else { node.focus(); if (document.activeElement !== node) return {ok:false}; }
     return {ok:true};
   })()`;
@@ -129,6 +138,8 @@ async function execute(ctx, action) {
     if(ctx.webGuard && (!['web-click','web-input'].includes(action.type) || typeof ctx.webGuard.objectId !== 'string' || typeof ctx.webGuard.source !== 'string'))
       throw Object.assign(Error('Invalid internal guard'),{notDispatched:true});
     const operation=ctx.webGuard?.operation;
+    const invocation=ctx.webGuard?.invocation;
+    if(invocation!==undefined&&(action.type!=='web-click'||!invocation||typeof invocation.receiverId!=='string'||!invocation.receiverId||typeof invocation.callableId!=='string'||!invocation.callableId))throw Object.assign(Error('Invalid internal invocation'),{notDispatched:true});
     if(operation!==undefined && (action.type!=='web-click'||!ctx.webGuard||!operation||typeof operation!=='object'||Array.isArray(operation)||Object.keys(operation).length!==2||!Object.hasOwn(operation,'name')||!Object.hasOwn(operation,'source')||typeof operation.name!=='string'||!/^[a-z][a-z0-9-]{0,63}$/.test(operation.name)||typeof operation.source!=='string'||!operation.source.trim()||Buffer.byteLength(operation.source,'utf8')>32768))
       throw Object.assign(Error('Invalid internal operation'),{notDispatched:true});
     try {
@@ -136,8 +147,8 @@ async function execute(ctx, action) {
       if (ctx.webGuard) {
         const response = await client.send('Runtime.callFunctionOn', {
           objectId: ctx.webGuard.objectId,
-          functionDeclaration: `function(...observedInputs) { const observedRoot = this; return ${webExpression(action, ctx.webGuard.source, operation, true)}; }`,
-          arguments: ctx.webGuard.arguments || [],
+          functionDeclaration: `function(...allInputs) { const observedInputs=${invocation?'allInputs.slice(0,-2)':'allInputs'}; ${invocation?'const [boundReceiver,boundCallable]=allInputs.slice(-2);':''} const observedRoot = this; return ${webExpression(action, ctx.webGuard.source, operation, true,!!invocation)}; }`,
+          arguments: [...(ctx.webGuard.arguments || []),...(invocation?[{objectId:invocation.receiverId},{objectId:invocation.callableId}]:[])],
           returnByValue: true, awaitPromise: true,
         });
         if (response?.exceptionDetails) throw Error('Guarded evaluation failed');
@@ -240,4 +251,4 @@ async function execute(ctx, action) {
   return { status: 'completed', ...summary(action) };
 }
 
-module.exports = { validate, summary, execute };
+module.exports = { validate, summary, execute, reviewedOperation };

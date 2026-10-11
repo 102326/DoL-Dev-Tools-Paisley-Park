@@ -61,10 +61,10 @@ async function prepare(client,request,goal,attemptId){
     const read=`function(){return (${reader.toString()})()}`,check=`function(phase){return observedInputs[3](phase,observedInputs.slice(4))}`;
     const source=`if(node!==observedInputs[0]${selection?'.closest("#clothes-list .clothing-item")':browse?'':'.parentElement'}||(${control.clickReader.toString()})(observedInputs[0],true)!==observedInputs[1]||observedInputs[2]?.payload?.[0]?.contents!==${JSON.stringify(held.payload)})return {ok:false,guardRejected:true};
       try{if((${preflight.toString()})(observedInputs[0],${JSON.stringify(config)},${read},${check})!==null)return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`;
-    const op=`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},${read},${check},${preflight.toString()});`;
+    const op=`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},${read},${check},${preflight.toString()},markOperationDispatch,invokeBoundClick);`;
     if(Buffer.byteLength(op)>32768||Buffer.byteLength(source)>32768)throw Error('Original shop menu operation bound');
-    return {action:{type:'web-click',selector:actionSelector},arguments:args,objectGroups:[held.objectGroup,...groups],source,executionBinding:binding,
-      interpretation:{provider:'dol-shop-native',operation:request.operation,from:before.view,execution:'native-operation',contract:binding.contract},operation:{name:'native-shop-menu',source:op}};
+    return {clickReceiverObjectId:o.node,action:{type:'web-click',selector:actionSelector},arguments:args,objectGroups:[held.objectGroup,...groups],source,executionBinding:binding,
+      interpretation:{provider:'dol-shop-native',operation:request.operation,from:before.view,execution:'native-operation',contract:binding.contract},operation:require('./action.cjs').reviewedOperation('native-shop-menu',op)};
   }catch(error){const released=await Promise.allSettled([...groups.map(objectGroup=>client.send('Runtime.releaseObjectGroup',{objectGroup})),...(held?[held.release()]:[])]);
     const failures=released.filter(r=>r.status==='rejected').map(r=>r.reason);if(failures.length)throw Object.assign(new AggregateError([error,...failures],'Native shop menu binding cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED'});
     throw Object.assign(Error('Reviewed native shop menu unavailable',{cause:error}),{code:'MAPPING_UNAVAILABLE'});

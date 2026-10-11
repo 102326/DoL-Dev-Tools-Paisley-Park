@@ -39,10 +39,10 @@ async function prepare(client,request,attemptId,{attestOnly=false}={}){
          !Array.isArray(args)||args.length!==2||args[1]!==${JSON.stringify(request.operation==='equip'?held.interpretation.index:'strip')})return {ok:false,guardRejected:true};
       try{if(observedInputs[4]('before',observedInputs.slice(5))!==undefined)return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`;
     const config={namespace:receipts.namespace,binding,attemptId,request,before:held.interpretation.before};
-    const operationSource=`return (${operation.toString()})(node,${JSON.stringify(config)},${mapping.reader.toString()},function(phase){return observedInputs[4](phase,observedInputs.slice(5))});`;
+    const operationSource=`return (${operation.toString()})(node,${JSON.stringify(config)},${mapping.reader.toString()},function(phase){return observedInputs[4](phase,observedInputs.slice(5))},markOperationDispatch,invokeBoundClick);`;
     if(Buffer.byteLength(operationSource)>32768)throw Error('Native wardrobe operation source exceeds limit');
-    return {action:{type:'web-click',selector:held.interpretation.selector},arguments:argumentsList,objectGroups:[held.objectGroup,...groups],source:sourceGuard,executionBinding:binding,
-      interpretation:{...held.interpretation,provider:'dol-wardrobe-native',execution:'native-operation',contract:binding.contract},operation:{name:'native-head-'+request.operation,source:operationSource}};
+    return {clickReceiverObjectId:o.node,action:{type:'web-click',selector:held.interpretation.selector},arguments:argumentsList,objectGroups:[held.objectGroup,...groups],source:sourceGuard,executionBinding:binding,
+      interpretation:{...held.interpretation,provider:'dol-wardrobe-native',execution:'native-operation',contract:binding.contract},operation:require('./action.cjs').reviewedOperation('native-head-'+request.operation,operationSource)};
   }catch(error){if(releaseCalled&&error.code==='NATIVE_BINDING_CLEANUP_FAILED')throw error;try{await release()}catch(cleanup){throw Object.assign(new AggregateError([error,cleanup],'Native wardrobe preparation and cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED'})}
     if(error.code==='NATIVE_BINDING_CLEANUP_FAILED')throw error;throw Object.assign(Error('Reviewed native wardrobe unavailable',{cause:error}),{code:'MAPPING_UNAVAILABLE'});
   }

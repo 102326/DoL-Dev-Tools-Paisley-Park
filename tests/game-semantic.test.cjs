@@ -55,7 +55,11 @@ function fixture(t, variant = '') {
         if (variant === 'scroll-guard-scene') state.variables.location='town';
         if (variant === 'replace') root = new Element();
       }
-      const value = vm.runInNewContext(`(${params.functionDeclaration})`, globals).call(client.bound);
+      // CDP source attestation is a substitute here, not real native-browser proof.
+      if(params.objectId==='fixture-native-click'&&params.functionDeclaration.includes('toString'))return {result:{value:'function click() { [native code] }'}};
+      const args=(params.arguments||[]).map(a=>a.objectId==='fixture-native-click'?node.click:client.bound);
+      const value = vm.runInNewContext(`(${params.functionDeclaration})`, globals).apply(client.bound,args);
+      if(params.returnByValue===false&&typeof value==='function')return {result:{type:'function',objectId:'fixture-native-click'}};
       if (variant === 'disconnect' && clicks) throw Error('Lost acknowledgement');
       return { result: { value } };
     },

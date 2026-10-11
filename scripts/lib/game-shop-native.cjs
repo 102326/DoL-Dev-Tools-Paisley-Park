@@ -71,11 +71,11 @@ async function prepare(client,request,goal,attemptId,{quote,attestOnly=false}={}
       const mappedGuard=(function(observedInputs){${mapped.source}})(observedInputs.slice(8));if(mappedGuard?.guardRejected)return mappedGuard;
       try{if(observedInputs[3]('before',observedInputs.slice(4,8))!==undefined)return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`;
     const config={namespace:receipts.namespace,binding,attemptId,quote,before};
-    const operationSource=`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},function(){return (${readCurrent.toString()})(${JSON.stringify(quote)},observedInputs[5].date.timeStamp)},function(phase){return observedInputs[3](phase,observedInputs.slice(4,8))});`;
+    const operationSource=`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},function(){return (${readCurrent.toString()})(${JSON.stringify(quote)},observedInputs[5].date.timeStamp)},function(phase){return observedInputs[3](phase,observedInputs.slice(4,8))},markOperationDispatch,invokeBoundClick);`;
     if(Buffer.byteLength(operationSource)>32768)throw Error('Native purchase operation bound');
-    return {action:{type:'web-click',selector:button},arguments:args,objectGroups:[held.objectGroup,...groups,...mapped.objectGroups],objectIds:mapped.objectIds,
+    return {clickReceiverObjectId:o.node,action:{type:'web-click',selector:button},arguments:args,objectGroups:[held.objectGroup,...groups,...mapped.objectGroups],objectIds:mapped.objectIds,
       source,executionBinding:binding,interpretation:{...mapped.interpretation,provider:'dol-shop-native',contract:binding.contract,execution:'native-operation'},
-      operation:{name:'native-shop-buy-one',source:operationSource}};
+      operation:require('./action.cjs').reviewedOperation('native-shop-buy-one',operationSource)};
   }catch(error){if(releaseCalled&&error.code==='NATIVE_BINDING_CLEANUP_FAILED')throw error;
     try{await release()}catch(cleanup){throw Object.assign(new AggregateError([error,cleanup],'Native purchase preparation and cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED'})}
     throw Object.assign(Error('Reviewed native purchase unavailable',{cause:error}),{code:'MAPPING_UNAVAILABLE'});

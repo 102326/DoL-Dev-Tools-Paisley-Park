@@ -28,7 +28,7 @@ function inspect(node,field){
   if(other.length>2*1024*1024)throw Error('Native radio state bound');
   return {passage:s.passage,turns:s.turns,time:s.variables.timeStamp,money:s.variables.money,other,value:s.variables[field],checked:node.checked};
 }
-function operation(node,config,epoch,check,read){
+function operation(node,config,epoch,check,read,markDispatch=()=>{},invokeClick=n=>n.click()){
   const context=window[config.namespace],s=window.SugarCube.State;
   if(check('before')!==undefined||context?.nonce!==config.binding.contextNonce||context.version!==1||Object.getPrototypeOf(context.records)!==null||
     !Object.isExtensible(context.records)||Object.hasOwn(context.records,config.attemptId)||Object.keys(context.records).length>=64)return {ok:false,guardRejected:true};
@@ -37,8 +37,9 @@ function operation(node,config,epoch,check,read){
   const root=document.querySelector('#passages > .passage'),active=s.active,history=s.history,index=s.activeIndex,entry=history[index],variables=s.variables,temporary=s.temporary;
   const tempKeys=Reflect.ownKeys(temporary),tempValues=tempKeys.map(k=>Object.getOwnPropertyDescriptor(temporary,k));
   if(tempKeys.length>512||tempValues.some(d=>!Object.hasOwn(d,'value')))return {ok:false,guardRejected:true};
+  markDispatch();
   const started=Object.freeze({...config.binding,attemptId:config.attemptId,status:'started',phase:'radio-started'});context.records[config.attemptId]=started;
-  try{node.click();const after=read(node,config.field);
+  try{invokeClick(node);const after=read(node,config.field);
     if(window[config.namespace]!==context||context.records[config.attemptId]!==started||window.SugarCube.State!==s||s.active!==active||s.history!==history||s.activeIndex!==index||history[index]!==entry||s.variables!==variables||
       document.querySelector('#passages > .passage')!==root||!root.isConnected||check('after')!==undefined||
       s.temporary!==temporary||Reflect.ownKeys(temporary).length!==tempKeys.length||tempKeys.some((k,i)=>{const d=Object.getOwnPropertyDescriptor(temporary,k),b=tempValues[i];return !d||!Object.hasOwn(d,'value')||!Object.is(d.value,b.value)||d.writable!==b.writable||d.enumerable!==b.enumerable||d.configurable!==b.configurable})||
@@ -88,8 +89,8 @@ async function prepare(client,descriptor,goal,attemptId){
     const check='function(phase){return observedInputs[1](phase,...observedInputs.slice(2))}';
     return {action:descriptor.selected,arguments:argumentsList,objectGroups:[group],executionBinding:binding,
       source:`if(node!==observedInputs[0].parentElement)return {ok:false,guardRejected:true};try{if((${check})('before')!==undefined||JSON.stringify((${inspect.toString()})(observedInputs[0],${JSON.stringify(field)}))!==JSON.stringify(observedInputs[2].before))return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`,
-      interpretation:{provider:'native-dol',execution:'native-operation',contract:binding.contract,field,value:value.value},
-      operation:{name:'native-radio',source:`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},observedInputs[2],${check},${inspect.toString()});`}};
+      clickReceiverObjectId:node,interpretation:{provider:'native-dol',execution:'native-operation',contract:binding.contract,field,value:value.value},
+      operation:require('./action.cjs').reviewedOperation('native-radio',`return (${operation.toString()})(observedInputs[0],${JSON.stringify(config)},observedInputs[2],${check},${inspect.toString()},markOperationDispatch,invokeBoundClick);`)};
   }catch(error){try{await client.send('Runtime.releaseObjectGroup',{objectGroup:group})}catch(cleanup){throw Object.assign(new AggregateError([error,cleanup],'Native radio binding cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED'})}throw Object.assign(Error('Reviewed native radio unavailable',{cause:error}),{code:'MAPPING_UNAVAILABLE'})}
 }
 function validateReceipt(r,e){const v=r.evidence;return r.outcome==='occurred'&&r.remoteClosed===true&&r.spent===0&&e?.executionBinding?.provider==='native-dol'&&/^native-radio-[a-f0-9]{12}$/.test(e.executionBinding.contract||'')&&e.action?.kind==='menu'&&e.action.cost===0&&

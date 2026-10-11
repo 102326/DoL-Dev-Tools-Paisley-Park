@@ -47,7 +47,7 @@ function preflight(node, config, engine, jq, footer, addon, tasks, history, hist
 }
 
 // Browser-only reviewed operation; serialized callers supply the same guard.
-async function operation(node, config, engine, jq, footer, addon = null, tasks, history, check = preflight, environmentCheck = () => undefined, historyCheck=checkHistory, monitor=null,taskReview=null) {
+async function operation(node, config, engine, jq, footer, addon = null, tasks, history, check = preflight, environmentCheck = () => undefined, historyCheck=checkHistory, monitor=null,taskReview=null,markDispatch=()=>{},invokeClick=n=>n.click()) {
   const rejected=check(node,config,engine,jq,footer,addon,tasks,history,historyCheck,monitor,taskReview);
   if(rejected)return {ok:false,guardRejected:true,reason:rejected};
   try{if(environmentCheck('before')!==undefined)return {ok:false,guardRejected:true,reason:'native-environment-changed'}}
@@ -169,10 +169,11 @@ async function operation(node, config, engine, jq, footer, addon = null, tasks, 
     const clean=restore();
     return {ok:false,...(clean?{guardRejected:true}:{}),reason:clean?'navigation-observer-unavailable':'observer-ownership-conflict'};
   }
+  markDispatch();
   started=Object.freeze({...binding,attemptId,status:'started'});
   context.records[attemptId]=started;
   persist();
-  try{clicked=true;node.click()}catch{fail('original-navigation-threw')}
+  try{clicked=true;invokeClick(node)}catch{fail('original-navigation-threw')}
   finally{restored=restore();persist()}
   if(!clicked||!restored||failed||phaseIndex!==5||footerCalls!==1||addon!==null&&addonCalls.some(count=>count!==1)){
     fail('navigation-phase-incomplete');return {ok:false,reason};

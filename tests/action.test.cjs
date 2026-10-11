@@ -4,6 +4,39 @@ const vm = require('node:vm');
 const { validate, summary, execute } = require('../scripts/lib/action.cjs');
 
 const pkg = 'com.example.game';
+test('bound native callable and receiver reject replacement/getters before click and preserve post-start uncertainty',async()=>{
+ const {reviewedOperation}=require('../scripts/lib/action.cjs');let calls=0,getters=0;const receivers=[];
+ class Element{isConnected=true;matches(){return false}closest(){return null}getClientRects(){return[1]}click(){calls++;receivers.push(this)}}
+ const node=new Element(),original=node.click,other=new Element();const globals={HTMLElement:Element,document:{querySelectorAll:()=>[node]},getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1'}),other};
+ const {ctx}=fixture();ctx.webGuard={objectId:'root',source:'',invocation:{receiverId:'receiver',callableId:'click'}};
+ ctx.ensureWebview=async()=>({evaluate(){throw Error('Unbound')},async send(method,p){const args=p.arguments.map(a=>a.objectId==='receiver'?node:original);return{result:{value:vm.runInNewContext(`(${p.functionDeclaration})`,globals).apply(node,args)}}}});
+ const action={type:'web-click',selector:'#bound'};await execute(ctx,action);assert.equal(calls,1);assert.equal(receivers[0],node);
+ node.click=function(){throw Error('Changed click must not run')};await assert.rejects(execute(ctx,action),e=>e.notDispatched===true);assert.equal(calls,1);
+ Object.defineProperty(node,'click',{configurable:true,get(){getters++;throw Error('Getter must not run')}});await assert.rejects(execute(ctx,action),e=>e.notDispatched===true);assert.equal(getters,0);
+ delete node.click;
+ ctx.webGuard.operation=reviewedOperation('reviewed-call','markOperationDispatch();invokeBoundClick(other);return {ok:true};');
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true);assert.equal(calls,1);
+ ctx.webGuard.operation=reviewedOperation('reviewed-call','markOperationDispatch();invokeBoundClick(node);return {ok:false,guardRejected:true};');
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true);assert.equal(calls,2);assert.equal(receivers[1],node);
+});
+test('reviewed start marker preserves truthful preflight rejection and never trusts arbitrary or post-start zero-effect claims',async()=>{
+ const {reviewedOperation}=require('../scripts/lib/action.cjs');let effects=0;
+ class Element{isConnected=true;matches(){return false}closest(){return null}getClientRects(){return[1]}}
+ const node=new Element(),globals={HTMLElement:Element,document:{querySelectorAll:()=>[node]},getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1'}),remoteEffect:()=>effects++};
+ const {ctx}=fixture();ctx.webGuard={objectId:'node',source:''};ctx.ensureWebview=async()=>({evaluate(){throw Error('Unbound evaluation')},async send(method,p){return {result:{value:await vm.runInNewContext(`(${p.functionDeclaration})`,globals).call(node)}}}});
+ const action={type:'web-click',selector:'#reviewed'};
+ ctx.webGuard.operation=reviewedOperation('reviewed-fixture','return {ok:false,guardRejected:true};');
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched===true);assert.equal(effects,0);
+ for(const op of [
+  {name:'reviewed-fixture',source:'remoteEffect();return {ok:false,guardRejected:true};'},
+  {...reviewedOperation('reviewed-fixture','remoteEffect();return {ok:false,guardRejected:true};')},
+  reviewedOperation('reviewed-fixture','markOperationDispatch();remoteEffect();return {ok:false,guardRejected:true};'),
+  reviewedOperation('reviewed-fixture','markOperationDispatch();remoteEffect();return Promise.resolve({ok:false,guardRejected:true});'),
+ ]){ctx.webGuard.operation=op;await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true)}
+ assert.equal(effects,4);
+ ctx.webGuard.operation=reviewedOperation('reviewed-fixture','markOperationDispatch();remoteEffect();throw Error("after dispatch");');
+ await assert.rejects(execute(ctx,action),e=>e.notDispatched!==true);assert.equal(effects,5);
+});
 test('reviewed guarded input shares the original setter/events and rejects a stale guard before changing the input',async()=>{
  let value='2',events=0,allowed=true,marked=0;
  class Element {isConnected=true;readOnly=false;type='range';matches(){return this.disabled===true}closest(){return null}getClientRects(){return[1]}dispatchEvent(){events++}}
