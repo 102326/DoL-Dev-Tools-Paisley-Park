@@ -63,3 +63,20 @@ A 当前仅定位 Lab-owned `shop.toolbar` 与列出的源码/候选样式，不
 建议 UI 对话在自己的 3.0 分支薄接入：按其当前组件/props/样式顺序更新 Lab 和覆盖输入，重新生成 index/clue，做一次真实样式或组件任务的「观察→定位→编辑→HMR→正式构建→同场景验证」。不要整分支合并导致 3.0 回退到 2.5，不复制 Runtime 或用内存回调代替业务证明。
 
 先选择一个 3.0 实际高频组件，复用现有 Vue/Vite/Playwright 和项目构建；只在 Source Link 不能回答真实问题时补最小映射。是否需要 GER 由任务决定，不为普通 UI 调试强建 Goal。通过之后再决定覆盖其它组件或推进 C。
+
+## Field Report：Stone Free 3.0 首轮使用（2026-10-13 登记）
+
+UI 对话已按用户后续确认开展实际使用。本节保留此前原型验收的历史边界，不把新的 UI 项目记录算成本工具重新执行的验收。反馈基线是 UI `dev/stone-free-3.0-current` 的 `f247df7f03ea7aabfc13635d44cc7c4cceac28aa`；来源为该项目 `docs/STONE_FREE_WINDOWS_AB.md` 与 ignored `tests/artifacts/stone-free-lab`。本轮只读复核这些记录、现有 producer/consumer 与去重登记，未重跑浏览器、设备或测试。
+
+已复核 producer 列明 `shop.toolbar` 与 `floating.tools` 各自真实组件、样式和接线输入，未把旧 2.5 Lab 整分支覆盖 3.0。保存的商店结果为 `matched`，悬浮结果为 `unknown / index-format`；当前 Tools consumer 的白名单确实只接受 `shop.toolbar / toolbar`。它属于已声明的覆盖边界，不是已支持能力退化或权限拒绝，普通 Debug 不受影响。保存结果对应当时快照，不代表提交或后续改动后的线索仍新鲜。
+
+Source Index 三项通过及类型检查记录存在。成功的 `hmr-data-ready-test.txt` 和对应联合结果证明同源悬浮组件、390px、内存回调、CSS HMR/恢复与商店线索；`hmr-final-test.txt`、`hmr-corrected-test.txt` 等首次失败仍保留，不能因文件名带 final 就当作成功。平板 trusted Pointer、位置保存、设置 Modal 暂停/恢复和关键原状态对照来自 UI 的独立设备记录，不由 Lab 或 `matched` 推导。本工具未重测这些设备行为，也未宣布 UI 3.0 全部完成。
+
+| 候选 | 登记状态与归属 | 提升为实施任务的条件 |
+| --- | --- | --- |
+| FR-20261013-SF-01A：明确 `floating.tools` consumer profile | Additional coverage / Optional Integration；复用本节已有单组件覆盖限制，非阻塞缺陷，未排入 Remaining work。 | 用户/目标发布明确要求，或真实项目需要可靠悬浮源码关联且现有直接源码/CDP 不足；再核对当前 3.0 的明确合同与负例，不全局扫描、不新建 SDK。 |
+| FR-20261013-SF-01B：区分 unsupported component 与 invalid index | 错误解释候选；当前格式检查把不支持的组件也归为 index-format，仍返回 unknown，不伪造匹配。 | 有明确解释需求或反复误判证据时，单独审查原因分类兼容性；不得因此新增权限门槛或让普通 Debug 停止。 |
+
+以下经验按现有规则去重，不新增 Skill 规则或工具任务：旧 `ui/utilities.css` 不存在是项目接入差异，应按实际样式入口调整；折叠 `details` 的 `innerText` 和异步 null 是探针读取/等待问题；人工编辑晚于等待窗口是实验时序问题，不自动归因 Tools/Vite。优先读取实际源码与 `textContent`、等待所需数据就绪，并用无业务影响的控制样式验证 HMR 后恢复原字节。保留失败与时间边界，不进行无依据重试。
+
+本次仅登记；未修改运行实现、全局 Skill、GER/Store/Unknown、UI 工作区，未推送/发布或另行发消息催促工具扩展。UI 的后续自有设置研发由其原计划继续负责。
