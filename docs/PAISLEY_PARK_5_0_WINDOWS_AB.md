@@ -1,5 +1,7 @@
 # Paisley Park 5.0：A/B Windows 接续验收
 
+> 2026-10-13 同步说明：用户已授权将最新进展上传到现有 GitHub 测试分支。Tools 使用 `test/paisley-park-5.0-mac`（保留命名，追加 Windows 验收与真实反馈），UI Lab 使用 `test/paisley-park-component-lab`。下文的“未推送”“待确认”保留各阶段当时状态；UI 3.0 使用已获后续确认，首轮反馈已登记。正式 main、4.0.1 Release 与全局 Skill 不因本次同步更新；`floating.tools` 仍是未实施的覆盖候选。
+
 2026-10-12。本轮只验收 A（UI Source Link）和 B（Vite Component Lab）的现有有限原型。达到本文范围内的 Scoped Done；不等于完整 5.0 或真实游戏修复闭环。UI 3.0 的真实使用须先由用户确认，再交给 UI 对话，本轮尚未发送消息或改动其开发分支。
 
 ## Delivered
