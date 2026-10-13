@@ -1,7 +1,7 @@
 # DoL Dev Tools: Paisley Park — 诊断工作流
 
 当前 3.0.3 Gold Experience Requiem 提供通用诊断/Schema 1 与独立私有的[Gameplay Runtime](GAMEPLAY.md)，验收与限制见[收口](CLOSEOUT_3_0_3.md)。通用核心不要求 Soft & Wet 或 Gameplay 依赖；Integration 为可选增强，业务 Scene/Memory 不自动进入 Evidence/Support。旧阶段文档保留为验证历史；3.0.0/3.0.1 公开 Release/tag 已按用户要求移除。
-历史首批说明见 [0.3.0](FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
+历史首批说明见 [0.3.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
 
 仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools-paisley-park`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。
 
@@ -120,7 +120,7 @@ Perfetto 包装已有的官方 `record_android_trace`，通过 `DOL_PERFETTO_REC
 固定参数为显式 serial、`--user`禁止helper尝试root、1..30 秒、32 MB buffer、目标 App 和 sched/gfx/wm，`--no-open` 禁止自动打开或提供 viewer。
 保留 helper SHA、采集参数和 trace 的 SHA / 字节数；文件非空不代表 trace schema 或内容正确，尚未接入 trace processor。
 helper 运行超时为采集时长 +30 秒；系统 trace 本身可能包含设备线程与其他进程信息，须人工检查隐私。
-已有选定真机3秒trace与完整bugreport验收；前者另行复用android-profiler的官方Trace Processor确认schema、约2.9785秒跨度和目标进程调度数据，后者用标准库验证ZIP CRC/main entry。核心仍不内置解析器，traceParsed=false与外部验证收据分开。Support不复制两种二进制，见[最终验收](FINAL_ACCEPTANCE.md)。
+已有选定真机3秒trace与完整bugreport验收；前者另行复用android-profiler的官方Trace Processor确认schema、约2.9785秒跨度和目标进程调度数据，后者用标准库验证ZIP CRC/main entry。核心仍不内置解析器，traceParsed=false与外部验证收据分开。Support不复制两种二进制，见[最终验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/FINAL_ACCEPTANCE.md)。
 官方参数核对来源：[record_android_trace](https://github.com/google/perfetto/blob/main/tools/record_android_trace)。不同本地脚本版本须核对参数，不把该链接当作已安装版本证明。
 
 bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、接受文件大小上限 512 MiB，ZIP 头检查不等于 archive 完整性检查。
@@ -133,7 +133,7 @@ bugreport 使用固定设备的 ADB 本地输出，主机调用上限 180 秒、
 仓库内 [.agents/skills/dol-dev-tools-paisley-park/SKILL.md](../.agents/skills/dol-dev-tools-paisley-park/SKILL.md) 路由诊断、复现和开发闭环，支持[独立安装](SKILL_INSTALL.md)。本机已有安装及独立任务使用证明，自动发现仍取决于宿主和实际请求。
 Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live Site First、证据先行、来源分离、最小充分诊断；测试环境允许任务范围内的主动复现，具体操作边界见 [架构](ARCHITECTURE.md)。
 1.2提供独立有限Action/Journey，不自动遍历控件或抓取网络正文。保留Android CLI独立入口，原始布局不直接进入脱敏包；helper运行/安装需明确选择。
-独立Action/Journey可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect/Doctor/Evidence保持观察语义。真实存档、正式用户数据和凭据的破坏性操作需对应显式授权。范围见[BLUEPRINT](BLUEPRINT.md)。诊断层无常驻后台服务或云端遥测；Gameplay 使用独立的本地 SQLite Store。
+独立Action/Journey可以在明确测试环境执行点击、输入、导航、重启、旋转和普通游戏复现；Inspect/Doctor/Evidence保持观察语义。真实存档、正式用户数据和凭据的破坏性操作需对应显式授权。范围见[BLUEPRINT](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/BLUEPRINT.md)。诊断层无常驻后台服务或云端遥测；Gameplay 使用独立的本地 SQLite Store。
 
 ## 公共格式与第三方 Integration
 
@@ -143,7 +143,7 @@ Skill 面向整个 DoL Mod 生态，路由实际工具，不复制实现。Live 
 
 ## 开发工作区：CSS / Environment / 目标选择
 
-下面是1.2的增补入口，现场证明与条件边界见[能力覆盖](CAPABILITY_COVERAGE.md)。
+下面是1.2的增补入口，现场证明与条件边界见[能力覆盖](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CAPABILITY_COVERAGE.md)。
 
 ```powershell
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/facts-001 --scope '#passages' --css yes --environment yes

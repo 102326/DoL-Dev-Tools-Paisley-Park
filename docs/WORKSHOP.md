@@ -2,7 +2,7 @@
 
 Workshop 是 Skill 的开发闭环：用 Tools 观察现场，用目标项目自己的源码和构建/部署命令修改，最后回到同一问题复验。Tools 不新增通用 shell/业务脚本执行框架，也不接管 ModLoader 或项目 Runtime。
 
-1.5约定闭环已经完成。新项目/新设备进入这里时开展该问题的最小复验，不要求Tools替项目跑全部设置、存档迁移或云端业务回归。完成报告使用[三类能力状态](CLOSEOUT_1_5.md)，保留当前证据范围及按需扩展条件。
+1.5约定闭环已经完成。新项目/新设备进入这里时开展该问题的最小复验，不要求Tools替项目跑全部设置、存档迁移或云端业务回归。完成报告使用[三类能力状态](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_1_5.md)，保留当前证据范围及按需扩展条件。
 
 后续[原生与APK目标配方](NATIVE_RECREATE.md)已实机验证Activity及其WebView重建、真实游戏APK的同签名更新和自有sentinel保留；[真实业务Mod配方](BUSINESS_MOD_UPDATE.md)又在此独立副本主游戏完成DoLGameUI发行更新、设置行为及重启持久加载复验。它们和以下DOM/隔离origin夹具分别证明，不扩大为全部存档或游戏业务验收。
 

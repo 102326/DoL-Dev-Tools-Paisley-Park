@@ -29,7 +29,7 @@ node scripts/dol-dev.cjs leak-probe --endpoint http://127.0.0.1:PORT --out artif
 
 Timeline显式observerInstrumentation窗口可报告新建且成功instrument的Observer数量与末端WeakRef存活数量，不枚举已有Observer。保存原始bound/arrow方法可能间接保留实例，报告明确instrumentationMayRetainInstances；未强制GC，aliveAtEnd不是无扰动存活或泄漏判断。完整renderer所有权、heap保留链和callback闭包由目标项目公开Integration或Chrome/Perfetto调查，不把generic数字猜成某个Mod的所有权。
 
-早期真机detached响应超过4MiB，DOM.disable未确认，partial保留。修复后当前Android独立detached采样available、DOM.disable确认；真实Journey基线→三次设置打开关闭→复采及短Observer窗口全部complete，运输和临时节点清理分别记录。计数截断保留下界标记，不据此判定泄漏。详情见[最终验收](FINAL_ACCEPTANCE.md)。
+早期真机detached响应超过4MiB，DOM.disable未确认，partial保留。修复后当前Android独立detached采样available、DOM.disable确认；真实Journey基线→三次设置打开关闭→复采及短Observer窗口全部complete，运输和临时节点清理分别记录。计数截断保留下界标记，不据此判定泄漏。详情见[最终验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/FINAL_ACCEPTANCE.md)。
 
 休眠时 CDP 可能暂停，黑屏截图也不能当作 App 黑屏；核对设备 power 与焦点。`wake` 是显式 Action，采集器不偷偷唤醒设备或重启 App。
 

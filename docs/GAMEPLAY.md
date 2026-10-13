@@ -11,11 +11,11 @@ TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见
 
 已结清的重复路线保留 routeHints，不再在第三次后硬封路；不可凭此重放 started/Unknown。派发在既有 SQLite 事务中比较宿主已批准的 revision/提案/场景身份，成功预留后使用该 Effect 的动作。页面回执只在原终态可靠持久结算后精确回收；started、Unknown、未结算与其它 namespace 的记录保留。维护失败保留记录，下次观察按同一已提交事实处理，不改写业务结论。
 
-项目 Recipe、实际 callable/receiver、scoped IDB 保存/自动保存与真实数据代次合同已接入；离线和真实 Android 代表性证据及其限制分别见 [4.0 开发记录](BITES_THE_DUST_4_0.md)。
+项目 Recipe、实际 callable/receiver、scoped IDB 保存/自动保存与真实数据代次合同已接入；离线和真实 Android 代表性证据及其限制分别见 [4.0 开发记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/BITES_THE_DUST_4_0.md)。
 
 ## 当前 Runtime 与冻结 Foundation 的区别
 
-3.0.3 的 `game-goal` 使用共享 XState/SQLite 核心，以下旧接口说明保留为冻结 Foundation 历史。Gameplay 需要根目录 `npm ci --ignore-scripts --no-audit --no-fund`；Node 22 运行时加 `--experimental-sqlite`，Windows launcher 已包含，Generic 可独立使用。参见[共享核心设计记录](GOLD_EXPERIENCE_REAUDIT.md#10-m2共享内核迁移进展)。
+3.0.3 的 `game-goal` 使用共享 XState/SQLite 核心，以下旧接口说明保留为冻结 Foundation 历史。Gameplay 需要根目录 `npm ci --ignore-scripts --no-audit --no-fund`；Node 22 运行时加 `--experimental-sqlite`，Windows launcher 已包含，Generic 可独立使用。参见[共享核心设计记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md#10-m2共享内核迁移进展)。
 
 ### 版本与语义边界
 
@@ -46,13 +46,13 @@ TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见
 
 新请求可选顶层`description`（非空、最多512字符、不含控制字符），保存原高层目标说明，供当前及新宿主理解目的；`name`仍是1—64字符短标识。未提供时保留旧name作为描述。该文字沿已有不可变Goal配置持久化并进入Decision Request，resume不改写它；它不增加动作权限、不改变预算或形式谓词，也不提供新的活动历史断言。宿主应根据原说明选择有意义的动作，完成结论仍明确区分原状态/受审Outcome证明与文字解释。目标变更需新授权及新Session，不能借Proposal或现场文字重写原Goal。
 
-开发中的内部Native Operation复用已审原UI穿戴/脱下入口、共享Action/claim和attempt回执；它不开放任意JS Action字段。当前限定profile已完成本地合同审阅；真实只读attestOnly仍只证明对象/源码绑定，不证明动作或完整Gameplay通过。缺失、started或不同context的receipt通常保持未知，恢复不初始化/修补receipt、不重放。一个旧合同的started结果另有受审的只读原状态/刷新结束证明，保留原失败及started历史；它不是对任意未知动作的通用放行，详见[候选进展与限制](GOLD_EXPERIENCE_REAUDIT.md#native-operation候选与终止回执)。
+开发中的内部Native Operation复用已审原UI穿戴/脱下入口、共享Action/claim和attempt回执；它不开放任意JS Action字段。当前限定profile已完成本地合同审阅；真实只读attestOnly仍只证明对象/源码绑定，不证明动作或完整Gameplay通过。缺失、started或不同context的receipt通常保持未知，恢复不初始化/修补receipt、不重放。一个旧合同的started结果另有受审的只读原状态/刷新结束证明，保留原失败及started历史；它不是对任意未知动作的通用放行，详见[候选进展与限制](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md#native-operation候选与终止回执)。
 
 原生导航库现有内部`prepare(client, descriptor, goal, attemptId, reviewEnvironment)`：绑定实际原控件、源码、词法目的地、目标环境、共享Action及attempt回执。`reviewEnvironment`必须是受审本地代码，其远端引用归准备阶段的同一object group；不是CLI/Goal/Proposal可传入的JS或权限声明。同步guard与operation复用同一个preflight，回执容量/重复attempt、原状态变化、Engine忙、task registry及observer无法安装均在操作开始前拒绝；操作开始后的失败仍unknown。准备或清理失败分开报告。有限环境profile已启用，未审目的场景或payload仍在准备阶段拒绝；只读准备验证本身不证明动作或S2。
 
 环境guard为同步、只读的本地合同：无返回值表示仍符合已审条件，任何返回值或异常表示不符合。它在派发前及原Addon业务Promise结束后分别以`before`/`after`检查；后一次拒绝保留started/unknown，不能签terminal或回退为未派发。跨转换应保持的环境/源身份与接收场景资格分开检查，不重查已离开的旧节点；来源场景不自动获得接收场景资格。实际场景、正常重定向与Goal Predicate仍独立判断。已审guard在同一owned object group内编译并核对源码，作为函数参数传入共享operation，随同其它绑定清理；contract保留源码与传输版本，Action源码上限不变。这不是CLI/Proposal自定义JS入口。
 
-原生导航复用 source epoch、原控件/词法目的地、原共享 Scene transfer 合同；不要求每个普通 Passage 有新 core handler。具体活动和特殊 payload 仍由 Provider 的有限 profile 校验，不能借普通导航合同绕过未审业务。已审原生路径包括首入卧室、厨房/浴室/花园日常活动、普通街道、教学与事件继续、商店和衣柜进出，支持边界由当前源/对象/环境决定。空 payload 允许原 createShadowWrapper 的 literal null 回调，缺失/undefined 仍拒绝。回执证明真实有界 history 新 moment、裁剪规则、五阶段、原 Addon Promise 和原状态；State.turns 饱和后可不变，不能当单调回合编号。当前支持历史末端、2—128 槽和最多 1024 expired 标题；历史回退等分支未审。失败 started 不会因新合同、Goal 真或重启自动结清，旧未知结果见[收口限制](CLOSEOUT_3_0_1.md)。
+原生导航复用 source epoch、原控件/词法目的地、原共享 Scene transfer 合同；不要求每个普通 Passage 有新 core handler。具体活动和特殊 payload 仍由 Provider 的有限 profile 校验，不能借普通导航合同绕过未审业务。已审原生路径包括首入卧室、厨房/浴室/花园日常活动、普通街道、教学与事件继续、商店和衣柜进出，支持边界由当前源/对象/环境决定。空 payload 允许原 createShadowWrapper 的 literal null 回调，缺失/undefined 仍拒绝。回执证明真实有界 history 新 moment、裁剪规则、五阶段、原 Addon Promise 和原状态；State.turns 饱和后可不变，不能当单调回合编号。当前支持历史末端、2—128 槽和最多 1024 expired 标题；历史回退等分支未审。失败 started 不会因新合同、Goal 真或重启自动结清，旧未知结果见[收口限制](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md)。
 
 屏外原生控件可作为scrollEligible候选，仍沿同一web-click执行链。标准act只为当前唯一、安全、非报价且有效祖先可见的屏外节点准备视口；滚动后原节点、场景与钱和时间状态必须保持，并重新满足命中检查。点击guard使用重新核对的完整Scene，准备失败时不点击、不重试。隐藏、禁用、遮挡及歧义Overlay不会因“可滚动”放行。
 
@@ -64,9 +64,9 @@ TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见
 
 原生知识目标可读取受限原集合成员并要求返回，例如`{"kind":"native-knowledge","collection":"plants_known","entry":"daisy","passage":"Bedroom"}`。目前只允许`plants_known`，entry为1—128字符；不接受任意变量路径或写入操作。只返回指定成员是否存在，不导出整份知识集合；原集合缺失、类型错误或超过512项为unavailable。成员存在及返回场景同时成立才满足目标。这证明当前原知识状态，不自动证明曾执行特定寻找动作；实际活动仍需关联原Outcome，接收合同和S2验收也不因新增谓词而完成。
 
-原生日常活动profile另支持已审第一天的Bedroom→大厅（按原daily.homeEvent选择普通事件或已结束分支）、大厅→Bathroom、Bathroom→Bathroom Brush、刷牙场景原继续与Bathroom→Bedroom。随机活动仍由原游戏事件池选择；绑定原widget/function macro、事件池词法函数、RNG与State对象，最后由相同Action、History、时间和生命周期见证结清。宿主选择当前候选并维护临时事件/返回目标，没有新增日常活动控制器。此有限接收合同不证明其它时间、版本或所有活动，也不以hygiene初始为0冒充曾执行清洁活动；真实短路径见[日常活动记录](GOLD_EXPERIENCE_REAUDIT.md#m5准备原生日常活动真实短路径)。
+原生日常活动profile另支持已审第一天的Bedroom→大厅（按原daily.homeEvent选择普通事件或已结束分支）、大厅→Bathroom、Bathroom→Bathroom Brush、刷牙场景原继续与Bathroom→Bedroom。随机活动仍由原游戏事件池选择；绑定原widget/function macro、事件池词法函数、RNG与State对象，最后由相同Action、History、时间和生命周期见证结清。宿主选择当前候选并维护临时事件/返回目标，没有新增日常活动控制器。此有限接收合同不证明其它时间、版本或所有活动，也不以hygiene初始为0冒充曾执行清洁活动；真实短路径见[日常活动记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md#m5准备原生日常活动真实短路径)。
 
-花园/花坛/寻找雏菊也作为native Provider的有限接收能力接入同一链：原生大厅→Garden一分钟、Garden→Garden Flowers空payload、原寻找种子payload更新plants_known并推进30分钟，之后使用原继续/离开/大厅/卧室入口返回。这里只审第一天早上7—11点、空白或仅耕作的三块花圃及既有非空头饰分支；普通40分钟耕作另有有限合同，不是所有耕种或花园事件的支持声明。寻找活动会执行原游戏的特殊物品解锁刷新，相关原函数、词法helper与有限条件函数族按源码和身份核对；采集不调用这些函数，原业务仍由原控件执行。30分钟已有真实terminal，状态Goal由原plants_known成员读取，二者分别证明活动发生与当前知识状态；耕作复用同页navigation operation，在原接收尾部核对已耕空苗圃数量恰好增加1，保留原体能/疲劳副作用并读取原physique目标；已完成的苗圃会呈现种植选择，宿主必须据新Scene重规划，不能复用旧耕作引用。新宿主与完整S2状态见[当前验收](GOLD_EXPERIENCE_REAUDIT.md)。
+花园/花坛/寻找雏菊也作为native Provider的有限接收能力接入同一链：原生大厅→Garden一分钟、Garden→Garden Flowers空payload、原寻找种子payload更新plants_known并推进30分钟，之后使用原继续/离开/大厅/卧室入口返回。这里只审第一天早上7—11点、空白或仅耕作的三块花圃及既有非空头饰分支；普通40分钟耕作另有有限合同，不是所有耕种或花园事件的支持声明。寻找活动会执行原游戏的特殊物品解锁刷新，相关原函数、词法helper与有限条件函数族按源码和身份核对；采集不调用这些函数，原业务仍由原控件执行。30分钟已有真实terminal，状态Goal由原plants_known成员读取，二者分别证明活动发生与当前知识状态；耕作复用同页navigation operation，在原接收尾部核对已耕空苗圃数量恰好增加1，保留原体能/疲劳副作用并读取原physique目标；已完成的苗圃会呈现种植选择，宿主必须据新Scene重规划，不能复用旧耕作引用。新宿主与完整S2状态见[当前验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md)。
 
 原生 DoL Gameplay Runtime 是中心；衣物是领域 Provider 和 S1 副作用场景。S2 已以原生劳动、普通导航、连续运行、同 Session 恢复与无旧聊天新宿主证明不依赖 Soft & Wet 私有 Runtime、衣柜 Adapter 或 UI Mod 能力。新的场景/事件/导航/对话/战斗能力继续从原生 Gameplay 设计。
 
@@ -144,7 +144,7 @@ epoch必须来自当前Request，示例12不是现场值。省略cognition保留
 
 新Request的`outcomes`保留本Session已结清attempt、实际消费和受审见证，供无旧聊天的新宿主理解。最终判真发生在同一observe事务结清之后：原条件、完整选中variant、原库存/穿戴总数1、返回地点、页内context连续性和父预算都须成立。原库存计数独立于可装备候选筛选；截断或未知不是0。`view.proof.satisfied`为这个组合判据，原页内reader只提供条件事实。购买后不提供load-save动作；更换页内context或已检测的时间回退不能把旧见证拼接为新游戏状态证明。同页外部载档/未经跟踪的状态替换尚无连续性合同，不能据旧见证继续验收。
 
-**S1 同 Goal 真实闭环已验证。** 原 `dol-shop` 支持受审的 `buy-one`、零成本 `browse` 与 `return-menu`。browse 使用当前候选的 `{type:"dol-shop",operation:"browse",selector:CURRENT_SELECTOR}`，覆盖原头饰分类与简单物品；return 使用 `{type:"dol-shop",operation:"return-menu"}`，每次只退出一个当前菜单层。二者保持钱、库存、穿戴、原 history/time/turns 不变；购买仍为独立报价/终止合同，不能包装为 menu。原生当前默认完整 variant 可直接购买，未审颜色/数量修改不自动支持。候选不足或源不匹配时拒绝准备，不通过直接写变量补齐。具体 S1/S2 结果与旧未决失败见[收口](CLOSEOUT_3_0_1.md)。
+**S1 同 Goal 真实闭环已验证。** 原 `dol-shop` 支持受审的 `buy-one`、零成本 `browse` 与 `return-menu`。browse 使用当前候选的 `{type:"dol-shop",operation:"browse",selector:CURRENT_SELECTOR}`，覆盖原头饰分类与简单物品；return 使用 `{type:"dol-shop",operation:"return-menu"}`，每次只退出一个当前菜单层。二者保持钱、库存、穿戴、原 history/time/turns 不变；购买仍为独立报价/终止合同，不能包装为 menu。原生当前默认完整 variant 可直接购买，未审颜色/数量修改不自动支持。候选不足或源不匹配时拒绝准备，不通过直接写变量补齐。具体 S1/S2 结果与旧未决失败见[收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md)。
 
 Combat 当前接入受审原 radiobutton 的字符串选择（leftaction/rightaction/feetaction/mouthaction）。实际原 change handler 执行，验证选择值、其它原变量与历史/时间/金钱稳定；该回执只证明选择，后续原 turn/导航须另有 Outcome。不支持任意表单、所有战斗分支或胜利断言。普通场景仍共享导航合同，具体业务由 Provider 审查。
 
@@ -156,7 +156,7 @@ Gameplay私有Scene现在含最多2048字符、最多256条非空可读片段的
 
 只读`game-contract`可核对widget handler真实闭包正文、定义payload及唯一Story正文和已审阅hash；这只证明源码身份。真实穿戴的事件入口、可达刷新宏、业务提交见证和错误/清理语义仍需整体验证，不能把源码hash、node.click返回或UI静默直接当作terminal receipt。
 
-以下是冻结 v3.0.0 Foundation 的历史接口记录。其 journal/lock/叙述式 reconcile 与 3.0.1 v2 Session 不同；不混用同一任务或直接迁移冻结日志。当前执行以本页上方 Session 协议和[3.0.1 收口](CLOSEOUT_3_0_1.md)为准。
+以下是冻结 v3.0.0 Foundation 的历史接口记录。其 journal/lock/叙述式 reconcile 与 3.0.1 v2 Session 不同；不混用同一任务或直接迁移冻结日志。当前执行以本页上方 Session 协议和[3.0.1 收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md)为准。
 
 ## 历史 Foundation：Goal 会话
 

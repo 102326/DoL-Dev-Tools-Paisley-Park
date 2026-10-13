@@ -5,20 +5,20 @@
 | 历史版本 | 记录 |
 | --- | --- |
 | 4.0.1 / v4.0.1 — Bites the Dust | [验货修订说明](RELEASE_4.0.1.md)、[定向修复与验证](F1_F5_CLOSEOUT_4_0.md) |
-| 4.0.0 / v4.0.0 — Bites the Dust | [更新说明](RELEASE_4.0.0.md)、[收口与兼容](CLOSEOUT_4_0.md) |
-| 3.0.3 / v3.0.3 | [实战诊断体验补丁](RELEASE_3.0.3.md)、[历史收口](CLOSEOUT_3_0_3.md) |
-| 3.0.2 / v3.0.2 | [Gold Experience Requiem 发布说明](RELEASE_3.0.2.md)、[3.0.2 验收与限制](CLOSEOUT_3_0_2.md) |
-| 3.0.1（公开 Release / tag 已删除） | [历史发布说明](RELEASE_3.0.1.md)、[S1/S2 代表性证明](CLOSEOUT_3_0_1.md) |
-| 3.0.0（公开 Release / tag 已删除） | [原发布说明](RELEASE_3.0.0.md)、[Foundation A—D证明](CLOSEOUT_3_0.md)、[撤版](WITHDRAWAL_3.0.0.md)、[新的研发方案](GOLD_EXPERIENCE_REAUDIT.md) |
-| 2.0.1 / v2.0.1 | [实战经验指引补丁](RELEASE_2.0.1.md) |
-| 2.0.0 / v2.0.0 | [Paisley Park品牌重置](RELEASE_2.0.0.md) |
-| 1.0 / v1.0.0 | [通用诊断重置](RELEASE_1.0.md) |
-| 1.1 / v1.1.0 | [Integration Contract 1](INTEGRATIONS.md)、[历史验证](VALIDATION.md) |
-| 1.2 / v1.2.0 | [有限复现与独立Skill](RELEASE_1.2.md) |
-| 1.3 / v1.3.0 | [生命周期与证据工作流](RELEASE_1.3.md) |
-| 1.4 / v1.4.0 | [原生重建与真实Mod更新](RELEASE_1.4.md) |
-| 1.5 / v1.5.0 | [完整能力验收](RELEASE_1.5.md)、[收口与Coverage Ledger](CLOSEOUT_1_5.md) |
-| 1.5.1 / 1.5.2 | [首次试用反馈](RELEASE_1.5.1.md)、[实战Skill封装](RELEASE_1.5.2.md)；此前仅有本地交付，不虚构旧GitHub Release |
+| 4.0.0 / v4.0.0 — Bites the Dust | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)、[收口与兼容](CLOSEOUT_4_0.md) |
+| 3.0.3 / v3.0.3 | [实战诊断体验补丁](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.3.md)、[历史收口](CLOSEOUT_3_0_3.md) |
+| 3.0.2 / v3.0.2 | [Gold Experience Requiem 发布说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.2.md)、[3.0.2 验收与限制](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_2.md) |
+| 3.0.1（公开 Release / tag 已删除） | [历史发布说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.1.md)、[S1/S2 代表性证明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md) |
+| 3.0.0（公开 Release / tag 已删除） | [原发布说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.0.md)、[Foundation A—D证明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0.md)、[撤版](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/WITHDRAWAL_3.0.0.md)、[新的研发方案](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md) |
+| 2.0.1 / v2.0.1 | [实战经验指引补丁](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_2.0.1.md) |
+| 2.0.0 / v2.0.0 | [Paisley Park品牌重置](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_2.0.0.md) |
+| 1.0 / v1.0.0 | [通用诊断重置](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.0.md) |
+| 1.1 / v1.1.0 | [Integration Contract 1](INTEGRATIONS.md)、[历史验证](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/VALIDATION.md) |
+| 1.2 / v1.2.0 | [有限复现与独立Skill](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.2.md) |
+| 1.3 / v1.3.0 | [生命周期与证据工作流](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.3.md) |
+| 1.4 / v1.4.0 | [原生重建与真实Mod更新](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.4.md) |
+| 1.5 / v1.5.0 | [完整能力验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.5.md)、[收口与Coverage Ledger](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_1_5.md) |
+| 1.5.1 / 1.5.2 | [首次试用反馈](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.5.1.md)、[实战Skill封装](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.5.2.md)；此前仅有本地交付，不虚构旧GitHub Release |
 
 2026-10-08 按用户明确要求重置公开 3.0 提交链，删除 v3.0.0 / v3.0.1 Release、tag 和旧分支引用，v3.0.2 绑定重置后的实现及资产；v2.0.1 及更早历史保持保留。旧 3.0 实现、失败与验证记录仍保留为历史证据，完整旧 Git 历史和资产另有本地备份。本文中的旧发布说明是历史资料，不是可下载 Release 的承诺。Schema 1 的稳定 URN 与夹具内部标识按原约定继续工作。
 

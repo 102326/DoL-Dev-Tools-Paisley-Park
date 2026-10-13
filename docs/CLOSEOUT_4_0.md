@@ -1,6 +1,6 @@
 # DoL Dev Tools 4.0.0 — Bites the Dust 技术说明与收口
 
-产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 独立验货修订已在本地收口；用户随后明确授权更新 Skill 与上传 GitHub，本轮采用 4.0.1 发布，保留原 4.0.0 制品。见 [4.0.1 更新说明](RELEASE_4.0.1.md)与 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
+产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 独立验货修订已在本地收口；用户随后明确授权更新 Skill 与上传 GitHub，本轮采用 4.0.1 发布，保留原 4.0.0 制品。见 [4.0.1 更新说明](RELEASE_4.0.1.md)与 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
 
 ## Delivered
 
@@ -42,7 +42,7 @@ Recipe 是经过审核的本地 Node 脚本，拥有实际文件/网络权限，
 - 一次受控原生零价购买：原成本设置调整后，库存、消费计数/时间与执行回执共同证明；随后恢复成本设置。四项真实 WebView 生产 Action 边界检查是受控夹具，不是 durable GER 购买崩溃试验。
 - 四次获证实的原生数据重建；原 81 Effect docs/status、21 Session docs 及后来四条历史未决记录保留。失败记录不被成功试验覆盖或追认。
 
-Android 三剑客实测来源：CLI 1.0.16486076 的实际版本和 native-layout；已安装官方 Skills 的实际清单/内容摘要；KB 的真实查询 `WebView debugging JavaScript execution context page reload` 与返回 `kb://android/develop/ui/views/layout/webapps/debugging`，接收时间 `2026-10-11T08:39:48.076Z`。KB 说明适用于 WebView 诊断，不能替代本项目身份协议证明。来源和固定切片见 [开发记录](BITES_THE_DUST_4_0.md)。
+Android 三剑客实测来源：CLI 1.0.16486076 的实际版本和 native-layout；已安装官方 Skills 的实际清单/内容摘要；KB 的真实查询 `WebView debugging JavaScript execution context page reload` 与返回 `kb://android/develop/ui/views/layout/webapps/debugging`，接收时间 `2026-10-11T08:39:48.076Z`。KB 说明适用于 WebView 诊断，不能替代本项目身份协议证明。来源和固定切片见 [开发记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/BITES_THE_DUST_4_0.md)。
 
 ## Not validated / Known limitations
 

@@ -30,7 +30,7 @@ Runner 首次遇到已有同名包就拒绝；安装 Success 和实际 SHA/versi
 
 这份早期记录证明Activity重建连同其中的WebView重建；独立WebView-only的新证明如下，不能回填到旧收据。sentinel不证明所有业务存档或云数据保留。真实业务Mod更新需自己的加载身份与行为证明，不由此回填。首次构建的密码文件重复读取失败、首次runner因Android `appId`字段而在安装前失败均保留；没有重试已派发的安装/重建动作。
 
-测试副本和自有 sentinel 保留，记录只在忽略的本地 artifacts 中。不采截图、Console、日志正文或游戏文字，不上传。既有 1.3 ZIP/tag 冻结；后续真实业务更新及最终范围完成后统一汇入[1.4](RELEASE_1.4.md)。
+测试副本和自有 sentinel 保留，记录只在忽略的本地 artifacts 中。不采截图、Console、日志正文或游戏文字，不上传。既有 1.3 ZIP/tag 冻结；后续真实业务更新及最终范围完成后统一汇入[1.4](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.4.md)。
 
 ## 同Activity独立WebView替换
 
@@ -45,4 +45,4 @@ node examples/android-native/verify-webview.cjs DEVICE_SERIAL NATIVE_RECEIPT BUS
 
 实机51204 complete/exit0：同PID/processSession、相同Activity UUID/identityHash，实际WebView UUID/identityHash改变；过期WebView token拒绝，未改变当前对象。替换前后及App重启后，主游戏IndexDB DoLGameUI 2.1.0实际JS/CSS SHA、运行时版本、设置打开/关闭均通过；sentinel保留。四份scoped CSS无正文、无截断。设置开关不证明全部设置值持久化或游戏存档迁移。
 
-51203首次执行因启动地址被错误限制为file URL而未重建，partial及清理记录保留；校正为真实HTTPS地址后按显式拥有关系更新51204，只派发一次新的重建动作。原App SHA、已有映射不变、自有forward移除、原前台恢复。详见[最终验收](FINAL_ACCEPTANCE.md)。
+51203首次执行因启动地址被错误限制为file URL而未重建，partial及清理记录保留；校正为真实HTTPS地址后按显式拥有关系更新51204，只派发一次新的重建动作。原App SHA、已有映射不变、自有forward移除、原前台恢复。详见[最终验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/FINAL_ACCEPTANCE.md)。

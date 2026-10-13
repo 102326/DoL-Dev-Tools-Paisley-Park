@@ -1,16 +1,14 @@
 # DoL Dev Tools
 
-**5.0.0-rc.1 — Paisley Park · 本地候选版**
+**5.0.0-rc.2 — Paisley Park · 本地候选版**
 
 面向 DoL Mod 作者和 Agent 的本地开发工具：进入真实 Android / WebView 现场，调查问题、找到相关源码，沿用项目自己的构建与部署方式验证结果。首次使用可先跑 `doctor` 检查连接，再用 `capture` 查看画面，需要多来源证据时用 `evidence`。
 
-[5.0 候选更新说明](docs/RELEASE_5.0.0-rc.1.md) · [5.0 能力与入口](docs/PAISLEY_PARK_5_0.md) · [快速开始](#快速开始) · [当前公开稳定版 4.0.1](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1)
+[5.0 候选更新说明](docs/RELEASE_5.0.0-rc.2.md) · [5.0 能力与入口](docs/PAISLEY_PARK_5_0.md) · [快速开始](#快速开始) · [当前公开稳定版 4.0.1](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1)
 
-5.0 让已有开发能力更容易接续：选定 UI 组件可以关联当前源码快照，目标 UI 项目可用同源 Component Lab 快速试样式，Agent 按需沿用现场、源码和制品证据。没有新增 Runtime、审批流程或强制任务管线；本候选尚未正式发布。
+5.0 帮助 Agent 从现场继续查到源码和实际加载的包：选定 UI 组件可以关联当前源码，目标 UI 项目可以在 Component Lab 编辑真实组件。Skill 按问题选择已有工具，保留每一步能证明什么。Source Link 首轮支持商店 Toolbar；Lab 需要目标项目接入，不包含在 Tools 包里。
 
 在一次明确的工作区、设备、App 与数据范围授权内，Agent 可自主调查、修改、构建、部署和复验。普通调试可直接执行已审步骤或脚本；需要持续游戏目标和中断恢复时，使用共享 Gameplay Runtime（GER）保存进度与动作结果。正常阶段切换不需要重复确认；公网发布与范围外资源需另行授权。
-
-[稳定版 3.0.3（历史基线）](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v3.0.3) · [快速开始](#快速开始) · [文档导航](#文档导航)
 
 ## 能做什么
 
@@ -60,13 +58,13 @@
 
 **条件购衣、返回并穿戴。** Agent 在预算内购买黑色发卡，处理途中普通事件后返回卧室并穿戴。购买后独立进程恢复保留原目标、预算与购买证明，没有重复购买；最终核对资金、库存、完整颜色变体和穿戴状态。
 
-**原生活动与新宿主接管。** Agent 从卧室前往花园劳动，达到体能目标后返回。没有旧聊天的新宿主从同一个 Session 读取进度继续，累计约 12 分 40 秒有效连续运行。与购衣场景一样，这条实机路径不依赖 Soft & Wet 私有 Runtime、衣柜 Adapter 或 UI Mod。两条 Gameplay 路径的结果和覆盖边界见 [代表性验收](docs/CLOSEOUT_3_0_1.md#validated)。
+**原生活动与新宿主接管。** Agent 从卧室前往花园劳动，达到体能目标后返回。没有旧聊天的新宿主从同一个 Session 读取进度继续，累计约 12 分 40 秒有效连续运行。与购衣场景一样，这条实机路径不依赖 Soft & Wet 私有 Runtime、衣柜 Adapter 或 UI Mod。两条 Gameplay 路径的结果和覆盖边界见 [代表性验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md#validated)。
 
 ## 快速开始
 
-本候选包为 `DoL-Dev-Tools-5.0.0-rc.1.zip`，仅供本地验货，尚无公开 5.0 下载链接。核对随附 SHA-256，将 ZIP 解压到新的长期保留目录，保留旧 Tools 与 Skill；详见 [安装与升级](docs/SKILL_INSTALL.md)。需要公开稳定版时使用 [4.0.1 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1)。包不包含游戏、APK、设备工具、node_modules、私人证据或另一项目的 Component Lab。
+本候选包为 `DoL-Dev-Tools-5.0.0-rc.2.zip`，仅供本地验货，尚无公开 5.0 下载链接。核对随附 SHA-256，将 ZIP 解压到新的长期保留目录，保留旧 Tools 与 Skill；详见 [安装与升级](docs/SKILL_INSTALL.md)。需要公开稳定版时使用 [4.0.1 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1)。包不包含游戏、APK、设备工具、node_modules、私人证据或另一项目的 Component Lab。
 
-在解压后的 Tools 根目录运行 `.\DoL-Dev.cmd --version`，应返回 `5.0.0-rc.1`；`--help` 首行应为 `DoL Dev Tools 5.0.0-rc.1 — Paisley Park`，随后是用途说明。现有 `Paisley-Park.cmd` 入口仍可使用。
+在解压后的 Tools 根目录运行 `.\DoL-Dev.cmd --version`，应返回 `5.0.0-rc.2`；`--help` 首行应为 `DoL Dev Tools 5.0.0-rc.2 — Paisley Park`，随后是用途说明。现有 `Paisley-Park.cmd` 入口仍可使用。
 
 需要 **Node.js 22.12+**。Android 现场需要已有 **ADB、USB 调试授权和明确的设备 serial / App package**；先手动打开目标 App。WebView 内部观察还需要 App 开启调试支持。ADB 不在 PATH 时，在当前进程设置 `DOL_ADB` 为已有 `adb.exe` 的绝对路径；详见 [环境与连接说明](docs/DIAGNOSTICS.md#快速入口)。
 
@@ -112,7 +110,7 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 
 使用数据重建功能前，一致备份执行记录；升级后的记录不允许 3.0.3 继续写入。实验 Recipe 是经过审核、拥有实际 Node 权限的本地脚本，不是安全沙箱。详见 [升级提醒](docs/RELEASE_4.0.1.md#重要注意事项)。
 
-当前支持范围、旧未决动作和未覆盖项见 [4.0 技术说明](docs/CLOSEOUT_4_0.md)；[稳定版收口](docs/CLOSEOUT_3_0_3.md)保留历史证据。规划中的能力与已交付功能分开记录。
+当前支持范围、旧未决动作和未覆盖项见 [4.0 技术说明](docs/CLOSEOUT_4_0.md)。历史材料留在源码仓库，包内必要引用指向固定来源；当前文件清单见 [包内容与验货](docs/RELEASE_PACKAGE.md)。
 
 ## 文档导航
 
@@ -126,8 +124,8 @@ Skill 目标目录必须尚不存在；已有安装先备份并移出该路径�
 | 接入项目专属诊断 | [Integration Contract](docs/INTEGRATIONS.md) |
 | 关联选定 UI 源码、接入项目 Lab、接续研发证据 | [5.0 入口](docs/PAISLEY_PARK_5_0.md) · [development-flow Recipe](docs/DEVELOPMENT_FLOW.md) |
 | 修改、构建、部署与贡献 | [Workshop](docs/WORKSHOP.md) · [项目规则](AGENTS.md) · [架构边界](docs/ARCHITECTURE.md) |
-| 查询当前验收与历史依据 | [5.0 候选收口](docs/CLOSEOUT_5_0_RC1.md) · [4.0 开发记录](docs/BITES_THE_DUST_4_0.md) · [3.0.3 收口](docs/CLOSEOUT_3_0_3.md) · [历史验证](docs/VALIDATION.md) |
-| 了解版本演进与未来方向 | [历史索引](docs/HISTORY.md) · [能力蓝图](docs/BLUEPRINT.md) |
+| 查询当前验收与历史依据 | [5.0 候选收口](docs/CLOSEOUT_5_0_RC2.md) · [4.0 开发记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/BITES_THE_DUST_4_0.md) · [3.0.3 收口](docs/CLOSEOUT_3_0_3.md) · [历史验证](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/VALIDATION.md) |
+| 了解版本演进与未来方向 | [历史索引](docs/HISTORY.md) · [能力蓝图](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/BLUEPRINT.md) |
 
 贡献时使用目标模块的最小充分检查；Tools 的离线检查入口为 `npm test` 和 `python -m unittest discover -s tests -p "test_*.py"`。离线通过不能代替真机或游戏业务证明。
 

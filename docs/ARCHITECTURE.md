@@ -1,13 +1,13 @@
 # DoL Dev Tools: Paisley Park：公共开发工具架构约束
 
-2026-10-06更新：正式v3.0.0已撤为Foundation，最新Gameplay架构以[重新审计](GOLD_EXPERIENCE_REAUDIT.md)为准。保留通用诊断/业务真相/安全边界；原“只允许薄层、不建设Agent Runtime”的限制不再适用于新的正式3.0研发。能复用就复用，缺核心就设计，旧结构阻碍就重构。
+2026-10-06更新：正式v3.0.0已撤为Foundation，最新Gameplay架构以[重新审计](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md)为准。保留通用诊断/业务真相/安全边界；原“只允许薄层、不建设Agent Runtime”的限制不再适用于新的正式3.0研发。能复用就复用，缺核心就设计，旧结构阻碍就重构。
 
-2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](BLUEPRINT.md)；当前可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
+2026-10-05。按最新公共开发定位与最终能力蓝图修订。完整需求、当前状态与后续批次见 [BLUEPRINT](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/BLUEPRINT.md)；当前可执行入口和验收以 DIAGNOSTICS / VALIDATION 为准。
 目标是面向整个 DoL Mod 生态的公共本地开发、调试、诊断与复现实验工具链。Android CLI、Chrome Inspect / CDP、ADB 构成 Live Device Access，支撑 Observe → Understand → Act → Modify → Deploy → Verify → Preserve Evidence。
 Android CLI看到真机画面；Chrome Inspect/CDP是Agent进入真实WebView内部的核心桥梁，提供限定范围DOM、CSS/Computed Style、Console/Exception、Network、Storage、Performance与页面状态观察，并连接可选项目Integration；ADB提供Android/App系统现场。Chrome DevTools也可用于交互式深入调查，CDP的定位不限于人工辅助入口。
-本文是能力边界。1.0交付诊断和证据基础，1.2能力实现与条件验收见[覆盖](CAPABILITY_COVERAGE.md)；蓝图、命令存在和业务通过分别判断。
+本文是能力边界。1.0交付诊断和证据基础，1.2能力实现与条件验收见[覆盖](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CAPABILITY_COVERAGE.md)；蓝图、命令存在和业务通过分别判断。
 
-完成标准是能力闭环成立。1.5核心能力与约定场景已完成并验收；已实现但部分环境验证、可选Integration和后续按需覆盖不是当前产品未完成。Tools支持项目调查/验证问题，完整业务与存档回归由对应项目承担；状态定义见[正式收口](CLOSEOUT_1_5.md)。
+完成标准是能力闭环成立。1.5核心能力与约定场景已完成并验收；已实现但部分环境验证、可选Integration和后续按需覆盖不是当前产品未完成。Tools支持项目调查/验证问题，完整业务与存档回归由对应项目承担；状态定义见[正式收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_1_5.md)。
 
 ## 三者职责
 
@@ -139,7 +139,7 @@ Evidence 编排先搭可运行的薄版本，随 collector 逐步增加内容，
 离线测试、真实设备采集、视觉判断、游戏业务验收分别报告；静态通过不等于真机或游戏结果。
 工具开发不修改 DoL-Game-UI。设备采证按用户授权执行；游戏业务与存档操作不因诊断被隐式授权。
 
-新的公共接入、CSS/Environment、复现实验和专项时间线批次见 [BLUEPRINT](BLUEPRINT.md)。上面的首批路线保留作已有实现背景，不能限制最新授权的测试操作。
+新的公共接入、CSS/Environment、复现实验和专项时间线批次见 [BLUEPRINT](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/BLUEPRINT.md)。上面的首批路线保留作已有实现背景，不能限制最新授权的测试操作。
 
 ## Inspect 与测试操作
 
@@ -159,7 +159,7 @@ Inspect 默认只观察；明确测试环境中的任务相关普通游戏操作
 
 ## 3.0 Foundation与正式Gold Experience研发
 
-[Foundation历史设计与实施](GOLD_EXPERIENCE_DESIGN.md)的有限语义、动作映射与原状态证明保留。其衣柜、单件购买/穿戴恢复、普通绕路和工具源码复验有效，但尚不是持续Gameplay核心。正式Release已撤为草稿；最新[重新审计](GOLD_EXPERIENCE_REAUDIT.md)建议重做Goal控制/持久与Semantic，正式建设Orchestrator、Working Memory、规划/事件/恢复，复用并按需要调整Action/Journey共享执行链。Working Memory不是第二业务真相，Generic Schema 1与Contract 1保持独立。
+[Foundation历史设计与实施](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_DESIGN.md)的有限语义、动作映射与原状态证明保留。其衣柜、单件购买/穿戴恢复、普通绕路和工具源码复验有效，但尚不是持续Gameplay核心。正式Release已撤为草稿；最新[重新审计](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md)建议重做Goal控制/持久与Semantic，正式建设Orchestrator、Working Memory、规划/事件/恢复，复用并按需要调整Action/Journey共享执行链。Working Memory不是第二业务真相，Generic Schema 1与Contract 1保持独立。
 
 Gameplay的最高层是Goal→Observe→Interpret→Act→Observe Again→Replan，Journey是可跨越/替换的执行片段。正常随机事件、分支、战斗、时间推进、买卖、穿脱、菜单与绕路默认由Agent自主处理；不能把固定路径偏离等同异常。禁止未授权删除/覆盖已有存档，允许列表读取和已允许测试档加载。可靠观察丢失、连续结果无法解释、明显损坏或真正高风险才暂停；开发验收仍可要求固定起点/检查点。显式`game-observe --gameplay yes`提供有限私有选择标签用于理解，不加入Generic Evidence/Support，不把标签或Mod文本当作权限来源。
 

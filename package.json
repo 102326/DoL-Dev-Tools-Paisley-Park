@@ -1,7 +1,7 @@
 {
   "name": "dol-dev-tools-paisley-park",
   "displayName": "DoL Dev Tools",
-  "version": "5.0.0-rc.1",
+  "version": "5.0.0-rc.2",
   "private": true,
   "license": "MIT",
   "engines": {

@@ -76,6 +76,6 @@ node scripts/dol-dev.cjs matrix --file reviewed-matrix.json --out artifacts/matr
 
 home→launch表达后台返回；restart表达强制停止后重新启动，不清数据。用例必须按实际加载时间明确安排等待/检查点。launch结果只证明Android启动命令成功；页面就绪和业务状态另外验证。当前已实测后台返回；重启命令完成后的页面等待未在所选时限通过，保留为partial，不自动重试制造通过。
 
-锁屏生命周期可显式安排lock→unlock→页面就绪检查。凭据锁屏设备由本人认证后开始新的返回复验，不能把人工认证伪装成自动解锁成功。未识别的系统keyguard格式会停止；不从simSecure、trust状态或屏幕关闭推断凭据安全性。具体实机记录见[最终验收](FINAL_ACCEPTANCE.md)。
+锁屏生命周期可显式安排lock→unlock→页面就绪检查。凭据锁屏设备由本人认证后开始新的返回复验，不能把人工认证伪装成自动解锁成功。未识别的系统keyguard格式会停止；不从simSecure、trust状态或屏幕关闭推断凭据安全性。具体实机记录见[最终验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/FINAL_ACCEPTANCE.md)。
 
 更多实体设备/版本/组合须逐个明确选择；标签、单设备运行或浏览器模拟均不代表完整兼容矩阵。构建部署闭环仍在开发清单。

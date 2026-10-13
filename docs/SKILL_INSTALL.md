@@ -11,11 +11,11 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装后从下一次对话回合开始发现；当前回合显式读取可以验证行为，但不能冒充宿主自动发现验收。
 
-## 5.0.0-rc.1 本地候选验货
+## 5.0.0-rc.2 本地候选验货
 
-当前研发源码与本地候选为 `5.0.0-rc.1 — Paisley Park`；公开稳定版和全局已安装 Skill 仍为 4.0.1。本候选未获本轮远程发布授权，不覆盖已有安装。
+当前研发源码与本地候选为 `5.0.0-rc.2 — Paisley Park`；公开稳定版和全局已安装 Skill 仍为 4.0.1。本候选未获本轮远程发布授权，不覆盖已有安装。
 
-核对候选 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.0.0-rc.1`，help 首行应为 `DoL Dev Tools 5.0.0-rc.1 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
+核对候选 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.0.0-rc.2`，help 首行应为 `DoL Dev Tools 5.0.0-rc.2 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
 
 用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。候选自测只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
 
@@ -45,7 +45,7 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 
 升级不迁移旧私有 journal、不清空共享执行记录，也不自动结清结果未知的动作。使用 4.0 原生数据重建功能前，对 SQLite 执行记录做一致备份；一旦升级为 schema 3，3.0.3 不得继续写入同一 Store，也不得用它恢复 4.0 的新 Session。直接复制正在写入的 SQLite 主文件可能遗漏 WAL 数据，不能当成一致备份；可在所有写入者关闭后保留数据库及相关文件，或使用 SQLite 备份 API。没有验证过的自动降级或历史合并流程。详见 [技术兼容说明](CLOSEOUT_4_0.md)。
 
-旧 v3.0.0 Foundation 与[撤版记录](WITHDRAWAL_3.0.0.md)保留；3.0.3 [收口](CLOSEOUT_3_0_3.md)是历史依据，不代表 4.0 的新通过数。
+旧 v3.0.0 Foundation 与[撤版记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/WITHDRAWAL_3.0.0.md)保留；3.0.3 [收口](CLOSEOUT_3_0_3.md)是历史依据，不代表 4.0 的新通过数。
 
 移动Tools或恢复安装时，先核对新路径，再在当前进程设置`DOL_DEV_TOOLS_HOME`；它优先于安装记录和仓库相对位置。旧记录失效会停止，不扫描私有目录或自行下载替代包。搬迁后说明中的机器专属链接也可能过期，以解析结果中的docs为准；更新安装前保留旧目录，再向新的空目标安装。
 
@@ -55,6 +55,6 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 
 1.4独立前向任务使用安装副本完成真实业务设置CSS的两次比较和重启后Evidence报告，三条CLI均complete/exit0。它将“采集完整”“CSS无差异”和“业务/存档正确”区分，未连接设备或把目录名当作重启证明。
 
-1.5安装已保留旧副本备份，UTF-8 quick_validate与resolve通过，定位1.5.0。新增“不重复造轮子”路由，优先复用可用android-cli/android-profiler、Chrome DevTools与目标项目既有流程；不把这些Skill装进Tools、不复制工具实现、不要求缺失时自动安装。独立前向验证使用已有trace与现有分析工具，结果见[VALIDATION](VALIDATION.md)。
+1.5安装已保留旧副本备份，UTF-8 quick_validate与resolve通过，定位1.5.0。新增“不重复造轮子”路由，优先复用可用android-cli/android-profiler、Chrome DevTools与目标项目既有流程；不把这些Skill装进Tools、不复制工具实现、不要求缺失时自动安装。独立前向验证使用已有trace与现有分析工具，结果见[VALIDATION](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/VALIDATION.md)。
 
-[1.5.2](RELEASE_1.5.2.md)将实战后的标准能力优先、点击失败诊断、范围收窄和直接探针/Journey边界纳入同一源码包。更新时保留旧Tools与Skill，将新包解压到新的稳定目录，再按上方既有安装命令生成指向新包的Skill；不是只改旧安装的文字。解析器版本、说明链接和生成指引应同时匹配新目录，避免重装回退。
+[1.5.2](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.5.2.md)将实战后的标准能力优先、点击失败诊断、范围收窄和直接探针/Journey边界纳入同一源码包。更新时保留旧Tools与Skill，将新包解压到新的稳定目录，再按上方既有安装命令生成指向新包的Skill；不是只改旧安装的文字。解析器版本、说明链接和生成指引应同时匹配新目录，避免重装回退。

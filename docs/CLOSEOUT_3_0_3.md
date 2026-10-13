@@ -13,14 +13,14 @@
 
 76 项受影响 Node 检查通过：包含跨 Session 阻挡仍有效、原 effect / Store 状态不变、投影限额与私有字段省略、旧 Environment 兼容、来源展示与投影、错误阶段、已审字段和任意异常不泄露，以及既有未知结果不重放和缺依赖/Generic 独立性。
 
-源码检查和发行/安装记录保留本地；既有真机证明复用 [S1/S2](CLOSEOUT_3_0_1.md#validated)，因为原游戏动作与终止合同未改，不重复实机路线。
+源码检查和发行/安装记录保留本地；既有真机证明复用 [S1/S2](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md#validated)，因为原游戏动作与终止合同未改，不重复实机路线。
 
 ## Not validated
 
-新指引在未来实际使用中的收益、UI 对话未执行的购买业务、其它设备/版本/Mod，以及原未知 effect 根因。沿用 [Coverage Ledger](CLOSEOUT_3_0_1.md#not-validated--coverage-ledger)，不自动变成本轮阻塞工作。
+新指引在未来实际使用中的收益、UI 对话未执行的购买业务、其它设备/版本/Mod，以及原未知 effect 根因。沿用 [Coverage Ledger](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md#not-validated--coverage-ledger)，不自动变成本轮阻塞工作。
 
 ## Known limitations
 
 摘要可能截断，未知 metadata 仍为 unknown；不含跨 Session 叙事标签或完整私有绑定。CLI 只为已审错误提供精确信息，其余阶段提示不推断原因。版本来源是独立顺序观察，不能保证同一时刻一致；旧制品缺字段不代表游戏版本变化。
 
-旧未决 effect 与 Provider 的已审支持范围继续按 [既有真实限制](CLOSEOUT_3_0_1.md#known-limitations)保留。本轮未连接真机、打开本机真实共享 Store、迁移 journal 或结清旧动作。
+旧未决 effect 与 Provider 的已审支持范围继续按 [既有真实限制](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md#known-limitations)保留。本轮未连接真机、打开本机真实共享 Store、迁移 journal 或结清旧动作。
