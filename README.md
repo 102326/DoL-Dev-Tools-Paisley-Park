@@ -1,22 +1,14 @@
 # DoL Dev Tools: Paisley Park
 
-面向 DoL Mod 作者和 Agent 的本地开发工具。查看真实 Android / WebView，调查界面与运行问题，找到相关源码，再核对构建包和实际加载结果。
+Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助你查看真实 Android / WebView 运行现场，调查界面和运行问题，关联源码，并核对构建包与实际加载结果。可以作为独立开发工具使用，也可以被宿主 Agent 调用。
 
 **5.0.0 — Paisley Park** · [下载与版本](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_5.0.0.md)
 
-## 从真实运行现场开始
+它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。宿主 Agent 负责判断，工具提供调查、执行和验证依据。
 
-Android CLI、Chrome Inspect/CDP 和 ADB 是三个主要入口：
+## 为什么需要 Paisley Park
 
-| 入口 | 你能看到什么 |
-| --- | --- |
-| Android CLI | 真机画面、标注截图与原生布局 |
-| Chrome Inspect / CDP | WebView 内部的 DOM、Computed Style、Console、异常、Network、Storage 摘要与 Performance |
-| ADB | Android / App 的日志、进程、内存、帧统计和生命周期 |
-
-Chrome Inspect/CDP 也是 Agent 进入真实 WebView 的桥梁。它可以读取当前控件、样式和页面状态，结合截图与系统日志判断问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装 Soft & Wet 或任何特定 UI Runtime。
-
-日常开发可以用它：
+当问题出现在设备上，只看源码或构建日志往往不够。你还需要核对当前界面、运行状态和实际加载的包。你可以用 Paisley Park：
 
 - 检查界面错位、控件命中、Console 异常和 Mod 加载状态。
 - 用 Action/Journey 复现已审阅的步骤，保留失败和前后证据，比较修改结果。
@@ -26,6 +18,8 @@ Chrome Inspect/CDP 也是 Agent 进入真实 WebView 的桥梁。它可以读取
 已有标准能力足够时优先使用；需要更灵活的调查时，可以直接使用 CDP、ADB 或项目测试。按当前问题选择工具，不要求每次走完整管线。
 
 ## 快速开始
+
+初次使用建议从诊断、现场采集和 Evidence 开始，需要时再接入 Skill 与 Agent 工作流。无需先理解全部内部机制。
 
 ### 1. 解压并确认版本
 
@@ -74,19 +68,35 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 
 宿主 Agent 负责理解现场与决策，Tools 负责执行、记录与结果核验。持续游戏目标使用共享 Gameplay Runtime（GER）；普通只读调查或点击无需新建 Goal。支持的目标、预算和恢复步骤见 [Gameplay 指南](docs/GAMEPLAY.md)。
 
-## 5.0 增加了什么
+## 核心能力
+
+Android CLI、Chrome Inspect/CDP 和 ADB 负责设备与运行现场；Source Link 和 Skill/Recipe 帮助接到源码与后续开发：
+
+| 入口 | 你能看到什么 |
+| --- | --- |
+| Android CLI | 真机画面、标注截图与原生布局 |
+| Chrome Inspect / CDP | WebView 内部的 DOM、Computed Style、Console、异常、Network、Storage 摘要与 Performance |
+| ADB | Android / App 的日志、进程、内存、帧统计和生命周期 |
+| Source Link | 可选的组件源码关联，当前只覆盖选定商店 Toolbar |
+| Skill / Recipe | 帮助 Agent 按问题选择工具、接续调查依据与未确认结果 |
+
+Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前控件、样式和页面状态，结合截图与系统日志调查问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装 Soft & Wet 或任何特定 UI Runtime。
+
+## 5.0 新增内容
 
 | 能力 | 当前用途与范围 |
 | --- | --- |
 | UI Source Link | 将选定组件关联当前源码，首轮支持商店 Toolbar；源码变动、缺输入或未知组件保留对应状态 |
-| Vite Component Lab | 已接入的 UI 项目可编辑真实 Vue 组件并热更新；由 UI 工程维护，不包含在 Tools ZIP，也不证明游戏业务 |
+| Vite Component Lab | 用于已接入 UI 工程的组件开发和预览，可编辑真实 Vue 组件并热更新；由 UI 工程维护，不包含在 Tools ZIP，不代表游戏内热替换、自动部署或业务验证 |
 | Skill / Recipe 接续 | 按问题关联现场、源码、构建与实际加载的包，同版本号仍核对字节；诊断可以独立交付，无需制造补丁 |
 
 4.0.1 的自主 Debug、受支持 Gameplay、可选消费额度、执行回执和恢复能力继续保留。5.0 未改写 GER、SQLite 或历史 Unknown 的合同。更多入口见 [5.0 使用说明](docs/PAISLEY_PARK_5_0.md)。
 
-## 能力与验证边界
+## 当前验证范围
 
-A/B 已有有限原型验收，C 已完成代表性只读研发接续。发布前 Windows 独立包的 Node 全套 412 项通过；Python 3 项通过，1 项因缺可选 Pillow 跳过。既有 Android 证据包括页面身份、受支持的存档操作、自动保存和受控购买。详细时段与复用范围见 [5.0 收口](docs/CLOSEOUT_5_0.md) 和 [4.0 技术记录](docs/CLOSEOUT_4_0.md)。
+源码关联与 Component Lab 已有有限原型验收（A/B）；现场、源码和制品的接续已完成代表性只读验证（C）。发布前 Windows 独立包的 Node 全套 412 项通过；Python 3 项通过，1 项因缺可选 Pillow 跳过。既有 Android 证据包括页面身份、受支持的存档操作、自动保存和受控购买。详细时段与复用范围见 [5.0 收口](docs/CLOSEOUT_5_0.md) 和 [4.0 技术记录](docs/CLOSEOUT_4_0.md)。
+
+## 已知限制
 
 完整 Android Mod 自主修复、构建、部署与业务复验闭环仍未验证；更多组件、设备、Provider 和 Mod 组合也不属于全覆盖承诺。Lab 回调、构建成功、包已加载与游戏业务通过是不同证据。
 
@@ -96,7 +106,7 @@ Integration 缺失、不支持或失败会单独记录，已成功的通用采�
 
 截图、日志、存档和私人原始证据不自动上传。Evidence 的 complete / partial / failed 描述一次采集；像素差异不能单独证明兼容失败，内存增长不能单独证明泄漏。
 
-## 按任务找文档
+## 文档入口
 
 | 你要做什么 | 入口 |
 | --- | --- |
@@ -108,6 +118,8 @@ Integration 缺失、不支持或失败会单独记录，已成功的通用采�
 | 接入专属诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [Schema 与格式](docs/FORMATS.md) |
 | 查询验收、限制与历史 | [5.0 收口](docs/CLOSEOUT_5_0.md) · [历史索引](docs/HISTORY.md) |
 | 贡献与打包 | [项目规则](AGENTS.md) · [架构](docs/ARCHITECTURE.md) · [包清单](docs/RELEASE_PACKAGE.md) |
+
+## 贡献与开发
 
 贡献时按改动风险选择最小充分检查。离线入口为 `npm test` 和 `python -m unittest discover -s tests -p "test_*.py"`；离线通过不能替代真机或业务证明。
 
