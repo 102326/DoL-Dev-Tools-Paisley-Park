@@ -1,6 +1,7 @@
 # DoL Dev Tools project rules
 
 - Read [.agents/skills/dol-dev-tools-paisley-park/SKILL.md](.agents/skills/dol-dev-tools-paisley-park/SKILL.md) and only the relevant command/architecture documents before work. Keep this file short; the Skill owns detailed workflows.
+- For human-facing documentation, repository memory/archive or release preparation, follow [auxiliary Skill and delivery rules](docs/AUXILIARY_SKILLS.md). Use existing writing Skills as needed, preserve facts/Unknown, and inspect the release file list; do not auto-migrate directories or add a parallel execution system.
 - Define scoped Done from the task: deliverables, required behavior, acceptance environments, material risks and completion conditions. Do not add exhaustive ecosystem acceptance at the end.
 - Match validation to actual risk. Documentation-only changes need link, instruction-consistency and format checks; behavior changes need affected tests and representative integration/device evidence as warranted. Explain the unresolved risk before escalating. Reuse valid unaffected evidence; do not test more merely because more tests are possible.
 - Distinguish Completed, Implemented/coverage limited and Not implemented. Untested environments do not mean unfinished implementation. Optional/Future coverage belongs in the [Coverage Ledger](docs/CLOSEOUT_3_0_3.md), not automatically in Remaining work; promote only for explicit user/release requirements, risk evidence or a real issue.
