@@ -1,6 +1,6 @@
 # DoL Dev Tools 5.0 — Paisley Park
 
-当前为 `5.0.0-rc.2` 本地候选。它在 4.0.1 的 Android/CDP/ADB、Action/Journey、GER 与 Evidence 上改善研发接续，不另建执行平台。公开稳定版仍为 4.0.1。
+当前为 `5.0.0` 本地正式包，尚未公开发布。它在 4.0.1 的 Android/CDP/ADB、Action/Journey、GER 与 Evidence 上改善研发接续，不另建执行平台。公开稳定版仍为 4.0.1。
 
 ## 第一次使用
 
@@ -35,4 +35,4 @@ Lab 复用真实 Vue 组件、样式和项目自己的 Vite，用于编辑与 HM
 
 A/B 的有限原型和 C 的代表性接续已按约定收口，证据分别注明平台与时段。5.0 未改变 GER/SQLite/Effect Ledger，没有追认或清理历史 Unknown。完整 Android Mod 修复、更多组件与设备、全部 Debug/GER 组合仍为 Not validated / Additional coverage，不自动扩大验收。C-EXT 未触发的外部工具研究不是运行前置条件。
 
-候选版本、安装与 payload 验货独立于这些已有证据；本地准备不代表公网发布、正式合并或全局 Skill 更新。新候选仍须通过包检查，记录见 [候选收口](CLOSEOUT_5_0_RC2.md)。
+正式包的版本、安装与内容核验独立于这些已有证据；本地打包不代表公网发布、正式合并或全局 Skill 更新。具体检查与复用依据见 [5.0 收口](CLOSEOUT_5_0.md)。

@@ -11,13 +11,13 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装后从下一次对话回合开始发现；当前回合显式读取可以验证行为，但不能冒充宿主自动发现验收。
 
-## 5.0.0-rc.2 本地候选验货
+## 5.0.0 安装与验货
 
-当前研发源码与本地候选为 `5.0.0-rc.2 — Paisley Park`；公开稳定版和全局已安装 Skill 仍为 4.0.1。本候选未获本轮远程发布授权，不覆盖已有安装。
+当前源码与本地正式包为 `5.0.0 — Paisley Park`，尚未公开发布；公开稳定版和全局已安装 Skill 仍为 4.0.1。本轮授权仅包括本地正式打包，不覆盖已有安装。
 
-核对候选 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.0.0-rc.2`，help 首行应为 `DoL Dev Tools 5.0.0-rc.2 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
+核对正式 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.0.0`，help 首行应为 `DoL Dev Tools 5.0.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
 
-用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。候选自测只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
+用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。安装验货只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
 
 ## 解压包的依赖隔离检查
 
