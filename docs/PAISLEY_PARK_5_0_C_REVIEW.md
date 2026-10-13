@@ -1,6 +1,6 @@
-# Paisley Park 5.0：C 主线离线复盘与接续
+# Paisley Park 5.0：C 主线真实任务复盘与接续
 
-当前范围：保全 A/B，以真实研发轨迹检查能力选择、身份接续和结果证明；仅按证据调整 Skill/Recipe，不扩建 Runtime、Ledger 或 Runner。本文是离线核查，不是原事件重演或新的实机验收。
+当前范围：保全 A/B，以真实研发轨迹检查能力选择、身份接续和结果证明；仅按证据调整 Skill/Recipe，不扩建 Runtime、Ledger 或 Runner。本文包含原任务离线复盘与 2026-10-14 新执行的平板只读接续核对，二者分别记账；不重演打赏。
 
 ## Delivered：固定现场与任务关联
 
@@ -38,13 +38,38 @@ Recipe 针对这些已观察摩擦复用现有 execution-context、当前状态�
 ## A/B/C 与 C-EXT 状态
 
 - A/B：保留既有 Scoped Done 的有限原型口径，生产源码未因本轮改变。
-- C：**部分完成**。诊断结果、工具切换和原包加载可核查；逐阶段文档身份与新的现场—源码—制品接续仍待验证，不能称完整 Scoped Done。
+- C：**代表性接续范围 Scoped Done**。原打赏调查仍保留缺失的历史文档身份；下述新只读混合任务独立证明标准 Action、生产执行绑定、源码/制品核对和实际加载结果能自然接续。没有把它记为完整 Mod 修复或全部 Debug/GER 组合验收。
 - C-EXT：采用现有 Skill 渐进披露和轻量原 ID/文件关联思想；没有安装 OpenTelemetry/Collector。原调查已用 Playwright/CDP，不等于本轮完成 CLI/MCP 对照。DevTools 重诊断、rrweb、性质测试、BiDi 均未触发，不构成剩余必交工作包。
 
 ## Not validated / Known limitations
 
 单笔大额、反馈者原组合、正常人工发布的时序问题、付费文章及第三方修复效果未验证。不同 helper 阶段的原文档连续性不能补造，截图/通知也不能替代业务结果。
 
-入场 ADB 无连接设备。用户表示稍后连接已授权测试平板；本轮不重新打赏，不保存/加载/覆盖/删除存档，不改 Unknown 或 Store，不公开推送/发布原始证据。
+离线复盘入场 ADB 无连接设备；2026-10-14 用户确认测试平板已连接，完成下述接续。本轮不重新打赏，不保存/加载/覆盖/删除存档，不改 Unknown 或 Store，不公开推送/发布原始证据。
 
-下一步在已授权目标做只读原现场与源码/制品核对：通过现有绑定记录实际 target/frame/loader/uniqueContext、版本和资源摘要，关联原任务/当前源码与实际加载证据，只清理自有资源。如果仍缺关键证据则继续保留部分完成；不为补档制造业务副作用，也不把这个新验证追写成旧调查已具备身份记录。
+## 2026-10-14：新只读混合任务的真实接续
+
+本次问题是：已授权平板当前运行的 UI，是否对应本地当前研发包？这是实际加载核对，不是新 UI Bug、业务修复或旧打赏重演。使用 Tools `a41664ff8683f7bbd477493ae1c17f654f0f9ab9`，UI 工作树为 `c2fcbd130527da80c1a791094230f2434b70bc7c`，两者入场干净；UI 源码仅阅读，未重建或部署。
+
+### Delivered / Validated
+
+- 平板 M367FC / Android 17 / user 0，精确测试包 `com.vrelnir.dol.lyra.uicompat051213`。入场前台是桌面，测试包未运行；先复用标准 Action 的静态 plan，再执行一次 launch。Journey `202a2380-8ce9-492f-a0c7-40d77134e2e4` 为 complete。manifest 的 App 字段采于 launch 前，不能拿前台=false 当作启动后的结果；后续独立核对前台、PID、socket。
+- 只选择该 App 的调试 socket 及唯一 `https://localhost/index.html` page，使用既有 `execution-context.create/ensureWebview/finish`。记录 targetId 与 frameId、loaderId、uniqueContextId、timeOrigin 的独立字段，生产绑定在每次调用前后验证；每阶段和整段观察均保持同一文档、进程及原生数据资源身份。
+- 当前 DoL `0.5.12.13`、SugarCube `2.36.1+34`、ModLoader `2.101.1`。DoLGameUI 及其 Runtime 报告 `3.0.0-stone-free.1`；SmartPhone Alpha 的 ModInfo 与 Runtime 均未观察到，不再安装它。运行列表不等于全部导入库存/执行顺序。
+- 当前本地 ZIP 是 `1a8ad1b5d0ceca3eec2966d55f19f3e6dd2036485ea0122c989e4921297f5c85`，与 UI 自己的原生动作原型构建记录一致；当前源码 HEAD 只是观察到的工作树身份，不另推定它能重现所有历史制品。
+- 平板 ModLoader 已存 UI ZIP 的只读摘要是 `2045bb55d9d36d39ad6ef9f5e9ad1dd1ac5fdda8a28096ec59bd39b0fbb82fe7`，与本地既有备份及历史 build/deploy 记录一致。只读事务仅取 UI ZIP，未读取游戏存档，未创建/升级数据库。
+- 实际 ModInfo 的 JS/CSS 内容及 DOM 中包含的原资源匹配这个备份包：JS `be9730bd8843655d157a25d3d5245448718ea500c52d39f298dc5a129954cdab`、CSS `145d3462880f63ad5a278782b3e737ecf42d55fd1e152f6f4c297fe77caa291f`。二者均与当前本地 ZIP 不同。Runtime 存在和 DOM 注入证明当前初始化/资源现场，不证明每条代码都运行或全部业务通过。
+- **结果：排除“版本号相同，所以当前最新包已加载”。** 本次观察 complete、负例判断通过；没有重装包来制造匹配，也未把环境差异报告为 Tools 缺陷。UI 后续若需验收最新包，须由其部署流程另行核对。
+- 原生资源身份前后相同；所有 Runtime.evaluate 均使用生产绑定的同一 uniqueContextId。CDP 与动态 forward 均由本轮创建并清理，forward 列表前后为空；未清理其它 socket 或应用资源。
+
+本地原始记录位于 ignored `artifacts/c-flow-review/`：launch plan/run manifest、逐次新文件名的 environment/resources/artifact/continuity JSON、所执行 helper 的 SHA、生产模块 SHA、本地 ZIP 条目哈希及独立 assert 核查。最终接续运行时段为 `2026-10-13T16:16:38Z` 起（本地 2026-10-14 00:16），保留实际起止时间与命令关联，不混入原调查时间。所有设备标识、原生路径和详细列表留在本地。
+
+### 最小修改及复用检查
+
+新现场只强化既有 Recipe 的制品证明区分，没有新增 CLI、Runtime、Ledger、Store 或依赖。此前 Skill 格式验证、安装/resolver 单项测试及隔离安装验证仍有效；本轮对改过的文档补链接、范围、状态和 diff 检查。A/B 原验收复用，未改其实现；不为文档收口重跑全量 Node/Python/真机业务。
+
+### Not validated / Known limitations
+
+没有执行购买、换装、打赏、存档操作、页面重载或 GER Goal；没有制作第三方修复包，没有验收完整 Android Mod 自主修复闭环。新证据不能补齐旧打赏逐阶段文档连续性，也不证明最新 UI 包在平板已加载。未重测 Document 失效、GER Unknown 恢复或其它设备，相关生产逻辑未改，沿用已有适用证据与限制。
+
+因此 C 收口的是**自然能力选择与代表性只读研发接续**，不是扩大 Gameplay、UI 发布或生态覆盖承诺。C-EXT 未触发的研究不构成阻塞。正式安装仍为 4.0.1；本轮未推送、合并、Tag 或发布。
