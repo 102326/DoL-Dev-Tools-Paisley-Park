@@ -1,7 +1,7 @@
 {
   "name": "dol-dev-tools-paisley-park",
   "displayName": "DoL Dev Tools",
-  "version": "4.0.1",
+  "version": "5.0.0-rc.1",
   "private": true,
   "license": "MIT",
   "engines": {
@@ -13,5 +13,5 @@
   "dependencies": {
     "xstate": "5.33.2"
   },
-  "releaseName": "Bites the Dust"
+  "releaseName": "Paisley Park"
 }
