@@ -14,6 +14,6 @@ DoL Dev Tools 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮�
 
 RC.2 的 Windows 独立解压包已运行 Node 全套：412 通过，0 失败；Python：3 通过，1 项因缺可选 Pillow 跳过。正式包复用这些未失效的回归结果，并单独核对最终版本、内容与安装入口。A/B 是有限原型验收，C 是代表性只读接续；完整 Android Mod 自主修复、更多组件、设备与业务仍未验证。
 
-本地正式包为 `DoL-Dev-Tools-5.0.0.zip`，附带 SHA-256 与来源 manifest。manifest 用于核对文件来源，不需要安装进游戏。保留旧 Tools/Skill，按 [安装与升级](SKILL_INSTALL.md) 使用新目录；本包不迁移、清空或结清旧执行记录。
+安装包为 `DoL-Dev-Tools-5.0.0.zip`，附带 SHA-256 与来源 manifest。manifest 用于核对文件来源，不需要安装进游戏。保留旧 Tools/Skill，按 [安装与升级](SKILL_INSTALL.md) 使用新目录；本包不迁移、清空或结清旧执行记录。
 
-具体证据与限制见 [5.0 收口](CLOSEOUT_5_0.md)。本轮完成本地正式打包，尚未公开发布；公网推送与 GitHub Release 另按授权执行。
+具体证据与限制见 [5.0 收口](CLOSEOUT_5_0.md)，已发布版本与下载见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。

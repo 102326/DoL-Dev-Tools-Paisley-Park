@@ -13,7 +13,7 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 ## 5.0.0 安装与验货
 
-当前源码与本地正式包为 `5.0.0 — Paisley Park`，尚未公开发布；公开稳定版和全局已安装 Skill 仍为 4.0.1。本轮授权仅包括本地正式打包，不覆盖已有安装。
+本文对应 `5.0.0 — Paisley Park`；下载状态见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
 
 核对正式 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.0.0`，help 首行应为 `DoL Dev Tools 5.0.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
 

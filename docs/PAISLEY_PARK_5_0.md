@@ -1,6 +1,6 @@
 # DoL Dev Tools 5.0 — Paisley Park
 
-当前为 `5.0.0` 本地正式包，尚未公开发布。它在 4.0.1 的 Android/CDP/ADB、Action/Journey、GER 与 Evidence 上改善研发接续，不另建执行平台。公开稳定版仍为 4.0.1。
+本文对应 `5.0.0 — Paisley Park`，在 4.0.1 的 Android/CDP/ADB、Action/Journey、GER 与 Evidence 上改善研发接续。已发布版本与下载见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。
 
 ## 第一次使用
 
