@@ -19,6 +19,14 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。候选自测只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
 
+## 解压包的依赖隔离检查
+
+只在验证独立安装或缺依赖拒绝时使用。Node 会向祖先目录寻找依赖；解压包自身没有 `node_modules`，仍可能借到源码工作树的 XState。先用解压包 `package.json` 建立 `createRequire` 并检查实际 `resolve('xstate')`，记录执行进程的环境和解析位置；GUI/CLI 版本可运行不能替代这一检查。
+
+缺依赖试验应在确认没有祖先 XState 的独立目录执行，保留原失败和解析结果。正常安装按原锁文件进行，再核对依赖解析到候选包自己的目录。使用自有 smoke Store，成功或失败都先关闭句柄，再删除本轮拥有的文件；不改全局依赖、旧 Store 或原安装。
+
+5.0 RC.1 验货实际遇到这一问题：初次解压借到源码树依赖，改用独立目录后真正缺依赖的拒绝成立，安装后自有 Runtime smoke 通过。这是验货条件修正，不要求每个诊断任务额外测缺依赖，也未改 Runtime。关联与限制见 [C 后续记录](PAISLEY_PARK_5_0_C_FOLLOWUP.md)。
+
 ## 历史：4.0.1 安装与升级
 
 正式产品名为 DoL Dev Tools，版本代号 Bites the Dust。CLI 文件名和 Skill 标识仍使用原名称，已有入口继续有效。正式 ZIP 见 [4.0.1 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.1)；历史 3.0.3 下载不是 4.0。
