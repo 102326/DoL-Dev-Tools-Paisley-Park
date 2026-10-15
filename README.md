@@ -2,7 +2,7 @@
 
 Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助你查看真实 Android / WebView 运行现场，调查界面和运行问题，关联源码，并核对构建包与实际加载结果。可以作为独立开发工具使用，也可以被宿主 Agent 调用。
 
-**5.1.0 — Paisley Park（本地候选，尚未发布）** · [下载与版本](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_5.1.0.md)
+**5.1.0 — Paisley Park** · [下载正式版](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_5.1.0.md)
 
 它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。宿主 Agent 负责判断，工具提供调查、执行和验证依据。
 
@@ -23,7 +23,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 
 ### 1. 解压并确认版本
 
-从 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases) 选择对应版本的 ZIP，核对随附 SHA-256，解压到长期保留的新目录。本文对应本地候选 `DoL-Dev-Tools-5.1.0.zip`；若该版本尚未出现在下载页，使用已发布版本，并按对应版本的说明安装。保留旧 Tools 和 Skill。
+从 [5.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0) 下载 `DoL-Dev-Tools-5.1.0.zip`，核对随附 SHA-256，解压到长期保留的新目录。保留旧 Tools 和 Skill。
 
 需要 **Node.js 22.12+**。在 Tools 根目录运行：
 
@@ -32,7 +32,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 .\DoL-Dev.cmd --help
 ```
 
-5.1.0 候选包的版本输出应为 `5.1.0`，help 首行为 `DoL Dev Tools 5.1.0 — Paisley Park`。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
+版本输出应为 `5.1.0`，help 首行为 `DoL Dev Tools 5.1.0 — Paisley Park`。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
 
 ### 2. 连接已授权的 Android App
 
@@ -84,7 +84,7 @@ Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前
 
 ## 5.1 维护与保留能力
 
-5.1 校正命令和文档、按任务整理 Skill、改善已知错误与安装失败恢复，并明确普通 Integration 的顺序观察边界。完整本机证据与未验收平台见 [维护记录](docs/MAINTENANCE_5_1.md)。以下 5.0 能力继续保留：
+5.1 校正命令和文档、按任务整理 Skill、改善已知错误与安装失败恢复，并明确普通 Integration 的顺序观察边界。Windows 补验修复了 Node 22 下安装器对自有临时文件的误判。实际环境与覆盖范围见 [维护记录](docs/MAINTENANCE_5_1.md)和 [Windows 验收](docs/WINDOWS_5_1.md)。以下 5.0 能力继续保留：
 
 | 能力 | 当前用途与范围 |
 | --- | --- |
@@ -96,7 +96,9 @@ Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前
 
 ## 当前验证范围
 
-源码关联与 Component Lab 已有有限原型验收（A/B）；现场、源码和制品的接续已完成代表性只读验证（C）。发布前 Windows 独立包的 Node 全套 412 项通过；Python 3 项通过，1 项因缺可选 Pillow 跳过。既有 Android 证据包括页面身份、受支持的存档操作、自动保存和受控购买。详细时段与复用范围见 [5.0 收口](docs/CLOSEOUT_5_0.md) 和 [4.0 技术记录](docs/CLOSEOUT_4_0.md)。
+5.1 Windows 源码的 Node 24 完整套件为 429 项通过、1 项 macOS 专属跳过；最低 Node 22.12 定向套件为 24 项通过、1 项跳过，独立包再次通过同一定向检查。Python 3 项通过，1 项因缺可选 Pillow 跳过。两个 Windows 启动器、NTFS 中文/空格路径、真实文件占用和 Codex CLI 新进程的项目 Skill 发现均有实际验证。Mac 的隔离 Chrome 与宿主结果另行记录，不计为 Windows 通过数，见 [5.1 验收](docs/WINDOWS_5_1.md)。
+
+源码关联与 Component Lab 保留 5.0 的有限原型验收（A/B），现场、源码和制品的接续保留代表性只读验证（C）。既有 Android 证据包括页面身份、受支持的存档操作、自动保存和受控购买；本轮未重新执行设备或真实游戏测试。详细时段与复用范围见 [5.0 收口](docs/CLOSEOUT_5_0.md) 和 [4.0 技术记录](docs/CLOSEOUT_4_0.md)。
 
 ## 已知限制
 
@@ -118,7 +120,7 @@ Integration 缺失、不支持或失败会单独记录，已成功的通用采�
 | 关联源码、接入 Lab、接续研发 | [5.0 入口](docs/PAISLEY_PARK_5_0.md) · [development-flow Recipe](docs/DEVELOPMENT_FLOW.md) |
 | 修改、构建、部署 | [Workshop](docs/WORKSHOP.md) |
 | 接入专属诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [Schema 与格式](docs/FORMATS.md) |
-| 查询验收、限制与历史 | [5.0 收口](docs/CLOSEOUT_5_0.md) · [历史索引](docs/HISTORY.md) |
+| 查询验收、限制与历史 | [5.1 维护记录](docs/MAINTENANCE_5_1.md) · [Windows 验收](docs/WINDOWS_5_1.md) · [5.0 收口](docs/CLOSEOUT_5_0.md) · [历史索引](docs/HISTORY.md) |
 | 贡献与打包 | [项目规则](AGENTS.md) · [架构](docs/ARCHITECTURE.md) · [包清单](docs/RELEASE_PACKAGE.md) |
 
 ## 贡献与开发

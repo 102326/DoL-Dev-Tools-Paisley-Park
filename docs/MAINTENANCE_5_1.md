@@ -1,5 +1,7 @@
 # Paisley Park 5.1 维护与验收记录
 
+**最新状态（2026-10-15）：** [Windows 独立记录](WINDOWS_5_1.md)保留最低 Node 初次 4 项失败、根因修复、429 项 Node 24 通过、独立包和真实 Windows Codex 宿主结果。Windows 范围已完成，用户随后授权进入 GitHub 发布阶段；最终制品身份以 v5.1.0 与 Release 随附 manifest 为准。下文“暂缓 Windows”和“未推送”是当时的阶段状态，不再代表当前待办；原验货 ZIP 与原始证据保留。
+
 2026-10-15。独立分支 `maintenance/paisley-park-5.1`，参考 5.0.0 `607d2807d8735233e986d048849d8b14b23c4f22`；开发起点 `99affae8c6545b5ed8cf0493db687c18c33ab813` 仅多一项 README 改善。原研究分支和未相关工作保留，没有重置、清理 Unknown、全局安装切换或远端推送。本地候选版本为 **5.1.0**，不是正式发布。
 
 ## Delivered
@@ -87,7 +89,7 @@ node --test tests/install-skill.test.cjs tests/install-skill-failures.test.cjs t
 
 ## Not validated
 
-Windows launcher 真执行、Windows路径/占用/硬链接与异常恢复；Android CLI、Android WebView实机及真实DoL Gameplay未验证。Mac并不替代这些验收。Python可选Pillow用例跳过。六任务路由是静态人工/独立审查，不代表所有模型和提示的动态触发率。
+原 Mac 阶段未验证 Windows launcher 真执行、Windows路径/占用/硬链接与异常恢复，现已由 [Windows 补验](WINDOWS_5_1.md)覆盖其明确范围，未借用 Mac 结果替代。Android CLI、Android WebView实机及真实DoL Gameplay本维护轮未验证。Python可选Pillow用例跳过。六任务路由是静态人工/独立审查，不代表所有模型和提示的动态触发率。
 
 ## Known limitations
 
@@ -99,6 +101,6 @@ Integration多次采集是顺序观察，manifest/envelope、URL相同及集成�
 
 ## 交付与发布判断
 
-**P1–P6与本轮F1/F2修复、R1合同限定在Mac范围达到Scoped Done。暂不正式跨平台发布。** 按用户要求暂缓Windows测试；其安装器路径、文件占用、hard link支持、并发创建/中断后态及两个launcher仍为后续发布待验条件，没有被取消或视为通过。
+**此前 Mac 阶段结论：P1–P6与F1/F2修复、R1合同限定在Mac范围达到Scoped Done。** 当时按用户要求暂缓Windows测试；安装器路径、文件占用、hard link支持、并发创建/中断后态及两个launcher没有被取消或视为通过。随后实际完成的 Windows 验收见 [独立记录](WINDOWS_5_1.md)，本项待验条件已在其范围内关闭。
 
-Android目标绑定及Gameplay生产代码未改，本轮未作设备/真实游戏验收，不把既有历史实机证据计作新通过数。若Windows定向验收发现问题，修复后重跑受影响检查，再评估正式发布。当前没有额外在Mac可推进而未完成的必要实现；不擅自实现6.0能力。远端推送、Tag和Release均未执行。
+Android目标绑定及Gameplay生产代码未改，本维护轮未作设备/真实游戏验收，不把既有历史实机证据计作新通过数。Windows 实际发现并修复 Node 22 文件身份比较问题，受影响回归及独立包通过；没有扩展6.0能力。补验结束后，用户另行授权 GitHub 发布；发布沿用已通过的运行行为，另核对最终文档、固定提交、包摘要与安装入口。

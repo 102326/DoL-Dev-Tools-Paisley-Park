@@ -32,13 +32,13 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 撤销依据已记录的 inode 与预期字节，只处理检查时仍符合记录的本轮文件及空目录；检查发现身份或内容变化、资源归属不明确时保留残留，不递归删除未知目录。这些检查与 unlink/rmdir 不是同一原子操作，不能保证对其它进程在检查后持续替换或修改路径的原子保护。暂存目录创建成功但首次身份记录失败时，目录保留并返回 SKILL_INSTALL_INCOMPLETE，不在缺少归属依据时补做删除。父目录可能保留。安装完成但暂存清理无法确认时报告明确警告，不谎称临时资源已全部撤销。
 
-这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；Windows 路径与文件占用仍须实测，不能以 Mac hard link/rename 行为替代 Windows 验收。
+这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；[Windows 补验](WINDOWS_5_1.md)已覆盖 NTFS 中文/空格路径、hard link、真实文件占用、竞争、失败及实际子进程中断，不外推其它文件系统。
 
-## 5.1.0 候选安装与验货
+## 5.1.0 安装与验货
 
-本文对应本地候选 `5.1.0 — Paisley Park`，尚未远端发布；下载状态见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
+本文对应 `5.1.0 — Paisley Park`；正式 ZIP、SHA-256 与来源清单见 [5.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
 
-核对候选或正式 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.1.0`，help 首行应为 `DoL Dev Tools 5.1.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
+核对 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.1.0`，help 首行应为 `DoL Dev Tools 5.1.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
 
 macOS在Tools根目录使用同一Node入口（安装目标同样必须不存在）：
 
@@ -49,7 +49,7 @@ node scripts/dol-dev.cjs install-skill --out "$PWD/isolated-agent/.agents/skills
 node "$PWD/isolated-agent/.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
 ```
 
-这只建立隔离安装；宿主还需从该项目或对应Skill作用域实际发现，见 [本轮Mac宿主验货](MAINTENANCE_5_1.md#p6-独立包与真实宿主)。
+这只建立隔离安装；宿主还需从该项目或对应Skill作用域实际发现，见 [Mac宿主验货](MAINTENANCE_5_1.md#p6-独立包与真实宿主)和 [Windows新进程验货](WINDOWS_5_1.md#validated)。
 
 用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。安装验货只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
 
