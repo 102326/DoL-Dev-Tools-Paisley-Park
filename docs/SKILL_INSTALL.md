@@ -38,7 +38,18 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 本文对应本地候选 `5.1.0 — Paisley Park`，尚未远端发布；下载状态见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
 
-核对正式 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.1.0`，help 首行应为 `DoL Dev Tools 5.1.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
+核对候选或正式 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.1.0`，help 首行应为 `DoL Dev Tools 5.1.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
+
+macOS在Tools根目录使用同一Node入口（安装目标同样必须不存在）：
+
+```sh
+node scripts/dol-dev.cjs --version
+node scripts/dol-dev.cjs --help
+node scripts/dol-dev.cjs install-skill --out "$PWD/isolated-agent/.agents/skills/dol-dev-tools-paisley-park"
+node "$PWD/isolated-agent/.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
+```
+
+这只建立隔离安装；宿主还需从该项目或对应Skill作用域实际发现，见 [本轮Mac宿主验货](MAINTENANCE_5_1.md#p6-独立包与真实宿主)。
 
 用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。安装验货只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
 

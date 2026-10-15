@@ -12,4 +12,4 @@
 4. **P5**：自建 loopback Chrome 在 detect/collect 间导航，核对当前消费者和输出语义；只对真实身份缺陷局部修复，Generic 不受可选失败影响。不修改 Android 强绑定，除非证据确实要求。
 5. **P6**：按现有 git archive/export-ignore，固定本地源码提交、版本/锁/白名单、ZIP/hash；独立解压、依赖拒绝、安装/resolver、CLI/临时 SQLite、链接锚点。真实宿主发现与 resolver 分开验收；Windows/Android 缺口单列，不伪造通过。
 
-Mac：2026-10-15 实测 macOS 27.0.1 ARM64 / Node24.18.0 / npm11.16.0 / Git2.54.0 / Chrome155.0.8059.41。适用测试按实际改动选择；Node22.12、Windows 文件占用及真实宿主发现的可执行性仍待核实。必要发布验证未完成时明确报告，不偷偷将承诺改为可选。
+Mac：2026-10-15 实测 macOS 27.0.1 ARM64 / Node24.18.0 / npm11.16.0 / Git2.54.0 / Chrome155.0.8059.41。最终状态：P1–P6 Mac范围已实施和验收。Node22.12定向22/22、Node24全量427/427、真实Chrome导航3/3、独立包22+1/23、真实Codex CLI负/正发现对照通过。Python4项中1项Pillow缺失跳过。详细记录见docs/MAINTENANCE_5_1.md；Windows新安装流程与两个launcher实测仍是发布条件。Android/真实游戏本轮未验，未修改目标强绑定。无远端发布。
