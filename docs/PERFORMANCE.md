@@ -34,3 +34,14 @@ Timeline显式observerInstrumentation窗口可报告新建且成功instrument的
 休眠时 CDP 可能暂停，黑屏截图也不能当作 App 黑屏；核对设备 power 与焦点。`wake` 是显式 Action，采集器不偷偷唤醒设备或重启 App。
 
 独立 `process-memory` 或 `evidence --processes yes` 使用Android公开packageList/user/UID采集逐PID内存，见 [PROCESS_MEMORY](PROCESS_MEMORY.md)。它支持准确关联的isolated进程，但不推断当前CDP page的renderer角色，采样也不是同时发生。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+- gfxinfo is an Android statistic, not whole-game speed; meminfo growth does not prove a leak. Golden Diff reports pixels, not quality or release acceptance.
+
+- Use bounded `perf-series` when repeated native/heap/DOM/listener measurements resolve the question; see [PERFORMANCE](PERFORMANCE.md). Check power state before treating a paused CDP connection or black screenshot as an App failure. Use explicit wake only on the identified test target. `lock` requests screen-off, not a guaranteed credential lock; `unlock` never enters credentials and rejects a displayed secure/unknown keyguard. Manual authentication remains with the device owner; see [ACTIONS](ACTIONS.md).
+
+- Use `leak-probe --detached yes` only when detached counts help the investigation; unsupported is not zero. Observer wrappers may retain instrumented objects. `evidence-timeline` preserves missing anchors, source omissions and unknown envelopes; its ordering does not prove causation or reconstruct native frame intervals.

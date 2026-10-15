@@ -32,3 +32,23 @@ hostOrigin使用主机captureStart。Target事件只能在自身时间锚点与A
 时间顺序与接近不证明因果，秒级Android时钟估计也不能支持毫秒级跨来源断言。不同设备时钟或长期会话的时钟变化须另外核对；这不是Chrome/Perfetto完整Trace Viewer。
 
 源端dropped/truncated/omitted与投影遗漏分别保留；已知时间源的envelope/data不可用或格式无法投影进入unmapped/partial。Long Task使用有效startMs作为区间起点，atMs只记录callback观察时间；起点未知时只保留reportedDuration，不构造错误区间。关联进程内存只投影采样观察时刻，不伪造逐时变化曲线。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+For an ordinary user's issue, project a local Evidence Bundle using `support`; screenshot is excluded unless explicitly selected. Check the resulting files before sharing. Do not upload them or create an Issue without authorization.
+`issue-report --from` accepts Evidence or projected Support directories. A Support report does not verify the original artifacts; its projection time is not the original capture time. See [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md).
+
+- A direct probe is the cheaper sufficient path: keep a small local record of the verified target, source/tool, host observation time, stage (before/action/after), relevant result and action dispatch/outcome if applicable. Preserve failures and unknowns, distinguish observation from interpretation, and omit unnecessary text, HTML, input values and game state. Existing project records are sufficient; this is not a new schema or collector, and it does not require copying raw output into Evidence/Support or adding an Integration.
+
+- Read manifest first: incident ID, requested profile, capture times, completion status, source, failed/skipped/unsupported steps and privacy limits. A `complete` package is collection completeness, not a test verdict.
+
+- Check content coverage separately: DOM truncated/limits/reasons and Console omitted/projection counts. CDP Runtime.enable may deliver cached events; captureStart/End describe reception, while event timestamps use the target clock. Do not infer live versus replay or a new-error rate without aligned timing evidence. Keep unknown gameVersion separate from an ADB wrapper App version; never substitute one for the other. The versions collector keeps gameVersion from the GameVersion Mod; gameVersionSources separately records StartConfig.version and GameVersion Mod values, and Environment retains its existing StartConfig-first reading. A missing value from one source does not erase an observed value from another or establish the cause; absent source metadata in an older record is unknown, not proof of a version change. Read the actual source and CDP step before attributing a mismatch.
+
+- Android/CDP/DOM are observations from those sources; Runtime/Adapter are interpretations; repro notes are user context. Separate observation, source, interpretation and cause: retain unknown cause without causal evidence. Different sample times or truncated data can explain disagreement. Do not invent past events or infer hidden state from a screenshot.
+
+- Console/Logcat omit message content by default; Network omits private bodies/paths. Say when these summaries cannot establish a root cause. Screenshots, recordings and reproduction notes need manual privacy review.
+
+- Keep successful evidence when another collector fails. No infinite retries, replacing baselines automatically, or upgrading to full/heavy capture without a concrete unresolved question.

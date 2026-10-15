@@ -11,3 +11,10 @@ node scripts/dol-dev.cjs animation-frames --input LOCAL_VIDEO.mp4 --out artifact
 frameAtSeconds是fps采样序号推算，未恢复原始PTS；容器时长与可解码视频可能不同。达到max-frames会标truncated，complete仅表示所选有限抽帧任务完成。PNG去除嵌入元数据仍含真实屏幕像素，必须人工审查后分享。
 
 受控2秒视频实际提取8帧通过；这是离线解码与输出校验，未验证真实Drawer/Modal动画质量。可将明确时刻的帧用于现有region visual-diff；调用者核对平台、viewport、状态与时序，不能自动替换Golden或把像素差当作动画通过。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+For motion evidence, use a short existing recording and optional offline `animation-frames`; see [ANIMATION](ANIMATION.md). Do not call sampled frame indices exact source timestamps or treat synthetic/browser proof as Android animation acceptance.

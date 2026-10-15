@@ -31,3 +31,12 @@ Timeline 为 1..10000ms 窗口，最多 500 条结构记录：click/pointer/inpu
 `--observer-instrumentation yes` 才临时观察窗口内新建 Mutation/Resize/IntersectionObserver 的构造和方法调用。已有实例、callback 执行次数不追踪；不替换 callback、不 disconnect 项目 Observer。只在可安全覆盖数据描述符时包装，最多弱引用 128 个实例；结束后按完整描述符复原。第三方修改或 freeze 导致冲突时不覆盖，残留包装停用并记录 cleanupConflicts，采集失败/CLI 返回 1。初始化异常也清理已经登记的资源。CDP 断开不保证立刻撤销页面内观察；页面窗口的定时 finally 仍负责清理，页面导航/销毁则结束该上下文。
 
 Evidence 可组合以上显式选项；缺失 CDP 保留其它资料。Journey checkpoint 的 capture 也可选择这些 mode、storage 和 timeline；timeline 需额外给 `timelineMs`，可给布尔 `observerInstrumentation`。观察窗口单独运行，不假设其涵盖此前或之后的动作。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+- DOM/layout question: begin with the affected unique root, not an assumed Runtime role or whole page. Use scoped DOM/CSS or `capture`; add `environment` only when viewport/provider/context is relevant. If truncated, read the DOM limits/truncationReasons and manifest step coverage, name the missing evidence, then narrow scope if that answers it. Missing data is not an absent node; do not automatically increase depth or collect Full Evidence. Observe original structure before optional Integration interpretation.
+
+- Define DOM contracts by native-owned, third-party-owned and UI-owned nodes, with explicit allowed exceptions. The target project specifies which identities, handlers or relationships must remain stable; UI-owned rebuilds and agreed moves are not automatically compatibility failures. A scoped DOM Diff uses structural addresses, not proven node identity; insertions can shift them. It does not freeze third-party DOM or decide compatibility by itself.

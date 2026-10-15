@@ -231,3 +231,34 @@ python scripts/adb-backup-app-data.py --serial DEVICE_SERIAL --label before-test
 ADB 不在 PATH 时使用 `--adb` 指定路径；其他包名使用 `--package`。需要应用允许 `run-as`，不支持时明确失败，不尝试 root 或绕过限制。输出默认在已忽略的 `backups/` 中，包含真实私有数据，不要上传。TAR 可读性及 SHA256 检查不等于恢复验收。
 
 Backup 始终独立于 Evidence / Support，不默认执行。DoLWorkbench、Mod Center 和 Soft & Wet Runtime 不属于工具包本体。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+Verify the executable environment in the actual command process. If ADB needs `DOL_ADB` and your tool launches a new shell for each call, set it in the same invocation as each CLI command; an earlier shell assignment does not persist. An observation failure before App/CDP metadata is available may be setup failure: check the known tool path/environment and device power/foreground before attributing it to gameplay. Preserve failed observations and budgets; correct an evidenced cause instead of retrying unchanged calls.
+
+If Doctor reports adb unavailable/ENOENT, first verify an existing caller-selected SDK/platform-tools adb executable. Set DOL_ADB to that absolute file path in the current process, check its version, then rerun Doctor to a new output. Do not install tools, change system PATH or guess a different device. An unavailable optional tool is separate from a required ADB prerequisite.
+Doctor `complete` does not mean the App is running or its WebView is inspectable: read app-process/webview-socket checks before dependent work. An unavailable check alone does not establish a crash or disabled debugging. Restore live state only when this task's Done needs it; source-only work may already have sufficient proof.
+
+| Mode | Cheapest useful path | Escalation |
+| --- | --- | --- |
+| quick-inspect | Existing evidence or `doctor`; `capture` and manually inspect its current screen; scoped `dom-snapshot` / CDP if needed | `evidence` when independent sources are necessary |
+| compatibility-diagnose | Scoped DOM contracts of affected versions → `dom-diff` → optional integration in `evidence` | Compare structure with Runtime/Adapter interpretation; missing integration does not prevent generic diagnosis |
+| visual-diagnose | Capture affected screen → `visual-diff` with a comparable Golden → DOM/CSS investigation | Check viewport, fonts, platform, game state and optional visual tier before attributing differences to a regression |
+| performance-diagnose | `perf` for gfxinfo/meminfo → Chrome Performance if needed | A concrete unresolved scheduling/rendering question can justify Perfetto, separately scoped |
+| full-evidence | `evidence` with an explicit DOM scope, short `--logcat-seconds`, optional integration and user reproduction note | Add short `--record-seconds` if motion matters; `--full --sensitive yes` requests system trace and bugreport only for a concrete unresolved problem |
+| reproduce | Reviewed JSON `action` / `journey`, static `--plan`, then execution on the identified test environment | Stop after uncertain actions; keep checkpoints and cleanup evidence; see [ACTIONS](ACTIONS.md) |
+| structure-and-events | CSS snapshot/diff, `dom-inspect`, short `timeline` or storage metadata only as needed | See [INSPECTORS](INSPECTORS.md); incomplete data cannot prove deletion, pixel occlusion or ownership; Observer instrumentation is explicitly opt-in |
+| evidence-review | Offline `evidence-compare` / `issue-report`, caller-selected `known-good` snapshots | See [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md); report generation does not authorize an upload, and reference selection does not prove business correctness |
+| controlled-experiment | Reviewed `matrix` or `network-scenario --plan`, scoped `journey-record` candidates | See [NETWORK](NETWORK.md) and [ACTIONS](ACTIONS.md); network requires an explicitly neutral baseline and no competing settings owner; candidate input stays unresolved |
+| viewport-and-native | Reviewed `viewport-matrix --plan` or explicitly selected `native-layout` | See [VIEWPORT](VIEWPORT.md) and [NATIVE_LAYOUT](NATIVE_LAYOUT.md); metrics require no original override and exclusive ownership; native layout may run/install the existing CLI helper |
+| development-loop | Observe implicated source → scoped fix → target-owned build/deploy → same-scene verification | See [WORKSHOP](WORKSHOP.md); retain source/artifact hashes, actual loading proof and before/after evidence; browser fixture proof is not Android deployment |
+
+Perfetto (`perf --deep`) needs a reviewed official recorder selected through DOL_PERFETTO_RECORDER, supported Android, and explicit sensitive capture selection; do not download it automatically. `bugreport` also requires explicit sensitive selection and may leave an Android system copy. Development action/journey commands use reviewed local JSON, --plan and explicit --test-environment yes; see [ACTIONS](ACTIONS.md). Audit real target semantics, stop after failed/uncertain actions, never automatically retry a dispatched action. Never treat this skill as permission to install tools or touch private app data. The private Backup command is separate from Evidence/Support and requires the user's corresponding task scope.
+
+
+- Live Site First: for a runtime issue, inspect the current device screen, actual WebView via CDP and Android/App via ADB as needed before guessing from source. Android CLI shows annotated device screen/layout; Chrome Inspect/CDP is the core bridge connecting agents to the live WebView, with scoped DOM/CSS, Console/exception and Network metadata, Storage/Performance observations and optional integrations; ADB exposes Android/App system state. Chrome DevTools also supports interactive investigation. Choose the smallest necessary sources and respect collector privacy limits.
+
+- Evidence/record create temporary transport or capture resources; acknowledge their scope. `doctor` checks environment and must not repair it. Original Android CLI layout may install a helper APK; do not silently substitute it for a failed read-only collector.

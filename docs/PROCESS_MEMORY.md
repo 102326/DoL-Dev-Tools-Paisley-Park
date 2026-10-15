@@ -14,3 +14,10 @@ node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACK
 packageList 是系统报告的关联，不能证明这个进程一定承载选定 page 的 JS renderer。采样顺序不同，不应直接求和宣称同时占用，也不能从单次内存值判断泄漏。前后记录和 meminfo 名称不能完全排除两次观察之间同 PID/同名的进程重生，因此明确记录 process generation not proven。
 
 当前真机报告主进程及一个准确关联的独立进程，两份 PID meminfo 均可读，最终 complete。其它没有该 packageList 成员的沙盒候选被排除。没有将其强行关联到当前 CDP target 或宣称整个 WebView 内存已完整枚举。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+- Use `process-memory` only when per-process Android memory matters; exact ActivityManager packageList association does not establish CDP renderer ownership. See [PROCESS_MEMORY](PROCESS_MEMORY.md). For touch-size/overlap questions, `hitbox-overlay` shows measured rectangles and center samples, not complete event dispatch behavior.

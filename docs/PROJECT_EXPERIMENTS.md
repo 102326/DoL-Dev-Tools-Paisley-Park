@@ -84,3 +84,10 @@ A completed execution phase is retained when a subsequent state read fails, but 
 `project-experiment` 是状态 Goal：初始谓词已经成立时，零动作完成是有效结果。它不证明本 Session 执行过保存。要求“这次保存已完成”的工作流应采用 development Goal 与既有 required checkpoint，在写入该 checkpoint 前核对本 Session 的 settled Effect：action.kind 为 save，原 Recipe 操作为 save-slot，独立 Outcome 为 occurred，executionCompleted 为 true，slot/metadata/原状态读回与本次输入一致。
 
 核对来源是既有 `Runtime.outcomeContext(session)` 的持久 Effect 与对应动作证据；不得只看 actions 数、ACK 或当前状态为真。checkpoint 本身是状态断言，不会自动替你补足操作 witness。不要为状态已经满足的普通 Goal 强制重复动作。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+For a project experiment that belongs in a long-lived GER Session, use the existing `project-experiment` capability and a reviewed local Recipe; see [Recipe contract](PROJECT_EXPERIMENTS.md). Persist the host's actual granted scope, pin the real target, read fresh candidates after source edits and keep execute acknowledgement, independently observed Outcome and native Goal predicate separate. Recipe modules have local Node permissions, not a sandbox. Missing terminal proof stays Unknown; a new Recipe version never settles an old attempt. Ordinary Debug still uses its cheaper existing route.

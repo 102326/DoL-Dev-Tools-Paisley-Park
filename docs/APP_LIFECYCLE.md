@@ -17,3 +17,10 @@ reason数字含义以[Android ApplicationExitInfo官方API](https://developer.an
 Diff只比较相同package/user/UID/boot的固定投影。主PID不同只是PID观察变化，不能排除重用、证明Activity/WebView实例recreate或替代实际加载/业务复验。新增条目称newlyReportedExits，系统发布延迟可能使它早已发生；消失只记noLongerReportedCount，不当作删除。时间是设备本地字符串，未猜测UTC偏移、转为主机时间或加入统一时间轴。不同目标/boot或不完整输入保留incomplete，CLI退出1；输入格式/关联无效则拒绝写出。
 
 公共payload定义为[Schema appLifecycle](../schemas/diagnostics-v1.schema.json)。格式验证不保证真实性、隐私或完整系统历史。当前已在授权App只读采集complete，未为了制造条目杀进程、重启、收集堆栈或调试第三方问题。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+- Use `app-lifecycle` or an explicit Journey lifecycle checkpoint for Android exit metadata; see [APP_LIFECYCLE](APP_LIFECYCLE.md). Only compare the same package/user/UID/boot. Newly reported history need not be newly occurred, and PID changes do not prove native Activity/WebView recreation. Native reconstruction requires a target-owned entry and object identity proof; generic capture only reads an optional bridge and never dispatches its action.

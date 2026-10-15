@@ -53,3 +53,10 @@ Worker 用于故障隔离，**不是安全沙箱**。模块依然拥有 Node 文
 原有模块对象注入是内部测试钩子，不作为外部作者的公共主机 API。公共接入走 CLI 文件入口与 Contract 1。
 
 目标自有原生实例的只读例子见 [native-lifecycle.cjs](../integrations/examples/native-lifecycle.cjs) 与 [原生验收配方](NATIVE_RECREATE.md)。不存在该桥时跳过，未知契约拒绝；它不为通用 DOM 增加角色或指纹字段，也不通过桥派发动作。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+For optional diagnostics, use the builtin `--integration soft-and-wet` or explicit `--integration-file REVIEWED_LOCAL.cjs`; the builtin entry is `integrations/soft-and-wet/index.cjs` under the resolved Tools root. Review the local module before executing it. Modules run with Node permissions in a bounded worker, not a security sandbox. Missing/unsupported/failed integrations do not invalidate Generic completeness. See [Contract 1](INTEGRATIONS.md) and [public evidence formats](FORMATS.md). Do not guess another Mod's private API or copy custom diagnostic payloads into Support.

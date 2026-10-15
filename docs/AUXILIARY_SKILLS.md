@@ -28,3 +28,10 @@ README、Release Notes、Changelog、公告、技术摘要和用户说明，从�
 既有 RC.1 包不重写，也不追认为已经按新卫生规范重新验货。RC.2 按[包清单](RELEASE_PACKAGE.md)落实导出与链接检查，实际结果由随附验货记录说明；推送、正式合并、Tag/Release 仍依实际授权。敏感原始资料保留本地，不能因归档进入公开仓库或发行包。
 
 不新增 Runtime、Runner、Ledger、数据库、权限流程或管理平台。按任务选择现有辅助 Skill，真实效果决定是否保留；文档规范的落地用链接、入口和一致性检查，复用有效工程证据。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+For README/release notes/user explanations, archive work or release preparation, read [auxiliary Skill and delivery rules](AUXILIARY_SKILLS.md) as needed. Use available PRP Technical Writing/Humanizer from verified facts, retaining Unknown and coverage limits; keep historical repository memory separate from the current release file list. This does not install Skills, move directories or change Runtime contracts.

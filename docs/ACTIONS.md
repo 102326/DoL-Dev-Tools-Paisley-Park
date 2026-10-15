@@ -79,3 +79,18 @@ home→launch表达后台返回；restart表达强制停止后重新启动，不
 锁屏生命周期可显式安排lock→unlock→页面就绪检查。凭据锁屏设备由本人认证后开始新的返回复验，不能把人工认证伪装成自动解锁成功。未识别的系统keyguard格式会停止；不从simSecure、trust状态或屏幕关闭推断凭据安全性。具体实机记录见[最终验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/FINAL_ACCEPTANCE.md)。
 
 更多实体设备/版本/组合须逐个明确选择；标签、单设备运行或浏览器模拟均不代表完整兼容矩阵。构建部署闭环仍在开发清单。
+
+
+## Agent task notes
+
+从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
+
+For an explicit reproduction workflow, inspect any available plan first, verify the current selector/target and bound waits. Keep successful checkpoints on failure; clean up temporary resources and restore experiment settings such as network conditions/orientation when the task requires it. Do not silently retry a Journey until it passes or introduce a new automation framework to compensate for a missing command.
+
+- First zero-area, pointer-interception or ambiguous-target failure: stop dispatching the stale action and establish whether the previous action was dispatched or its outcome is unknown. Use `dom-inspect` selector-health, hitboxes or overlays only for the missing observation. In Gameplay, an ordinary menu, animation, event or route change can be understood and handled autonomously, then replan; it is not automatically a whole-Goal diagnostic pause. A child link's center sample does not prove the whole control unusable: check the actual visible hitbox and event carrier, then resolve a fresh reviewed action; do not silently click its parent, force a click or replay an unknown side effect. Development acceptance retains failed checkpoints. Inspectors do not prove ownership or causation; do not default to Timeline, recording or Full Evidence. See [INSPECTORS](INSPECTORS.md) and [ACTIONS](ACTIONS.md).
+
+- During exploration, use read-only observations and reviewed small actions on the identified test target. Once targets and outcomes are stable, consider a minimal Action/Journey for repeated same-scene checks, handoff or useful failure checkpoints; several actions alone do not justify one. Keep business assertions with the target project. An existing stable project smoke can remain the sufficient path; do not create a second workflow for a one-off fix or repeat valid same-source evidence. If its test runner lacks a browser, check the runner's supported configuration for an already installed browser before installing anything; a different runner must be shown compatible, not assumed equivalent.
+
+- Inspect/Doctor/Evidence are observational. In an identified test save/account, isolated App or temporary data environment, perform task-relevant clicks, input, navigation, setting changes, restarts, rotation and ordinary game reproduction without asking again for each routine step. Keep actions distinct from capture and report their scope. A connected or running App alone is not proof of a test environment.
+
+- Deleting/overwriting real saves or cloud data, clearing production user data, deleting real Mods or changing real credentials requires corresponding explicit authorization. Establish the target/environment before dependent actions when unclear; meanwhile continue useful observation. Existing general evaluator executes supplied JavaScript: review it and use read-only probes for inspection, separately scoped operations for reproduction.
