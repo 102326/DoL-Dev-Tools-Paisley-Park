@@ -36,6 +36,8 @@ Python 初次因当前解释器缺开发校验依赖和 Pillow，2 通过/2 跳�
 
 独立候选验货结果另随包提供 `validation.json`：核对归档文件与固定 Git blob、CLI、安装/resolver、缺依赖拒绝、自有 SQLite 生命周期和解压路径。manifest 只说明来源/字节，不替代验货结论。上列原始设备证据不因版本改为 6.0 而改写来源提交或计为重新实测；最低 Node 22.12 的既有安装回归按未改行为复用，不声称本轮重跑。
 
+首次本地 ZIP 被逐字节核对拒绝：系统 Git 的 `core.autocrlf=true` 将 LF 导出为 CRLF，规范换行后才相等。失败包保留，不作为候选交付。后续按[打包约定](RELEASE_PACKAGE.md)仅为归档进程固定换行，再重新核对全部文件；没有降低字节判据或改全局 Git 配置。
+
 ## Known limitations
 
 - 方法返回、内容变化、原生发布和业务成功是不同证据；`okCount` 不等于匹配数。StoryCaption 存在未采集的中间写入者，不能补造连续因果链。

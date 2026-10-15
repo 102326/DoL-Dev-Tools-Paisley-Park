@@ -2,6 +2,8 @@
 
 发布 ZIP 使用固定提交的 `git archive`，由根目录 `.gitattributes` 的 `export-ignore` 控制文件清单。源码仓库保留所有历史资料；排除清单只影响归档，不删除文件或改写历史。
 
+Windows 的系统 Git 可能配置 `core.autocrlf=true`，导致归档文本与 Git blob 字节不同。为保持固定提交的字节，不修改全局配置，归档命令显式使用 `git -c core.autocrlf=false -c core.eol=lf archive --format=zip --prefix=DoL-Dev-Tools-VERSION/ --output=NEW_ZIP FULL_COMMIT`，替换占位符并使用尚不存在的输出。仍须逐文件核对，不能把“仅换行不同”当作字节验货通过。
+
 包内保留 CLI、生产模块、可选 Integration、Probe、Schema、Skill、当前使用文档、许可证、示例和离线回归。旧 Release、废弃设计、内部计划、早期验收和实验说明不进入包；仍有引用时，链接到已经存在的 4.0.1 固定源码提交。历史网页需要联网查看。
 
 `experiments/gold-runtime` 中四个代码文件是现有离线回归的必要资源：`tests/game-goal.test.cjs` 使用 Receiver 检查旧拒绝回执不能结清后续已派发动作，实验测试还调用其 CLI。保留这些夹具以维持原测试入口，不将它们作为第二套正式 Runtime。生产执行仍来自 `scripts/lib/game-runtime.cjs`，实验 README 被排除。
