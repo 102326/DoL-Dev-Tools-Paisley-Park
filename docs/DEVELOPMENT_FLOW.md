@@ -8,6 +8,8 @@
 
 ## 跨步骤保持正确对象
 
+研究Mod时，尽量先核对作者最新正式发布，下载到隔离目录后再研究。区分正式附件、对应源码、默认分支HEAD与设备当前版本；记录来源、核对时间和摘要。没有正式附件或无法确认官方来源时如实说明，不把源码ZIP当成可安装包。获准更新测试目标时先备份原包与配置，再核对持久化、重载和实际功能；新结果不改写旧版本证据。当前输入见[Mod来源记录](knowledge/latest-mod-sources.md)。
+
 已有标准能力能覆盖时优先复用。直接 CDP/Playwright 可作灵活调查，但 `contexts()[0].pages()[0]`、相同 URL 或旧端口不是文档绑定。Android 需要生产绑定时复用 `scripts/lib/execution-context.cjs` 的 `create(options, overrides, settings)`、`ensureWebview()` 和 `finish()`：显式 serial/package/user，存在歧义时指定已核对的 target/socket。它保留当前 frame/loader/uniqueContext 的绑定；失效后建立新连接，不能让旧持有者自动跟随。
 
 这是 Tools 内部现有入口，不是稳定公共 SDK 承诺；调用前核对所选版本源码。普通只读诊断可显式绑定当前文档，无需另建 Goal。使用外部工具则保留其实际 target/context、采集方式和限制，不把外部 UID/ref 自动换算成 Paisley 身份。

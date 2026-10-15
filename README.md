@@ -1,5 +1,7 @@
 # DoL Dev Tools: Paisley Park
 
+本分支保存 **6.0 White Snake 的研发进展**，当前可用范围和接续方式见[测试分支交接说明](docs/WHITE_SNAKE_6_0_CHECKPOINT.md)。6.0尚未整体验收；CLI和package暂保留5.1.0身份，下面的正式版入口仍指向5.1。
+
 Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助你查看真实 Android / WebView 运行现场，调查界面和运行问题，关联源码，并核对构建包与实际加载结果。可以作为独立开发工具使用，也可以被宿主 Agent 调用。
 
 **5.1.0 — Paisley Park** · [下载正式版](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_5.1.0.md)

@@ -6,10 +6,10 @@
 
 | 证据 | 可以使用的结论 | 不能代替的验证 |
 | --- | --- | --- |
-| 公开MapleBirch5.4.3，固定提交 `4b4b6e26e934d2e848058f21dfa1df0f71cc455d` | 本页列出的Character接口与源码方法实验 | 当前设备执行的5.4.2、完整框架构建或真实Canvas生命周期。 |
-| 本轮LyraMouthCompat0512130.1.2独立构建与原绑定读回 | 指定消费者成员、注册函数、侧栏采用、图片解码及路径函数结果 | 全部脸型、未来5.x、整个ZIP字节或5.4.3设备兼容。 |
+| 公开MapleBirch5.4.3，固定提交 `4b4b6e26e934d2e848058f21dfa1df0f71cc455d` | 本页列出的Character接口与源码方法实验 | 完整框架构建或真实Canvas全部生命周期。 |
+| LyraMouthCompat0512130.1.2独立构建，先后在5.4.2及更新后的5.4.3原绑定读回 | 指定消费者成员、注册函数、侧栏采用、原showfn、图片解码及路径函数结果 | 全部脸型、未来5.x或消费者整个ZIP字节。 |
 
-第三方版本和生命周期会变化。先确认当前加载版本、源码及产物身份，再决定哪些事实仍适用。历史经过见[嘴部案例](knowledge/maplebirch-mouth.md)，本轮构建经过见[字节差异案例](knowledge/build-byte-drift.md)。
+第三方版本和生命周期会变化。先下载作者最新输入，再确认当前加载版本、源码及产物身份。历史经过见[嘴部案例](knowledge/maplebirch-mouth.md)，本轮构建经过见[字节差异案例](knowledge/build-byte-drift.md)，新增5.4.3的正式附件更新与有限实机验证见[来源记录](knowledge/latest-mod-sources.md)。
 
 ## 按问题选择下一步
 

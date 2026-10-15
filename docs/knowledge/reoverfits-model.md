@@ -25,3 +25,9 @@ ReOverfits 4.1.1 的外层服装本身能按原生逻辑购买、穿脱，UI 分
 目标工程 `reoverfits-ui-model` 的 `compat/reoverfits-soft-wet/VALIDATION.md` 为后续直接依据；同目录 `VALIDATION_0.1.0_HISTORY.md` 保存旧方案。正式 UI 后续集成另见目标主工程 `docs/audits/reoverfits-2.2.1.md`，不能由候选报告代替。
 
 原始记录在目标工程 `tests/artifacts/reoverfits-device/`，不随 Tools 分发。UI 候选 SHA-256 为 `1c192852fcba9a2a500757a531c2875b23f66b3fafbc0e4131149d8bd38d3576`，Adapter 为 `e37024e5cc73243789bad4de8a2f207507f477177d3034bf99ac4b3ce10e515d`；它们是特定候选身份，不是今天任意同名包的证明。
+
+## 后续来源核对
+
+2026-10-16通过公开搜索定位到README署名所对应的[作者仓库](https://github.com/miyakoAki4828/Dol-Miyako-Mods)。该仓库最近Release为2024年的`0.5.3.0`，其中ReOverfits正式附件Manifest为2.0.0；已隔离下载，但不是本地4.1.1的来源证明。针对4.1.1的本轮查询没有取得可核验的新作者发布，不把未找到解释成不存在。
+
+因此未用旧附件替换4.1.1，也未把2.0.0当作整个ReOverfits系列的最新版本。当前平板没有加载ReOverfits，这次没有新增其业务验收。作者附件仅供本地调查、不随Tools分发；后续研究4.x仍须确认对应来源与配套Adapter。
