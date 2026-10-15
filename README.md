@@ -2,9 +2,7 @@
 
 Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助你查看真实 Android / WebView 运行现场，调查界面和运行问题，关联源码，并核对构建包与实际加载结果。可以作为独立开发工具使用，也可以被宿主 Agent 调用。
 
-**6.0.0 — White Snake，本地候选** · [安装与升级](docs/SKILL_INSTALL.md) · [6.0 更新说明](docs/RELEASE_6.0.0.md) · [支持范围与验收](docs/CLOSEOUT_6_0.md)
-
-6.0 尚未发布到 GitHub。需要已发布版本时使用 [5.1.0 稳定版](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)，不要将本分支或本地修改的第三方 Mod 当作上游正式发行。
+**6.0.0 — White Snake** · [下载](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_6.0.0.md) · [支持范围](docs/CLOSEOUT_6_0.md)
 
 它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。宿主 Agent 负责判断，工具提供调查、执行和验证依据。
 
@@ -25,7 +23,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 
 ### 1. 解压并确认版本
 
-使用本地候选 `DoL-Dev-Tools-6.0.0.zip` 时，核对随附 SHA-256 与来源清单，解压到长期保留的新目录。保留旧 Tools 和 Skill。本页命令对应 6.0 候选；已发布 5.1 的下载和操作步骤见其 [Release 说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)。
+从 [6.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 下载 `DoL-Dev-Tools-6.0.0.zip`，核对随附的 SHA-256，解压到长期保留的新目录。升级时保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。页面自动生成的 Source code 是源码归档；首次使用请下载上面命名的工具包。
 
 需要 **Node.js 22.12+**。在 Tools 根目录运行：
 
@@ -86,11 +84,11 @@ Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前
 
 ## 6.0 新增内容
 
-White Snake 把真实 Mod 调查中的方法和限制接到现有开发流程，帮助下一次任务少走已经证实的弯路：
+遇到相似的 Mod 问题时，White Snake 让 Agent 先查已有经验、核对适用条件，再决定如何调查：
 
-- **按问题找经验。** Skill 从[知识入口](docs/MOD_KNOWLEDGE.md)发现相关案例，核对版本、反证和适用条件。独立新会话已经实际使用这些资料重建候选包；没有把保存文档等同于学会。
-- **查清 Mod 之间发生了什么。** 提供有界、显式启停的 [Patch 观测配方](examples/patch-provenance/README.md)，记录所选方法、资源摘要、遗漏和恢复状态，并接入已有 Evidence。它是诊断实验，不是全量冲突扫描器。
-- **保留能复现的修复方法。** [CE 可选框架案例](docs/knowledge/cheat-optional-framework.md)说明为何已装 MapleBirch 仍提示缺 Simple；配方只接受核对过的原包，生成可独立验证的本地修改包，不屏蔽真实错误。
+- [知识入口](docs/MOD_KNOWLEDGE.md)按问题整理 MapleBirch、ModHub 和真实兼容案例，保留版本、反例与尚未确认的部分。独立新会话已经自行找到案例，并重建出与实机所用版本一致的修复包。
+- [Patch 观测配方](examples/patch-provenance/README.md)帮助调查所选 Mod 的修改和发布过程，记录内容指纹、漏采和恢复状态，再接到已有 Evidence。需要审查后显式启用，不会默认安装探针，也不提供全量冲突判定。
+- [CE 可选框架案例](docs/knowledge/cheat-optional-framework.md)解释了为什么已装 MapleBirch 仍会提示缺 Simple。随包配方只接受已经核对的原包，生成本地修复版；真正的错误仍会保留。
 
 MapleBirch、ModHub 的专业参考、无冲突对照和各项支持边界见 [6.0 收口记录](docs/CLOSEOUT_6_0.md)。第三方 Mod、游戏资源和私人现场记录不随包分发。
 

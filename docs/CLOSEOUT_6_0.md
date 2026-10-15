@@ -1,6 +1,6 @@
 # 6.0 — White Snake：支持范围与验收
 
-2026-10-16。本轮交付为本地 6.0.0 候选，不包含远程推送、正式合并、Tag 或 Release。基线是已发布 5.1.0：`fc52a6ce6c5f15a884f775d9473ae19e133a6987`。包的最终提交、逐文件摘要与独立安装结果以随附 manifest 和验货记录为准。
+2026-10-16。6.0.0 已完成约定范围的本地候选验货；用户随后明确授权 GitHub 发布和本地工具/Skill 更新。基线是已发布 5.1.0：`fc52a6ce6c5f15a884f775d9473ae19e133a6987`。正式制品通过 [v6.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 提供，最终提交、逐文件摘要和验货范围以随附 manifest、validation.json 为准，不沿用候选 ZIP 摘要。
 
 ## Delivered
 
