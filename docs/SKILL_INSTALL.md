@@ -34,11 +34,11 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；Windows 路径与文件占用仍须实测，不能以 Mac hard link/rename 行为替代 Windows 验收。
 
-## 5.0.0 安装与验货
+## 5.1.0 候选安装与验货
 
-本文对应 `5.0.0 — Paisley Park`；下载状态见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
+本文对应本地候选 `5.1.0 — Paisley Park`，尚未远端发布；下载状态见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
 
-核对正式 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.0.0`，help 首行应为 `DoL Dev Tools 5.0.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
+核对正式 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.1.0`，help 首行应为 `DoL Dev Tools 5.1.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
 
 用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。安装验货只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
 

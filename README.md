@@ -2,7 +2,7 @@
 
 Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助你查看真实 Android / WebView 运行现场，调查界面和运行问题，关联源码，并核对构建包与实际加载结果。可以作为独立开发工具使用，也可以被宿主 Agent 调用。
 
-**5.0.0 — Paisley Park** · [下载与版本](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_5.0.0.md)
+**5.1.0 — Paisley Park（本地候选，尚未发布）** · [下载与版本](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_5.1.0.md)
 
 它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。宿主 Agent 负责判断，工具提供调查、执行和验证依据。
 
@@ -23,7 +23,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 
 ### 1. 解压并确认版本
 
-从 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases) 选择对应版本的 ZIP，核对随附 SHA-256，解压到长期保留的新目录。本文对应 `DoL-Dev-Tools-5.0.0.zip`；若该版本尚未出现在下载页，使用已发布版本，并按对应版本的说明安装。保留旧 Tools 和 Skill。
+从 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases) 选择对应版本的 ZIP，核对随附 SHA-256，解压到长期保留的新目录。本文对应本地候选 `DoL-Dev-Tools-5.1.0.zip`；若该版本尚未出现在下载页，使用已发布版本，并按对应版本的说明安装。保留旧 Tools 和 Skill。
 
 需要 **Node.js 22.12+**。在 Tools 根目录运行：
 
@@ -32,7 +32,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 .\DoL-Dev.cmd --help
 ```
 
-5.0.0 包的版本输出应为 `5.0.0`，help 首行为 `DoL Dev Tools 5.0.0 — Paisley Park`。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
+5.1.0 候选包的版本输出应为 `5.1.0`，help 首行为 `DoL Dev Tools 5.1.0 — Paisley Park`。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
 
 ### 2. 连接已授权的 Android App
 
@@ -82,7 +82,9 @@ Android CLI、Chrome Inspect/CDP 和 ADB 负责设备与运行现场；Source Li
 
 Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前控件、样式和页面状态，结合截图与系统日志调查问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装 Soft & Wet 或任何特定 UI Runtime。
 
-## 5.0 新增内容
+## 5.1 维护与保留能力
+
+5.1 校正命令和文档、按任务整理 Skill、改善已知错误与安装失败恢复，并明确普通 Integration 的顺序观察边界。完整本机证据与未验收平台见 [维护记录](docs/MAINTENANCE_5_1.md)。以下 5.0 能力继续保留：
 
 | 能力 | 当前用途与范围 |
 | --- | --- |

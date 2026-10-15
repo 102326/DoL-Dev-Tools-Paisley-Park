@@ -1,54 +1,50 @@
-# Paisley Park 5.1 维护进度
+# Paisley Park 5.1 维护与验收记录
 
-2026-10-15。本轮按开工指令完成工作区检查及第一阶段 P1 + P3；不是完整 5.1 发布验收。尚未改版本号，当前包仍报告 5.0.0。没有远端推送、合并、Tag/Release 或全局安装切换。
+2026-10-15。独立分支 `maintenance/paisley-park-5.1`，参考 5.0.0 `607d2807d8735233e986d048849d8b14b23c4f22`；开发起点 `99affae8c6545b5ed8cf0493db687c18c33ab813` 仅多一项 README 改善。原研究分支和未相关工作保留，没有重置、清理 Unknown、全局安装切换或远端推送。本地候选版本为 **5.1.0**，不是正式发布。
 
-## 基线与环境
+## Delivered
 
-参考 5.0.0 `607d2807d8735233e986d048849d8b14b23c4f22`；实际开发起点 `99affae8c6545b5ed8cf0493db687c18c33ab813`，后者仅新增 README 改善，没有修复 P1–P6。原 `research/star-platinum-mac` 分支和所有研究文件保留；独立 worktree 分支 `maintenance/paisley-park-5.1`，没有继承 Star Platinum 研究提交。入场工作树干净，无 stash，原工作区未覆盖或重置。
-
-本次重新探测：macOS 27.0.1 / ARM64，Node24.18.0、npm11.16.0、Apple Git2.54.0、Chrome155.0.8059.41；项目只需原锁定 XState5.33.2。测试使用 Node24 与官方便携 Node22.12.0（项目 ignored artifacts 内），未改变系统 Node/PATH。官方归档 SHA256 `293dcc6c2408da21562d135b0412525e381bb6fe150d688edb58fe850d0f3e13` 已与 nodejs.org 同版本 SHASUMS256.txt 核对；初次下载60秒超时，保留部分文件并续传完成，未跳过摘要核验。
-
-`npm ci --ignore-scripts --no-audit --no-fund` 成功；既有 Node 测试入口与 git archive/export-ignore 规范可用，没有现成统一发布构建脚本，P6 沿用原规范而不另造发布系统。
-
-## Delivered / 按工作包状态
-
-| 工作包 | 当前状态与变更 |
+| 工作包 | 实际交付 |
 |---|---|
-| P1 | 已修：GAMEPLAY 的三次无进展规则为 routeHints、不自动封路；Help 拆开 capture/perf/logcat/record，保留 deep 的显式敏感选择；PROJECT_EXPERIMENTS 示例增加 SQLite 参数并引用统一运行前提；安装消息/安装文档/README 不再保证下一回合发现；README 失效升级锚点指向现有数据兼容说明。冻结 Foundation 历史示例未改。 |
-| P3 | 第一阶段已修：CLI_OPTION_NOT_APPLICABLE、SKILL_TARGET_EXISTS、INVALID_SKILL_TARGET、ETIMEDOUT 的固定阶段/字段/建议。保留原错误括号格式、原成功命令行为和 unknown fallback；不输出原始异常、路径或私有参数。不重试、不结清 Unknown。安装缺后置源文件/写入失败的分类将结合 P4 的真实后态实现。 |
-| P2 | 已定位主 Skill36111字节、入口混合任务细则；未开始移动规则或做六任务路由评估。 |
-| P4 | 已确认原安装器先建最终目录、后读取/复制 agents 元数据；半安装修复尚未实施。此次只有输入错误分类与 lstat 保护（已有坏链接也拒绝），不声称已解决中途写入/崩溃。 |
-| P5 | 已定位 Worker 普通 evaluate 与 execution-context 强绑定的差别；导航/重建的真实 Integration 调查尚未执行，未预设已出现混采事故。 |
-| P6 | 发布规范及现有入口已核对；5.1 独立 ZIP、安装完整验货与真实宿主发现尚未执行。 |
+| P1 | GAMEPLAY 的三次无进展改为真实 routeHints 语义，不自动封路；Help 区分支持 seconds 的采集器；Node22 SQLite 示例补齐；安装后不再保证下一回合自动发现。保留冻结历史语境。 |
+| P2 | 主 Skill 从36111缩到8261字节，先选 Debug、Action/Journey、源码构建、GER、安装排障等路径。49段任务规则迁入现有权威文档，身份、授权、Evidence、Unknown 与恢复规则仍在。六个固定提示的静态前后评估见 [路由记录](SKILL_ROUTING_5_1.md)，不是成功率基准。 |
+| P3 | 已知输入错误提供固定 code/stage/field/advice，未知错误不猜根因；timeout 不当成设备故障或撤销。新增安装缺源/失败/不完整分类。不泄漏原始异常、路径或参数，不自动重试副作用。 |
+| P4 | 必要源完整预读、同父目录隔离暂存、字节核验、exclusive mkdir/硬链接发布，SKILL.md 最后出现。新完整性清单由 resolver 验证，旧无清单安装兼容。按 inode/字节撤销自己文件，保留陌生或已修改资源；失败与中断可从新父目录重试。见 [安装合同](SKILL_INSTALL.md#安装失败与重试)。 |
+| P5 | 真实隔离 Chrome 证明 detect/collect 可跨导航和同 URL 刷新。现有结果声明顺序观察，未承诺单文档事务；补齐 [文档归属边界](INTEGRATIONS.md#顺序观察与文档归属)，没有制造不必要的新绑定层。新增可选择执行的浏览器夹具。 |
+| P6 | 版本/锁文件为5.1.0，XState仍锁5.33.2；按现有 git archive 规范准备固定提交候选。独立包与真实宿主验收结果在完成后记录，下文不以 resolver 代替发现证据。 |
 
-生产 GER/SQLite 模式、预算、fencing、目标绑定、回执与 Effect Ledger 没有修改；未打开真实 Store、私人 Profile 或游戏。普通诊断不新增 Goal 或 GER 依赖。
+主要生产修改是 CLI Help/错误分类、Skill 安装器与 resolver。GER/SQLite schema、预算、fencing、目标身份、回执、Effect Ledger 及旧 Unknown 合同未修改；普通 Debug 不新增 Goal 锁。Android 强绑定及 Integration 生产代码未修改。没有增添外部依赖或6.0能力。
+
+P4 比较了完整预检与隔离暂存：预检消除缺源后态，却不能消除后续写入失败，因此选暂存。实际 Mac rename 能替换其它进程创建的空目录，不能用它承诺不覆盖，最终采用 exclusive mkdir 与 hard link。不是目录事务或断电保证；不支持 hard link 的文件系统安全失败。入口发布后崩溃可能已安装但未返回成功，先核验，不盲目重装。
 
 ## Validated
 
-初始 CLI/Skill 基线3项通过。新增行为测试先确认旧代码失败；初次 Evidence 替身遗漏 completed 数组导致测试设置失败，已修正替身完整结构，不把它算产品缺陷或靠重跑掩盖。
+环境为 macOS27.0.1 ARM64、Node24.18.0/npm11.16.0、Apple Git2.54.0、Chrome155.0.8059.41/CDP1.3、Python3.12.14。最低 Node22.12.0 使用官方便携归档，SHA256 与官方 SHASUMS 核对，没有修改全局 Node/PATH。项目安装仅 `npm ci --ignore-scripts --no-audit --no-fund`。
 
-在 **Node24.18.0 与 Node22.12.0** 各自运行：
+| 实际命令 | 结果与范围 |
+|---|---|
+| `npm test`（Node24，含 experimental-sqlite） | 427 passed / 0 failed / 0 skipped。首次沙箱运行426通过、1项 workshop-origin 因 loopback listen EPERM 失败；保留失败，授权本地夹具端口后原命令427全过，未改产品掩盖失败。 |
+| `node --test tests/install-skill.test.cjs tests/install-skill-failures.test.cjs tests/cli-errors.test.cjs` | 18 passed / 0 failed / 0 skipped，实际 Mac 临时文件系统。 |
+| Node22.12 `node --experimental-sqlite --test tests/install-skill.test.cjs tests/install-skill-failures.test.cjs tests/cli-errors.test.cjs tests/integration.test.cjs` | 22 passed / 0 failed / 0 skipped。 |
+| `python -m unittest discover -s tests -p 'test_*.py'`（Python3.12.14） | 4项：3 passed、1 skipped（Pillow缺失），不是4项全通过。 |
+| `DOL_TEST_CHROME=<已核对Chrome> node tests/integration-document.browser.cjs` | 3/3：稳定文档、detect后导航、同URL刷新。自有临时Profile/loopback夹具，无游戏资源；浏览器及服务器关闭。 |
 
-```
-node --experimental-sqlite --test tests/cli-errors.test.cjs tests/install-skill.test.cjs tests/diagnostics.test.cjs
-node --experimental-sqlite --test --test-name-pattern='settled no-progress' tests/game-goal.test.cjs
-```
+初期 Node24/22 各自的13项 CLI/诊断与1项真实临时 SQLite 无进展测试也通过；后者使用替身目标，不代表 Android/游戏。Node22不带SQLite参数时在创建Store前正确拒绝。P2独立审查确认49/49规则保留、111条本地链接/锚点有效。
 
-每个 Node 环境：第一组 **13 passed / 0 failed / 0 skipped**；第二组 **1 passed / 0 failed / 0 skipped**。没有执行或宣称整套产品回归。安装测试只在自有临时目录操作；无进展回归使用自有真实 SQLite 及替身 Android/CDP，覆盖四次重复、恢复、仍可执行与持久提示，不是实机游戏。
+安装故障回归覆盖缺少后置源文件、五处部分写入、五处发布失败、并发目标创建、权限拒绝、陌生文件、外部截短文件、真实子进程在入口发布前退出及换目录重试。独立审查发现的撤销误删外部截短文件问题，先红后绿补回归；仅未完成的本轮写入允许按部分字节识别，已完成文件要求完整字节一致。未递归清理未知目录。
 
-seconds 的 capture/普通 perf 拒绝发生在受控 Evidence I/O 前；logcat/record/deep 合法值正确映射到既有 collector 选项。没有访问 ADB、Perfetto 或设备。隐私测试注入 PRIVATE 参数/路径/错误，验证固定输出不泄漏；未知 Session 操作仍显示原阶段和 cause unknown。安装已有目录的 sentinel 保留。
+## Not validated
 
-另外验证 help/version/Skill 安装不加载 xstate/node:sqlite/game-runtime；Node22.12 不带 SQLite 参数时 Runtime 给出 GAMEPLAY_RUNTIME_UNAVAILABLE，未创建临时 Store。`node --check`、`git diff --check` 通过；变更涉及文档的36个本地链接/锚点核对通过。独立只读审查未发现第一阶段高优先级问题。
+Windows launcher 真执行、Windows路径/占用/硬链接与异常恢复；Android CLI、Android WebView实机及真实DoL Gameplay未验证。Mac并不替代这些验收。Python可选Pillow用例跳过。六任务路由是静态人工/独立审查，不代表所有模型和提示的动态触发率。
 
-本地原始记录在 ignored `artifacts/5.1/`：stage1-baseline/red/final、no-progress、node22-stage1/no-progress/sqlite-prerequisite 等，不进入发布 payload 或源码提交。
+## Known limitations
 
-## Not validated / Known limitations
+安装不具备全目录原子事务或电源故障保证；异常中断可能保留自己与未知资源。新清单只证明本地完整性，不证明来源可信。保留不明残留、从新父目录重试；不自动覆盖旧安装。
 
-- Windows launcher 真执行、Windows 路径/占用、Android WebView/设备、真实 DoL 未验；本阶段不改这些实现。
-- 文件安装成功与 resolver 可执行仍不证明 Agent 宿主已自动发现 Skill。本轮没有全局 Skill 安装或宿主发现验收。
-- P4 的半安装失败与竞争/异常中断恢复仍是待修复的已知问题，不因新增输入错误码而消失。
-- P2 六任务评估、P5 真实导航调查和 P6 独立包验货属于后续已规划工作；不能用本阶段通过数替代。
+Integration多次采集是顺序观察，manifest/envelope、URL相同及集成版本均不证明同一文档代次。导航期间依赖跨观察连续性的消费者必须自行重新核对身份，不能把这些输出当原子业务快照。
 
-## 发布判断
+本地原始测试记录、浏览器输出、便携Node与未来包验货材料位于ignored artifacts；不进入Git/发行payload。所有夹具均为合成无游戏内容数据。
 
-**第一阶段 P1 + P3 范围内完成。整体 5.1 尚未达到 Scoped Done，暂不建议正式发布。** 下一阶段按计划推进 P2，再做 P4/P5 和 P6；需要的 Windows/宿主证据分别记录为发布条件，不把主要研发全部转移到家里，也不提前实现6.0功能。
+## 交付与发布判断
+
+P1–P5已按Mac维护范围完成。P6独立包与真实宿主验收正在收口，完成前不宣称整体Scoped Done。Windows安装器的定向实测是正式跨平台发布条件；无设备不阻止完成Mac交付，不把未测写成通过。未授权远端推送、Tag或Release。
