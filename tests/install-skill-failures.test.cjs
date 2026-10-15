@@ -88,6 +88,47 @@ test('actual process interruption before the entry is published cannot expose a 
  assert.throws(()=>resolve(f.dest,{DOL_DEV_TOOLS_HOME:f.source}));assert.throws(()=>install(f.dest,f.source),e=>e.code==='SKILL_TARGET_EXISTS');
  assert.equal(install(path.join(f.root,'retry/dol-dev-tools-paisley-park'),f.source).status,'installed');
 });
+test('file rollback uses consistent identities when path stats report a different device',t=>{
+ const f=fixture(t),lstat=fs.lstatSync,link=fs.linkSync;
+ fs.lstatSync=function(...args){const stat=lstat.apply(this,args);if(stat.isFile())stat.dev+=typeof stat.dev==='bigint'?1n:1;return stat};
+ fs.linkSync=()=>{throw Object.assign(Error('controlled publication failure'),{code:'EIO'})};
+ try{
+  assert.throws(()=>install(f.dest,f.source),e=>e.code==='SKILL_INSTALL_FAILED');
+  assert(!fs.existsSync(f.dest));assert.deepEqual(fs.readdirSync(path.dirname(f.dest)),[]);
+  fs.linkSync=link;
+  assert.equal(install(f.dest,f.source).stagingCleanup,'completed');
+  assert.equal(resolve(f.dest,{}).version,require('../package.json').version);
+ }finally{fs.lstatSync=lstat;fs.linkSync=link}
+});
+
+test('Windows exclusive file handles preserve incomplete cleanup and occupied existing installations',{skip:process.platform!=='win32'},async t=>{
+ const f=fixture(t),link=fs.linkSync,{spawn}=require('node:child_process');let held,closed,count=0;
+ function lock(file){
+  const ready=path.join(f.root,'lock-ready-'+count);held=spawn(path.join(process.env.SystemRoot,'System32/WindowsPowerShell/v1.0/powershell.exe'),['-NoProfile','-NonInteractive','-Command',
+   "$ErrorActionPreference='Stop';$handle=[IO.File]::Open($env:PAISLEY_LOCK_FILE,'Open','ReadWrite','None');try{[IO.File]::WriteAllText($env:PAISLEY_LOCK_READY,'ready');[Console]::ReadLine()|Out-Null}finally{$handle.Dispose()}"],
+   {env:{...process.env,PAISLEY_LOCK_FILE:file,PAISLEY_LOCK_READY:ready},stdio:['pipe','ignore','pipe'],windowsHide:true});
+  closed=new Promise(resolve=>held.once('close',resolve));
+  const deadline=Date.now()+10000;
+  while(!fs.existsSync(ready)&&Date.now()<deadline)Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,25);
+  assert(fs.existsSync(ready),'owned lock process must acknowledge acquisition');
+  assert.throws(()=>fs.readFileSync(file),e=>['EBUSY','EACCES','EPERM'].includes(e.code));
+ }
+ async function unlock(){if(held){held.stdin.end('\n');const code=await closed;held=undefined;assert.equal(code,0)}}
+ const published=path.join(f.dest,'agents/openai.yaml'),expected=fs.readFileSync(path.join(f.skill,'agents/openai.yaml'));
+ fs.linkSync=function(...args){if(++count===3){lock(published);throw Object.assign(Error('controlled publication failure'),{code:'EIO'})}return link.apply(this,args)};
+ try{
+  assert.throws(()=>install(f.dest,f.source),e=>e.code==='SKILL_INSTALL_INCOMPLETE');
+  assert(!fs.existsSync(path.join(f.dest,'SKILL.md')));
+ }finally{fs.linkSync=link;await unlock()}
+ assert.deepEqual(fs.readFileSync(published),expected);
+ const stage=fs.readdirSync(path.dirname(f.dest)).find(v=>v.startsWith('.dol-dev-tools-install-'));assert(stage);
+ assert(fs.readdirSync(path.join(path.dirname(f.dest),stage)).some(name=>fs.statSync(path.join(path.dirname(f.dest),stage,name)).ino===fs.statSync(published).ino));
+ const retry=path.join(f.root,'retry/dol-dev-tools-paisley-park');assert.equal(install(retry,f.source).status,'installed');
+ const entry=path.join(retry,'SKILL.md'),bytes=fs.readFileSync(entry);count++;
+ try{lock(entry);assert.throws(()=>install(retry,f.source),e=>e.code==='SKILL_TARGET_EXISTS')}finally{await unlock()}
+ assert.deepEqual(fs.readFileSync(entry),bytes);assert.equal(resolve(retry,{}).version,require('../package.json').version);
+});
+
 test('macOS permission failures are refused before discovery; directory rename can replace an empty peer',t=>{
  if(process.platform!=='darwin'||process.getuid?.()===0){t.skip('Requires unprivileged macOS filesystem');return}
  const f=fixture(t);fs.mkdirSync(path.dirname(f.dest));fs.chmodSync(path.dirname(f.dest),0o500);
