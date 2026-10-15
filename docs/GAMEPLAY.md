@@ -152,7 +152,7 @@ Combat 当前接入受审原 radiobutton 的字符串选择（leftaction/rightac
 
 开发衣柜检查可以使用同一条件Goal，`mode:"development"`并声明`requiredCheckpoints:["starting-wardrobe","original-equipped"]`。分别提交`{"name":"starting-wardrobe","predicate":"scene-passage","passage":"Wardrobe"}`及`{"name":"original-equipped","predicate":"goal-satisfied"}`。检查由新原观察决定，不接收模型传入的passed。必需检查未通过不能complete，失败不能由恢复/换路线/后来Goal达成覆盖；检查点也会使旧Decision失效。
 
-Gameplay私有Scene现在含最多2048字符、最多256条非空可读片段的可见叙述（遍历最多4096个文本节点）及有界控制标签，排除form/save-list/input值；Generic Evidence仍不采集这些游戏上下文。路线记录保存最近16个已结清attempt及原现场/目标进展摘要，恢复后可读取；同一现场/同一动作反复3次无原Goal进展时不再提供该路线，宿主可选择其它当前动作。新事件仍可理解并重规划，硬预算始终保留。记录是观察与解释的有限摘要，不是全游戏地图或根因证明。
+Gameplay私有Scene现在含最多2048字符、最多256条非空可读片段的可见叙述（遍历最多4096个文本节点）及有界控制标签，排除form/save-list/input值；Generic Evidence仍不采集这些游戏上下文。路线记录保存最近16个已结清attempt及原现场/目标进展摘要，恢复后可读取；同一现场/同一动作反复3次无原Goal进展时保留可用路线并提供 routeHints，提示宿主考虑其它实验或重新规划，不自动封禁路线。未决/Unknown 仍禁止盲目重放，硬预算始终保留。记录是观察与解释的有限摘要，不是全游戏地图或根因证明。
 
 只读`game-contract`可核对widget handler真实闭包正文、定义payload及唯一Story正文和已审阅hash；这只证明源码身份。真实穿戴的事件入口、可达刷新宏、业务提交见证和错误/清理语义仍需整体验证，不能把源码hash、node.click返回或UI静默直接当作terminal receipt。
 

@@ -36,7 +36,10 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
     data-reset clears scoped App data and records native generation proof; no Store/TargetKey substitution.
   inspect --endpoint LOCAL_HTTP_CDP --out NEW_JSON
   environment --serial SERIAL --package PACKAGE --out NEW_DIR [--target-id ID]
-  capture | perf | logcat | record --serial SERIAL --package PACKAGE --out NEW_DIR [--seconds N]
+  capture --serial SERIAL --package PACKAGE --out NEW_DIR
+  perf --serial SERIAL --package PACKAGE --out NEW_DIR
+  logcat --serial SERIAL --package PACKAGE --out NEW_DIR [--seconds N]
+  record --serial SERIAL --package PACKAGE --out NEW_DIR [--seconds N]
   perf --deep --serial SERIAL --package PACKAGE --out NEW_DIR --seconds 10 --sensitive yes
   perf-series --serial SERIAL --package PACKAGE --out NEW_DIR --samples 3 --interval-ms 1000 [--webview yes]
   bugreport --serial SERIAL --package PACKAGE --out NEW_DIR --sensitive yes
@@ -78,6 +81,7 @@ function parse(args, allowed) {
   const options = Object.create(null);
   while (args.length) {
     const flag = args.shift();
+    if (flag === '--seconds' && !allowed.includes(flag)) throw Object.assign(Error('Option not applicable'),{code:'CLI_OPTION_NOT_APPLICABLE'});
     if (['--deep','--full','--plan'].includes(flag) && allowed.includes(flag) && !Object.hasOwn(options,flag.slice(2))) { options[flag.slice(2)] = true; continue; }
     if (!allowed.includes(flag) || Object.hasOwn(options, flag.slice(2)) || !args.length) throw Object.assign(new Error('Unknown, duplicate or incomplete option'),{code:'INVALID_CLI_ARGUMENTS'});
     options[flag.slice(2)] = args.shift();
@@ -89,6 +93,10 @@ function errorMessage(error) {
     GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Run npm ci --ignore-scripts --no-audit --no-fund in the Tools root; Node 22.12 needs --experimental-sqlite. Generic diagnostics remain available.'],
     INVALID_CLI_ARGUMENTS:['cli.parse','Unknown, duplicate or incomplete option; use --help. Supplied arguments omitted.'],
     UNSUPPORTED_CHECKPOINT_NAME:['journey.validate','field=name: Action/Journey checkpoints do not accept name. See docs/ACTIONS.md.'],
+    CLI_OPTION_NOT_APPLICABLE:['cli.validate','field=seconds: omit --seconds for this command. Use logcat, record or perf --deep for supported timed collection; see --help.'],
+    SKILL_TARGET_EXISTS:['install.preflight','field=out: Existing target preserved. Select a new empty target named dol-dev-tools-paisley-park; see docs/SKILL_INSTALL.md.'],
+    INVALID_SKILL_TARGET:['install.preflight','field=out: Select a new directory named dol-dev-tools-paisley-park; see docs/SKILL_INSTALL.md.'],
+    ETIMEDOUT:['command.timeout','Operation timed out; this is not proof of device failure or remote cancellation. Check the original target and execution evidence. Do not blindly replay an operation that may have been dispatched.'],
   };
   const code=typeof error?.code==='string'&&Object.hasOwn(known,error.code)?error.code:'COMMAND_FAILED';
   const stage=['request','propose','dispatch','resume','reconcile','checkpoint','cancel','status'].includes(error?.cliOperation)?'game-session.'+error.cliOperation:'command';
@@ -168,7 +176,7 @@ async function main(args = process.argv.slice(2)) {
     if (options.sensitive !== undefined && options.sensitive !== 'yes') throw new Error('Sensitive selection must be yes');
     options.sensitive = options.sensitive === 'yes';
     if (options.deep || options.full) options.deepSeconds = Number(options.seconds ?? 10);
-    if (command === 'perf' && options.seconds !== undefined && !options.deep) throw new Error('--seconds requires --deep for perf');
+    if (command === 'perf' && options.seconds !== undefined && !options.deep) throw Object.assign(Error('Option not applicable'),{code:'CLI_OPTION_NOT_APPLICABLE'});
     if (options.full) { options.bugreport = true; options.logcatSeconds = 30; options.recordSeconds = 10; }
     if (command === 'logcat' || options['logcat-seconds'] !== undefined) options.logcatSeconds = Number(options['logcat-seconds'] ?? options.seconds ?? 30);
     if (command === 'record' || options['record-seconds'] !== undefined) options.recordSeconds = Number(options['record-seconds'] ?? options.seconds ?? 10);
@@ -187,7 +195,7 @@ async function main(args = process.argv.slice(2)) {
     }
     if (manifest.status !== 'complete') process.exitCode = 1;
   } else if(command==='install-skill'){
-    const options=parse(args,['--out']);const result=require('./lib/install-skill.cjs').install(options.out);console.log('Skill installed at '+result.skillDir+'; available on the next turn. Tools location will be reverified before use.');
+    const options=parse(args,['--out']);const result=require('./lib/install-skill.cjs').install(options.out);console.log('Skill files installed at '+result.skillDir+'. Host discovery is not verified; follow docs/SKILL_INSTALL.md and verify the resolved Tools location before use.');
   } else if(command==='hitbox-overlay'){
     const options=parse(args,['--input','--out','--minimum-css-px']);require('./lib/hitbox-overlay.cjs').write(options.input,options.out,options['minimum-css-px']===undefined?44:Number(options['minimum-css-px']));console.log('Hitbox bounds SVG created; center hit and size hints do not prove click behavior.');
   } else if (command==='viewport-matrix') {

@@ -1,8 +1,9 @@
 const fs=require('node:fs'),path=require('node:path'),{createHash}=require('node:crypto');
 const {validateRoot}=require('../../.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs');
 function install(out,toolRoot=path.resolve(__dirname,'../..')){
- const tools=validateRoot(toolRoot);if(typeof out!=='string'||!out.trim())throw Error('New Skill directory required');const dest=path.resolve(out);
- if(path.basename(dest)!=='dol-dev-tools-paisley-park'||fs.existsSync(dest))throw Error('New dol-dev-tools-paisley-park Skill directory required; existing installation preserved');
+ const tools=validateRoot(toolRoot);if(typeof out!=='string'||!out.trim())throw Object.assign(Error('New Skill directory required'),{code:'INVALID_SKILL_TARGET'});const dest=path.resolve(out);
+ if(path.basename(dest)!=='dol-dev-tools-paisley-park')throw Object.assign(Error('Invalid Skill directory name'),{code:'INVALID_SKILL_TARGET'});
+ try{fs.lstatSync(dest);throw Object.assign(Error('Existing installation preserved'),{code:'SKILL_TARGET_EXISTS'})}catch(error){if(error.code!=='ENOENT')throw error}
  const source=path.join(tools.root,'.agents/skills/dol-dev-tools-paisley-park'),skill=fs.readFileSync(path.join(source,'SKILL.md'),'utf8'),resolver=fs.readFileSync(path.join(source,'scripts/resolve.cjs'));
  // Generated local links point to the same canonical Tools docs; no second runtime or manual copy.
  const installed=skill.replace(/\]\(\.\.\/\.\.\/\.\.\/docs\/([A-Za-z0-9_.-]+\.md)(#[^\s)<>]+)?\)/g,(_,file,anchor)=>'](<'+path.join(tools.docs,file).replaceAll('\\','/')+(anchor||'')+'>)');

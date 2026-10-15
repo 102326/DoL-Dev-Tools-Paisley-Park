@@ -51,11 +51,13 @@ Scope 是宿主把已经获得的用户授权落实为工作区、设备、App�
 
 这些是待替换的明确占位符，不能直接运行；先落实真实授权、当前目标和审查后的 Recipe。省略 maxSpend 表示不设消费上限；显式零只允许真实零成本候选。实际花费仍持久记录。已有同目标 Unknown 必须按原合同处理，不换库或改 TargetKey 解锁。
 
+按[运行前提](SKILL_INSTALL.md#运行前提)安装锁定依赖；直接 Node 入口显式启用 SQLite，Windows launcher 已包含该参数。
+
 ```powershell
-node scripts/dol-dev.cjs game-goal-start --file reviewed-request.json --serial SELECTED_DEVICE --package SELECTED.APP.PACKAGE --out NEW_GOAL_DIR --test-environment yes
-node scripts/dol-dev.cjs game-session --goal NEW_GOAL_DIR --operation request --test-environment yes
-node scripts/dol-dev.cjs game-session --goal NEW_GOAL_DIR --operation propose --file current-decision.json --test-environment yes
-node scripts/dol-dev.cjs game-session --goal NEW_GOAL_DIR --operation dispatch --test-environment yes
+node --experimental-sqlite scripts/dol-dev.cjs game-goal-start --file reviewed-request.json --serial SELECTED_DEVICE --package SELECTED.APP.PACKAGE --out NEW_GOAL_DIR --test-environment yes
+node --experimental-sqlite scripts/dol-dev.cjs game-session --goal NEW_GOAL_DIR --operation request --test-environment yes
+node --experimental-sqlite scripts/dol-dev.cjs game-session --goal NEW_GOAL_DIR --operation propose --file current-decision.json --test-environment yes
+node --experimental-sqlite scripts/dol-dev.cjs game-session --goal NEW_GOAL_DIR --operation dispatch --test-environment yes
 ```
 
 使用当前 Request 的完整 Decision envelope 和 actionRef。改动源码后先重新观察，不用旧 ref 执行新函数。传输 acknowledgement、已观察副作用、当前 Goal predicate 分开显示；Goal 为真而 effect 未知仍不能完成。正常脚本结清但 Goal 尚未满足，可继续重规划。

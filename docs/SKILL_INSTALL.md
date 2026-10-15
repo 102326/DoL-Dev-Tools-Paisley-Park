@@ -9,7 +9,13 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 安装目标必须是尚不存在的`dol-dev-tools-paisley-park`目录。已有安装会拒绝覆盖；本命令不下载、删除或自动更新。安装内容为SKILL.md、位置解析器、显示名元数据agents/openai.yaml和本地tool-location.json；说明链接指向同一份Tools文档。工具包本体需要留在原位置；源码包不包含机器专属位置记录。
 
-解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装后从下一次对话回合开始发现；当前回合显式读取可以验证行为，但不能冒充宿主自动发现验收。
+解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装成功只证明文件已写入；宿主何时重新扫描取决于实际 Agent 环境。按宿主支持的方法刷新或开启新会话，确认其可发现 Skill 并调用正确版本。当前回合显式读取或 resolver 成功不能冒充宿主自动发现验收。
+
+## 运行前提
+
+最低 Node.js 22.12.0。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2；直接运行 Gameplay CLI 时使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，兼容最低 Node 22.12 的 SQLite 启动条件。维护环境 Node 24 可直接加载内置 SQLite；显式带参数的示例同样可用。两个 Windows launcher 已包含参数，不需修改系统配置。
+
+缺依赖拒绝不表示设备故障。只使用自有临时库做环境 smoke，不打开旧 Store 来测试是否加载成功。
 
 ## 5.0.0 安装与验货
 

@@ -62,7 +62,7 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 
 安装器拒绝覆盖已有 Skill。更新时先备份并移出旧安装，保留原 Tools，再向空目录安装；Tools 必须留在稳定位置。Node 22 直接运行 Gameplay CLI 需要 `--experimental-sqlite`，Windows launcher 已包含。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
 
-下一回合显式使用 `$dol-dev-tools-paisley-park`，告诉 Agent 工作区、设备、App、问题或目标，以及获准操作的数据范围。例如：
+安装后按宿主支持的方法刷新或开启新会话，确认 Skill 确实被发现；文件安装和 resolver 成功不保证下一回合自动可用。发现后显式使用 `$dol-dev-tools-paisley-park`，告诉 Agent 工作区、设备、App、问题或目标，以及获准操作的数据范围。例如：
 
 > 检查已授权测试 App 中这个界面的布局问题，先确认实际加载的 Mod，再找到相关源码。只修改有证据指向的部分，使用项目已有方式构建和复验。
 
@@ -102,7 +102,7 @@ Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前
 
 Integration 缺失、不支持或失败会单独记录，已成功的通用采集仍可保留。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 可以执行传入的页面 JavaScript，“只读”是 Probe 和工作流约束。
 
-操作存档、覆盖、删除或数据重建必须属于用户实际授权。已授权范围内自主推进，结果未知的动作保留原记录，不盲重放，也不通过换 Store 隐藏。使用数据重建前一致备份执行记录；升级后的 Store 不允许 3.0.3 继续写入，见 [升级提醒](docs/RELEASE_4.0.1.md#重要注意事项)。
+操作存档、覆盖、删除或数据重建必须属于用户实际授权。已授权范围内自主推进，结果未知的动作保留原记录，不盲重放，也不通过换 Store 隐藏。使用数据重建前一致备份执行记录；升级后的 Store 不允许 3.0.3 继续写入，见 [升级提醒](docs/CLOSEOUT_4_0.md#数据重建与旧记录)。
 
 截图、日志、存档和私人原始证据不自动上传。Evidence 的 complete / partial / failed 描述一次采集；像素差异不能单独证明兼容失败，内存增长不能单独证明泄漏。
 
