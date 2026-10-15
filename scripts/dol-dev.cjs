@@ -96,6 +96,9 @@ function errorMessage(error) {
     CLI_OPTION_NOT_APPLICABLE:['cli.validate','field=seconds: omit --seconds for this command. Use logcat, record or perf --deep for supported timed collection; see --help.'],
     SKILL_TARGET_EXISTS:['install.preflight','field=out: Existing target preserved. Select a new empty target named dol-dev-tools-paisley-park; see docs/SKILL_INSTALL.md.'],
     INVALID_SKILL_TARGET:['install.preflight','field=out: Select a new directory named dol-dev-tools-paisley-park; see docs/SKILL_INSTALL.md.'],
+    SKILL_SOURCE_INCOMPLETE:['install.preflight','Required Skill source files are missing, unreadable or invalid. Recheck the complete toolkit from its verified package; no installation was published.'],
+    SKILL_INSTALL_FAILED:['install.write','Installation failed; owned temporary files were removed. Check local directory permissions/filesystem support and retry an unused target; existing installations remain protected.'],
+    SKILL_INSTALL_INCOMPLETE:['install.cleanup','Installation failed and some paths could not be safely removed. Preserve the target and unknown leftovers; retry a different unused parent path. See docs/SKILL_INSTALL.md.'],
     ETIMEDOUT:['command.timeout','Operation timed out; this is not proof of device failure or remote cancellation. Check the original target and execution evidence. Do not blindly replay an operation that may have been dispatched.'],
   };
   const code=typeof error?.code==='string'&&Object.hasOwn(known,error.code)?error.code:'COMMAND_FAILED';
@@ -195,7 +198,7 @@ async function main(args = process.argv.slice(2)) {
     }
     if (manifest.status !== 'complete') process.exitCode = 1;
   } else if(command==='install-skill'){
-    const options=parse(args,['--out']);const result=require('./lib/install-skill.cjs').install(options.out);console.log('Skill files installed at '+result.skillDir+'. Host discovery is not verified; follow docs/SKILL_INSTALL.md and verify the resolved Tools location before use.');
+    const options=parse(args,['--out']);const result=require('./lib/install-skill.cjs').install(options.out);console.log('Skill files installed at '+result.skillDir+'. Host discovery is not verified; follow docs/SKILL_INSTALL.md and verify the resolved Tools location before use.');if(result.stagingCleanup==='retained-unknown')console.log('Temporary staging cleanup could not be confirmed; unknown leftovers were preserved. See docs/SKILL_INSTALL.md.');
   } else if(command==='hitbox-overlay'){
     const options=parse(args,['--input','--out','--minimum-css-px']);require('./lib/hitbox-overlay.cjs').write(options.input,options.out,options['minimum-css-px']===undefined?44:Number(options['minimum-css-px']));console.log('Hitbox bounds SVG created; center hit and size hints do not prove click behavior.');
   } else if (command==='viewport-matrix') {

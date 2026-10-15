@@ -64,3 +64,13 @@ test('offline version, help and Skill installation do not load Gameplay dependen
     const result=run(args,['-r',shim]);assert.equal(result.status,0,result.stderr);
   }
 });
+test('incomplete Skill sources and owned write failures expose fixed recovery advice only',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-install-io-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const sourceShim=path.join(root,'source.cjs');
+  fs.writeFileSync(sourceShim,`const fs=require('node:fs'),read=fs.readFileSync;fs.readFileSync=function(file,...args){if(typeof file==='string'&&file.replaceAll('\\\\','/').endsWith('/agents/openai.yaml'))throw Object.assign(Error('PRIVATE_SOURCE_PATH'),{code:'EACCES'});return read.call(this,file,...args)};`);
+  const source=run(['install-skill','--out',path.join(root,'source/dol-dev-tools-paisley-park')],['-r',sourceShim]);
+  assert.equal(source.status,1);assert.match(source.stderr,/SKILL_SOURCE_INCOMPLETE stage=install.preflight/);assert(!source.stderr.includes('PRIVATE'));assert(!fs.existsSync(path.join(root,'source')));
+  const writeShim=path.join(root,'write.cjs');fs.writeFileSync(writeShim,`const fs=require('node:fs');fs.writeFileSync=()=>{throw Object.assign(Error('PRIVATE_WRITE_PATH'),{code:'EACCES'})};`);
+  const failed=run(['install-skill','--out',path.join(root,'write/dol-dev-tools-paisley-park')],['-r',writeShim]);
+  assert.equal(failed.status,1);assert.match(failed.stderr,/SKILL_INSTALL_FAILED stage=install.write/);assert.match(failed.stderr,/retry an unused target/);assert(!failed.stderr.includes('PRIVATE'));assert(!failed.stderr.includes(root));
+});

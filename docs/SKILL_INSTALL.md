@@ -17,6 +17,23 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 缺依赖拒绝不表示设备故障。只使用自有临时库做环境 smoke，不打开旧 Store 来测试是否加载成功。
 
+## 安装失败与重试
+
+5.1 采用隔离暂存而非直接逐文件暴露入口。先完整读取必要源文件，再在目标同一父目录的本轮独占 `.dol-dev-tools-install-*` 中写入并核对字节；暂存文件不叫 SKILL.md，不供宿主发现。最终目标用 exclusive mkdir 创建（已有空目录、文件、坏链接或并发创建都拒绝），逐文件使用同文件系统的 exclusive hard link 发布，**SKILL.md 最后出现**。不用可替换 POSIX 空目录的 rename 来冒充“不覆盖”保证。
+
+新安装包含 install-manifest.json。resolver 验证四个必要文件的存在与摘要，拒绝不完整安装；显式 Tools 环境覆盖只允许绕过过期 tool-location 内容摘要，不跳过其它完整性检查。旧安装/源码目录没有该清单时仍按原位置合同解析，不自动迁移。清单证明本地完整性，不是来源签名。需要实际支持文件 hard link 的本地文件系统；不支持时安全失败，不降级为可见的半写入口。
+
+| 固定错误 | 可执行的处理 |
+|---|---|
+| SKILL_TARGET_EXISTS | 原目标保持不变。完整、残缺及来历不明目录都不能直接覆盖；保留它，选择另一个父目录下尚不存在的同名目标。 |
+| SKILL_SOURCE_INCOMPLETE | 必要源文件缺失/不可读/超限，尚未发布安装；重新核对完整的可信 Tools 包，不能只补一份猜测的 YAML/脚本。 |
+| SKILL_INSTALL_FAILED | 本轮可确认归属的临时文件已撤销；检查父目录权限及文件系统 hard link 支持后，可重试同一个未使用路径。 |
+| SKILL_INSTALL_INCOMPLETE | 部分路径无法安全清理，保留现场，使用不同父目录的未使用目标重试。不能根据目录前缀自动删除残留。 |
+
+撤销只处理记录过 inode 与预期字节的本轮文件及空目录；陌生文件、已替换目录或内容修改会保留，不递归删除未知目录。父目录可能保留。安装完成但暂存清理无法确认时报告明确警告，不谎称临时资源已全部撤销。
+
+这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；Windows 路径与文件占用仍须实测，不能以 Mac hard link/rename 行为替代 Windows 验收。
+
 ## 5.0.0 安装与验货
 
 本文对应 `5.0.0 — Paisley Park`；下载状态见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
