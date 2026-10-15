@@ -15,6 +15,20 @@ test('all required sources are preflighted before a final installation is create
  const f=fixture(t);fs.unlinkSync(path.join(f.skill,'agents/openai.yaml'));
  assert.throws(()=>install(f.dest,f.source),e=>e.code==='SKILL_SOURCE_INCOMPLETE');assert.equal(fs.existsSync(f.dest),false);
 });
+test('staging identity read failures preserve the unrecorded directory and report incomplete cleanup',t=>{
+ const f=fixture(t),mkdtemp=fs.mkdtempSync,lstat=fs.lstatSync,foreign=path.join(f.root,'foreign');fs.writeFileSync(foreign,'keep');
+ const retained=[];
+ for(const code of ['EIO','EACCES']){
+  let stage,injected=false;
+  fs.mkdtempSync=function(...args){stage=mkdtemp.apply(this,args);return stage};
+  fs.lstatSync=function(file,...args){if(stage&&path.resolve(file)===stage&&!injected){injected=true;throw Object.assign(Error('PRIVATE_STAGE_PATH'),{code})}return lstat.call(this,file,...args)};
+  try{assert.throws(()=>install(f.dest,f.source),e=>e.code==='SKILL_INSTALL_INCOMPLETE')}finally{fs.mkdtempSync=mkdtemp;fs.lstatSync=lstat}
+  assert(injected);assert(fs.statSync(stage).isDirectory());assert.deepEqual(fs.readdirSync(stage),[]);retained.push(stage);
+  assert(!fs.existsSync(f.dest));assert.equal(fs.readFileSync(foreign,'utf8'),'keep');
+ }
+ assert.equal(install(f.dest,f.source).status,'installed');
+ for(const stage of retained)assert.deepEqual(fs.readdirSync(stage),[],'retry must preserve unrecorded staging directories');
+});
 test('legacy installations without a manifest retain location and explicit override behavior',t=>{
  const f=fixture(t);fs.mkdirSync(path.join(f.dest,'scripts'),{recursive:true});
  fs.writeFileSync(path.join(f.dest,'tool-location.json'),JSON.stringify({schemaVersion:1,toolRoot:f.source}));

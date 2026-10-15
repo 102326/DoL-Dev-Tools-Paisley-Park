@@ -32,10 +32,10 @@ function install(out,toolRoot=path.resolve(__dirname,'../..')){
   payload={'SKILL.md':Buffer.from(installed),'scripts/resolve.cjs':resolver,'agents/openai.yaml':agent,'tool-location.json':Buffer.from(JSON.stringify({schemaVersion:1,toolRoot:tools.root},null,2))};
  }catch{throw coded('SKILL_SOURCE_INCOMPLETE')}
  const manifest=Buffer.from(JSON.stringify({schemaVersion:1,files:Object.fromEntries(Object.entries(payload).map(([name,bytes])=>[name,sha(bytes)]))},null,2));
- const staging=owned(),final=owned();let stage,claimed=false;
+ const staging=owned(),final=owned();let stage,stageRecorded=false,claimed=false;
  try{
   fs.mkdirSync(path.dirname(dest),{recursive:true});
-  stage=fs.mkdtempSync(path.join(path.dirname(dest),'.dol-dev-tools-install-'));staging.adopt(stage);
+  stage=fs.mkdtempSync(path.join(path.dirname(dest),'.dol-dev-tools-install-'));staging.adopt(stage);stageRecorded=true;
   const entries=[['install-manifest.json',manifest],...Object.entries(payload)],staged=new Map();
   for(const [i,[name,bytes]] of entries.entries()){const file=path.join(stage,'entry-'+i+'.data');staging.write(file,bytes);if(!fs.readFileSync(file).equals(bytes))throw coded('SKILL_INSTALL_FAILED');staged.set(name,file)}
   // Directory rename can overwrite an empty peer on POSIX. Claim with exclusive mkdir instead.
@@ -49,7 +49,8 @@ function install(out,toolRoot=path.resolve(__dirname,'../..')){
   const stageRemoved=staging.cleanup();
   return {status:'installed',skillDir:dest,toolsRoot:tools.root,skillSha256:sha(payload['SKILL.md']),locationMustBeReverified:true,stagingCleanup:stageRemoved?'completed':'retained-unknown'};
  }catch(error){
-  const targetClean=claimed?final.cleanup():true,stageClean=staging.cleanup();
+  // A created staging directory without a recorded identity must be preserved.
+  const targetClean=claimed?final.cleanup():true,stageClean=(!stage||stageRecorded)&&staging.cleanup();
   if(!targetClean||!stageClean)throw coded('SKILL_INSTALL_INCOMPLETE');
   if(error.code==='SKILL_TARGET_EXISTS')throw error;
   try{fs.lstatSync(dest);if(!claimed)throw coded('SKILL_INSTALL_INCOMPLETE')}catch(check){if(check.code!=='ENOENT')throw check}

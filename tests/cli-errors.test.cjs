@@ -41,9 +41,11 @@ test('seconds help and validation match the controlled evidence boundary without
 test('known installation input failures are actionable without disclosing the supplied path',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-install-errors-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const dest=path.join(root,'PRIVATE_PARENT','dol-dev-tools-paisley-park');fs.mkdirSync(dest,{recursive:true});fs.writeFileSync(path.join(dest,'sentinel'),'unchanged');
-  const existing=run(['install-skill','--out',dest]);assert.equal(existing.status,1);assert.match(existing.stderr,/SKILL_TARGET_EXISTS stage=install.preflight.*field=out/);assert.match(existing.stderr,/new empty target/);assert(!existing.stderr.includes(root));assert(!existing.stderr.includes('PRIVATE'));
+  const existing=run(['install-skill','--out',dest]);assert.equal(existing.status,1);assert.match(existing.stderr,/SKILL_TARGET_EXISTS stage=install.preflight.*field=out/);assert.match(existing.stderr,/target path that does not exist/);assert(!existing.stderr.includes(root));assert(!existing.stderr.includes('PRIVATE'));
   assert.equal(fs.readFileSync(path.join(dest,'sentinel'),'utf8'),'unchanged');
-  const invalid=run(['install-skill','--out',path.join(root,'PRIVATE_WRONG')]);assert.equal(invalid.status,1);assert.match(invalid.stderr,/INVALID_SKILL_TARGET stage=install.preflight.*field=out/);assert(!invalid.stderr.includes('PRIVATE'));
+  const empty=path.join(root,'empty/dol-dev-tools-paisley-park');fs.mkdirSync(empty,{recursive:true});
+  const refused=run(['install-skill','--out',empty]);assert.equal(refused.status,1);assert.match(refused.stderr,/SKILL_TARGET_EXISTS.*target path that does not exist/);assert.deepEqual(fs.readdirSync(empty),[]);
+  const invalid=run(['install-skill','--out',path.join(root,'PRIVATE_WRONG')]);assert.equal(invalid.status,1);assert.match(invalid.stderr,/INVALID_SKILL_TARGET stage=install.preflight.*field=out/);assert.match(invalid.stderr,/target path that does not exist/);assert(!invalid.stderr.includes('PRIVATE'));
 });
 test('installation success reports file installation without guaranteeing host discovery',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-discovery-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
@@ -70,6 +72,11 @@ test('incomplete Skill sources and owned write failures expose fixed recovery ad
   fs.writeFileSync(sourceShim,`const fs=require('node:fs'),read=fs.readFileSync;fs.readFileSync=function(file,...args){if(typeof file==='string'&&file.replaceAll('\\\\','/').endsWith('/agents/openai.yaml'))throw Object.assign(Error('PRIVATE_SOURCE_PATH'),{code:'EACCES'});return read.call(this,file,...args)};`);
   const source=run(['install-skill','--out',path.join(root,'source/dol-dev-tools-paisley-park')],['-r',sourceShim]);
   assert.equal(source.status,1);assert.match(source.stderr,/SKILL_SOURCE_INCOMPLETE stage=install.preflight/);assert(!source.stderr.includes('PRIVATE'));assert(!fs.existsSync(path.join(root,'source')));
+  const identityShim=path.join(root,'identity.cjs');
+  fs.writeFileSync(identityShim,`const fs=require('node:fs'),mkdtemp=fs.mkdtempSync,lstat=fs.lstatSync;let stage;fs.mkdtempSync=function(...args){stage=mkdtemp.apply(this,args);return stage};fs.lstatSync=function(file,...args){if(file===stage)throw Object.assign(Error('PRIVATE_STAGE_PATH'),{code:'EIO'});return lstat.call(this,file,...args)};`);
+  const identityParent=path.join(root,'identity'),identity=run(['install-skill','--out',path.join(identityParent,'dol-dev-tools-paisley-park')],['-r',identityShim]);
+  assert.equal(identity.status,1);assert.match(identity.stderr,/SKILL_INSTALL_INCOMPLETE stage=install.cleanup/);assert(!identity.stderr.includes('PRIVATE'));assert(!identity.stderr.includes(root));
+  const retained=fs.readdirSync(identityParent);assert.equal(retained.length,1);assert(retained[0].startsWith('.dol-dev-tools-install-'));assert.deepEqual(fs.readdirSync(path.join(identityParent,retained[0])),[]);
   const writeShim=path.join(root,'write.cjs');fs.writeFileSync(writeShim,`const fs=require('node:fs');fs.writeFileSync=()=>{throw Object.assign(Error('PRIVATE_WRITE_PATH'),{code:'EACCES'})};`);
   const failed=run(['install-skill','--out',path.join(root,'write/dol-dev-tools-paisley-park')],['-r',writeShim]);
   assert.equal(failed.status,1);assert.match(failed.stderr,/SKILL_INSTALL_FAILED stage=install.write/);assert.match(failed.stderr,/retry an unused target/);assert(!failed.stderr.includes('PRIVATE'));assert(!failed.stderr.includes(root));
