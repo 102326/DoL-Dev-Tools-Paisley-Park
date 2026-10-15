@@ -72,8 +72,16 @@ ModLoader 的 `registerAddonPlugin` 要求在 inject-early 阶段注册；`after
 
 显式启用 [patch-observation.cjs](../../integrations/examples/patch-observation.cjs) 即可通过现有 `evidence --integration-file` 入口读取已经存在的探针记录；它不会安装探针、执行 stop、重放 Patch 或延长 Integration 超时。探针不存在时 unavailable，记录的 nonce/当前 timeOrigin 或容量不符合合同则 unsupported，Generic Evidence 继续按原规则独立完成。
 
-collect 只做一次同步页面求值，核对记录自带的文档标签；这不让 Integration Worker 自动获得原执行上下文的完整绑定，也不承诺 detect 和 collect 属于同一文档。需要连续身份时使用原 Execution Context，不拼接不同 Document。可用记录不代表完整记录、业务完成或兼容成功。此模块已做定向替身回归；真实设备记录使用原绑定直接读回，尚未用本模块重新采集，不把两者混算为新实机验收。
+collect 只做一次同步页面求值，核对记录自带的文档标签；这不让 Integration Worker 自动获得原执行上下文的完整绑定，也不承诺 detect 和 collect 属于同一文档。需要连续身份时使用原 Execution Context，不拼接不同 Document。可用记录不代表完整记录、业务完成或兼容成功。首次设备记录使用原绑定直接读回；随后对显式选择的新记录执行了标准Worker/Evidence采集，两次证据分别保留，见下节。
 
 模块对公开结果再做字段投影：只保留选定资源摘要、局部阶段、容量/错误和恢复信息；Mod 名称转为摘要，不复制额外正文、异常或路径。资源名称由调用者显式选择，发布前仍需审阅自己的 Evidence。`publication-browser-003` 使用实际模块在独立 Chrome 夹具核对同文档 available、重载后旧记录 unsupported、桥不存在 unavailable；这包含真实 Chrome，但桥是受控替身，也没有冒充一次完整 Worker/Android Evidence 验收。
 
 公开投影同时保留过滤数与被选Mod名的摘要；旧记录没有过滤字段时保持 null，不事后补造0。`patch-upstream-run-007` 在同十二个场景增加显式选择的第四组对照，仍使用真实固定上游类；最终内容、原异常、回调顺序和原发布结果与无观测一致。尚未以此宣布正式6.0或新的真实兼容正例完成。
+
+## 显式选择的真实标准采集
+
+2026-10-16，固定Tools源码 `d243b1b884bf51db23af0b8a09723fcab06c1947` 构建第二个自有临时包，保存实际输入源码副本、工具版本、profile与bundle。选择DoLGameUI，保留同两个资源、原16项容量及全部发布方法。实际读到11项：1次所选do_patch、10次发布，主动过滤8项、容量丢失0项；两个原方法恢复。
+
+现有 `evidence --integration-file integrations/examples/patch-observation.cjs` 实际Worker路径得到available，入口SHA对应同份源码。随后原执行绑定直接读回，nonce/timeOrigin与所采记录一致；这不是Generic和Integration的原子快照。移除本次原始ZIP对应记录并重启后，标准采集得到unavailable，Generic仍complete；原Mod列表、隐藏项、方法及两个资源摘要与无探针对照相符。
+
+两次Generic都保留DOM max-depth截断；工具同时报告GameVersion来源unknown和StartConfig.version=0.5.12.13，不把包装版本替代未知来源。原始目录为 `phase2-selected-evidence-001`、`phase2-selected-evidence-clean-001`，其相邻validation与控制报告保留。截图/日志未公开，自有Mod与forward已清理，未操作存档。

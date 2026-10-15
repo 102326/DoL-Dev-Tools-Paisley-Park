@@ -95,3 +95,11 @@
 已把现有记录的读取接到可选 Contract1 示例 `integrations/examples/patch-observation.cjs`，没有新建采集平台。它只读取当前页面已有记录，拒绝文档标签/容量不匹配；公开投影省略额外正文、路径和原始Mod名，保留摘要、未决、截断及恢复状态。三项定向回归及既有Integration隔离检查通过；真实Chrome夹具验证同文档、重载后的旧记录及桥缺失三种分支。桥是受控替身，这不是实际Android Worker Evidence验收，设备原记录仍以原绑定直接读取为依据。
 
 当前检查汇总：41项相关Node检查中40通过、1项macOS专属跳过、0失败；其中包含最终取消/超时状态回归。它们不是对Runtime/GER的全量验收。Windows源代码与安装入口继续保持5.1正式版本身份，6.0代码暂在独立研发分支；没有更新全局安装、推送、Tag或Release。
+
+### 后续接续：选择条件、标准Evidence与专业参考
+
+首轮实际容量丢失促成了有界的显式Mod选择，而不是继续扩大日志容量。固定 `d243b1b884bf51db23af0b8a09723fcab06c1947` 后保存完整输入源码副本，构建第二个临时包；在同一获准App中实际取得11项记录、主动过滤8项、容量丢失0项、0项观察器错误，包含1次所选方法与10次发布。标准Evidence的真实Worker路径available，随后原执行绑定的nonce/timeOrigin读回对应同份记录。卸载本次原始ZIP对应项、重启后，第二次标准Evidence为unavailable/Generic complete，原Mod列表、隐藏项、原方法及两个资源摘要对照通过。截图、日志、DOM截断和版本来源unknown均保留，未操作存档；见[实验边界](../examples/patch-provenance/README.md)。
+
+另补[MapleBirch专业参考](MAPLEBIRCH.md)：从实际5.4.3固定源码提取Character方法和原object工具函数，使用明确的原生模型/缓存替身核对新构造、已有缓存、迟到缺失层、后注册与默认目标五项合同。Windows Node实验通过，不冒充5.4.3实机或完整框架构建；原生5.4.2消费者证据另列。该参考从知识入口按需发现，不新建框架Runtime或专属知识数据库。
+
+真实关系预检复用ModLoader自身启动前模拟结果及39个实际加载Mod的Manifest元数据。模拟列表没有资源重叠，而TweeReplacer声明中存在多个共享目标；二者覆盖不同阶段，不能据此给出冲突/无冲突 verdict。已从当前组合筛选ModHub1.5.0与原版优化1.1.1.2作为负对照候选：原始替换文件保留同一锚点，后者还声明在ModHub存在时退让。当前仍是候选，下一步核对实际调用、发布和相关入口，不把静态源码本身当成功。

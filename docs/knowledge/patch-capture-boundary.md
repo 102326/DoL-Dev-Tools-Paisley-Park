@@ -1,12 +1,12 @@
 # 启动 Patch 摘要：记录满了，不等于后面没有执行
 
-状态：6.0 本轮真实 Android 观测原型，2026-10-16。对象为独立测试 App 中的 TweeReplacer1.7.0、Linker1.0.0、MapleBirch5.4.2、DoLGameUI2.7.0；不是通用兼容结论。
+修订2：6.0 本轮真实 Android 观测原型，2026-10-16。对象为独立测试 App 中的 TweeReplacer1.7.0、Linker1.0.0、MapleBirch5.4.2、DoLGameUI2.7.0；不是通用兼容结论。
 
 ## 已观察到的边界
 
 短时 Integration 不能事后重建启动过程。因此本轮显式安装一个自有临时 Mod，复用 ModLoader Addon 生命周期，在 afterEarlyLoad 核对实际方法源码摘要后包装原调用，在自己的 afterPatchModToGame hook 停止。两项方法恢复后，与安装前源码摘要一致。
 
-选择两个已审资源，仅保存摘要与方法边界。容量16项，实际记录16项、另有3项被截断，observerErrors=0。不能根据首个失败为空或已记录的摘要未变，声称所有 Patch 都成功、后续没有运行或所有 Mod 兼容。
+首轮选择两个已审资源，仅保存摘要与方法边界。容量16项，实际记录16项、另有3项被截断，observerErrors=0。不能根据首个失败为空或已记录的摘要未变，声称所有 Patch 都成功、后续没有运行或所有 Mod 兼容。
 
 记录包含真实发布与 do_patch 调用，部分已记录的 Mod 未改变所选两项资源。它只说明这两项资源在这些方法边界的摘要相同，不代表这些 Mod 没有修改其它 Passage，也不说明其中每条规则匹配成功。包装没有读取逐规则命中量。
 
@@ -23,3 +23,11 @@
 先确认源码与目标合同，再看采集区间、截断数、未决摘要、卸载归属及实际调用层级。没有记录时优先检查是否未安装、未就绪、不在区间或已经截断，不直接推断没有执行。文档 nonce/timeOrigin 是采集标签；仍需原执行上下文验证当前读取属于哪个 Document，不能替代完整 CDP 绑定。
 
 源码原型在 [Patch 实验](../../examples/patch-provenance/README.md)。本地忽略目录 `phase2-startup-*` 保留构建、安装、重启、原始读回、移除与恢复证据；`phase2-patch-seam-clean-001` 保存无探针对照。原始 Mod 名称、运行日志和游戏资源不随 Tools 发布。该原型未成为默认启动项，没有增加 Runtime 或改动 GER/旧 Unknown。
+
+## 修订2：按问题选择，保留未采集的区别
+
+首轮截断是真的，原始记录不改写。随后针对DoLGameUI的调查增加显式Mod选择，仍保留全部发布方法，容量也仍为16；得到11项记录、主动过滤8项、容量丢失0项。这不把另外8项追认为成功，选中方法外的资源也不因此获得覆盖。
+
+标准Evidence实际Worker路径成功读取新记录。卸载这次自有包并重启后，可选集成跳过，Generic仍complete；原顺序、隐藏项、方法和两个资源摘要的对照成立。DOM深度截断依然明确存在，不因Evidence complete而消失。新证据与原绑定读回用nonce/timeOrigin关联，不声称原子快照。
+
+新结果与清理保留在 `phase2-selected-*`。对外投影保留filtered和dropped，Mod名转为摘要；旧记录没有filtered时为null，不能用后来的过滤规则重写旧事件。下一次调查先看选择条件和采集区间，再决定是否需要新采样。
