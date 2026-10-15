@@ -46,7 +46,7 @@ node examples/patch-provenance/publication-browser.cjs REVIEWED_UTILS_TS TYPESCR
 
 ## 启动期局部观测原型
 
-`observe.cjs` 是显式调用的实验模块，不会被 CLI、Skill 或普通 Integration 自动注入。它暂未打包为可安装 Mod，也没有部署到游戏。调用者必须先审查实际方法、确认来源，再选择一至两个资源并提供当前文档标识；传入的 sourceSha256/documentId 只是来源标签，不是模块自行验证的源码真实性或 CDP 文档绑定。
+`observe.cjs` 是显式调用的实验模块，不会被 CLI、Skill 或普通 Integration 自动注入。调用者必须先审查实际方法、确认来源，再选择一至两个资源并提供当前文档标识；传入的 sourceSha256/documentId 只是来源标签，不是该模块自行验证的源码真实性或 CDP 文档绑定。
 
 它包装实际 `do_patch` 与 `replaceFollowSC2DataInfo`，保留 this、参数、返回值和原异常。最多记录16次调用，每项资源最多32 KiB；保存摘要、不保存剧情文本。摘要尚未完成、容量溢出、内容超限、停止时未决分别保留。首个方法异常即使发生在容量之外也单独记录。显式 stop 或30秒到期恢复自有方法，保留卸载归属冲突；停止后的迟到结果不能改写记录。
 
@@ -55,3 +55,21 @@ node examples/patch-provenance/publication-browser.cjs REVIEWED_UTILS_TS TYPESCR
 ModLoader 的 `registerAddonPlugin` 要求在 inject-early 阶段注册；`afterEarlyLoad` 在消费者注册前执行，`afterPatchModToGame` 按插件注册表顺序逐项 await。因此后续若接入启动生命周期，必须验证探针安装时机和停止 hook 的实际顺序，不能因为 hook 名称含 after 就认定已覆盖所有发布者。当前没有自动安装/卸载 Mod 的能力承诺。
 
 2026-10-16，七项局部生命周期测试及十二组实际上游原构建/诊断构建/局部包装对照通过；后者报告 `artifacts/patch-upstream-run-006/report.json`。它们使用真实固定类与受控业务夹具，未证明真实 Mod 功能共存。后续部署必须另有真实目标身份、原始包备份和不带探针的对照。
+
+## Android 启动期接入实验
+
+`startup.cjs` 导出 `register(host, reviewed)`，供经过审查的自有临时 Mod 在 inject-early 脚本中调用。reviewed 明确包含实际 patch/publication 方法源码的两个 SHA-256 和选定资源；只接受本次 Android `https://localhost` 场景。它不自动下载、安装或替换任何 Mod。调用者可用目标工程已有打包方式把此入口和 `observe.cjs` 打进自己的诊断 Mod，不重新打包上游执行器。
+
+注册后复用 Addon 生命周期；源码核验最多1秒且异步核验期间方法不能变化，不匹配就不安装包装。自己的 afterPatch hook 给摘要最多500ms排空，然后停止；这会增加诊断启动耗时。自己的 hook 之后若还有发布者，明确在覆盖区间之外。目标来源、注册/执行顺序和已加载制品必须另外核对。
+
+本轮已构建并在获准平板安装一次自有临时包，实际取得16项方法记录、3项截断及原方法恢复证据；没有保存剧情内容或操作存档。随后通过原 ModLoader 接口删除本次自有记录并重启，新文档中全局/加载项不存在，原列表、隐藏项和两个资源摘要对照成立。原始记录留在忽略目录；详见[采集边界案例](../../docs/knowledge/patch-capture-boundary.md)。
+
+现有七项局部测试加六项启动合同测试通过。`publication-browser-002` 另在真实 Chrome 对局部包装的原 Promise、原生 DOM 发布、WebCrypto 迟到摘要和恢复进行检查，原三组 DOM 故障对照仍通过。这些结果不等于逐规则完整执行史或真实业务兼容闭环。
+
+## 接入现有 Evidence
+
+显式启用 [patch-observation.cjs](../../integrations/examples/patch-observation.cjs) 即可通过现有 `evidence --integration-file` 入口读取已经存在的探针记录；它不会安装探针、执行 stop、重放 Patch 或延长 Integration 超时。探针不存在时 unavailable，记录的 nonce/当前 timeOrigin 或容量不符合合同则 unsupported，Generic Evidence 继续按原规则独立完成。
+
+collect 只做一次同步页面求值，核对记录自带的文档标签；这不让 Integration Worker 自动获得原执行上下文的完整绑定，也不承诺 detect 和 collect 属于同一文档。需要连续身份时使用原 Execution Context，不拼接不同 Document。可用记录不代表完整记录、业务完成或兼容成功。此模块已做定向替身回归；真实设备记录使用原绑定直接读回，尚未用本模块重新采集，不把两者混算为新实机验收。
+
+模块对公开结果再做字段投影：只保留选定资源摘要、局部阶段、容量/错误和恢复信息；Mod 名称转为摘要，不复制额外正文、异常或路径。资源名称由调用者显式选择，发布前仍需审阅自己的 Evidence。`publication-browser-003` 使用实际模块在独立 Chrome 夹具核对同文档 available、重载后旧记录 unsupported、桥不存在 unavailable；这包含真实 Chrome，但桥是受控替身，也没有冒充一次完整 Worker/Android Evidence 验收。

@@ -4,12 +4,14 @@ assert.equal(process.argv.length,7,'Usage: node publication-browser.cjs REVIEWED
 const [utilsFile,compilerFile,playwrightFile,chrome,out]=process.argv.slice(2).map(v=>path.resolve(v));
 assert.ok(!fs.existsSync(out),'Output must not exist');
 const ts=require(compilerFile),{chromium}=require(playwrightFile),hash=v=>createHash('sha256').update(v).digest('hex');
+const integration=require('../../integrations/examples/patch-observation.cjs');
 const source=fs.readFileSync(utilsFile,'utf8'),ast=ts.createSourceFile(utilsFile,source,ts.ScriptTarget.Latest,true);
 const owner=ast.statements.find(n=>ts.isClassDeclaration(n)&&n.name?.text==='ModUtils');assert(owner);
 const methods=owner.members.filter(n=>ts.isMethodDeclaration(n)&&n.name.getText(ast)==='replaceFollowSC2DataInfo');assert.equal(methods.length,1);
 const method=methods[0].getText(ast);
 const compiled=ts.transpileModule('class OwnedNativePublication { '+method+' } window.OwnedNativePublication=OwnedNativePublication;',
  {compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText;
+const observerSource=fs.readFileSync(path.join(__dirname,'observe.cjs'),'utf8');
 fs.mkdirSync(out);
 const report={status:'running',scope:'exact native method extracted by TypeScript AST; real Chrome DOM; synthetic data/node constructors only',source:{file:utilsFile,sha256:hash(source),methodSha256:hash(method),compiledSha256:hash(compiled),upstreamCommit:'unknown; local reviewed source, not a Git checkout'},cases:[]};
 let server,context;
@@ -24,6 +26,7 @@ let server,context;
  context=await chromium.launchPersistentContext(path.join(out,'owned-profile'),{executablePath:chrome,headless:true,chromiumSandbox:true,args:['--no-first-run','--disable-background-networking','--disable-component-update','--disable-sync']});
  report.browser={version:context.browser()?.version(),origin,privateProfileUsed:false};
  const page=await context.newPage();await page.goto(origin,{waitUntil:'load'});
+ await page.addScriptTag({content:'(()=>{const module={exports:{}};'+observerSource+';window.OwnedPatchObserver=module.exports;})()'});
  for(const mode of ['success','constructor-fails','append-fails-after-removal']){
   const results=[];
   for(const observed of [false,true])results.push(await page.evaluate(({mode,observed})=>{
@@ -52,6 +55,45 @@ let server,context;
   if(mode==='append-fails-after-removal'){assert.deepEqual(observed.after,['new-script','new-style']);assert.equal(observed.flushes,0);assert.equal(observed.error,'owned-append-failed')}
   report.cases.push({...observed,controlMatches:true});
  }
+ report.cooperative=await page.evaluate(async sourceSha256=>{
+  const root=document.querySelector('#owned-root');root.replaceChildren();let flushes=0;
+  const originalNode=document.createElement('tw-passagedata');root.append(originalNode);
+  const api=new window.OwnedNativePublication();api.pSC2DataManager={rootNode:root,
+   makeScriptNode:()=>document.createElement('script'),makeStyleNode:()=>document.createElement('style'),
+   makePassageNode:item=>{const n=document.createElement('tw-passagedata');n.textContent=item.content;return n},flushAfterPatchCache:()=>{flushes++}};
+  const item={name:'Owned',content:'alpha'},sc={passageDataItems:{items:[item],map:new Map([['Owned',item]])}};
+  const result=Promise.resolve(17),replacer={do_patch(ri,value){if(this!==replacer||value!==sc)throw Error('Binding lost');item.content='beta';return result}};
+  const original=replacer.do_patch,originalPublish=api.replaceFollowSC2DataInfo;
+  const observer=window.OwnedPatchObserver.install({replacer,utils:api,resources:['Owned'],identity:{documentId:'owned-chrome-fixture',sourceSha256}});
+  const samePromise=replacer.do_patch({mod:{name:'OwnedMod'}},sc)===result;await result;
+  const returnedUndefined=api.replaceFollowSC2DataInfo(sc,{styleNode:[],scriptNode:[],passageDataNodes:[originalNode]})===undefined;
+  const immediately=observer.read();
+  const deadline=performance.now()+1000;
+  while(JSON.stringify(observer.read()).includes('digest-pending')&&performance.now()<deadline)await new Promise(resolve=>setTimeout(resolve,0));
+  const beforeStop=observer.read(),cleanup=observer.stop();
+  return {samePromise,returnedUndefined,flushes,domText:root.querySelector('tw-passagedata')?.textContent,immediately,beforeStop,cleanup,
+   restored:replacer.do_patch===original&&api.replaceFollowSC2DataInfo===originalPublish};
+ },hash(method));
+ const c=report.cooperative;assert.equal(c.samePromise,true);assert.equal(c.returnedUndefined,true);assert.equal(c.flushes,1);assert.equal(c.domText,'beta');assert.equal(c.restored,true);
+ assert.equal(c.beforeStop.observerErrors,0);assert.equal(JSON.stringify(c.beforeStop).includes('digest-pending'),false);
+ assert.deepEqual(c.beforeStop.events.map(e=>e.phase),['resolved','returned']);
+ assert.equal(c.beforeStop.events[0].before[0].sha256,hash('alpha'));assert.equal(c.beforeStop.events[0].after[0].sha256,hash('beta'));
+ assert.deepEqual(c.cleanup,{patch:'restored',publication:'restored'});
+ report.observerSourceSha256=hash(observerSource);
+ // The bridge is a controlled fixture, not a probe installed in a real game.
+ const captured=await page.evaluate(observation=>({schemaVersion:1,document:{nonce:'owned-chrome-fixture',timeOrigin:performance.timeOrigin},
+  status:'stopped',observation:{...observation,active:false}}),c.beforeStop);
+ await page.evaluate(record=>{window.WhiteSnakePatchProbe={read:()=>record}},captured);
+ const ctx={client:{evaluate:expression=>page.evaluate(expression)}};
+ const sameDocument=await integration.collect(ctx);assert.equal(sameDocument.status,'available');
+ await page.reload({waitUntil:'load'});
+ await page.evaluate(record=>{window.WhiteSnakePatchProbe={read:()=>record}},captured);
+ const replacedDocument=await integration.collect(ctx);assert.equal(replacedDocument.status,'unsupported');
+ assert.equal(replacedDocument.reason,'capture-document-mismatch');
+ await page.evaluate(()=>{delete window.WhiteSnakePatchProbe});
+ const absent=await integration.collect(ctx);assert.equal(absent.status,'unavailable');
+ report.integration={scope:'production module evaluation through Playwright client; synthetic bridge in owned Chrome, not Integration Worker or real DoL',
+  sameDocument:sameDocument.status,replacedDocument:replacedDocument.status,absent:absent.status};
  report.status='passed';
 }catch(e){report.status='failed';report.error=e.message;process.exitCode=1}
 finally{
