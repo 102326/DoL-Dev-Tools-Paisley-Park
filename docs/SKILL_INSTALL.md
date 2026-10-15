@@ -34,7 +34,17 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；[Windows 补验](WINDOWS_5_1.md)已覆盖 NTFS 中文/空格路径、hard link、真实文件占用、竞争、失败及实际子进程中断，不外推其它文件系统。
 
-## 5.1.0 安装与验货
+## 6.0.0 White Snake 候选安装与验货
+
+本分支和本地候选对应 `6.0.0 — White Snake`，尚无 6.0 GitHub Release。已发布稳定版仍是 [5.1.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)。不要从猜测的 6.0 下载地址取包。
+
+核对本地 `DoL-Dev-Tools-6.0.0.zip`、SHA-256 和 manifest，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `6.0.0`，help 首行以 `DoL Dev Tools 6.0.0 — White Snake` 开头；两个 launcher 和 `node scripts/dol-dev.cjs` 继续使用原入口。
+
+普通诊断无需 npm 依赖。Gameplay 在该目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，仍锁定 XState 5.33.2。按本页开头命令向尚不存在的同名 Skill 目录安装，再执行 resolver，确认版本 6.0.0 和本次解压根目录。先用隔离目录验货，不自动替换全局 Skill。保留旧 Tools、Skill 和 Store；安装与升级不迁移或清理历史 Unknown。
+
+知识入口、MapleBirch/ModHub 参考和定向配方随包提供；第三方 Mod 与原始设备证据不提供。Patch 观测不是默认采集器，需要按配方审查当前源码与授权环境后显式启用。当前验收见 [6.0 支持范围](CLOSEOUT_6_0.md)。
+
+## 历史：5.1.0 安装与验货
 
 本文对应 `5.1.0 — Paisley Park`；正式 ZIP、SHA-256 与来源清单见 [5.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
 

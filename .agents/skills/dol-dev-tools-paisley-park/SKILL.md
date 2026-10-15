@@ -3,7 +3,7 @@ name: dol-dev-tools-paisley-park
 description: "Use DoL Dev Tools for live DoL Mod diagnosis, scoped fixes and verification, or authorized short gameplay goals with original-state checks. Uses Android, WebView/CDP and local evidence across vanilla, UI, content, framework and manager Mods; optional integrations enhance diagnosis and mapping."
 ---
 
-# DoL Dev Tools — Paisley Park
+# DoL Dev Tools: Paisley Park — White Snake
 
 Tools provide live-site observations and execution evidence. This Skill selects the cheapest sufficient task path; optional integrations interpret their own project. Soft & Wet, MapleBirch and ModHub are peers. Do not put collectors, another project's Runtime or a second runner inside this Skill.
 
@@ -46,4 +46,6 @@ Match validation to the actual change and risk. Reuse valid evidence; diagnose f
 - Timing, memory and motion: [PERFORMANCE](../../../docs/PERFORMANCE.md), [ANIMATION](../../../docs/ANIMATION.md), [PROCESS_MEMORY](../../../docs/PROCESS_MEMORY.md), [APP_LIFECYCLE](../../../docs/APP_LIFECYCLE.md); [VIEWPORT](../../../docs/VIEWPORT.md), [NATIVE_LAYOUT](../../../docs/NATIVE_LAYOUT.md) or [NETWORK](../../../docs/NETWORK.md) only when that experiment is needed. Heavy/private capture needs explicit task scope and sensitive selection.
 - Human documentation, archival or packaging: [AUXILIARY_SKILLS](../../../docs/AUXILIARY_SKILLS.md) and [RELEASE_PACKAGE](../../../docs/RELEASE_PACKAGE.md). Preserve facts and Unknown; auxiliary Skills do not expand scope or require redundant approval.
 
-The maintenance line preserves the existing GER/Store/Unknown contracts. Historical releases and verification belong to [HISTORY](../../../docs/HISTORY.md), [5.0 scope](../../../docs/CLOSEOUT_5_0.md) and [4.0 compatibility](../../../docs/CLOSEOUT_4_0.md); they are not current-device proof, migration authority or a promise that every Mod/provider is supported.
+White Snake 6.0 adds conditional Mod knowledge, reviewed local recipes and bounded opt-in Patch observation; start with [current support and evidence](../../../docs/CLOSEOUT_6_0.md). Before studying a Mod, check and isolate the author's latest available package, pin sources and digests, and distinguish it from the version actually loaded. Experience guides investigation; version changes and contrary evidence require reassessment. Patch probes are reviewed diagnostic code with timing/identity effects, not automatic compatibility verdicts. They never install themselves through ordinary Evidence collection.
+
+This version preserves the existing GER/Store/Unknown contracts. Historical releases and verification belong to [HISTORY](../../../docs/HISTORY.md), [5.0 scope](../../../docs/CLOSEOUT_5_0.md) and [4.0 compatibility](../../../docs/CLOSEOUT_4_0.md); they are not current-device proof, migration authority or a promise that every Mod/provider is supported.

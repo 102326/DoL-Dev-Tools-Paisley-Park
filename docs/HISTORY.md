@@ -4,6 +4,8 @@
 
 | 历史版本 | 记录 |
 | --- | --- |
+| 5.1.0 / v5.1.0 — Paisley Park | [更新说明](RELEASE_5.1.0.md)、[Windows 验收](WINDOWS_5_1.md)；6.0 的已发布研发基线。 |
+| 5.0.0 / v5.0.0 — Paisley Park | [范围与验收](CLOSEOUT_5_0.md)；Source Link / Lab / 研发接续的原始边界。 |
 | 4.0.1 / v4.0.1 — Bites the Dust | [验货修订说明](RELEASE_4.0.1.md)、[定向修复与验证](F1_F5_CLOSEOUT_4_0.md) |
 | 4.0.0 / v4.0.0 — Bites the Dust | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)、[收口与兼容](CLOSEOUT_4_0.md) |
 | 3.0.3 / v3.0.3 | [实战诊断体验补丁](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.3.md)、[历史收口](CLOSEOUT_3_0_3.md) |

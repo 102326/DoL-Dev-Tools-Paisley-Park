@@ -1,10 +1,10 @@
 # DoL Dev Tools: Paisley Park
 
-本分支保存 **6.0 White Snake 的研发进展**，当前可用范围和接续方式见[测试分支交接说明](docs/WHITE_SNAKE_6_0_CHECKPOINT.md)。6.0尚未整体验收；CLI和package暂保留5.1.0身份，下面的正式版入口仍指向5.1。
-
 Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助你查看真实 Android / WebView 运行现场，调查界面和运行问题，关联源码，并核对构建包与实际加载结果。可以作为独立开发工具使用，也可以被宿主 Agent 调用。
 
-**5.1.0 — Paisley Park** · [下载正式版](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_5.1.0.md)
+**6.0.0 — White Snake，本地候选** · [安装与升级](docs/SKILL_INSTALL.md) · [6.0 更新说明](docs/RELEASE_6.0.0.md) · [支持范围与验收](docs/CLOSEOUT_6_0.md)
+
+6.0 尚未发布到 GitHub。需要已发布版本时使用 [5.1.0 稳定版](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)，不要将本分支或本地修改的第三方 Mod 当作上游正式发行。
 
 它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。宿主 Agent 负责判断，工具提供调查、执行和验证依据。
 
@@ -25,7 +25,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 
 ### 1. 解压并确认版本
 
-从 [5.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0) 下载 `DoL-Dev-Tools-5.1.0.zip`，核对随附 SHA-256，解压到长期保留的新目录。保留旧 Tools 和 Skill。
+使用本地候选 `DoL-Dev-Tools-6.0.0.zip` 时，核对随附 SHA-256 与来源清单，解压到长期保留的新目录。保留旧 Tools 和 Skill。本页命令对应 6.0 候选；已发布 5.1 的下载和操作步骤见其 [Release 说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)。
 
 需要 **Node.js 22.12+**。在 Tools 根目录运行：
 
@@ -34,7 +34,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 .\DoL-Dev.cmd --help
 ```
 
-版本输出应为 `5.1.0`，help 首行为 `DoL Dev Tools 5.1.0 — Paisley Park`。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
+版本输出应为 `6.0.0`，help 首行以 `DoL Dev Tools 6.0.0 — White Snake` 开头。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
 
 ### 2. 连接已授权的 Android App
 
@@ -84,7 +84,17 @@ Android CLI、Chrome Inspect/CDP 和 ADB 负责设备与运行现场；Source Li
 
 Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前控件、样式和页面状态，结合截图与系统日志调查问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装 Soft & Wet 或任何特定 UI Runtime。
 
-## 5.1 维护与保留能力
+## 6.0 新增内容
+
+White Snake 把真实 Mod 调查中的方法和限制接到现有开发流程，帮助下一次任务少走已经证实的弯路：
+
+- **按问题找经验。** Skill 从[知识入口](docs/MOD_KNOWLEDGE.md)发现相关案例，核对版本、反证和适用条件。独立新会话已经实际使用这些资料重建候选包；没有把保存文档等同于学会。
+- **查清 Mod 之间发生了什么。** 提供有界、显式启停的 [Patch 观测配方](examples/patch-provenance/README.md)，记录所选方法、资源摘要、遗漏和恢复状态，并接入已有 Evidence。它是诊断实验，不是全量冲突扫描器。
+- **保留能复现的修复方法。** [CE 可选框架案例](docs/knowledge/cheat-optional-framework.md)说明为何已装 MapleBirch 仍提示缺 Simple；配方只接受核对过的原包，生成可独立验证的本地修改包，不屏蔽真实错误。
+
+MapleBirch、ModHub 的专业参考、无冲突对照和各项支持边界见 [6.0 收口记录](docs/CLOSEOUT_6_0.md)。第三方 Mod、游戏资源和私人现场记录不随包分发。
+
+## 保留能力
 
 5.1 校正命令和文档、按任务整理 Skill、改善已知错误与安装失败恢复，并明确普通 Integration 的顺序观察边界。Windows 补验修复了 Node 22 下安装器对自有临时文件的误判。实际环境与覆盖范围见 [维护记录](docs/MAINTENANCE_5_1.md)和 [Windows 验收](docs/WINDOWS_5_1.md)。以下 5.0 能力继续保留：
 
@@ -98,13 +108,15 @@ Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前
 
 ## 当前验证范围
 
-5.1 Windows 源码的 Node 24 完整套件为 429 项通过、1 项 macOS 专属跳过；最低 Node 22.12 定向套件为 24 项通过、1 项跳过，独立包再次通过同一定向检查。Python 3 项通过，1 项因缺可选 Pillow 跳过。两个 Windows 启动器、NTFS 中文/空格路径、真实文件占用和 Codex CLI 新进程的项目 Skill 发现均有实际验证。Mac 的隔离 Chrome 与宿主结果另行记录，不计为 Windows 通过数，见 [5.1 验收](docs/WINDOWS_5_1.md)。
+6.0 已有真实 Android 上的消费者加载、CE 修复前后与原组合相关入口验证；共享侧栏的带/不带探针对照、真实 Chrome 发布夹具和独立会话经验应用分别保留证据边界。当前候选的离线与安装验货见 [6.0 收口](docs/CLOSEOUT_6_0.md)，不把此前 CI 或 Mac 结果计为本轮 Windows 通过数。
+
+未改动的安装与执行行为复用 [5.1 Windows 验收](docs/WINDOWS_5_1.md)：Node 24 完整套件 429 项通过、1 项跳过；Node 22.12 定向检查 24 项通过、1 项跳过。两个 Windows 启动器、NTFS 中文/空格路径、真实文件占用和新进程 Skill 发现有对应记录，不外推所有宿主或文件系统。
 
 源码关联与 Component Lab 保留 5.0 的有限原型验收（A/B），现场、源码和制品的接续保留代表性只读验证（C）。既有 Android 证据包括页面身份、受支持的存档操作、自动保存和受控购买；本轮未重新执行设备或真实游戏测试。详细时段与复用范围见 [5.0 收口](docs/CLOSEOUT_5_0.md) 和 [4.0 技术记录](docs/CLOSEOUT_4_0.md)。
 
 ## 已知限制
 
-完整 Android Mod 自主修复、构建、部署与业务复验闭环仍未验证；更多组件、设备、Provider 和 Mod 组合也不属于全覆盖承诺。Lab 回调、构建成功、包已加载与游戏业务通过是不同证据。
+本轮真实 CE 修复由主会话完成平板部署与相关入口复验；独立新会话完成了经验发现与同摘要包构建，未独立部署设备。完整无人接管的 Android Mod 修复闭环、全部作弊功能及更多组件、设备、Provider 和 Mod 组合未验证。Lab 回调、构建成功、包已加载与游戏业务通过是不同证据。
 
 Integration 缺失、不支持或失败会单独记录，已成功的通用采集仍可保留。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 可以执行传入的页面 JavaScript，“只读”是 Probe 和工作流约束。
 
@@ -121,8 +133,9 @@ Integration 缺失、不支持或失败会单独记录，已成功的通用采�
 | 运行或恢复游戏目标 | [Gameplay](docs/GAMEPLAY.md) |
 | 关联源码、接入 Lab、接续研发 | [5.0 入口](docs/PAISLEY_PARK_5_0.md) · [development-flow Recipe](docs/DEVELOPMENT_FLOW.md) |
 | 修改、构建、部署 | [Workshop](docs/WORKSHOP.md) |
+| 调查框架、Mod 关系与相似历史问题 | [知识入口](docs/MOD_KNOWLEDGE.md) · [MapleBirch](docs/MAPLEBIRCH.md) · [ModHub](docs/MODHUB.md) |
 | 接入专属诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [Schema 与格式](docs/FORMATS.md) |
-| 查询验收、限制与历史 | [5.1 维护记录](docs/MAINTENANCE_5_1.md) · [Windows 验收](docs/WINDOWS_5_1.md) · [5.0 收口](docs/CLOSEOUT_5_0.md) · [历史索引](docs/HISTORY.md) |
+| 查询验收、限制与历史 | [6.0 收口](docs/CLOSEOUT_6_0.md) · [5.1 Windows 验收](docs/WINDOWS_5_1.md) · [历史索引](docs/HISTORY.md) |
 | 贡献与打包 | [项目规则](AGENTS.md) · [架构](docs/ARCHITECTURE.md) · [包清单](docs/RELEASE_PACKAGE.md) |
 
 ## 贡献与开发

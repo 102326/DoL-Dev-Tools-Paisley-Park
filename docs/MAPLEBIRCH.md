@@ -22,6 +22,8 @@
 
 原绑定失效时显式新绑定，不能沿用旧Document身份。使用现有Inspector/CDP和目标项目构建即可，不为一次读取创建GER Goal或安装新的框架管理平台。
 
+判断可选框架是否存在时，先区分真实技术名与别名。固定Loader2.101.1的严格查询在名称缺失时也会打印error；需要严格区分Simple与Maple时，先看`getModListNameNoAlias`，不能把别名查询返回的Maple当成真正Simple安装。实际CE修复与反例见[可选查询案例](knowledge/cheat-optional-framework.md)。
+
 ## Character注册与缓存
 
 在固定5.4.3源码中，`char.use(layers, target?, options?)` 注册图层，默认target为main，返回Character自身。它没有返回一个可调用destroy的图层句柄。target可为名字、名字数组或谓词；不要把某次内部layers数组的位置当成公共稳定ID。
