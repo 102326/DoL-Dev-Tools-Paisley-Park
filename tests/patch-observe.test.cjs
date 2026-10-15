@@ -94,3 +94,16 @@ test('deadline restores owned methods even if the caller never reaches its final
   assert.equal(replacer.do_patch, original); assert.equal(observer.read().stopReason, 'deadline');
   assert.equal(observer.read().events[0].phase, 'stopped-unsettled');
 });
+test('explicit selection saves capacity without suppressing publications, failures or the original calls', async () => {
+  let calls = 0;
+  const error = Error('original filtered error'), replacer = {do_patch(ri) { calls++; return ri.fail ? Promise.reject(error) : Promise.resolve(); }};
+  const utils = {replaceFollowSC2DataInfo() {}}, mods = ['Selected'];
+  const observer = install({replacer, utils, resources: ['Owned'], identity, mods}); mods[0] = 'mutated';
+  for (let i = 0; i < 20; i++) await replacer.do_patch({mod: {name: 'Other'}}, data('x'));
+  await assert.rejects(replacer.do_patch({mod: {name: 'Other'}, fail: true}, data('x')), e => e === error);
+  await replacer.do_patch({mod: {name: 'Selected'}}, data('x')); utils.replaceFollowSC2DataInfo(data('x'));
+  const r = observer.read(); assert.equal(calls, 22); assert.equal(r.filtered, 21); assert.equal(r.dropped, 0);
+  assert.deepEqual(r.events.map(e => e.kind), ['do_patch','publication']); assert.deepEqual(r.events.map(e => e.sequence), [22,23]);
+  assert.deepEqual(r.firstFailure, {kind: 'rejected', sequence: 21}); assert.deepEqual(r.selection.mods, ['Selected']); observer.stop();
+  assert.throws(() => install({replacer, utils, resources: ['Owned'], identity, mods: []}));
+});

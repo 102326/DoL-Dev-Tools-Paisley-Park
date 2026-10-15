@@ -18,7 +18,11 @@ function redact(result) {
     reviewed: r.reviewed ? {patchSha256: hash(r.reviewed.patchSha256), publicationSha256: hash(r.reviewed.publicationSha256)} : null,
     actual: r.actual ? {patchSha256: hash(r.actual.patchSha256), publicationSha256: hash(r.actual.publicationSha256)} : null,
     observation: o === null ? null : {schemaVersion: 1, identity: {documentId: text(o.identity.documentId, 160), sourceSha256: hash(o.identity.sourceSha256)},
-      active: o.active === true, dropped: count(o.dropped), observerErrors: count(o.observerErrors), cleanup: cleanup(o.cleanup),
+      active: o.active === true, dropped: count(o.dropped), filtered: count(o.filtered),
+      selection: {modNameHashes: Array.isArray(o.selection?.mods) ? o.selection.mods.slice(0, 2).map(name =>
+        typeof name === 'string' ? createHash('sha256').update(name.slice(0, 160)).digest('hex') : null) : null,
+        publication: choose(o.selection?.publication, ['all'])},
+      observerErrors: count(o.observerErrors), cleanup: cleanup(o.cleanup),
       stopReason: choose(o.stopReason, ['explicit','deadline']),
       firstFailure: o.firstFailure ? {kind: choose(o.firstFailure.kind, ['threw','rejected']), sequence: count(o.firstFailure.sequence)} : null,
       events: o.events.slice(0, 16).map(e => ({sequence: count(e.sequence), kind: choose(e.kind, ['do_patch','publication']),

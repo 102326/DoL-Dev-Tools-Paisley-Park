@@ -63,3 +63,12 @@ test('missing final loader hook still expires and the public status reflects own
   t.mock.timers.tick(30000); assert.equal(f.replacer.do_patch, original);
   assert.equal(probe.read().status, 'stopped'); assert.equal(probe.read().observation.stopReason, 'deadline');
 });
+test('startup copies the reviewed Mod selection before registering lifecycle hooks', async () => {
+  const f = fixture(); f.reviewed.mods = ['selected']; const probe = register(f.host, f.reviewed); f.reviewed.mods[0] = 'other';
+  await f.hooks().afterEarlyLoad();
+  const sc = {passageDataItems: {map: new Map([['Owned', {content: 'alpha'}]])}};
+  await f.replacer.do_patch({mod: {name: 'other'}}, sc); await f.replacer.do_patch({mod: {name: 'selected'}}, sc);
+  await f.hooks().afterPatchModToGame();
+  assert.equal(probe.read().observation.filtered, 1); assert.equal(probe.read().observation.events.length, 1);
+  assert.deepEqual(probe.read().observation.selection.mods, ['selected']);
+});

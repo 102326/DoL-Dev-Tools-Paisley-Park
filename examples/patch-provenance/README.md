@@ -50,6 +50,8 @@ node examples/patch-provenance/publication-browser.cjs REVIEWED_UTILS_TS TYPESCR
 
 它包装实际 `do_patch` 与 `replaceFollowSC2DataInfo`，保留 this、参数、返回值和原异常。最多记录16次调用，每项资源最多32 KiB；保存摘要、不保存剧情文本。摘要尚未完成、容量溢出、内容超限、停止时未决分别保留。首个方法异常即使发生在容量之外也单独记录。显式 stop 或30秒到期恢复自有方法，保留卸载归属冲突；停止后的迟到结果不能改写记录。
 
+实际首轮启动的16项记录另有3项因容量丢失。针对只调查少量Mod的任务，可在已审profile中给出可选 `mods: ['实际Mod名']`，最多两个精确名称；省略时仍记录全部。这个选择只过滤 do_patch 的摘要，不过滤原调用或发布方法，也不会吞掉未选Mod的原异常。`filtered` 表示主动未采集，`dropped` 表示容量丢失；序号保留调用间隔，不能把间隔补成完整执行史。两个计数不同，原容量没有扩大。
+
 这里只能说明方法 resolved/rejected、工作副本摘要及同步发布 returned/threw。它不读出逐规则匹配数，也不把异步发布方法的返回当作终态。外加 Promise reaction 会改变拒绝追踪和时序，函数身份及属性描述符在安装期间也不同，因此仍属于有扰动的诊断实验。不要重复叠装；页面重建后使用新执行绑定，不沿用旧记录。
 
 ModLoader 的 `registerAddonPlugin` 要求在 inject-early 阶段注册；`afterEarlyLoad` 在消费者注册前执行，`afterPatchModToGame` 按插件注册表顺序逐项 await。因此后续若接入启动生命周期，必须验证探针安装时机和停止 hook 的实际顺序，不能因为 hook 名称含 after 就认定已覆盖所有发布者。当前没有自动安装/卸载 Mod 的能力承诺。
@@ -73,3 +75,5 @@ ModLoader 的 `registerAddonPlugin` 要求在 inject-early 阶段注册；`after
 collect 只做一次同步页面求值，核对记录自带的文档标签；这不让 Integration Worker 自动获得原执行上下文的完整绑定，也不承诺 detect 和 collect 属于同一文档。需要连续身份时使用原 Execution Context，不拼接不同 Document。可用记录不代表完整记录、业务完成或兼容成功。此模块已做定向替身回归；真实设备记录使用原绑定直接读回，尚未用本模块重新采集，不把两者混算为新实机验收。
 
 模块对公开结果再做字段投影：只保留选定资源摘要、局部阶段、容量/错误和恢复信息；Mod 名称转为摘要，不复制额外正文、异常或路径。资源名称由调用者显式选择，发布前仍需审阅自己的 Evidence。`publication-browser-003` 使用实际模块在独立 Chrome 夹具核对同文档 available、重载后旧记录 unsupported、桥不存在 unavailable；这包含真实 Chrome，但桥是受控替身，也没有冒充一次完整 Worker/Android Evidence 验收。
+
+公开投影同时保留过滤数与被选Mod名的摘要；旧记录没有过滤字段时保持 null，不事后补造0。`patch-upstream-run-007` 在同十二个场景增加显式选择的第四组对照，仍使用真实固定上游类；最终内容、原异常、回调顺序和原发布结果与无观测一致。尚未以此宣布正式6.0或新的真实兼容正例完成。

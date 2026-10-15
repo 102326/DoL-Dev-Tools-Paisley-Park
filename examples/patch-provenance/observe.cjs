@@ -1,7 +1,7 @@
 'use strict';
 
 // Opt-in diagnostic example. Install only on reviewed local code before its patch phase.
-function install({replacer, utils, resources, identity, crypto = globalThis.crypto}) {
+function install({replacer, utils, resources, identity, mods = null, crypto = globalThis.crypto}) {
   if (!replacer || typeof replacer.do_patch !== 'function' ||
       !utils || typeof utils.replaceFollowSC2DataInfo !== 'function') throw Error('Unsupported patch/publication API');
   if (!Array.isArray(resources) || resources.length < 1 || resources.length > 2 ||
@@ -10,12 +10,17 @@ function install({replacer, utils, resources, identity, crypto = globalThis.cryp
   if (!identity || typeof identity.documentId !== 'string' || !identity.documentId || identity.documentId.length > 160 ||
       !/^[a-f0-9]{64}$/.test(identity.sourceSha256 || '')) throw Error('Reviewed source and document identity required');
   if (!crypto?.subtle || typeof crypto.subtle.digest !== 'function') throw Error('SHA-256 unavailable');
+  if (mods !== null && (!Array.isArray(mods) || mods.length < 1 || mods.length > 2 ||
+      mods.some(name => typeof name !== 'string' || !name || name.length > 160) ||
+      new Set(mods).size !== mods.length)) throw Error('Select one or two reviewed Mods, or all');
+  const selectedMods = mods === null ? null : [...mods];
 
   const originalPatch = replacer.do_patch, originalPublish = utils.replaceFollowSC2DataInfo;
   const patchOwn = Object.getOwnPropertyDescriptor(replacer, 'do_patch');
   const publishOwn = Object.getOwnPropertyDescriptor(utils, 'replaceFollowSC2DataInfo');
   const events = [], tokens = new Set(), encoder = new TextEncoder();
   const report = {schemaVersion: 1, identity: {documentId: identity.documentId, sourceSha256: identity.sourceSha256}, active: true, dropped: 0,
+    selection: {mods: selectedMods, publication: 'all'}, filtered: 0,
     observerErrors: 0, firstFailure: null, cleanup: null, events};
   let sequence = 0, deadline;
   const failure = (kind, seq) => { report.firstFailure ||= {kind, sequence: seq}; };
@@ -41,7 +46,9 @@ function install({replacer, utils, resources, identity, crypto = globalThis.cryp
   }
   function begin(kind, mod, sc) {
     const seq = ++sequence;
-    if (!report.active || events.length >= 16) { if (report.active) report.dropped++; return {seq}; }
+    if (!report.active) return {seq};
+    if (kind === 'do_patch' && selectedMods !== null && !selectedMods.includes(mod)) { report.filtered++; return {seq}; }
+    if (events.length >= 16) { report.dropped++; return {seq}; }
     const event = {sequence: seq, kind, mod: typeof mod === 'string' ? mod.slice(0, 160) : null,
       phase: 'started', before: null, after: null};
     const token = {seq, event, sc, active: true};

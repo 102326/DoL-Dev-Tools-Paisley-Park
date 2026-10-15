@@ -9,13 +9,16 @@ function register(host, reviewed) {
       reviewed.resources.length < 1 || reviewed.resources.length > 2 ||
       reviewed.resources.some(n => typeof n !== 'string' || !n || n.length > 160) ||
       new Set(reviewed.resources).size !== reviewed.resources.length ||
+      (reviewed.mods != null && (!Array.isArray(reviewed.mods) || reviewed.mods.length < 1 || reviewed.mods.length > 2 ||
+        reviewed.mods.some(n => typeof n !== 'string' || !n || n.length > 160) || new Set(reviewed.mods).size !== reviewed.mods.length)) ||
       !['patchSha256', 'publicationSha256'].every(k => /^[a-f0-9]{64}$/.test(reviewed[k] || ''))) {
     throw Error('Reviewed Android localhost profile required');
   }
   let observation, stopped = false;
   const report = {schemaVersion: 1, document: {nonce: host.crypto.randomUUID(), timeOrigin: host.performance.timeOrigin},
     status: 'registered', coverage: 'afterEarlyLoad installation through this addon afterPatchModToGame hook; later publishers not covered',
-    reviewed: {patchSha256: reviewed.patchSha256, publicationSha256: reviewed.publicationSha256, resources: [...reviewed.resources]}};
+    reviewed: {patchSha256: reviewed.patchSha256, publicationSha256: reviewed.publicationSha256,
+      resources: [...reviewed.resources], mods: reviewed.mods == null ? null : [...reviewed.mods]}};
   const profile = report.reviewed;
   const read = () => {
     const data = observation?.read() ?? null;
@@ -43,7 +46,7 @@ function register(host, reviewed) {
             replacer.do_patch !== patch || utils.replaceFollowSC2DataInfo !== publication) {
           report.status = 'source-mismatch'; return;
         }
-        observation = install({replacer, utils, resources: profile.resources,
+        observation = install({replacer, utils, resources: profile.resources, mods: profile.mods,
           identity: {documentId: report.document.nonce, sourceSha256: actual[0]}, crypto: host.crypto});
         report.status = 'collecting';
       } catch { if (!stopped) report.status = 'installation-failed'; }

@@ -44,7 +44,7 @@ const content=sc=>sc.passageDataItems.map.get(passageName).content;
 const rule=(findString,replace,extra={})=>({passage:passageName,findString,replace,...extra});
 
 async function run(test,observed){
- const cooperative=observed==='cooperative';observed=observed===true;
+ const selected=observed==='selected',cooperative=observed==='cooperative'||selected;observed=observed===true;
  const initial=test.initial,logs=[],events=[],callbackOrder=[];
  let published=initial,publishState='not-started',releasePublish,publishPromise,working,phase='not-started',dropped=0,firstFailure=null;
  const record=event=>{if(!firstFailure&&['threw','rejected','failed'].includes(event.phase))firstFailure={...event};if(events.length<64)events.push({sequence:events.length+1,...event});else dropped++};
@@ -78,7 +78,7 @@ async function run(test,observed){
  const linker=new TweeReplacerLinker(manager,utils);running='TweeReplacer';
  const replacer=new RuntimeReplacer(manager,utils);await replacer.afterEarlyLoad();
  const original=replacer.do_patch;
- const observer=cooperative?require('./observe.cjs').install({replacer,utils,resources:[passageName],identity:{documentId:'owned-fixture',sourceSha256:sources[0].sha256}}):null;
+ const observer=cooperative?require('./observe.cjs').install({replacer,utils,resources:[passageName],mods:selected?['owned-mod-0']:null,identity:{documentId:'owned-fixture',sourceSha256:sources[0].sha256}}):null;
  const wrapper=function(ri,sc){
   const event={kind:'do_patch',mod:ri.mod.name,sourceSha256:sources[0].sha256,inputSha256:hash(content(sc)),phase:'started'};
   record(event);
@@ -140,7 +140,12 @@ const cases=[
  const report={status:'running',scope:'real pinned upstream classes; synthetic loader working copy and publisher; no real DoL or device',sources,compiler:{file:compilerFile,version:ts.version},dependencies:{lodash:dependencyRequire('lodash/package.json').version,json5:dependencyRequire('json5/package.json').version},diagnosticBuild:'AST-located local rule-loop instrumentation; changes source/function identity and timing; compared against original build only for declared fixture behavior',publicationBoundary:'The deferred publisher is an adversarial replacement, not evidence that native ModLoader publication is asynchronous. Native DOM publication requires a separate experiment.',cases:[]};
  try{
   for(const test of cases){
-   const control=await run(test,false),observed=await run(test,true),cooperative=await run(test,'cooperative');
+   const control=await run(test,false),observed=await run(test,true),cooperative=await run(test,'cooperative'),selected=await run(test,'selected');
+   assert.deepEqual(selected.atReturn,control.atReturn,test.name+' selected observer perturbation');
+   assert.equal(selected.afterDeferred,control.afterDeferred);assert.equal(selected.ownMethodRestored,true);
+   assert.equal(selected.cooperativeReport.filtered,test.entries.filter(e=>!e.callback).length-1);
+   assert.equal(selected.cooperativeReport.dropped,0);
+   assert.ok(selected.cooperativeReport.events.filter(e=>e.kind==='do_patch').every(e=>e.mod==='owned-mod-0'));
    assert.deepEqual(cooperative.atReturn,control.atReturn,test.name+' cooperative observer perturbation');
    assert.equal(cooperative.afterDeferred,control.afterDeferred);
    assert.equal(cooperative.ownMethodRestored,true);
@@ -166,7 +171,7 @@ const cases=[
    if(test.order)assert.deepEqual(observed.atReturn.callbackOrder,test.order);
    if(test.rejected)assert.ok(observed.events.some(e=>e.phase==='rejected'));
    if(test.deferred){assert.equal(observed.atReturn.publishState,'started');assert.equal(observed.atReturn.working,'ALPHA');assert.equal(observed.afterDeferred,'ALPHA')}
-   report.cases.push({name:test.name,assertions:'passed',...observed,cooperative:cooperative.cooperativeReport});
+   report.cases.push({name:test.name,assertions:'passed',...observed,cooperative:cooperative.cooperativeReport,selected: selected.cooperativeReport});
   }
   report.status='passed';
  }catch(error){report.status='failed';report.error=error.message;process.exitCode=1}
