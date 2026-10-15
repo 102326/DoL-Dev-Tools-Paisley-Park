@@ -41,6 +41,20 @@ name/version 描述的是桥接模块；目标 Runtime/Mod 的实际版本可以
 
 Worker 用于故障隔离，**不是安全沙箱**。模块依然拥有 Node 文件/网络权限。终止 Worker 不回滚其副作用，也不能保证取消已提交的 WebView 求值；10 秒保证的是本地采集流程恢复。只执行自己审阅过的本地模块。
 
+## 顺序观察与文档归属
+
+Contract 1 的普通 evaluate 不自动继承 `execution-context.cjs` 的 Android PID/frame/loader/uniqueContext 强执行绑定。targetId 指定连接的页面，不把该页面后续刷新固定为同一份文档。detect 与 collect 是顺序钩子；中间导航或同 URL reload 后，后一次 evaluate 可以属于新文档。不同 Generic 与 Integration 采样也不构成原子快照。
+
+manifest 的 observationsAreSequential、步骤时段与 incidentId 关联本次采集文件；它们不能证明跨钩子文档连续。模块 describe 版本是桥版本；Support 的 compatibility 是来源状态摘要，不能据此断言 Mod 在同一文档内始终存在或因果关系已经成立。旧结果没有文档身份时就是未知，不反推同一文档。
+
+5.1 用自有 Chrome 夹具验证三种情况：稳定页面 detect/collect 同代；导航时两次结果异代；同 URL reload 时 URL 相同而 loader/uniqueContext 改变。Worker 均按原 Contract 1 返回实际 collect 结果；现有 Generic/Support 消费不声明同文档连续性，因此本轮补清边界，没有放宽或重写 Android 执行绑定。可用已安装 Chrome 运行：
+
+```sh
+DOL_TEST_CHROME=/ABS/INSTALLED_CHROME node tests/integration-document.browser.cjs
+```
+
+只读模块需要一致的关联字段时，尽量在一次已审查的同步探针中共同读取，并在自己的结果中保留实际适用范围；不要把 detect 的旧事实拼成当前 collect 的成功证明。需要生产操作连续性时按任务使用已有强绑定，不给普通观察增加 GER Goal。导航后读取失败保持可选失败，不抹掉已成功 Generic，不自动重试或悄悄换页。
+
 ## 作者的隐私责任
 
 尽量不采集敏感内容，而不是读完后再尝试删掉。默认排除用户输入、角色/存档正文、Credential、Cookie、Token、云端数据、私有路径与原始日志。只输出明确的版本、状态、计数和经核对的枚举。

@@ -24,7 +24,7 @@
 
 Manifest 初始/中途 checkpoint 可能尚无 captureEnd 和最终状态数组。读者只在 captureEnd 已形成后评估最终清单；异常终止留下的中途 failed checkpoint 不冒充完成包。制品文件独占创建，Manifest 是同一会话内唯一可更新文件。
 
-命名保持兼容：如 `screenshot.png`、`console.json`、`network.json`、`gfxinfo.json`、`meminfo.json`、`dom-contract.json`、`integration-0.json`。不因将来建议 integrations 子目录而改写旧包。身份绑定靠 manifest / envelope，不靠目录名。
+命名保持兼容：如 `screenshot.png`、`console.json`、`network.json`、`gfxinfo.json`、`meminfo.json`、`dom-contract.json`、`integration-0.json`。不因将来建议 integrations 子目录而改写旧包。采集文件归属靠 manifest / envelope，不靠目录名；incidentId/步骤时段不证明不同采样共享同一文档。普通 Integration 的文档连续性限制见 [顺序观察](INTEGRATIONS.md#顺序观察与文档归属)。
 
 ## DOM Contract
 
