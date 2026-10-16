@@ -5,7 +5,7 @@ const {install} = require('./observe.cjs');
 function register(host, reviewed) {
   if (host.WhiteSnakePatchProbe) throw Error('Probe already registered');
   if (host.location?.origin !== 'https://localhost' || !host.modUtils?.getAddonPluginManager ||
-      !host.crypto?.subtle || !Array.isArray(reviewed?.resources) ||
+      !host.crypto?.subtle || typeof host.performance?.now !== 'function' || !Array.isArray(reviewed?.resources) ||
       reviewed.resources.length < 1 || reviewed.resources.length > 2 ||
       reviewed.resources.some(n => typeof n !== 'string' || !n || n.length > 160) ||
       new Set(reviewed.resources).size !== reviewed.resources.length ||
@@ -56,8 +56,8 @@ function register(host, reviewed) {
       if (!observation || stopped) return;
       report.ownAfterPatchHookReached = true;
       // Give pending digests a bounded drain; this deliberately adds diagnostic startup latency.
-      const end = Date.now() + 500;
-      while (!stopped && JSON.stringify(observation.read()).includes('digest-pending') && Date.now() < end) {
+      const end = host.performance.now() + 500;
+      while (!stopped && JSON.stringify(observation.read()).includes('digest-pending') && host.performance.now() < end) {
         await new Promise(resolve => setTimeout(resolve, 10));
       }
       stop();

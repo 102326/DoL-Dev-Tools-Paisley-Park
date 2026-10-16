@@ -42,4 +42,4 @@
 
 本机独立研究目录的`downloads.json`、各`identity.json`及`archive-inspection.json`保留API来源、时间、提交、源码ZIP摘要和正式附件记录。本项目忽略目录`phase2-latest-mod-upgrade-001`保留备份、派发前记录和存储读回；`phase2-latest-restart-001`、`phase2-latest-readiness-001.json`、`phase2-latest-loaded-proof-001.json`及`phase2-latest-maple-consumer-001.json`保留新文档证据。
 
-本轮没有重建三个上游项目，没有验证全部ModHub功能、全部优化规则、所有表情、存档迁移或其它设备。更新与有限入口验证没有新增一项真实兼容故障修复正例；6.0的该项验收仍未完成。历史5.4.2及旧组合记录保持原样。
+本轮没有重建三个上游项目，没有验证全部ModHub功能、全部优化规则、所有表情、存档迁移或其它设备。本记录时点的更新与有限入口验证没有新增真实兼容故障修复正例，当时6.0的该项验收尚未完成。其后[可选框架探测修复](cheat-optional-framework.md)补充了限定真实正例，并纳入[6.0收口](../CLOSEOUT_6_0.md)；不能把本段历史状态当作当前未完成，也不能把后续正例扩大为全部功能通过。历史5.4.2及旧组合记录保持原样。

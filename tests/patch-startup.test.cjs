@@ -7,7 +7,7 @@ function fixture() {
   const replacer = {async do_patch(ri, sc) { sc.passageDataItems.map.get('Owned').content = 'beta'; }};
   const utils = {getMod: () => ({modRef: replacer}), replaceFollowSC2DataInfo() {},
     getAddonPluginManager: () => ({registerAddonPlugin(mod, addon, value) { assert.equal(mod, 'WhiteSnakePatchProbe'); hooks = value; }})};
-  const host = {location: {origin: 'https://localhost'}, performance: {timeOrigin: 123}, crypto: webcrypto, modUtils: utils};
+  const host = {location: {origin: 'https://localhost'}, performance: {timeOrigin: 123, now: () => performance.now()}, crypto: webcrypto, modUtils: utils};
   const reviewed = {resources: ['Owned'], patchSha256: sha(replacer.do_patch), publicationSha256: sha(utils.replaceFollowSC2DataInfo)};
   return {host, replacer, utils, reviewed, hooks: () => hooks};
 }
@@ -71,4 +71,22 @@ test('startup copies the reviewed Mod selection before registering lifecycle hoo
   await f.hooks().afterPatchModToGame();
   assert.equal(probe.read().observation.filtered, 1); assert.equal(probe.read().observation.events.length, 1);
   assert.deepEqual(probe.read().observation.selection.mods, ['selected']);
+});
+
+test('pending digest drain stays bounded when the wall clock moves backwards', async t => {
+  t.mock.timers.enable({apis: ['setTimeout']});
+  const f = fixture(); let calls = 0, elapsed = 0, wall = Date.now();
+  f.host.performance.now = () => elapsed;
+  f.host.crypto = {randomUUID: () => 'owned', subtle: {digest: (...args) => ++calls <= 2 ? webcrypto.subtle.digest(...args) : new Promise(() => {})}};
+  const original = f.replacer.do_patch, probe = register(f.host, f.reviewed);
+  await f.hooks().afterEarlyLoad();
+  await f.replacer.do_patch({}, {passageDataItems: {map: new Map([['Owned', {content: 'alpha'}]])}});
+  t.mock.method(Date, 'now', () => wall -= 1000);
+  const pending = f.hooks().afterPatchModToGame();
+  try {
+    for (let i = 0; i < 50; i++) { elapsed += 10; t.mock.timers.tick(10); await Promise.resolve(); }
+    assert.equal(probe.read().status, 'stopped');
+    assert.equal(probe.read().observation.events[0].before[0].status, 'stopped-unsettled');
+    assert.equal(f.replacer.do_patch, original);
+  } finally { probe.stop(); t.mock.timers.tick(10); await pending; }
 });

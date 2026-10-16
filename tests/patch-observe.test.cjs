@@ -107,3 +107,15 @@ test('explicit selection saves capacity without suppressing publications, failur
   assert.deepEqual(r.firstFailure, {kind: 'rejected', sequence: 21}); assert.deepEqual(r.selection.mods, ['Selected']); observer.stop();
   assert.throws(() => install({replacer, utils, resources: ['Owned'], identity, mods: []}));
 });
+
+test('direct installation owns its resource selection even if the caller later changes the array', async t => {
+  const resources = ['Owned'], reads = [];
+  const sc = {passageDataItems: {map: {get(name) { reads.push(name); return {content: name}; }}}};
+  const replacer = {do_patch: () => Promise.resolve('original')}, utils = {replaceFollowSC2DataInfo: () => 7};
+  const observer = install({replacer, utils, resources, identity}); t.after(() => observer.stop());
+  resources[0] = 'Unreviewed'; resources.push('Another');
+  assert.equal(await replacer.do_patch({}, sc), 'original');
+  resources.length = 0; assert.equal(utils.replaceFollowSC2DataInfo(sc), 7);
+  assert.deepEqual(reads, ['Owned', 'Owned', 'Owned', 'Owned']);
+  assert(observer.read().events.every(event => [...event.before, ...event.after].every(state => state.resource === 'Owned')));
+});

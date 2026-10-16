@@ -36,6 +36,28 @@ M0/M1已Scoped Done，M2必要能力保全已做，M3在单一受控案例范围
 - VM不是执行不可信代码的权限沙箱；必须审查固定输入。Unknown不能变成通过数。
 - 当前RC只在Mac验货；Windows启动器及最低Node的旧证据可按未改入口复用，但不宣称本轮重新执行。未升级全局依赖或更改用户配置。
 
+## RC-02复核处置
+
+RC-01（源码 `42c9321f06745a574cdf4d7913255ac9122cf29d`，ZIP摘要 `906ce64d6f840b09df13a5c9ac687cd34d589bbdd85d78a0aa3ed4fec3096514`）收到独立设计复核Conditional Accept。复核者亲自核对了293文件、CRC、摘要与6.0差异，未执行项目测试或独立确认该未发布提交的Git blob。不能把交付方测试改称独立复测，也不能把后续候选写成已获同一复核通过。
+
+| 维护项 | 本轮处置与证据 |
+| --- | --- |
+| 旧知识页称6.0兼容正例未完成 | 保留当时状态，新增后续CE正例与6.0收口链接；历史与当前结论分开。 |
+| 诊断页称当前5.0.0 | 改为当前6.1本地候选，保留5.0历史证据入口。 |
+| README对普通Agent工作要求npm ci | 移为仅Gameplay条件步骤；Skill安装/resolver仍无需XState。 |
+| Skill绝对要求先下载最新Mod | Skill与AGENTS同步按任务区分当前研究/固定历史复现；不增加新机制或下载前置。 |
+| CE验证器只核对三个允许成员与四处表达式 | 独立标准库检查固定原包与原成员摘要、每个完整预期输出成员；拒绝同一允许成员内额外或同长度改写。保留原AST/语义层，未改变生成器。 |
+| 直接Patch入口引用resources数组 | 安装时复制；新增回归在调用方修改/清空数组后仍只读取原选资源，保留原调用结果。 |
+| 摘要排空等待受墙钟回拨影响 | 使用宿主performance.now；模拟墙钟持续回拨，500ms单调窗口后停止、冻结未决并恢复原方法。 |
+
+这七项均已局部处理，没有将未修项目默认为关闭或隐含延期。新增生产改动仅位于可选示例配方及其验证辅助；正式scripts、GER、Schema、安装器、resolver和依赖仍未改，原测试新增定向回归。前述“不改原实现”的证据保全结论仍适用于正式Runtime，不再用于声称所有示例与测试字节都未变化。
+
+实际定向验证：`node --test tests/patch-observe.test.cjs tests/patch-startup.test.cjs tests/patch-observation-integration.test.cjs`；`python3 -m unittest discover -s tests -p test_cheat_optional.py -v`。结果以RC-02随附validation记录为准。资源选择与回拨回归先在旧实现确定性失败、修复后通过。CE旧归档检查曾接受陌生合成包中同三个成员的额外逻辑；新增完整字节检查用合成固定输入/测试专用身份验证通过与拒绝边界，CLI没有身份绕过选项。
+
+**覆盖限制**：本机无真实固定CE原附件或已有TypeScript模块，因此没有重新执行真实附件完整16项表达式验证；也未重新执行Android探针启动、真实Mod加载、Windows或DoL。上述为实现与定向替身验证，不是相关真实平台验收，普遍提效仍未证明。
+
+新候选保留四件套：ZIP、SHA256SUMS、逐文件artifact-manifest和validation。RC-01的manifest原已在本地生成，独立复核收到的附件不完整；后续交接须将四件套一并提供，原始日志仍只留本地。manifest为交付方可核对材料，不自动等于复核者已验证未发布Git提交。旧RC-01与失败记录均保留。
+
 ## Coverage Ledger
 
 以下为Not validated / Additional coverage，不自动成为Remaining work：

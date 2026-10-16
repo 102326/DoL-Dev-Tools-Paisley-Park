@@ -85,3 +85,7 @@ collect 只做一次同步页面求值，核对记录自带的文档标签；这
 现有 `evidence --integration-file integrations/examples/patch-observation.cjs` 实际Worker路径得到available，入口SHA对应同份源码。随后原执行绑定直接读回，nonce/timeOrigin与所采记录一致；这不是Generic和Integration的原子快照。移除本次原始ZIP对应记录并重启后，标准采集得到unavailable，Generic仍complete；原Mod列表、隐藏项、方法及两个资源摘要与无探针对照相符。
 
 两次Generic都保留DOM max-depth截断；工具同时报告GameVersion来源unknown和StartConfig.version=0.5.12.13，不把包装版本替代未知来源。原始目录为 `phase2-selected-evidence-001`、`phase2-selected-evidence-clean-001`，其相邻validation与控制报告保留。截图/日志未公开，自有Mod与forward已清理，未操作存档。
+
+## 6.1候选的局部维护
+
+直接 `observe.install` 也复制经审查的resources选择，调用方之后改数组不能扩大或改变采集范围；startup入口原有复制继续保留。摘要排空的500ms等待使用宿主 `performance.now()` 单调时钟，墙钟调整不会延长该等待；30秒停止、未决摘要冻结及原方法归属恢复语义不变。宿主须提供Performance API。定向Node替身回归覆盖数组变化与墙钟回拨，尚未重新执行Android启动或真实Mod加载，不将旧设备结果记为本轮通过。

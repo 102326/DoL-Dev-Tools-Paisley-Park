@@ -7,6 +7,7 @@ function install({replacer, utils, resources, identity, mods = null, crypto = gl
   if (!Array.isArray(resources) || resources.length < 1 || resources.length > 2 ||
       resources.some(name => typeof name !== 'string' || !name || name.length > 160) ||
       new Set(resources).size !== resources.length) throw Error('Select one or two reviewed resources');
+  const selectedResources = [...resources];
   if (!identity || typeof identity.documentId !== 'string' || !identity.documentId || identity.documentId.length > 160 ||
       !/^[a-f0-9]{64}$/.test(identity.sourceSha256 || '')) throw Error('Reviewed source and document identity required');
   if (!crypto?.subtle || typeof crypto.subtle.digest !== 'function') throw Error('SHA-256 unavailable');
@@ -27,7 +28,7 @@ function install({replacer, utils, resources, identity, mods = null, crypto = gl
   const safe = fn => { try { return fn(); } catch { report.observerErrors++; return null; } };
 
   function snapshot(sc, token) {
-    return resources.map(resource => {
+    return selectedResources.map(resource => {
       const value = sc?.passageDataItems?.map?.get(resource)?.content;
       const state = {resource, status: 'absent', sha256: null};
       if (typeof value !== 'string') return state;

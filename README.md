@@ -56,12 +56,17 @@ New-Item -ItemType Directory -Path artifacts -Force
 
 ### 3. 让 Agent 使用 Skill
 
-需要 Agent 开发工作流或 Gameplay 时，在同一 Tools 根目录安装锁定依赖与 Skill：
+需要Agent工作流时，在Tools根目录安装Skill；普通诊断、源码调查、Skill安装和resolver无需先装npm依赖：
+
+```powershell
+.\Paisley-Park.cmd install-skill --out "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park"
+node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
+```
+
+仅当任务使用Gameplay时，再在实际Tools根目录安装锁定依赖：
 
 ```powershell
 npm ci --ignore-scripts --no-audit --no-fund
-.\Paisley-Park.cmd install-skill --out "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park"
-node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
 ```
 
 安装器拒绝覆盖已有 Skill。更新时先备份并移出旧安装，保留原 Tools，再向空目录安装；Tools 必须留在稳定位置。Node 22 直接运行 Gameplay CLI 需要 `--experimental-sqlite`，Windows launcher 已包含。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
