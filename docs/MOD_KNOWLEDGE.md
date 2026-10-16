@@ -4,6 +4,7 @@
 
 | 当前问题 | 先读 | 当前能证明什么 |
 | --- | --- | --- |
+| 重构后最终数值相同，是否保留回调行为；注销后旧引用是否还受旧规则影响 | [重构行为保持与注册代次](../examples/behavior-preservation/README.md) | 固定R0 Hook切片在合成State/事件宿主中对照；区分保持、有意修复、负对照退化与Unknown，不代表当前CE R1、真实存档或Android验收。 |
 | CE提示找不到Simple Frameworks，但已安装MapleBirch；可选查询为何产生error | [可选框架探测的真实修复](knowledge/cheat-optional-framework.md) | 固定CE1.20.3.1与Maple5.4.3下，原生缺失查询导致假错误；四处局部保护、构建及实机相关入口共存通过，不证明全部作弊功能。 |
 | 开始研究某个Mod；本地旧包是否已落后 | [最新来源与测试目标更新](knowledge/latest-mod-sources.md) | 先下载官方最新版，分别核对源码、附件和实际加载。当前5.4.3/1.7.0/1.1.1.5已在获准平板完成有限验证；不外推未来更新。 |
 | MapleBirch 更新后兼容包不生效；角色图层注册了却没显示 | [版本门禁、图层注册与最终采用](knowledge/maplebirch-mouth.md)、[消费者专业参考](MAPLEBIRCH.md) | 历史5.4.2与新增5.4.3消费者实机读回分别保留；源码方法替身不等于完整框架构建或全部图层验证。 |
