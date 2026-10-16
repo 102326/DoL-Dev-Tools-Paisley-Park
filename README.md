@@ -1,6 +1,6 @@
 # DoL Dev Tools: Paisley Park
 
-Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助你查看真实 Android / WebView 运行现场，调查界面和运行问题，关联源码，并核对构建包与实际加载结果。可以作为独立开发工具使用，也可以被宿主 Agent 调用。
+Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 Android / WebView 现场诊断、源码与制品核验、Mod 兼容性调查，以及可接续的研究经验。它帮助你从运行问题找到相关源码，核对构建包与实际加载结果，并用证据比较修改前后。可以独立使用，也可以由宿主 Agent 调用。
 
 **6.0.0 — White Snake** · [下载](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_6.0.0.md) · [支持范围](docs/CLOSEOUT_6_0.md)
 
@@ -13,6 +13,8 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具。它帮助
 - 检查界面错位、控件命中、Console 异常和 Mod 加载状态。
 - 用 Action/Journey 复现已审阅的步骤，保留失败和前后证据，比较修改结果。
 - 连接目标项目自己的源码、构建和部署流程，确认设备实际加载的包。
+- 核对框架注册、缓存采用、依赖与补丁目标，结合实际执行证据调查兼容问题；优先复用上游已有功能。
+- 从类似问题的研究经验中选择方法，重新核对版本、适用条件和反例，再继续调查。
 - 在授权范围内推进受支持的游戏目标，中断后继续，并读取原游戏状态确认结果。
 
 已有标准能力足够时优先使用；需要更灵活的调查时，可以直接使用 CDP、ADB 或项目测试。按当前问题选择工具，不要求每次走完整管线。
@@ -80,17 +82,18 @@ Android CLI、Chrome Inspect/CDP 和 ADB 负责设备与运行现场；Source Li
 | Source Link | 可选的组件源码关联，当前只覆盖选定商店 Toolbar |
 | Skill / Recipe | 帮助 Agent 按问题选择工具、接续调查依据与未确认结果 |
 
-Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前控件、样式和页面状态，结合截图与系统日志调查问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装 Soft & Wet 或任何特定 UI Runtime。
+Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前控件、样式和页面状态，结合截图与系统日志调查问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装某个特定 Mod 或 UI Runtime。
 
 ## 6.0 新增内容
 
-遇到相似的 Mod 问题时，White Snake 让 Agent 先查已有经验、核对适用条件，再决定如何调查：
+White Snake 将 Mod 专业研究、兼容性调查、按需执行观测和经验接续接到既有开发流程：
 
-- [知识入口](docs/MOD_KNOWLEDGE.md)按问题整理 MapleBirch、ModHub 和真实兼容案例，保留版本、反例与尚未确认的部分。独立新会话已经自行找到案例，并重建出与实机所用版本一致的修复包。
-- [Patch 观测配方](examples/patch-provenance/README.md)帮助调查所选 Mod 的修改和发布过程，记录内容指纹、漏采和恢复状态，再接到已有 Evidence。需要审查后显式启用，不会默认安装探针，也不提供全量冲突判定。
-- [CE 可选框架案例](docs/knowledge/cheat-optional-framework.md)解释了为什么已装 MapleBirch 仍会提示缺 Simple。随包配方只接受已经核对的原包，生成本地修复版；真正的错误仍会保留。
+- **框架机制研究与能力复用**：按问题查阅注册、缓存采用、依赖声明、补丁目标检查和消费者构建方法，先确认上游已提供什么能力。见 [研究与经验入口](docs/MOD_KNOWLEDGE.md)。
+- **兼容性调查与定向修复**：结合源码、调用和实际加载结果，区分可选依赖误报、共享修改目标与真实故障。已有 [可选框架探测修复](docs/knowledge/cheat-optional-framework.md)和 [共享目标共存对照](docs/knowledge/shared-caption-coexistence.md)；同一目标被多个 Mod 修改，不等于发生冲突。
+- **按需 Patch 观测**：显式选择研究对象，记录修改与发布阶段的内容指纹、漏采、未决及恢复状态，接入已有 Evidence。见 [观测配方](examples/patch-provenance/README.md)。需要审查后启用，不会默认安装探针，也不提供全量冲突判定。
+- **跨会话经验接续**：按问题检索有版本条件的知识，保留反例和未知项。独立新会话已经自行找到案例，并重建出与实机所用版本一致的修复包；不能把历史结论直接套用到新版本。
 
-MapleBirch、ModHub 的专业参考、无冲突对照和各项支持边界见 [6.0 收口记录](docs/CLOSEOUT_6_0.md)。第三方 Mod、游戏资源和私人现场记录不随包分发。
+研究对象的具体名称、固定版本、来源与验证边界保留在专业参考和案例中，见 [6.0 支持范围](docs/CLOSEOUT_6_0.md)。第三方 Mod、游戏资源和私人现场记录不随包分发。
 
 ## 保留能力
 
@@ -106,7 +109,7 @@ MapleBirch、ModHub 的专业参考、无冲突对照和各项支持边界见 [6
 
 ## 当前验证范围
 
-6.0 已有真实 Android 上的消费者加载、CE 修复前后与原组合相关入口验证；共享侧栏的带/不带探针对照、真实 Chrome 发布夹具和独立会话经验应用分别保留证据边界。当前候选的离线与安装验货见 [6.0 收口](docs/CLOSEOUT_6_0.md)，不把此前 CI 或 Mac 结果计为本轮 Windows 通过数。
+6.0 已有真实 Android 上的消费者加载、可选框架探测修复前后与原组合相关入口验证；共享目标的带/不带探针对照、真实 Chrome 发布夹具和独立会话经验应用分别保留证据边界。当前候选的离线与安装验货见 [6.0 收口](docs/CLOSEOUT_6_0.md)，不把此前 CI 或 Mac 结果计为本轮 Windows 通过数。
 
 未改动的安装与执行行为复用 [5.1 Windows 验收](docs/WINDOWS_5_1.md)：Node 24 完整套件 429 项通过、1 项跳过；Node 22.12 定向检查 24 项通过、1 项跳过。两个 Windows 启动器、NTFS 中文/空格路径、真实文件占用和新进程 Skill 发现有对应记录，不外推所有宿主或文件系统。
 
@@ -114,7 +117,7 @@ MapleBirch、ModHub 的专业参考、无冲突对照和各项支持边界见 [6
 
 ## 已知限制
 
-本轮真实 CE 修复由主会话完成平板部署与相关入口复验；独立新会话完成了经验发现与同摘要包构建，未独立部署设备。完整无人接管的 Android Mod 修复闭环、全部作弊功能及更多组件、设备、Provider 和 Mod 组合未验证。Lab 回调、构建成功、包已加载与游戏业务通过是不同证据。
+已验证的兼容修复案例由主会话完成平板部署与相关入口复验；独立新会话完成了经验发现与同摘要包构建，未独立部署设备。完整无人接管的 Android Mod 修复闭环、案例涉及的全部功能及更多组件、设备、Provider 和 Mod 组合未验证。Lab 回调、构建成功、包已加载与游戏业务通过是不同证据。
 
 Integration 缺失、不支持或失败会单独记录，已成功的通用采集仍可保留。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 可以执行传入的页面 JavaScript，“只读”是 Probe 和工作流约束。
 
@@ -131,7 +134,7 @@ Integration 缺失、不支持或失败会单独记录，已成功的通用采�
 | 运行或恢复游戏目标 | [Gameplay](docs/GAMEPLAY.md) |
 | 关联源码、接入 Lab、接续研发 | [5.0 入口](docs/PAISLEY_PARK_5_0.md) · [development-flow Recipe](docs/DEVELOPMENT_FLOW.md) |
 | 修改、构建、部署 | [Workshop](docs/WORKSHOP.md) |
-| 调查框架、Mod 关系与相似历史问题 | [知识入口](docs/MOD_KNOWLEDGE.md) · [MapleBirch](docs/MAPLEBIRCH.md) · [ModHub](docs/MODHUB.md) |
+| 调查框架、Mod 关系与相似历史问题 | [知识入口](docs/MOD_KNOWLEDGE.md) · [框架注册与缓存采用](docs/MAPLEBIRCH.md) · [依赖与补丁检查](docs/MODHUB.md) |
 | 接入专属诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [Schema 与格式](docs/FORMATS.md) |
 | 查询验收、限制与历史 | [6.0 收口](docs/CLOSEOUT_6_0.md) · [5.1 Windows 验收](docs/WINDOWS_5_1.md) · [历史索引](docs/HISTORY.md) |
 | 贡献与打包 | [项目规则](AGENTS.md) · [架构](docs/ARCHITECTURE.md) · [包清单](docs/RELEASE_PACKAGE.md) |
