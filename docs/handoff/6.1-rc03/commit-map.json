@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "reason": "Remove unpublished automatic local author/committer machine identity; preserve original local branch and exact source trees. Existing remote history is unchanged.",
+  "base": "98cbe5ae89a58aca2344c9618a686d3befa019cc",
+  "commits": [
+    {
+      "originalLocalCommit": "7835a5798e329f5c27dd07078fa753e08346d16c",
+      "publicEquivalentCommit": "2fcd4e6f51adf1dc5ca7cd2e94d05e9f7068e8fd",
+      "identicalTree": "cc8f1e61143f7d471bc435ec721522d8cf6e46e3"
+    },
+    {
+      "originalLocalCommit": "42c9321f06745a574cdf4d7913255ac9122cf29d",
+      "publicEquivalentCommit": "c0311bd8799fac76d14c04a4ed62111d7e7c19b0",
+      "identicalTree": "0218c980ce9304a3dd932a5e4a90edb21c21ddfc"
+    },
+    {
+      "originalLocalCommit": "fae92a640b5a67a289da753da4566c8444e92f4e",
+      "publicEquivalentCommit": "d6f852dcb9763d2948314eef2339e34a3257b205",
+      "identicalTree": "f5e3382467a787fd0b8132efa910f91e16264970"
+    },
+    {
+      "originalLocalCommit": "c09e45b2708fc6343bf6833dde2207276013e5e6",
+      "publicEquivalentCommit": "a177f7f3510a21eb8d899fb29c4d5ee4a76ec224",
+      "identicalTree": "7dbf40ee304308de95cfad37379c7b0f4b44a7f8"
+    },
+    {
+      "originalLocalCommit": "cc8ae7b2a218c985e123ff53ba17d70d8b1da2e9",
+      "publicEquivalentCommit": "ffb88ea8ef5411492065babf99dfdf8c39673eeb",
+      "identicalTree": "e03d095599d24857ce84e9dea8e015e2cb30f43c"
+    }
+  ]
+}

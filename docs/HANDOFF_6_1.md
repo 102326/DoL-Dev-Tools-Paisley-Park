@@ -11,7 +11,9 @@
 - RC03产品ZIP：`DoL-Dev-Tools-6.1.0.zip`，SHA256 `07424d2a862559a6ae2f0745427e2afa5125b636c081d1bb7213890790e8ebd7`，295文件。
 - 脱敏逐文件[manifest](handoff/6.1-rc03/artifact-manifest.json)与[validation](handoff/6.1-rc03/validation.json)随测试分支保存。记录中的 `pushed:false` 等是当时候选验货快照，不是测试分支后续推送状态。
 
-RC03二进制及原始记录留在Mac本地；Git交接包含源码和脱敏证据，不包含候选ZIP、运行时、Profile、Store、日志、第三方Mod或派生源码。可从固定RC03提交按打包规范重新导出并核对原manifest；ZIP容器摘要还受Git/压缩实现影响，必须实测，不预先承诺另一平台重建ZIP同摘要。
+RC03二进制及原始记录留在Mac本地；Git交接包含源码和脱敏证据，不包含候选ZIP、运行时、Profile、Store、日志、第三方Mod或派生源码。可从公开等价RC03提交按打包规范重新导出并核对原manifest；ZIP容器摘要还受提交身份、Git/压缩实现影响，必须实测，不预先承诺另一平台重建ZIP同摘要。
+
+未推送提交原先带有自动生成的本机提交身份；公开交接链沿用既有GitHub noreply身份，保留原本地分支，未改远端历史。[提交对应表](handoff/6.1-rc03/commit-map.json)记录原本地SHA、公开等价SHA及完全相同的Git tree。RC03原本地源码 `c09e45b2708fc6343bf6833dde2207276013e5e6` 的公开等价提交为 `a177f7f3510a21eb8d899fb29c4d5ee4a76ec224`；可用它审查原manifest的全部文件blob。旧SHA和验货记录保留原始身份，不声称这些原本地提交已公开。
 
 本交接提交仅更新文档、源码交接材料及导出排除规则，分支最新HEAD会晚于RC03源码。后续修复或发布必须生成对应新提交的新包与manifest，不能将RC03摘要套用到新包。交接材料仅留源码仓库，不进入产品ZIP。
 

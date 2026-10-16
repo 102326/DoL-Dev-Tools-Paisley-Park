@@ -1,6 +1,6 @@
 # 6.1 — White Snake：范围与本地RC验收
 
-2026-10-16。6.1承接正式6.0提交 `c98ac280f13e9f4820c919fcf97c8d9281a526e4`；M1为 `98cbe5ae89a58aca2344c9618a686d3befa019cc`，M3为 `7835a5798e329f5c27dd07078fa753e08346d16c`。本页固定交付范围；每个本地RC的最终提交、ZIP摘要与实际验货结论，单独写入随附manifest和validation，不以本文替代制品验货。2026-10-16已获授权提交到6.1测试分支；后续验收与发布由家中电脑接续，本机不创建正式Tag或Release。
+2026-10-16。6.1承接正式6.0提交 `c98ac280f13e9f4820c919fcf97c8d9281a526e4`；M1为 `98cbe5ae89a58aca2344c9618a686d3befa019cc`，M3为 `7835a5798e329f5c27dd07078fa753e08346d16c`。本页固定交付范围；每个本地RC的最终提交、ZIP摘要与实际验货结论，单独写入随附manifest和validation，不以本文替代制品验货。2026-10-16已获授权提交到6.1测试分支；后续验收与发布由家中电脑接续，本机不创建正式Tag或Release。本文旧本地SHA与公开等价提交的对应关系见[跨电脑交接](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/test/paisley-park-6.1/docs/HANDOFF_6_1.md)，两者源码tree相同；原始验货身份不改写。
 
 ## Delivered
 
