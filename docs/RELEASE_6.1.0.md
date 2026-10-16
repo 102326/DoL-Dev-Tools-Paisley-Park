@@ -1,6 +1,6 @@
 # DoL Dev Tools 6.1.0 — White Snake
 
-本地Release Candidate说明。尚未推送、创建正式Tag或发布GitHub Release；版本号用于候选验货，不表示已对外发布。
+Release Candidate说明。当前通过6.1测试分支交接，尚未创建正式Tag或发布GitHub Release；版本号用于候选验货，不表示正式版本已发布。
 
 6.1改善现有Skill的研发使用方式与重构行为保持方法，继续使用原有诊断、Action/Journey、GER、Workshop和Evidence。
 

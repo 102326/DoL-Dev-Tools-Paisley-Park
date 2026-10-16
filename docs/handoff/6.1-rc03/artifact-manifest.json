@@ -1,0 +1,1783 @@
+{
+  "schemaVersion": 1,
+  "version": "6.1.0",
+  "releaseName": "White Snake",
+  "candidate": "local RC-03, not published",
+  "sourceCommit": "c09e45b2708fc6343bf6833dde2207276013e5e6",
+  "formalBase": "c98ac280f13e9f4820c919fcf97c8d9281a526e4",
+  "archive": "DoL-Dev-Tools-6.1.0.zip",
+  "archiveSha256": "07424d2a862559a6ae2f0745427e2afa5125b636c081d1bb7213890790e8ebd7",
+  "fileCount": 295,
+  "files": [
+    {
+      "path": ".agents/skills/dol-dev-tools-paisley-park/SKILL.md",
+      "bytes": 10145,
+      "sha256": "e750943b403ae99f1fd5bc2f6069b4e983c7df40543bde493767e484d5ed0091",
+      "gitBlob": "337ea9920f2ceca3efc875806cc7bdf34a687715"
+    },
+    {
+      "path": ".agents/skills/dol-dev-tools-paisley-park/agents/openai.yaml",
+      "bytes": 142,
+      "sha256": "121a7a30b34bfd2f9419b0e983c1812b44e9e91e372d13d713fb8a299396c2fe",
+      "gitBlob": "07b215d670b1b8a40b8f8e673bababef5b6ccbfe"
+    },
+    {
+      "path": ".agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs",
+      "bytes": 3080,
+      "sha256": "4ae5588d50928e5a162148307849dbbe2d8c8da67022cebd8d3d95edec030b3e",
+      "gitBlob": "1675786147a178c17452cc8fc9959fea4924756a"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 1545,
+      "sha256": "8b6a4264ff7dd5c7241872ab2da3798b0e008c6a67fef99263822a78ce00c558",
+      "gitBlob": "3c13afc756666eb4c51a9aa56dfb2ad56d0843bc"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 107,
+      "sha256": "54e37c86ca75877000f6d2f7793bff60e119c36186f6504ef4437b796d7d14cb",
+      "gitBlob": "fba7876fcf526c4937a2b4985371c018dfab1d86"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 4449,
+      "sha256": "45f006458c679454ce7333bb6dbcf1d9b44672c6a322e6b61783871ab030c869",
+      "gitBlob": "8079618c95815cd62d6e84a5b349c2e376677177"
+    },
+    {
+      "path": "DoL-Dev.cmd",
+      "bytes": 67,
+      "sha256": "2eb504cc4cf7afeee441d5baac4cff4d8385eed507366f062e5800bec96b58e2",
+      "gitBlob": "a457dd87c5d4758268d5563a890c633fcc082d18"
+    },
+    {
+      "path": "Inspect-Android.cmd",
+      "bytes": 311,
+      "sha256": "7f4ad306500aa21d93d4eb846422979540a80257d888363e6bd9069cb5966613",
+      "gitBlob": "1fed7a2e37384af621de00a5f11cf458d449aafd"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1083,
+      "sha256": "ca30b127dccc1c569e70a87f3ba22003aa5e9f7c219bdecad526a1ac7f96d885",
+      "gitBlob": "de190439ddf4fb361500b79abfeb8f58ec5da43c"
+    },
+    {
+      "path": "Paisley-Park.cmd",
+      "bytes": 67,
+      "sha256": "2eb504cc4cf7afeee441d5baac4cff4d8385eed507366f062e5800bec96b58e2",
+      "gitBlob": "a457dd87c5d4758268d5563a890c633fcc082d18"
+    },
+    {
+      "path": "README.md",
+      "bytes": 14036,
+      "sha256": "f440b66e8492048e476ea35f4640ee909fc41f05ab7ae11d546a6c68cf20dc78",
+      "gitBlob": "9676fe32cfb3143f2e7b65efa17cbab3a76334b1"
+    },
+    {
+      "path": "docs/ACTIONS.md",
+      "bytes": 12490,
+      "sha256": "ce3f646d2cc90e194cde84933459cb5e069d64df766ca0a92267f93aaf2c13bf",
+      "gitBlob": "1bbfa430065e76c15d0d64e7f6385dbdfbc0a6e7"
+    },
+    {
+      "path": "docs/ANIMATION.md",
+      "bytes": 2007,
+      "sha256": "aabec687a12fb2750ba35379b872cb833dd124c7ec0677be40561af1b4d708b6",
+      "gitBlob": "9354bcef1674b3c1ed8746026702eac9934dc044"
+    },
+    {
+      "path": "docs/APP_LIFECYCLE.md",
+      "bytes": 3660,
+      "sha256": "78a17f31365510592cf0bdadf3b1b9740567d86babe294509358ca8ff3b81173",
+      "gitBlob": "bcc81a6c977b895b5ad90add4ac095d6b77c6fd1"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "bytes": 19542,
+      "sha256": "506e6250f67e50117d9e0ec73816b3f6f1340d9a5fb515b443e51a1533d45ab7",
+      "gitBlob": "41f401e521bdb4490a1bff1c36d4324e468da78a"
+    },
+    {
+      "path": "docs/AUXILIARY_SKILLS.md",
+      "bytes": 4105,
+      "sha256": "dd12d25a319368a845cbea62b77003b9956b4ff4edcc48eaa25cdb2ce3a66540",
+      "gitBlob": "2192a165507341149f324da8a35882aa6f7f4412"
+    },
+    {
+      "path": "docs/BUSINESS_MOD_UPDATE.md",
+      "bytes": 3413,
+      "sha256": "4b6a8edcb18e8dc89e8a19bf7f3e9f6be73d584417da0ef68db08a8cb2f1b98e",
+      "gitBlob": "02dadec4462090f90c5442cb38aeb7e30f949ca4"
+    },
+    {
+      "path": "docs/CLOSEOUT_3_0_3.md",
+      "bytes": 2812,
+      "sha256": "dec7e17b6023a82d3efd26935f4f2f2caed909757e781524210096b400d20ed0",
+      "gitBlob": "14667ca61899bca46cd59266d33c2ddaafe6123e"
+    },
+    {
+      "path": "docs/CLOSEOUT_4_0.md",
+      "bytes": 7538,
+      "sha256": "6978ce1fcabdcb6904845f96a21b24bca82d111afd3bb195dfa8a509ac5291f9",
+      "gitBlob": "6735699ddb14aa9929b992e11c1aff2fbd795752"
+    },
+    {
+      "path": "docs/CLOSEOUT_5_0.md",
+      "bytes": 3150,
+      "sha256": "7aba6124d0cf8407e6b384de14a504dc24dcd2af6ab9ced4b80d27be7f7cb65a",
+      "gitBlob": "5cbcf1c921380a110b7296e6989a5faff58a49aa"
+    },
+    {
+      "path": "docs/CLOSEOUT_5_0_RC1.md",
+      "bytes": 2396,
+      "sha256": "e6a3f43d9019783a012dbffa354ebff317541a9fb0a1ebc8cadcbe4858c9e084",
+      "gitBlob": "d3cd25e04330963e2405d8b1513175b0eebd66be"
+    },
+    {
+      "path": "docs/CLOSEOUT_5_0_RC2.md",
+      "bytes": 1896,
+      "sha256": "6a78cbad44cb1e8de178cc825d90c71bc00f37d9d7cbd7dae8fc9a52c361fbdf",
+      "gitBlob": "eab0b1f1c4509b720893a3e3f9e8408c0eef02b0"
+    },
+    {
+      "path": "docs/CLOSEOUT_6_0.md",
+      "bytes": 7770,
+      "sha256": "972e6238113bcc2107dc7182e7189f7ad773214db84086a722d541581cf42a51",
+      "gitBlob": "08ce65e3285161ed4c5fcb6f180438238960aff5"
+    },
+    {
+      "path": "docs/CLOSEOUT_6_1.md",
+      "bytes": 8432,
+      "sha256": "56fb4c981836096564ed5e901b5cf991037bbc80423ac1f6a3bee521c6842dc7",
+      "gitBlob": "ec433f3d9056f1f2ce0274d89bae310e96066feb"
+    },
+    {
+      "path": "docs/DEVELOPMENT_FLOW.md",
+      "bytes": 9066,
+      "sha256": "34a9299054496af06e32d5d5610fa6a875aadbf7114cca1cd0b5a6e2fc080d72",
+      "gitBlob": "f6d976ab0d1ff2bf33712f99223fd256a5b7a671"
+    },
+    {
+      "path": "docs/DIAGNOSTICS.md",
+      "bytes": 30647,
+      "sha256": "893072fb5de68742d29ebfa97ec45a8b720fc6a6c22cd701521edf832f576678",
+      "gitBlob": "44f78d0cbfb8a7fd29e21607d318c523205f7f31"
+    },
+    {
+      "path": "docs/EVIDENCE_TOOLS.md",
+      "bytes": 8746,
+      "sha256": "7a125fd8b82a9901d65f5eb8bc59c83418051b09cf82c008b70e62b7370ddc50",
+      "gitBlob": "dcb2734a09d7165c00cd59ce0060767b783eb6fd"
+    },
+    {
+      "path": "docs/F1_F5_CLOSEOUT_4_0.md",
+      "bytes": 6894,
+      "sha256": "13e0f06056b3f44ac20b96f58e33b8a5ca25f682d5554a4386fe416e4f42a14f",
+      "gitBlob": "16da09ee5da970ce519d3c764df70365de5ab99a"
+    },
+    {
+      "path": "docs/FORMATS.md",
+      "bytes": 10413,
+      "sha256": "81d4758afd0dd01f102725a3a2709c6def41c7896304cde775d63bcc7fb66a16",
+      "gitBlob": "f8d637e38426b470048bc7a38c7eba6e715245a8"
+    },
+    {
+      "path": "docs/GAMEPLAY.md",
+      "bytes": 52414,
+      "sha256": "cfb9b6c5f2fa88eced6fd7ca8b7fd1750c1f2cff7faaf1e2f61d541b77190d99",
+      "gitBlob": "00d5bbe6ab4a6613bcf98a9925eb85f4970c2a86"
+    },
+    {
+      "path": "docs/HISTORY.md",
+      "bytes": 6352,
+      "sha256": "f5e2ff6f453399ba6d03a0059c2b53ebb6f17df6227d90bc9443c9ff747ceeeb",
+      "gitBlob": "98a9d0b884cc27fc0181ddfd615678208f58cf14"
+    },
+    {
+      "path": "docs/INSPECTORS.md",
+      "bytes": 6040,
+      "sha256": "c072cf2ebf7e214e1fb281ce215d27c70589b5c11c9ef1dc953a6bc6a5789040",
+      "gitBlob": "e12ea2612ad484b88438809b676bc0508bd9e96c"
+    },
+    {
+      "path": "docs/INTEGRATIONS.md",
+      "bytes": 8525,
+      "sha256": "5fa6be813927cee331575aac8afe61a6ad0b3c6b6b88e25aaf8b21f3240c3451",
+      "gitBlob": "92a124af34eb34fdaf61d9f09e54bd564f507824"
+    },
+    {
+      "path": "docs/MAINTENANCE_5_1.md",
+      "bytes": 13970,
+      "sha256": "80c61f23ddd13aa61d0dd67bdad1bbcd9ef376bad229b57633fe490e47416b47",
+      "gitBlob": "e1e6ad51a213c3efa502f4d920b4a41f194d3a26"
+    },
+    {
+      "path": "docs/MAPLEBIRCH.md",
+      "bytes": 5125,
+      "sha256": "911eb5ad2c4fc8ed680a0c975c80b924f754799d8076407ec1516ccdfdc0702f",
+      "gitBlob": "2f472a5781027f78b7d16041495bcb8c29237342"
+    },
+    {
+      "path": "docs/MODHUB.md",
+      "bytes": 4267,
+      "sha256": "8505f9f6266623f7abd186097d19f7d73f088d1c59cfba3365c0e4c549bcb3dc",
+      "gitBlob": "603e420a94154f039d6588c1c9014535fbb47253"
+    },
+    {
+      "path": "docs/MOD_KNOWLEDGE.md",
+      "bytes": 4026,
+      "sha256": "dfa70be4918ac9c94544036c7904276b7712cd25cfae5da5029ab2e7f19d96d1",
+      "gitBlob": "32a4c0e17155d4f1456f9eacd42f20526438c571"
+    },
+    {
+      "path": "docs/NATIVE_LAYOUT.md",
+      "bytes": 2334,
+      "sha256": "7c6918ecf48449285fd48eec8d9662e49a1a8a6faa00f0b504d5be97f153351e",
+      "gitBlob": "574aff82cca048d74c9e88879d930e42aaebca09"
+    },
+    {
+      "path": "docs/NATIVE_RECREATE.md",
+      "bytes": 6699,
+      "sha256": "a9cdb5f88949f2ce671223ada37849c2aa6bb99aea7fb8f78b7f5fa87ee00464",
+      "gitBlob": "3b011284dfac1f91e5c73083231fec8e60a5a2b1"
+    },
+    {
+      "path": "docs/NETWORK.md",
+      "bytes": 4097,
+      "sha256": "1d5e8cdc01b295029dff14a95c6860448c07fe1aa0315f2dd636526425a24125",
+      "gitBlob": "2bfd5d7bf8eb2323262a8d9e5788597af5025e95"
+    },
+    {
+      "path": "docs/PAISLEY_PARK_5_0.md",
+      "bytes": 3323,
+      "sha256": "4c5d9b1b0d7dd0c405b9f9e35230ef867f96657ba3a10aada9208679689320c5",
+      "gitBlob": "3477d019e495a88a3e540df03bbaec6192e9cca8"
+    },
+    {
+      "path": "docs/PAISLEY_PARK_5_0_C_FOLLOWUP.md",
+      "bytes": 6044,
+      "sha256": "df6ee7cbe54aa812b2e2bc874d942dd429f3e45d09e83e2d4d31db47f1b3238b",
+      "gitBlob": "d5d30475e307605637bd0758b97d9040dc8722d1"
+    },
+    {
+      "path": "docs/PAISLEY_PARK_5_0_C_REVIEW.md",
+      "bytes": 10529,
+      "sha256": "b851856f3e562d77e5035e6295ba7a7e192616a214338c50afcdd31aceffb1c6",
+      "gitBlob": "ae4c36ea5aed8d1dfde882d0920349be71303b33"
+    },
+    {
+      "path": "docs/PAISLEY_PARK_5_0_MAC.md",
+      "bytes": 8642,
+      "sha256": "981fb4031dcd51d016a848a00858dea4587c6a8debf77bae034f5e40c26ed680",
+      "gitBlob": "60486e2c01e0de12783af7b496d82873efdc1e59"
+    },
+    {
+      "path": "docs/PAISLEY_PARK_5_0_PROGRESS.md",
+      "bytes": 4965,
+      "sha256": "ff4d5e20597ecc796b4adc2f6912fb3bb9988afafd883a2dd89962afd08230cb",
+      "gitBlob": "570ea40a9ace1ea94be816902cd025b11bb520ce"
+    },
+    {
+      "path": "docs/PAISLEY_PARK_5_0_WINDOWS_AB.md",
+      "bytes": 9844,
+      "sha256": "f5e2686f72d2c144f89b5a7db181f7220c1f367c178cf50c50e726d78f6ef971",
+      "gitBlob": "7da7049dae63da97540c8c41b727096d0243fcc2"
+    },
+    {
+      "path": "docs/PERFORMANCE.md",
+      "bytes": 6116,
+      "sha256": "ebe2e132128cb882cfe240db22ba162d7de581d2423d8b2f6d005badecdf2bd4",
+      "gitBlob": "1cc8f2c4bc1f7d7876d85d6097e5c9bdd7c812af"
+    },
+    {
+      "path": "docs/PROCESS_MEMORY.md",
+      "bytes": 2470,
+      "sha256": "0a46ff52f99d375ecd39b58b75cbad050f120cb75e1947ef1a87b924f42f5746",
+      "gitBlob": "b9b71d02ddc7921360f3fed8097afbf91075c3a1"
+    },
+    {
+      "path": "docs/PROJECT_EXPERIMENTS.md",
+      "bytes": 11047,
+      "sha256": "88e17103e2193fd2f6d34ad0a8f3426c011603c03c0563a3a60db3dc6e6cc011",
+      "gitBlob": "9fbac6bc90d0b7ce6304fd8bd550d71cc0bf2fd6"
+    },
+    {
+      "path": "docs/RELEASE_4.0.1.md",
+      "bytes": 3657,
+      "sha256": "07ea3da1682b470af37e9688ec609350838158cff57fa55ee99bae3e846812ac",
+      "gitBlob": "96fc112cf1a48f282791f80bdefea064dfa8809a"
+    },
+    {
+      "path": "docs/RELEASE_5.0.0-rc.1.md",
+      "bytes": 1582,
+      "sha256": "a3f3d27f978062c7962748cc1398affdb9402b19d01d8c3528f4b106b51aaac6",
+      "gitBlob": "a2a33c2f6a2b06585659ceaffd90f4709eb87921"
+    },
+    {
+      "path": "docs/RELEASE_5.0.0-rc.2.md",
+      "bytes": 1684,
+      "sha256": "55a1a92482d558d7cd242727c5d956ec4aceceb5b9b2c59bc3b5f6b2d4800e19",
+      "gitBlob": "dce659f707b2df5d8e3b2396230b60bf025d2e1e"
+    },
+    {
+      "path": "docs/RELEASE_5.0.0.md",
+      "bytes": 2218,
+      "sha256": "a62ced2bfa572a318d69f68d2d647d1ceb3900f1801c685c4722aaa80518fde0",
+      "gitBlob": "66b62a1855b1e9225b6c72bce8210458a90cf8c4"
+    },
+    {
+      "path": "docs/RELEASE_5.1.0.md",
+      "bytes": 2676,
+      "sha256": "41b81b27a2c81c12fd704c4025b32b7867d8fe39d269f63be1d902082dda7257",
+      "gitBlob": "927131ccfa7782cd5b364f54ee21fe7d2f80140f"
+    },
+    {
+      "path": "docs/RELEASE_6.0.0.md",
+      "bytes": 3073,
+      "sha256": "ef3edcf3830b4d839923d82179d113040f330177f40651f15acd4fa3b5d2e159",
+      "gitBlob": "79131f492c09bb507e821d495c7077b7db083e15"
+    },
+    {
+      "path": "docs/RELEASE_6.1.0.md",
+      "bytes": 3077,
+      "sha256": "d7947a1d56854d36edae2a2b0a450c61db28d36a1fc01677c87402cba50e0dab",
+      "gitBlob": "4ad7be4eb3a28a449b66071f170a8b19f6c57ed6"
+    },
+    {
+      "path": "docs/RELEASE_PACKAGE.md",
+      "bytes": 2828,
+      "sha256": "cd833eec68ed1b33d0ed9bdab6b3500ecde5ced7124d521155281ccfaa5d91e7",
+      "gitBlob": "bd41774fbf9717b1e550b8c3f14f8ff679c0dd24"
+    },
+    {
+      "path": "docs/RESOURCE_GENERATIONS.md",
+      "bytes": 4269,
+      "sha256": "9e8ada67ae778161d0d70e76e6bf03d0383ee74eb2dac5fd9003c90ef229bd51",
+      "gitBlob": "75cb4fb005bb14244a99bd2d172ad1a4a2474930"
+    },
+    {
+      "path": "docs/SKILL_INSTALL.md",
+      "bytes": 14679,
+      "sha256": "ebd834bcc15bac710f08befd6e7d40e397899c00f8862e35ad5b03e1243413c1",
+      "gitBlob": "5373912c540961b4d0478992420fc540cfcb560f"
+    },
+    {
+      "path": "docs/SKILL_ROUTING_5_1.md",
+      "bytes": 2882,
+      "sha256": "4680c47ba2e46c1dc70109b5565474e8f5554dfaab45212399a829be69ad33ad",
+      "gitBlob": "0c099735637d1ea3ce8ed1ae9f41b63959ab76ce"
+    },
+    {
+      "path": "docs/VIEWPORT.md",
+      "bytes": 2133,
+      "sha256": "b2f537619287a33d211b65fac59e622ff01f1cf642cf18f6fa70c5d5dc635045",
+      "gitBlob": "51ba77fb86bfc00bf753d4292d59a15093fbe2d4"
+    },
+    {
+      "path": "docs/WINDOWS_5_1.md",
+      "bytes": 8981,
+      "sha256": "65091fbdf1e7b27dabcaee3979add29cd477d65ea1d24aea56b6265f8d63b655",
+      "gitBlob": "36c7f1bb45a5d98e86c1b61cbb876411ba2c16dd"
+    },
+    {
+      "path": "docs/WORKSHOP.md",
+      "bytes": 17132,
+      "sha256": "424ba16c891ba39768a758b6fd50fde356b8f0016d86e6dbb8f05515238ee1ad",
+      "gitBlob": "144b5ca7eadef04fe4bf60c7cac79f73c2f1365f"
+    },
+    {
+      "path": "docs/journey.example.json",
+      "bytes": 477,
+      "sha256": "f89423db98ffed2f83ce071dec68bfd2bb93bb8c1c1591a393f6cf6cab7300ed",
+      "gitBlob": "5be130be6d2d01c340b5fa4b8a7832c619270dd1"
+    },
+    {
+      "path": "docs/knowledge/build-byte-drift.md",
+      "bytes": 3244,
+      "sha256": "e9f3c95286534fbbed721486b26e2646e8e6f07d8f264cf7560fa88e84b77bd7",
+      "gitBlob": "ff607bd71a6aa0c081a5ee9bb22f3e027473d3fd"
+    },
+    {
+      "path": "docs/knowledge/cheat-optional-framework.md",
+      "bytes": 6709,
+      "sha256": "dcf9ce9918f912cc7c8f5bcbdbad4b4ae13722736a59371c29dc591dc8969cc0",
+      "gitBlob": "19f1dcf20509d81f9c39cdb0abade165271457b1"
+    },
+    {
+      "path": "docs/knowledge/latest-mod-sources.md",
+      "bytes": 4799,
+      "sha256": "3c9d4175759e7a032ab26c769a62c696188672a2e93bcc419608c1b83ceddc64",
+      "gitBlob": "8a37b9bbe8d208c977255c78d3507953a3d7c260"
+    },
+    {
+      "path": "docs/knowledge/maplebirch-mouth.md",
+      "bytes": 2646,
+      "sha256": "b068d7ac2c4a70ba7325b1a2512e301bbcf6246a103af54078c1dfd281bb1e96",
+      "gitBlob": "883de93ffbf98942f88ef5a7cd0f36110544d496"
+    },
+    {
+      "path": "docs/knowledge/patch-capture-boundary.md",
+      "bytes": 3928,
+      "sha256": "bc5c8e76c8d7c4734909c9faa2a84dd8e330d46daef0067034f75fd28785fbe7",
+      "gitBlob": "89457a4bd9514da7a4ab46f97933af38e0e49304"
+    },
+    {
+      "path": "docs/knowledge/reoverfits-model.md",
+      "bytes": 3398,
+      "sha256": "380be1aee2ebee09cc684af9508cf88fc15885382b04d44cc5a48a159409e57f",
+      "gitBlob": "ca482ab6279b451a0e8285bca44246fc9e584b83"
+    },
+    {
+      "path": "docs/knowledge/shared-caption-coexistence.md",
+      "bytes": 4493,
+      "sha256": "cc58ea05c7591a923ccb2498603e38aa118979ff445304996d21348caaad9d80",
+      "gitBlob": "e9d1b9d39ef61e0101224da95dbe4b8ea2d7ba72"
+    },
+    {
+      "path": "docs/recipes/dol-save-state.cjs",
+      "bytes": 6383,
+      "sha256": "7de40dc61a32a7fdd5db27c66f8095fb76aa2ebacfa82242ec06d6fe19aff52c",
+      "gitBlob": "d168c448e14200f9136e7e62a49354ca8145053b"
+    },
+    {
+      "path": "docs/recipes/project-state.cjs",
+      "bytes": 859,
+      "sha256": "482c7e3c02b80dbaeea64608fc4f5120dfcad91e039bc2744560967c088163d3",
+      "gitBlob": "1ee6f0ca91ad8dad5e8c1a40e5bd5899e28940df"
+    },
+    {
+      "path": "docs/repro.example.json",
+      "bytes": 284,
+      "sha256": "1d67d65993f9ee6dbd231767d8e8bc4eecc366a9df139bd168488e434a584574",
+      "gitBlob": "829dc9f6ad183ca3df771c29dd7800a0143d9260"
+    },
+    {
+      "path": "examples/android-native/ProbeActivity.java",
+      "bytes": 9515,
+      "sha256": "4d9ea06b29bba498d6ceb07685a48cbabab30df758a66083b77dd496cdeeb393",
+      "gitBlob": "c7f2661f12a85d05d6f9940567c4abbef621a342"
+    },
+    {
+      "path": "examples/android-native/build.py",
+      "bytes": 10972,
+      "sha256": "da75006cd95313be7bb97170c9d4626d3e1d1347c1d6fe4d0ee04029236d4573",
+      "gitBlob": "a895b4765a0c92e1c2ac3230ab2479ad516a04cc"
+    },
+    {
+      "path": "examples/android-native/verify-business-mod.cjs",
+      "bytes": 15225,
+      "sha256": "ce151f85110cac352b72f6ab35e992f6ca3c0756b1875cf8f3ed639b258f10aa",
+      "gitBlob": "1e4475cc63c561071df6f73e8e0a4854b08271d1"
+    },
+    {
+      "path": "examples/android-native/verify-webview.cjs",
+      "bytes": 18321,
+      "sha256": "21429246732377566c5b3b843e26dfb93bd6130d0051497e18caf4797a8329c0",
+      "gitBlob": "1497fa9703a7c86014eba55952822626d1169854"
+    },
+    {
+      "path": "examples/android-native/verify.cjs",
+      "bytes": 13684,
+      "sha256": "cea73e112ce8a79aa6376d09ba35281b87288ebf34838da9a661cac796456c1e",
+      "gitBlob": "810ad11ca5f49d27b0960194d9aff086c9ff495d"
+    },
+    {
+      "path": "examples/behavior-preservation/README.md",
+      "bytes": 5885,
+      "sha256": "76a7fcc20bc70fe0f7c8d9009c4bf4b1331d3d775ef94f910b2ce865016579c2",
+      "gitBlob": "2bf909c62d58a1603ae4df00c75d571768e36219"
+    },
+    {
+      "path": "examples/behavior-preservation/deep-proxy.cjs",
+      "bytes": 13239,
+      "sha256": "27e5ab38211966cf51b517d0b928f9d2783d9b7b53a8a3c8c18e293aead3ac75",
+      "gitBlob": "156bbf0c884b409e4af970eda15e2e3b1f6aa2d7"
+    },
+    {
+      "path": "examples/cheat-extended-optional-probe/README.md",
+      "bytes": 4227,
+      "sha256": "56384ad0a8aeca501938df767d1745d730cbe73a075a0e0a15dcfbb2c48d36cc",
+      "gitBlob": "45f19c0ca8614f0d9811d8395ab56ca464e31c2b"
+    },
+    {
+      "path": "examples/cheat-extended-optional-probe/patch.py",
+      "bytes": 3709,
+      "sha256": "e792ee197e9fd1e6588c1e59c5dbe14ddc0b78332f8e87ac8b3930a9618ab113",
+      "gitBlob": "9c84f8f0013a218fd62d51c4b6cffa09b1d1c24f"
+    },
+    {
+      "path": "examples/cheat-extended-optional-probe/verify.cjs",
+      "bytes": 4033,
+      "sha256": "ac3deb106f0f354ce8fba073f6634e72294234992c8ac852f8f2495b382f63c5",
+      "gitBlob": "79fe6c6cc4e9ba3ef7dba5d97de3f4f0cbb7d6c4"
+    },
+    {
+      "path": "examples/cheat-extended-optional-probe/verify.py",
+      "bytes": 3322,
+      "sha256": "a827468eb5369e0949991382dee5d07a4185f595fe650523e1922a51d4af8e4a",
+      "gitBlob": "99255d7a1c9ff23382be425489397e935326ed0e"
+    },
+    {
+      "path": "examples/maplebirch-character/README.md",
+      "bytes": 1726,
+      "sha256": "6fd13289f292cf0aea0af282540cebcee1b89fa87d04e34d0791d480722c9361",
+      "gitBlob": "0f171c059d6c87762a8c8b78e4e26a72140f04b9"
+    },
+    {
+      "path": "examples/maplebirch-character/verify.cjs",
+      "bytes": 5890,
+      "sha256": "6f86918cdfe18aada6da616341da919a322437e4df2388615f41a380f726f09c",
+      "gitBlob": "80f6e6e074c1e146a026f4a6c7a3cb3b8fa4e0b0"
+    },
+    {
+      "path": "examples/patch-provenance/README.md",
+      "bytes": 12958,
+      "sha256": "dd10fd6fb00c52b1f17d74f97232009a10ea4c51a102828e3b02bfa729aeea67",
+      "gitBlob": "354679adfd192052266efb37ea3636d933da3808"
+    },
+    {
+      "path": "examples/patch-provenance/observe.cjs",
+      "bytes": 6648,
+      "sha256": "a36e6012d32d3badb243f742c26c80c8bff8318351b791038f62bae23c72bcb7",
+      "gitBlob": "eead1614887b6ac92f6b20db5aab902c90e27e70"
+    },
+    {
+      "path": "examples/patch-provenance/publication-browser.cjs",
+      "bytes": 10462,
+      "sha256": "411085d2fc893135072795d7fe3bd76f52b9182b657dc5ecab283100576239dc",
+      "gitBlob": "9ff28236ff3dfcb7c486edc3e3e8218683fd1e46"
+    },
+    {
+      "path": "examples/patch-provenance/startup.cjs",
+      "bytes": 4519,
+      "sha256": "b2ef66ab3289499b80b4b04da9cd7e4c1b90b96289c6b6ebf42431f099ac9d7d",
+      "gitBlob": "3aaf4901f838f0e4649ea9dc48eeef3fab82752c"
+    },
+    {
+      "path": "examples/patch-provenance/verify.cjs",
+      "bytes": 15158,
+      "sha256": "dd4e4b1cb3f84f5ebaa91192c43a89b47fa61c9a3dbc7da578f34ccddcc36663",
+      "gitBlob": "82f13fa8bd5231529c0a55c770fe6ac3fb7f0290"
+    },
+    {
+      "path": "examples/workshop/build.cjs",
+      "bytes": 284,
+      "sha256": "7b4008a437860e05a78e5264b779f4586cb4d4698c6ec0a21ac01f3d75259986",
+      "gitBlob": "0c829286f2437ca3c19a580d6aa14da3558a477a"
+    },
+    {
+      "path": "examples/workshop/deploy.cjs",
+      "bytes": 291,
+      "sha256": "0e4b522c8cc0fc423afdc80418fbdf22b7f3b9fdb56c32d66a3fcceb639a850b",
+      "gitBlob": "4a03177bde6fba8d4f2c3a5065020c657e6c1d53"
+    },
+    {
+      "path": "examples/workshop/index.html",
+      "bytes": 379,
+      "sha256": "20a55a4a5a487a82ab870909af33081817daede36acb550068b8a0eabf099321",
+      "gitBlob": "31a2236a6d4d1f3554ebea94ca7301f3742a63ad"
+    },
+    {
+      "path": "examples/workshop/mod-fixture.js",
+      "bytes": 756,
+      "sha256": "3620b95b7c8e2be59882446a20594aab4c790aa1583d5113b8079bc188b0faea",
+      "gitBlob": "92b939e0dda041e874f54dd74d2824c8adce5f36"
+    },
+    {
+      "path": "examples/workshop/verify-android-mod.cjs",
+      "bytes": 18535,
+      "sha256": "07afe190a7d4696a63de1b5d935fe063c7870ae8b0967fe63f500c64f45cc0c9",
+      "gitBlob": "d4e40890139cabd001c626d73e9c60e7ea56aedb"
+    },
+    {
+      "path": "examples/workshop/verify-mod.cjs",
+      "bytes": 14287,
+      "sha256": "e898527f190b9db4e0b8526b2224043ebf7a915586d98d1bda88c107e06a6ea5",
+      "gitBlob": "0cc0ac31b0af36af41ed4869b1516c131c29b9c2"
+    },
+    {
+      "path": "examples/workshop/verify-webview.cjs",
+      "bytes": 6945,
+      "sha256": "30b15475d91158c70cb233584f649d004fc11fc986f683543ea4e88c427c6a50",
+      "gitBlob": "e14567aa5d9d3227b1f8052cbb0fa584e1d2753a"
+    },
+    {
+      "path": "examples/workshop/verify.cjs",
+      "bytes": 8465,
+      "sha256": "2e38a17d01c4578fe949bd7734e18093daa04cf43d96e4f4e3ea7504a048853a",
+      "gitBlob": "969690e8bc566586665f69827825b49995193395"
+    },
+    {
+      "path": "examples/workshop/webview-fixture.js",
+      "bytes": 1298,
+      "sha256": "280c2520cb6a846e79a5bb06096c29c16c192b733d7fad5c961743c0e5ffa712",
+      "gitBlob": "997594e92fef3a63aeb68a3ef2250d5341a83f8b"
+    },
+    {
+      "path": "experiments/gold-runtime/cli.cjs",
+      "bytes": 2092,
+      "sha256": "322f93f30d70bbc9cc0e420e92ee552b0e8c11ff6bd3e34b7e75df37f49ed0cf",
+      "gitBlob": "8309ef39c0fb6e989efaef44fd09c9c15e0e82b8"
+    },
+    {
+      "path": "experiments/gold-runtime/fixture.cjs",
+      "bytes": 4305,
+      "sha256": "8879955d93d770df438ff815102026cb7304bde52ee6f4dd6250e8613802214e",
+      "gitBlob": "7ccfe08596cae3d4eb7763e60922856e42c93f9a"
+    },
+    {
+      "path": "experiments/gold-runtime/runtime.cjs",
+      "bytes": 316,
+      "sha256": "ed2c6fdedd0fb917d8993e019e45198c9ca4c5875031c7e79a159eb37780474d",
+      "gitBlob": "217f78d7bdf9a49c59d177581486cb125eab86de"
+    },
+    {
+      "path": "experiments/gold-runtime/test/runtime.test.cjs",
+      "bytes": 32748,
+      "sha256": "83b16716f0148b051e603839864d97484c6d1a573913fd4a3dead1853c951c7d",
+      "gitBlob": "ff2b3a09473e8de4116db38e4930f4d26cf85e16"
+    },
+    {
+      "path": "integrations/examples/dom-summary.cjs",
+      "bytes": 928,
+      "sha256": "e5d4c211bd5ac0f7e1319eb1ec8e9fc1ff5a481b1ebcdf78dd90882faf0928c0",
+      "gitBlob": "02c118834f4abe2b7ce567b49e6338c92eaca1c8"
+    },
+    {
+      "path": "integrations/examples/native-lifecycle.cjs",
+      "bytes": 2016,
+      "sha256": "faa77cf2893186c726909dcaab2beb0b1431ee40c50d9db92e51ef672192809f",
+      "gitBlob": "0738af101f7e835c0c068f6f25e90b5eb1960df6"
+    },
+    {
+      "path": "integrations/examples/patch-observation.cjs",
+      "bytes": 4278,
+      "sha256": "62257dd775b881152c18891b2f732fd454b3d170d3f42880440ba92953210042",
+      "gitBlob": "79e9749bb9bb1883633c88400753d607d693e605"
+    },
+    {
+      "path": "integrations/soft-and-wet/gameplay.cjs",
+      "bytes": 5738,
+      "sha256": "7ae087dc738d80826c0b45a651196bebf16e9e3faf6796b471e7d43948f6cb9c",
+      "gitBlob": "b2595d2d8b6a4e30695574583b6edb430c2ce7bd"
+    },
+    {
+      "path": "integrations/soft-and-wet/index.cjs",
+      "bytes": 3411,
+      "sha256": "871781bd4963e19ca6ef1640191169ee54d8634ecb5e6d1caa271243f94b8027",
+      "gitBlob": "9012c8f1a3e3f51967eb4a5ae063045fe211e38f"
+    },
+    {
+      "path": "integrations/soft-and-wet/native-head-profile.json",
+      "bytes": 18128,
+      "sha256": "054200bf10103133a912859e8544b5695c6207a4f08708874c0b8ef81462a4b3",
+      "gitBlob": "133d59eb39d7e6a3da95aa3bee74dead32624d0c"
+    },
+    {
+      "path": "integrations/soft-and-wet/native-head.cjs",
+      "bytes": 40701,
+      "sha256": "d05e864d539215ba207abd609003f90431f8c1b95d04dc7d9637365fdd477f27",
+      "gitBlob": "c8ef7fffc1e8b9eee5db33aa262bf2b19cc13778"
+    },
+    {
+      "path": "integrations/soft-and-wet/source-link.cjs",
+      "bytes": 5691,
+      "sha256": "e087f260598bfc6166fe703115c5e3a6846eb5af41918cad2012f9eb4d5e7dff",
+      "gitBlob": "b87f5e06256c39d0a41e5b62f55923a56b450a6b"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 747,
+      "sha256": "ce32ab5cd3242f05c2477f26311150e1e11cee497b15768d559b75a14cfc41b4",
+      "gitBlob": "0f4e90b758118d4f282c10c748c2008c58bcda9d"
+    },
+    {
+      "path": "package.json",
+      "bytes": 388,
+      "sha256": "dec7c27fe34892f0f05bb65ccf28855b717b82d6eea4c9341da0897fafa15867",
+      "gitBlob": "f7080bceea18f975d07de560edb562d91f442f17"
+    },
+    {
+      "path": "probes/loader.js",
+      "bytes": 532,
+      "sha256": "8a2dc1bab1ca699843202d8dfc01d11b0c75cd042c1e8c89f390e39930089616",
+      "gitBlob": "0c9385fa3174959cbe994ddf4f7bebb8823681cb"
+    },
+    {
+      "path": "probes/shop.js",
+      "bytes": 1611,
+      "sha256": "34811c97f49bd351972d94417c850cedd9020a6878356dd19ef6a45103e390d2",
+      "gitBlob": "1a652f327f4c06b0799aa9af7a4eba35618d730f"
+    },
+    {
+      "path": "probes/status.js",
+      "bytes": 528,
+      "sha256": "3f8f4622554908de8da141020b42e0e0fc7c8e1ae38494a7df48f1232400f058",
+      "gitBlob": "0e4c183edf3d78948ae5145eff8f01f4b2c8be5e"
+    },
+    {
+      "path": "probes/wardrobe.js",
+      "bytes": 545,
+      "sha256": "c4385463a2db718d6a396fa30ac811d98232c1d4249a37c2af60f88f57991ecf",
+      "gitBlob": "ce72f6feb6a5115dcdd5a5a63a80c972152386f0"
+    },
+    {
+      "path": "schemas/diagnostics-v1.schema.json",
+      "bytes": 65312,
+      "sha256": "191c5a5e37217e18868d840bad42ed43081f3b0f9f8a6a1fdaf57393041781f4",
+      "gitBlob": "91416beb813acea1c76dac1997913574f93104d7"
+    },
+    {
+      "path": "scripts/adb-backup-app-data.py",
+      "bytes": 2413,
+      "sha256": "03a6aa9a7959ee1fd00e487e921794885d567fbef2d552acf7fceefe9a30bdc9",
+      "gitBlob": "323e61479312db374e76c94e0a879f7186a2ecd3"
+    },
+    {
+      "path": "scripts/adb-evaluate.cjs",
+      "bytes": 1193,
+      "sha256": "938438063b40f5e76e51c1e4f86c7c8769fed3d3d5b242e186f2d61a0218fa85",
+      "gitBlob": "aad3e1f8c505966d1c5e118b398871095651e4f7"
+    },
+    {
+      "path": "scripts/android-inspect.cjs",
+      "bytes": 3416,
+      "sha256": "dd949843ae482beb393ad49cba7bee0a24766f5fd089f0550341f29ddcf968f3",
+      "gitBlob": "e1f0df5c424d46f79cc8f4474c3a97186ecb982c"
+    },
+    {
+      "path": "scripts/dol-dev.cjs",
+      "bytes": 35043,
+      "sha256": "73390a581be0354ec30bcf8572c592e6b6962edf09a415fea06acdca6e7f1eb3",
+      "gitBlob": "1040e93d4034936159f7dc16daf1cc545ba9e775"
+    },
+    {
+      "path": "scripts/lib/action.cjs",
+      "bytes": 19238,
+      "sha256": "06bc32736af045bc09770eed592b32a30bb577f857ff88f8d2e7e2646147f002",
+      "gitBlob": "2c2588215aeefd5e924335e95c63258b4d4dc291"
+    },
+    {
+      "path": "scripts/lib/animation.cjs",
+      "bytes": 4852,
+      "sha256": "196d9750faf80bdfb5be531615b0b2f8fe2700e62b3da80f45920c5330cc5463",
+      "gitBlob": "5219890010d13ca418883ab582929d1ac56aab23"
+    },
+    {
+      "path": "scripts/lib/app-lifecycle.cjs",
+      "bytes": 9394,
+      "sha256": "af3ebeb985eb302488aa16c7aeb80c450ec4aea349677010e34f8418b7b3a387",
+      "gitBlob": "cc57e21a06325e5a3ebff768109b9b2a1143d1df"
+    },
+    {
+      "path": "scripts/lib/cdp.cjs",
+      "bytes": 6105,
+      "sha256": "5736f54bc9487a06d57a93a28564ac82bceb6a199aa2051ccba63bc6aefbb70b",
+      "gitBlob": "37a25922fe8cde253e0f527c256b83d72a7866c1"
+    },
+    {
+      "path": "scripts/lib/collectors.cjs",
+      "bytes": 12602,
+      "sha256": "ebb04a3a1415ec7528ab12f85f9013801c7cec16bd4a601adc1dd5b5fca2a4d1",
+      "gitBlob": "b7783ef54c2d89ef3916e715fe3935302fbd58f1"
+    },
+    {
+      "path": "scripts/lib/css.cjs",
+      "bytes": 5652,
+      "sha256": "0b3411c543fb6aff6a6e65cfbba38caf90ac1a199380998355bf0abf680bcd87",
+      "gitBlob": "f3c4d0de560a4db10b920c2b75917a11c2c62e5f"
+    },
+    {
+      "path": "scripts/lib/deep.cjs",
+      "bytes": 4047,
+      "sha256": "e1d5768aacdbdf78d0f743377f4f96dcbf5abc23323af454988ef260c0f729af",
+      "gitBlob": "d84a5c2abdd440398d6be033139559acbe076710"
+    },
+    {
+      "path": "scripts/lib/doctor.cjs",
+      "bytes": 5694,
+      "sha256": "65ad3410b2dc4e0e6289c8ffe1c96aebef739fb3ab78d41a48583bc402918700",
+      "gitBlob": "7e447b94e02d46175886953fc552db5ba8413a98"
+    },
+    {
+      "path": "scripts/lib/dom.cjs",
+      "bytes": 3376,
+      "sha256": "1436f7665981458d9d93f6629e4e5069d4372a5bdeeb550ed53b986dd87a27b5",
+      "gitBlob": "a00c922f6c079795eb30e03004116aabc7da2060"
+    },
+    {
+      "path": "scripts/lib/environment.cjs",
+      "bytes": 7553,
+      "sha256": "b7bf65b3b9387b65405d3487932120c6fefe3d10b6598644b116b701744de31c",
+      "gitBlob": "b4897e4eea4a3b296501f8bf156e7f259139739e"
+    },
+    {
+      "path": "scripts/lib/evidence-tools.cjs",
+      "bytes": 33926,
+      "sha256": "077d7ce334ce6152550e9ecf7c203f31e3e7c3b17303fbe6008f47b86901d9ee",
+      "gitBlob": "3003548258479a63a7dbe708f910b9cf7a66f37a"
+    },
+    {
+      "path": "scripts/lib/evidence.cjs",
+      "bytes": 18100,
+      "sha256": "d63bfe7e457d3263dd19abdcdaa9642229e37e0a08421b43d4bf2aba0d8195fc",
+      "gitBlob": "0544fe36e3443b4ae8451447397147c4c018293b"
+    },
+    {
+      "path": "scripts/lib/execution-context.cjs",
+      "bytes": 8717,
+      "sha256": "6ee6e72e05f2c0b41511ed08e8d3aa2b0e7ef94a5aba22e82eba7a51f7c6c114",
+      "gitBlob": "93a42e015bcf13fa8d35cdcb372c1bcc8291858d"
+    },
+    {
+      "path": "scripts/lib/game-capabilities.cjs",
+      "bytes": 6846,
+      "sha256": "19e37e9b280e65e5e0a9a9093f9cf145b7f96a638c5bf09b1d7dab92bb43f341",
+      "gitBlob": "06e5d1a52d63f11c6f8314569ddb0ab549b4250b"
+    },
+    {
+      "path": "scripts/lib/game-clothing-provider.cjs",
+      "bytes": 11945,
+      "sha256": "03e876d0975c5e54fecdbc683b173ac7c00e4f102fd6d580e8321be48712bfa6",
+      "gitBlob": "cd51a5d92c1e0e5ac63ae0d7de0e03f974d6490b"
+    },
+    {
+      "path": "scripts/lib/game-contract.cjs",
+      "bytes": 16164,
+      "sha256": "88492423877e72f06699834082a42c628df857ab9db648003d89997efeb95ca9",
+      "gitBlob": "92b0051d6659bd357b24e2f44beae6ce4d14812c"
+    },
+    {
+      "path": "scripts/lib/game-dol-provider.cjs",
+      "bytes": 31463,
+      "sha256": "90785cc60f4e5f11fc371b4df1d5c189e47d9949a210ebd4f16dd2d2853b77d1",
+      "gitBlob": "a9d274b7e28b46c1a6dde2cbd93853b9fb1c0846"
+    },
+    {
+      "path": "scripts/lib/game-goal-reader.cjs",
+      "bytes": 12492,
+      "sha256": "77c0a1f75d2e68a514e760d8cc35852e950e11a11f8cb1f814b8f1d00db750a5",
+      "gitBlob": "64539f3b41fbc2664ce1ab04a170502eecf80c4a"
+    },
+    {
+      "path": "scripts/lib/game-goal.cjs",
+      "bytes": 22077,
+      "sha256": "d453f57b6051267e250dfe35d0f5fed1f2516143edaea67868cc1acccbabbb36",
+      "gitBlob": "baa732384c4b5b2d0fdf22b3726459c5e917cb1f"
+    },
+    {
+      "path": "scripts/lib/game-native-bedroom-profile.json",
+      "bytes": 1188,
+      "sha256": "fccf9dbc9367085775fe73ffeede14cdfebc079fa27ca7c7fa29530f6e2652dd",
+      "gitBlob": "1d6feac6426aaf2fcb18a0373cc4dbadf38aed5e"
+    },
+    {
+      "path": "scripts/lib/game-native-business-bindings.cjs",
+      "bytes": 4965,
+      "sha256": "3930ad06d2873e293ddb6f8d03a1791c589779ea83131d94c57225407ca0ca62",
+      "gitBlob": "cc5ededf609b9a059e4a86a7532f4d5b0c93d4fa"
+    },
+    {
+      "path": "scripts/lib/game-native-control.cjs",
+      "bytes": 5694,
+      "sha256": "545445f57fe60d64a19773c4a1e15a7ade12fcacfad4646168e159e25b162f4b",
+      "gitBlob": "0918d1e1ad2e4c5d0106d514f13062e9da8be0e6"
+    },
+    {
+      "path": "scripts/lib/game-native-daily-profile.json",
+      "bytes": 4146,
+      "sha256": "5c7161c294ce3b024a36f467c6276837d8b09286dd8eacb4713618d75895d5e2",
+      "gitBlob": "6d1e261b56a7a6a0c54ec0c2d1ea8985c4fe698f"
+    },
+    {
+      "path": "scripts/lib/game-native-daily-state.cjs",
+      "bytes": 1736,
+      "sha256": "a496ca665680751a409c80d7fd436d24a046f3f93451da0778081f6778e99046",
+      "gitBlob": "d6d0c15271972dfe7adf2e8bb0f5cab7b0067916"
+    },
+    {
+      "path": "scripts/lib/game-native-environment.cjs",
+      "bytes": 16617,
+      "sha256": "fa773bcb821d45898074f58ca415d44a310770ce76fa1ac63abdacc1a3bace60",
+      "gitBlob": "14f3756bbbc9bd12a9eb46d9647336ce8b5682a2"
+    },
+    {
+      "path": "scripts/lib/game-native-garden-profile.json",
+      "bytes": 8161,
+      "sha256": "1a40cb93958cc1d5e6e4c6afdaa7b2e1c5fca50bfdad8ec60322a60bd2ad667f",
+      "gitBlob": "5d27f201fad3fe9977717223d12482b023425a82"
+    },
+    {
+      "path": "scripts/lib/game-native-garden-state.cjs",
+      "bytes": 5101,
+      "sha256": "f3258572c748d7ba8016e3f0c1803fdc62d7c76f9f5ac7953ec9be0d0153343d",
+      "gitBlob": "3f3443cda1308841a215b03d4f4296c632087153"
+    },
+    {
+      "path": "scripts/lib/game-native-generic-landing.cjs",
+      "bytes": 4686,
+      "sha256": "41ec132622eef4926171341481e7f659f517147a911d5789f1145ca41b27ffa1",
+      "gitBlob": "0ac9ed34a9f288b0e09127b97a5c995701af9471"
+    },
+    {
+      "path": "scripts/lib/game-native-hall-profile.json",
+      "bytes": 12964,
+      "sha256": "49ba57addff819ed7903c2fefb081c9f65f2274006edf59db76913f0e3769d27",
+      "gitBlob": "a535dba182005e95fd28b231a4a9d9eb5b3afa42"
+    },
+    {
+      "path": "scripts/lib/game-native-hall-state.cjs",
+      "bytes": 2893,
+      "sha256": "77ecb3b9591aa582e4d7844f317a4645a4012425c9be9a3ba85f304635a81c41",
+      "gitBlob": "ee2b0952d693c933eeca397eb6c9ce6357b4662d"
+    },
+    {
+      "path": "scripts/lib/game-native-history.cjs",
+      "bytes": 6792,
+      "sha256": "3d7eeb6c6c1d6832a7dbdfed6e89d538c1024b57dbc469494c0f3e47ecf318d8",
+      "gitBlob": "586cfb203262a8facbe4cb98c4be585e1cceb9f3"
+    },
+    {
+      "path": "scripts/lib/game-native-hour-profile.json",
+      "bytes": 3180,
+      "sha256": "72710ff7e34667e0f0f15079aca3e5c7f212669e3602cf2b9f14de8f8ba16680",
+      "gitBlob": "b845433c9f61d94aa49c8d7122917a63c8203997"
+    },
+    {
+      "path": "scripts/lib/game-native-hour-state.cjs",
+      "bytes": 1678,
+      "sha256": "71c250eb0ccac851f903e30d904f2a46e685b577b1d7ad771cc7c934d0efd171",
+      "gitBlob": "4aea7ddcc64356f3b1998be1161422158a44d79c"
+    },
+    {
+      "path": "scripts/lib/game-native-intro-profile.json",
+      "bytes": 33833,
+      "sha256": "3c954a9634e23d60c38c7cc84390fbba7de99e184346f0cc876dc7edd43a180b",
+      "gitBlob": "1ffb82d4360c8c14253e1d3ac89ae1df4647b2ea"
+    },
+    {
+      "path": "scripts/lib/game-native-invocation.cjs",
+      "bytes": 904,
+      "sha256": "b0a7ee194a568c8569e96fac5705f5acada91423c8177a7c51d9b77dc63353cc",
+      "gitBlob": "1728e007bcd3952b6d26383fe1086d734670b6ce"
+    },
+    {
+      "path": "scripts/lib/game-native-kitchen-profile.json",
+      "bytes": 1837,
+      "sha256": "a16e113e93c77b74ac97bbb357eee4a9d900fe05e811fb6e784ae89cbcccfdc9",
+      "gitBlob": "e6155580cca26e5d71a3a4b01b267e76bd17a241"
+    },
+    {
+      "path": "scripts/lib/game-native-navigation.cjs",
+      "bytes": 16766,
+      "sha256": "7b756544b403a44295eb5dd307ede0b20cd608bafcabcca89e28681b16301653",
+      "gitBlob": "d9d0ece4d59f2a0cb2604b564e947ce49a0886a2"
+    },
+    {
+      "path": "scripts/lib/game-native-profile.cjs",
+      "bytes": 23931,
+      "sha256": "f44d5c80e77ad4d386839b84e03438139899e8ca5177fc52f4cc51c479e9fb23",
+      "gitBlob": "5a9e5ae5b516eab65e7a304b9ec9a33424e762e3"
+    },
+    {
+      "path": "scripts/lib/game-native-profile.json",
+      "bytes": 59777,
+      "sha256": "5b7d9e7532bdf0a6fe569028a7bff1017565f7e464350166a2bc4bad332fe37d",
+      "gitBlob": "11f46fafa0487d1f1876a97af3bfd196021c0e02"
+    },
+    {
+      "path": "scripts/lib/game-native-provider.cjs",
+      "bytes": 11639,
+      "sha256": "c96e98dd727b6c33bdc678973f4867fe13b4ed229cda45980004724c5d1ab24f",
+      "gitBlob": "10941380482fdf8d02383df6a2bbaa61527a1d3d"
+    },
+    {
+      "path": "scripts/lib/game-native-radio.cjs",
+      "bytes": 14077,
+      "sha256": "8f2315d618ac3c4358c439b4046b9cb8713334c2c05ca2152d4762907905e613",
+      "gitBlob": "27378cc01e662e072278e93fcb9e75ea8c8c68fb"
+    },
+    {
+      "path": "scripts/lib/game-native-render-tasks.cjs",
+      "bytes": 5378,
+      "sha256": "75b52f9b63c1f80c8d89a21a4e9a22223e5f4834b1f2c0a3d46b39f1d5db2fe1",
+      "gitBlob": "f3984ea1eba259747a3fcacdfb515714137f60c3"
+    },
+    {
+      "path": "scripts/lib/game-native-save-profile.json",
+      "bytes": 1126,
+      "sha256": "769dcc5978ae89d2b387ee01df96bcb838eb8cb4dd41904b4b3ec98ea77a6eca",
+      "gitBlob": "ebaa8df2d923be49eb90ec5d3fdba4413939b818"
+    },
+    {
+      "path": "scripts/lib/game-native-save.cjs",
+      "bytes": 12332,
+      "sha256": "536b93c424165300bceefeb9d74fdad4b1dee10eba60aa33b35ef779697e626d",
+      "gitBlob": "e7461e04e5bc3019237dd2043cfd5ae89c54add0"
+    },
+    {
+      "path": "scripts/lib/game-native-street-profile.json",
+      "bytes": 1308,
+      "sha256": "b47b3fd2b79f57177a946fa4396b5ed419fc1cb47ff4586f3d2f9d9c58641fbc",
+      "gitBlob": "c91464200ffd016160169beadb63aea1078a65d7"
+    },
+    {
+      "path": "scripts/lib/game-native-street-recovery.cjs",
+      "bytes": 5594,
+      "sha256": "c525557262c216f64e5ef0f2b93c5570910d4920a3027eed5d9f3a953600db76",
+      "gitBlob": "d128f3364d2a23136ea09ed9c70a0117192f30f5"
+    },
+    {
+      "path": "scripts/lib/game-native-street-state.cjs",
+      "bytes": 1732,
+      "sha256": "bba3241132dc9be9c5f62db87c19d174ee98ef117667dd2468b4562fa2d70df2",
+      "gitBlob": "4d56012b3f50f628995b1b88004e67d44032d02d"
+    },
+    {
+      "path": "scripts/lib/game-native-time-profile.json",
+      "bytes": 2374,
+      "sha256": "5b022875f641727ead50bcc4d40c765567f069f6e315914dd3ca515b4fe42610",
+      "gitBlob": "82c3233c861517007445fce6a47bf5a61ccc95fb"
+    },
+    {
+      "path": "scripts/lib/game-native-time.cjs",
+      "bytes": 10486,
+      "sha256": "98257a485d86c24f99848b2adb6ed825c4524970a01ee706195dde4e3c56512a",
+      "gitBlob": "af57a0ed86912cf5cee547311853334f0eebaad5"
+    },
+    {
+      "path": "scripts/lib/game-navigation-operation.cjs",
+      "bytes": 17111,
+      "sha256": "f2e64ac9d4646e5d3cc6f987613fc52ae7bd3a4c3014ea6ef62772c366c45f44",
+      "gitBlob": "e19964adbcf816dbc67245c5b602abece2470ca1"
+    },
+    {
+      "path": "scripts/lib/game-project-provider.cjs",
+      "bytes": 10883,
+      "sha256": "7698c53824c3076c1de426e06a78c2087560d2d0a64e9955e4d61c513efe90a6",
+      "gitBlob": "0c83ac3d847ef19f21b0087ffe2358ea23f797b4"
+    },
+    {
+      "path": "scripts/lib/game-receipts.cjs",
+      "bytes": 5436,
+      "sha256": "a6428423f9716b3e3277ac2005d3b8d5c454b5eeedadb0bbb6a190138afc3132",
+      "gitBlob": "9af528fbccc80f0d1f8505b580876e0ec0aaecbb"
+    },
+    {
+      "path": "scripts/lib/game-resource.cjs",
+      "bytes": 5809,
+      "sha256": "c17953a02d935925d9187f885937942502ba01b0e0fd645d13d713470e5385f9",
+      "gitBlob": "fd12e7e60e6b0f2069667f8f9721a6804771fb4b"
+    },
+    {
+      "path": "scripts/lib/game-runtime.cjs",
+      "bytes": 37000,
+      "sha256": "27a6e9231df53c61ee54ac6b59d65cbf8e41b092c9df69030c3b637509d2cd3a",
+      "gitBlob": "3d2d0236c03af1de3987b048e3749e9fd885fbfe"
+    },
+    {
+      "path": "scripts/lib/game-scope.cjs",
+      "bytes": 1722,
+      "sha256": "a940c4ab87598eb8f87a6f796e6c685a8eebb36e2be03013392640000a11a9e9",
+      "gitBlob": "aeef92671367554d0b65637998d35a3906489b6b"
+    },
+    {
+      "path": "scripts/lib/game-semantic.cjs",
+      "bytes": 448,
+      "sha256": "a8db6078bc313851e3793ccea15d63d8c7e0e9f9f96fb7fe6d97758776119061",
+      "gitBlob": "9ecb1b9052b7912ee913a94f06018b9323e120cc"
+    },
+    {
+      "path": "scripts/lib/game-shop-menu-native.cjs",
+      "bytes": 11093,
+      "sha256": "da682735d722b34e301f3ee1c770565a8b6e5c1d21e6b88f15116392edf0e158",
+      "gitBlob": "c73ade0553b8e6d1d2e0e56d410dd6b9a60547c7"
+    },
+    {
+      "path": "scripts/lib/game-shop-menu-operation.cjs",
+      "bytes": 3360,
+      "sha256": "ed183cd53fa96b6265695acf9ea18713e124506d38fe77bef3299e2390b123b1",
+      "gitBlob": "91295dbfcf43e044a4e430196c7440aaa3a874bc"
+    },
+    {
+      "path": "scripts/lib/game-shop-menu-profile.json",
+      "bytes": 2599,
+      "sha256": "2d3d0a699399885bf58d9916da6f2c9581e565acf7f3c98cf128a3af00abff9c",
+      "gitBlob": "182b6c1cad4d92e6a8cd250726c872ccde2bc34a"
+    },
+    {
+      "path": "scripts/lib/game-shop-native.cjs",
+      "bytes": 9874,
+      "sha256": "3790190c0a10419ea80ea1a55e980a1f2c4ddf45834f79f783c4bfb37d3e69ed",
+      "gitBlob": "3debc480bf05a44185ef2149fc4812f521bffb63"
+    },
+    {
+      "path": "scripts/lib/game-shop-operation.cjs",
+      "bytes": 6072,
+      "sha256": "49c9a14b44e80e97a4b3645909fb231d435d607911a0f19de030d3a2581d95fd",
+      "gitBlob": "eb953d43a87870d74752415272d086cc8b652a6f"
+    },
+    {
+      "path": "scripts/lib/game-shop-profile.json",
+      "bytes": 15524,
+      "sha256": "95789ef475c63da6c9b3b66fbd8a4d2c023ad841bdba211bea11652c457ba8d0",
+      "gitBlob": "dbf0c79ef318c564622207f974b7c4d3e4585a5d"
+    },
+    {
+      "path": "scripts/lib/game-shop.cjs",
+      "bytes": 13626,
+      "sha256": "9d7946e3ca68dee939de54b970ebc0526a56a08efa2387467b2902594bcbadc3",
+      "gitBlob": "41925c499542edcf3d9c1fbc07f6fc179d13d644"
+    },
+    {
+      "path": "scripts/lib/game-spend.cjs",
+      "bytes": 575,
+      "sha256": "be39f2f29cb0c319590a509bc15c25b173b6e5402ef8d185b97fe6a748ffef41",
+      "gitBlob": "ec9313dc2fcd6b4bcd6846cb803925c1bf8591af"
+    },
+    {
+      "path": "scripts/lib/game-wardrobe-native.cjs",
+      "bytes": 6527,
+      "sha256": "2b8341169bffe9565bb019af1961487dd3820682b1c36d4546e76e0995ad9a3f",
+      "gitBlob": "f1a1990ac76295cbc17195f6b88bd2b06a643648"
+    },
+    {
+      "path": "scripts/lib/game-wardrobe-operation.cjs",
+      "bytes": 5338,
+      "sha256": "feb465bd62ee025e85055073655f575e7ec846b6f6c848bbe109d5f8841980f5",
+      "gitBlob": "effd7414366a53223dc0c7ce8953266a8156da9a"
+    },
+    {
+      "path": "scripts/lib/game-wardrobe-profile.json",
+      "bytes": 12567,
+      "sha256": "4fcc6b35476f77108443db4dc4a81d26508a16ec1e665793fa14402486e3987f",
+      "gitBlob": "f571c578db2adba32415a37bbfaf5acebabad3b5"
+    },
+    {
+      "path": "scripts/lib/game-wardrobe.cjs",
+      "bytes": 12476,
+      "sha256": "d9a3d7eda32f71e348de85e2ebf529c4ac93181be08277c1aca19767d08ce56a",
+      "gitBlob": "4e27168e0241d559619d77a34791575dbe9a5f7e"
+    },
+    {
+      "path": "scripts/lib/hitbox-overlay.cjs",
+      "bytes": 2519,
+      "sha256": "e665e2b6bdd7ddff92cab6ebd943d33b338b268321b4a89c1832978ea37943ea",
+      "gitBlob": "6f7382a835b623dd155cd18aedc68e4ec53d1c26"
+    },
+    {
+      "path": "scripts/lib/inspectors.cjs",
+      "bytes": 19748,
+      "sha256": "48f26d9137e4f17c41c910b911f50a7c04be951d7f0c8ed25e5083b00022faf7",
+      "gitBlob": "3848bbdb77ff3ba95b84c793ff711c485f6b1a3e"
+    },
+    {
+      "path": "scripts/lib/install-skill.cjs",
+      "bytes": 5728,
+      "sha256": "cd46fcabdcf6c118444d01ec0613f4d9f60e16df375a6fa2c7e93b97397b270d",
+      "gitBlob": "65517e46f2dae5b5421fb036c85b539d968f8172"
+    },
+    {
+      "path": "scripts/lib/integration-worker.cjs",
+      "bytes": 3952,
+      "sha256": "fb7027db40c3c6fde847ffa85c259b8af9d6cff3496afe10de60a676f4a20338",
+      "gitBlob": "e980034c0b708f679b4169fd4e7aba755a999d2b"
+    },
+    {
+      "path": "scripts/lib/integration.cjs",
+      "bytes": 3143,
+      "sha256": "4cd9227d76b0e902980b84fe919708b9a30c3f08cbc7c176c6c48789eb18ad0c",
+      "gitBlob": "21daae701fcc7fab222f5ac8fa03d742cee6d518"
+    },
+    {
+      "path": "scripts/lib/journey.cjs",
+      "bytes": 12082,
+      "sha256": "5b13084f7e2f7c83a53c0ebc938b7d140f36d4a37ca44b53208eead8e8a2f548",
+      "gitBlob": "f0a5dd50285369a9ffa9e17385063c85f1f2172e"
+    },
+    {
+      "path": "scripts/lib/logcat.cjs",
+      "bytes": 2129,
+      "sha256": "a4d0412363eecea25642a6c4ac6eab990fe25d16593dc8dddce77b5c862a5759",
+      "gitBlob": "24161a63affed425a8cc9eb0996077f84bea43dd"
+    },
+    {
+      "path": "scripts/lib/matrix.cjs",
+      "bytes": 5273,
+      "sha256": "3f55314ee1dd37b5d6e63ba0de40ff627751da15e198e10317cb403e5ea275e7",
+      "gitBlob": "dea5b4d2b19d6b0b1532db094683b6226f8279c2"
+    },
+    {
+      "path": "scripts/lib/native-layout.cjs",
+      "bytes": 3141,
+      "sha256": "47be9a5df3eae8ef7629fa9d8d03f7f623f23a4833d8cb8d537a14bfa2051cce",
+      "gitBlob": "5a8df7f3fbe03ff165a675052c004cbe32ae1a49"
+    },
+    {
+      "path": "scripts/lib/network-lab.cjs",
+      "bytes": 5725,
+      "sha256": "950100e0a7550e6c3bd41f755f5674bcfdca7675ce31a4809ecefd4807ba56d1",
+      "gitBlob": "f1cce4d0bbd303563631ad5b3cd54354e624f2c1"
+    },
+    {
+      "path": "scripts/lib/performance-series.cjs",
+      "bytes": 8319,
+      "sha256": "1291633ec44c3c0c898e27be1f2f3801f5d9bb24dcbd3167ebc4230cd12ae42c",
+      "gitBlob": "d1a0bdd8ce6ae5e532d78987f96a9e08dec280ec"
+    },
+    {
+      "path": "scripts/lib/performance.cjs",
+      "bytes": 2166,
+      "sha256": "abe8228a17a822a38903763ce19559f37da05d5d68c29f51805a330d3b8defb1",
+      "gitBlob": "4ac58842f4f0a3589bc3d26eed678961e6d9e5f4"
+    },
+    {
+      "path": "scripts/lib/privacy.cjs",
+      "bytes": 1583,
+      "sha256": "be30398fa8ba1f1fa0bf9aa3471a9abac90687253ea88df8097b746fa0927d0a",
+      "gitBlob": "c2984d16e9d05d672456ece3833270f1573dc2f9"
+    },
+    {
+      "path": "scripts/lib/process-memory.cjs",
+      "bytes": 4682,
+      "sha256": "3b8dbf6d92988712f39fa88d27a2f566d9630bb582ecc822bae6049e1fae5ab4",
+      "gitBlob": "cb7943c92331bae6477962f836a5402c1167ec95"
+    },
+    {
+      "path": "scripts/lib/record.cjs",
+      "bytes": 1539,
+      "sha256": "7eb25726c1ae632ba3e96db46c96f04e1b522274c3c192f292f743bb710f0992",
+      "gitBlob": "c343b3acb64ce1d9ace868c5a060b2458a664a89"
+    },
+    {
+      "path": "scripts/lib/recorder.cjs",
+      "bytes": 6993,
+      "sha256": "937b149f051d860671606fddb2fb1eb42df07ad3681d932c29d9cccae7f0ab50",
+      "gitBlob": "196a1bc58dfd123b47d45322b4a74407f9f89f32"
+    },
+    {
+      "path": "scripts/lib/support.cjs",
+      "bytes": 7496,
+      "sha256": "6b9c9ae2aa19933e704b29fcc87ada70de86cfd0517287e884d27763b38263b5",
+      "gitBlob": "ee0e4eee8877a984d939e62051ca50108f63b752"
+    },
+    {
+      "path": "scripts/lib/timeline.cjs",
+      "bytes": 12574,
+      "sha256": "671fb6447a5bbe6a829c0159c2af4cddf7526d2e99dc25fac589649aaa268fd1",
+      "gitBlob": "33ae2f84caa5492ca3522c4ec41b30abd6ddfe14"
+    },
+    {
+      "path": "scripts/lib/viewport.cjs",
+      "bytes": 6287,
+      "sha256": "bcf018e70b04ca8cf78ade9a8f23c8f4eb4424a03d67157079c045c4c6361f2f",
+      "gitBlob": "912484ce81fd72aaac4bdb6809debfb4683be937"
+    },
+    {
+      "path": "scripts/visual-diff.py",
+      "bytes": 4912,
+      "sha256": "598475aafa7a2208db75cb984aacbfe096b7ce58d6a14af91767fe7acd11abb3",
+      "gitBlob": "afc60a2c32664b2870cf1f77703b4f2514d8a19e"
+    },
+    {
+      "path": "tests/action.test.cjs",
+      "bytes": 25484,
+      "sha256": "c6cb593aa214b03808b15da2bc64e681b3d402ff56741a6153f5f1bb248e6713",
+      "gitBlob": "1a8233a74b1a87baab8bc1f22b6a3ed7b08c3281"
+    },
+    {
+      "path": "tests/android-inspect.test.cjs",
+      "bytes": 2189,
+      "sha256": "2edb7cd5210f081e6571a96ae55fd911a3ea0a83a631c2da7db1674f0d055a24",
+      "gitBlob": "ed211ff72e22f66902dc620f4cbdaa7a7935e6b8"
+    },
+    {
+      "path": "tests/animation.test.cjs",
+      "bytes": 2443,
+      "sha256": "7698d2aea616268d433b978da22b0d71c653ba3352fc52912bc13cdd33d292ea",
+      "gitBlob": "13827b7d96e1cf3c74b9a4a1773cd94d87f32810"
+    },
+    {
+      "path": "tests/app-lifecycle.test.cjs",
+      "bytes": 6547,
+      "sha256": "a2fcfe207d6d6f0285a19401066206af17f10b146e1091cb2a460f6ab8e145ed",
+      "gitBlob": "c212afe357b07184dcdfdc4382697a2e5d088f0d"
+    },
+    {
+      "path": "tests/cdp.test.cjs",
+      "bytes": 4880,
+      "sha256": "a3fc305422ffd3f4eb007d7f7cf72e228979cf3c1f28ade5d568cc415b17af86",
+      "gitBlob": "0f5624ef81779cf7a4076f02d966c1b1d0252c6d"
+    },
+    {
+      "path": "tests/cli-errors.test.cjs",
+      "bytes": 10216,
+      "sha256": "638f53dcf0126ed2fd4f8425bb13a8a64f6513b9d7c7ebc327614643a5ed46ce",
+      "gitBlob": "9a0bd617a1f28bdea7dcfabf0a382bb8fbe502c8"
+    },
+    {
+      "path": "tests/css.test.cjs",
+      "bytes": 4381,
+      "sha256": "5e440ec07b7eb6e1d7a2d689ff548947e67ef5716093c2de33341a35eb5cfd95",
+      "gitBlob": "53a8b55bb12bc893e9bfafcfc9b600c7f9568349"
+    },
+    {
+      "path": "tests/deep.test.cjs",
+      "bytes": 7064,
+      "sha256": "a13ec27184820391294a81bbf6b1a11da73ddbb3060342966ce2cbe4f8568143",
+      "gitBlob": "daccad4805223ba610c105b2d96f781e7b128f24"
+    },
+    {
+      "path": "tests/diagnostics.test.cjs",
+      "bytes": 11199,
+      "sha256": "847a211d03131743ab553842db26132c848ad926e304968d742852f4ad2361dd",
+      "gitBlob": "fd44590d88d82e3d1034da8d50c22e6403a69185"
+    },
+    {
+      "path": "tests/environment.test.cjs",
+      "bytes": 5667,
+      "sha256": "b4c065df3262f1b78cd59b4a54892c14d501987ec947f7f2cb322357a59e5968",
+      "gitBlob": "aec6dae226f41a468fc0b1628afe70d306a5714c"
+    },
+    {
+      "path": "tests/evaluate.test.cjs",
+      "bytes": 3553,
+      "sha256": "4cf1a189dd92206669d23278233ae423e630f4b6dc11d2b1eebd6f56748a25ff",
+      "gitBlob": "d90704ed37b4dc2c6a72375ef775cd67448d6f23"
+    },
+    {
+      "path": "tests/evidence-tools.test.cjs",
+      "bytes": 22776,
+      "sha256": "1457d13f864960ebf1520778608cfc898c0b0a4e0a153f829fa5638e554f51da",
+      "gitBlob": "03d903dfbe93cf3ab9c88a262c74d15f37469a64"
+    },
+    {
+      "path": "tests/evidence.test.cjs",
+      "bytes": 17208,
+      "sha256": "c163cc33c05589ced82030fa1b734a05ef0b22eb2d97d9840e28dbc9d40c0c35",
+      "gitBlob": "9c16859e9aeeb2b5919b430c4a3d904a94c94025"
+    },
+    {
+      "path": "tests/execution-context.test.cjs",
+      "bytes": 9866,
+      "sha256": "4b7bde2ea2114c7419a4d23e0e5d9719daa90f10070c0c28f57d4b4f252abfbd",
+      "gitBlob": "5a0d67f96923d59c8ee9dc317900b074a2aabe4f"
+    },
+    {
+      "path": "tests/fixtures/document-client.cjs",
+      "bytes": 815,
+      "sha256": "8f6a072c169f5d12ae0b66772abbebdb1b789a0a946bc557859d33d48ef4368f",
+      "gitBlob": "ba64eec6520bb8e70f300aa9e36c2645b30be77f"
+    },
+    {
+      "path": "tests/game-capabilities.test.cjs",
+      "bytes": 11176,
+      "sha256": "0bbf703617366a5076d5c9079f17351088c824e9dc79fdb2948caf9c5717709d",
+      "gitBlob": "590913c7e1c5b2928594e171c53a4b0dc27b0596"
+    },
+    {
+      "path": "tests/game-clothing-provider.test.cjs",
+      "bytes": 9257,
+      "sha256": "7835f8cf4829107a8b6431ee6d57ee156307a2ba38c2263104d99b3c56e88baf",
+      "gitBlob": "be634ce2f717fd121b3461a2202b5e3901875a6f"
+    },
+    {
+      "path": "tests/game-contract.test.cjs",
+      "bytes": 14022,
+      "sha256": "cb1db15e768782bfc21903d06e45c4d666fdb8bcce8ede443f5430627f602617",
+      "gitBlob": "e3f3a5f56828a024a5f705eb23d2bcfffcc817a0"
+    },
+    {
+      "path": "tests/game-execution-window.test.cjs",
+      "bytes": 1313,
+      "sha256": "8dc0a19332a7c14c3591a7770539e39fb3448f205542f18de3a28db5a2c769d0",
+      "gitBlob": "4225675a4399d02cfa28963787a8d769f3116cd8"
+    },
+    {
+      "path": "tests/game-goal.test.cjs",
+      "bytes": 72436,
+      "sha256": "32608d345990832ad168833e6df3b5d73affa13521f08d23325043284ad87104",
+      "gitBlob": "4e7bda96efd4cff2d2c74d2f0c75d92ac387bcaa"
+    },
+    {
+      "path": "tests/game-native-control.test.cjs",
+      "bytes": 5243,
+      "sha256": "e6babfafa9d0739716b7c03208a833d5908fad1a79a0c1717ce9f053159f3a98",
+      "gitBlob": "3ae9a5d0ce7f03ed92acd2dd1c47c50e23f023ae"
+    },
+    {
+      "path": "tests/game-native-daily-state.test.cjs",
+      "bytes": 2102,
+      "sha256": "f2776ef7c2f2439eea72ce6b3435e920d98b9aa8dff720edd49d9ba230ee01ea",
+      "gitBlob": "74716f75476ae9e02b66c5b398de9d53179960b8"
+    },
+    {
+      "path": "tests/game-native-environment.test.cjs",
+      "bytes": 6317,
+      "sha256": "0f9dd80486526da75c0ca327563131cbb9f3311e4141e1c9369fb2fea5bb9b33",
+      "gitBlob": "718f6b42437f7b8bc32fb3993de46d86c1e8e849"
+    },
+    {
+      "path": "tests/game-native-garden-state.test.cjs",
+      "bytes": 5246,
+      "sha256": "3787cdd76e807a91ed9996f4f729f273d80c7bf29cf73955c665da715b82c519",
+      "gitBlob": "fc0116b175eb602c562161dc7052a00002d3a4b6"
+    },
+    {
+      "path": "tests/game-native-generic-landing.test.cjs",
+      "bytes": 2873,
+      "sha256": "2857aa46c73f0868fc1952c9d5e7615ace9e1984198fdde5ae45e656b32a1472",
+      "gitBlob": "48e168689be08b9410fcb1bff23f8ac79a764b16"
+    },
+    {
+      "path": "tests/game-native-goal.test.cjs",
+      "bytes": 7935,
+      "sha256": "52959c4bc2889df37d029d1ae1e9e8c1c201755d304586f35239001b01b578b0",
+      "gitBlob": "4320dc6618ae1b8b855012c0db89e269509f8098"
+    },
+    {
+      "path": "tests/game-native-hall-state.test.cjs",
+      "bytes": 2901,
+      "sha256": "166374fd7cf86f757a926de46c215a10843a65e82516408e5d0d1a31a2d1087f",
+      "gitBlob": "a8f0d17bd20587f9a182aab301c993ed58ef501d"
+    },
+    {
+      "path": "tests/game-native-hour-state.test.cjs",
+      "bytes": 1573,
+      "sha256": "e8076bc92fde95514bd5369ac606157d096dd4a0c87185c3d14b23a85e09c45e",
+      "gitBlob": "96c83a99abbd3d0329ed9ed6fd24573ec3098ecf"
+    },
+    {
+      "path": "tests/game-native-invocation.test.cjs",
+      "bytes": 1378,
+      "sha256": "869bf3c5de8c96e7bdf8e9799f1e4fc7f465147dc07ce5e908591c3c30a5b759",
+      "gitBlob": "b5f4473468b2a5e6fb3cce1690bd638d19631662"
+    },
+    {
+      "path": "tests/game-native-navigation.test.cjs",
+      "bytes": 10073,
+      "sha256": "d086852a65875d50da4a33bc27c0f720ccfbedccdf07ee7f559826c13e9d2a44",
+      "gitBlob": "7b1b385990c04e7929f5c2035cc67e6a958dc2cf"
+    },
+    {
+      "path": "tests/game-native-profile.test.cjs",
+      "bytes": 25160,
+      "sha256": "ba3420c0493054b30e5a218b68ba756e08d41cc387a00141782a51de5dbbf06a",
+      "gitBlob": "dfa6a2a31954500dc30e1e57eb60b3705e4637e9"
+    },
+    {
+      "path": "tests/game-native-radio.test.cjs",
+      "bytes": 2561,
+      "sha256": "14308f4dbbdcc472568699e9ad8f0885186d740a62fe290e1ef453737d3b4c10",
+      "gitBlob": "e5274cb530066223f5e8acbf4815aa3c0a4f9ae4"
+    },
+    {
+      "path": "tests/game-native-render-tasks.test.cjs",
+      "bytes": 1799,
+      "sha256": "ecf44f52c545602578c7a4566a715f41573e6e800747c1a8bbe428af2ccc5207",
+      "gitBlob": "80f0a7164ae0a913b8cea5eb4e9ace82d61c50e2"
+    },
+    {
+      "path": "tests/game-native-save.test.cjs",
+      "bytes": 8821,
+      "sha256": "f7f0380854c2e469fea36ec0c1af62257dec6c9121e65ba032fab93fa04dcc16",
+      "gitBlob": "28e16a52d68c6fa4942e713d6a619bf376d0a4d1"
+    },
+    {
+      "path": "tests/game-native-shop-binding.test.cjs",
+      "bytes": 3638,
+      "sha256": "6d0b02cc7d1fbe87451d16c40c54c45cd28087b1e2585f92366adf8760de6ebf",
+      "gitBlob": "19e01dc325c9b6b5d4e74578a247e54d78ffcebc"
+    },
+    {
+      "path": "tests/game-native-shop-operation.test.cjs",
+      "bytes": 5754,
+      "sha256": "2c25260a6a2d5f3b45e3716349c00b20c5044d66cde82d01640be108aa3c691c",
+      "gitBlob": "3dd23a7e9fbbaa8fc49cf4e6ca071653aa1179ec"
+    },
+    {
+      "path": "tests/game-native-street-recovery.test.cjs",
+      "bytes": 5386,
+      "sha256": "3ea0837ea9df9d72d797385ab4ef27daffa3b65bde6e0ef774d195238348bf21",
+      "gitBlob": "81721e53ff072bf4e768477b762afd5f3faaad68"
+    },
+    {
+      "path": "tests/game-native-street.test.cjs",
+      "bytes": 1993,
+      "sha256": "9f2f09951da17b1c8026455f311886aaf94448a79d876c5c50918e1cebf7c24d",
+      "gitBlob": "87d0d377a692f6d93c326eae4cb787aa167a6a08"
+    },
+    {
+      "path": "tests/game-native-time.test.cjs",
+      "bytes": 6302,
+      "sha256": "1b11ab2d8c21ed2a7a7532df441f587d24f1128400de88062f601bd6707a29f5",
+      "gitBlob": "6b70c1c3914c45028c89e98e1748a46c8dbaea4d"
+    },
+    {
+      "path": "tests/game-native-wardrobe-binding.test.cjs",
+      "bytes": 1969,
+      "sha256": "edcbbf06ea5f5d278d1536929c526ac1f53d67bff795bfbdd3f6296bc5681236",
+      "gitBlob": "42019c16f0cd041927c9c7759ff61f8ac69a8264"
+    },
+    {
+      "path": "tests/game-native-wardrobe-operation.test.cjs",
+      "bytes": 4599,
+      "sha256": "4788382f3c846fa18029fee8f538f3ed8a589d259b1f18988150cf1ae4439b30",
+      "gitBlob": "184f496d5e9193b01907e84ad1fd0150b2f0ad60"
+    },
+    {
+      "path": "tests/game-native-wardrobe.test.cjs",
+      "bytes": 9178,
+      "sha256": "fb109f9f843979adeac9a3a38d88d6a35f3254ebb85c47574a8b3ed9bb0dc61e",
+      "gitBlob": "f0fb505f7ff9452e59a9337fc47262fe9061f900"
+    },
+    {
+      "path": "tests/game-navigation-operation.test.cjs",
+      "bytes": 28342,
+      "sha256": "32634c62e7735510ffbe6949e7a24138b604609865cd74f022036a7dfecbcdb9",
+      "gitBlob": "8491203dbee235aca9a040098b4ef559f1e2900e"
+    },
+    {
+      "path": "tests/game-project.test.cjs",
+      "bytes": 4892,
+      "sha256": "73f0ec757348e374ccc1cb028bec0d911ce8f5422a334f42fb1ba71b959049ee",
+      "gitBlob": "e65868beafd0aa9919c258a5c053aa45de10ecfd"
+    },
+    {
+      "path": "tests/game-purchase.test.cjs",
+      "bytes": 15080,
+      "sha256": "40b22a6dd611f589add7133582ed9ef79f358c65c720628f42f0159da9c6b67d",
+      "gitBlob": "836c5c1099188c5deca7cf1d8e5517455ebac731"
+    },
+    {
+      "path": "tests/game-receipts.test.cjs",
+      "bytes": 3838,
+      "sha256": "1c0189a3af419fb56de445d45ada8ccbdfb440d936caf4e5c39be8633a7169a5",
+      "gitBlob": "e42cf4f59fc078ae52b856c7b860b60c62c31524"
+    },
+    {
+      "path": "tests/game-resource.test.cjs",
+      "bytes": 11143,
+      "sha256": "b4cf41eaa07982c80a99dd7b8a40c93deae82ceb84bebe1bad297570f9f51f6a",
+      "gitBlob": "cd3b8e52d0fb36e7d1fca584d6df1b397b42c812"
+    },
+    {
+      "path": "tests/game-save-recipe.test.cjs",
+      "bytes": 5797,
+      "sha256": "53d8ef67d351b8316a9b556da1c312f0ed52b640f8ae965bafacc800084394a7",
+      "gitBlob": "e205a84715be3c7954e88eb19879b0cddf02548c"
+    },
+    {
+      "path": "tests/game-semantic.test.cjs",
+      "bytes": 20525,
+      "sha256": "f57dabe549946aad24f6c7af72eaed22ad33646c2fc14a944e6dbcb65d3f53f0",
+      "gitBlob": "29ad649c9124da455f491e86c54ddd3d13982fe5"
+    },
+    {
+      "path": "tests/game-shop-menu.test.cjs",
+      "bytes": 5811,
+      "sha256": "3473d84e01e8b1366ce8434b5c65b00b9f1e071aba28a16aeaa413af05de8a24",
+      "gitBlob": "370ab1a786154d4d733b392496175fc3e83a681f"
+    },
+    {
+      "path": "tests/game-shop.test.cjs",
+      "bytes": 11091,
+      "sha256": "6c76eb63fbe93bc696cc5fe6becf705c1adf40267dfaf9a09b5b2c8e0131b463",
+      "gitBlob": "d9202c894cf6d43365fff21b53b547836d938b8e"
+    },
+    {
+      "path": "tests/game-spend.test.cjs",
+      "bytes": 2758,
+      "sha256": "5be014c9a00fabe2b091319cd1cb2abe816eb9e8932f9c7a1885e238f6948cf9",
+      "gitBlob": "4922977275c11ac919f967ffa7577f1cdcb9fb9c"
+    },
+    {
+      "path": "tests/game-wardrobe.test.cjs",
+      "bytes": 4272,
+      "sha256": "878b4c1870f19018b2d93fc3b20a86bb4200dd47002586170d7724d22e943829",
+      "gitBlob": "ff5e1498b1a0ada544bddabca992d1df99fc8ff6"
+    },
+    {
+      "path": "tests/hitbox-overlay.test.cjs",
+      "bytes": 1496,
+      "sha256": "c9d421d8eeb8d753311cc3bc80a2167686111c525bdea1257d43950eb0b5d843",
+      "gitBlob": "602bf9d8f9c6c18ca4d7c61bf08c96da8503f037"
+    },
+    {
+      "path": "tests/inspectors.test.cjs",
+      "bytes": 7810,
+      "sha256": "db7b18f0cdb39e083a8ae12dbefcdb42f8305065e34fdef8d653ba06e90c3c8e",
+      "gitBlob": "9ae7165fd8b39ef3cb686b08147d3d8b6500caf1"
+    },
+    {
+      "path": "tests/install-skill-failures.test.cjs",
+      "bytes": 12794,
+      "sha256": "4d4f0e9d5d9110da7cec16a758beb2186c3254e67c3523459f8091b6a117dc36",
+      "gitBlob": "bdc4674c0eee2b12f3ed0b7917409defa4b510d3"
+    },
+    {
+      "path": "tests/install-skill.test.cjs",
+      "bytes": 3145,
+      "sha256": "688ac6f1d22660fdc3dc54caebf50be06e3b14cb41ba03c53d7a38e45914423a",
+      "gitBlob": "9dc48c6e7112531793dac71bc4dd38dd6beeda04"
+    },
+    {
+      "path": "tests/integration-document.browser.cjs",
+      "bytes": 6184,
+      "sha256": "856c3c4c88c1bd13155726d1715779a2c327e154b35ccb3b6f843d56215035a0",
+      "gitBlob": "2442825612896cfe0fc8193d7a5d941288d7c68d"
+    },
+    {
+      "path": "tests/integration.test.cjs",
+      "bytes": 7087,
+      "sha256": "ae6dc421ee907a0b4dfffd79d1675033cd23ebf357dda2f4f98d19b00afb19a2",
+      "gitBlob": "7d4e86ca012846a08fad99fd313bc9204ed1733c"
+    },
+    {
+      "path": "tests/journey.test.cjs",
+      "bytes": 8184,
+      "sha256": "259583108cbbef1d1339fd46ab60a952fdf91bfd042a92ddf616788fa21a35de",
+      "gitBlob": "c2ff26674847e5c846045ffc9934de2ac97dc1f8"
+    },
+    {
+      "path": "tests/logcat.test.cjs",
+      "bytes": 2526,
+      "sha256": "c07eb7a49fc480b6c94ad21894112723236126dfa1f1fb3364bdb6afb98e70fd",
+      "gitBlob": "2c399012efd66146c68776b18cce5578c0e30857"
+    },
+    {
+      "path": "tests/matrix.test.cjs",
+      "bytes": 2136,
+      "sha256": "eb34383a939ca4b2c5bf06686790895439237cda40646153c11432c6683cb13b",
+      "gitBlob": "aab7808a9ae886ad693a603821267a240dbc182f"
+    },
+    {
+      "path": "tests/native-business-recipe.test.cjs",
+      "bytes": 1826,
+      "sha256": "e318e70cadd3e50ff1370c168cdafa7b6c60d2b3530bb05c98bb19acbb080649",
+      "gitBlob": "950416ac5d66c78ee86ae0eea291b96843468363"
+    },
+    {
+      "path": "tests/native-head.test.cjs",
+      "bytes": 15983,
+      "sha256": "cd80a801ee80e54f8dc8ff27934ba27d5d394e0b330f0dc2428a03155b086d49",
+      "gitBlob": "e87dbe77502c35d9806564a2ba80561db7ce1646"
+    },
+    {
+      "path": "tests/native-layout.test.cjs",
+      "bytes": 2792,
+      "sha256": "ef07ce1747285069f8eaee89a6ad66aed9dd38297467f3d23b7c48ab1772ce93",
+      "gitBlob": "b4844c7ac8b37ec3b3e1ee62157507572e7ff203"
+    },
+    {
+      "path": "tests/native-lifecycle.test.cjs",
+      "bytes": 978,
+      "sha256": "bd21d9c73603a5203d36b7dfff5dd318aa969b265f989e4428e22c918dec6948",
+      "gitBlob": "dbd8813e00f4e23f29eb2948ef31713f03f3203d"
+    },
+    {
+      "path": "tests/native-webview-recipe.test.cjs",
+      "bytes": 2904,
+      "sha256": "c831111110f954149a9ec3af7f10427151f14fcd92cc537b081daefeedce95fb",
+      "gitBlob": "efd329d143f7b8c3af7cbf0c678d5bc2766050f9"
+    },
+    {
+      "path": "tests/network-lab.test.cjs",
+      "bytes": 2723,
+      "sha256": "0393c813ffc80b6dbd02292f0adb62524ae2c5ff0db2a0033c6a79e4da18897a",
+      "gitBlob": "b4f7bb2de496518783788c1633050b59d3f89fe2"
+    },
+    {
+      "path": "tests/patch-observation-integration.test.cjs",
+      "bytes": 3010,
+      "sha256": "7b8e8343d52ee4cfa75a0cd0d41a4348eddd0a7cabe8c717065e362c4934c283",
+      "gitBlob": "66be217a09f14837fb5802f39a1e1982401a851e"
+    },
+    {
+      "path": "tests/patch-observe.test.cjs",
+      "bytes": 8949,
+      "sha256": "497d5362b2a5b0b2763d2ba04b28de9610caa3e4a215a1d7b231b7cbc087a840",
+      "gitBlob": "6c4442fa71ca6148d8034acb5fba4c50c6e166f8"
+    },
+    {
+      "path": "tests/patch-startup.test.cjs",
+      "bytes": 6962,
+      "sha256": "ade5d9122940a610a49f6883d113fe00b3504e6c013b3a61c7b26d6cc3d74ee8",
+      "gitBlob": "01989ab495816b7078d0160bae3ac112033f65af"
+    },
+    {
+      "path": "tests/performance-series.test.cjs",
+      "bytes": 4479,
+      "sha256": "6f85fb4183967fb34d3c5900c860c32bc13b670789b9c09408bc609af7334589",
+      "gitBlob": "f3f1c02e100a03eb2a88f6b42107886598acbac4"
+    },
+    {
+      "path": "tests/process-memory.test.cjs",
+      "bytes": 2023,
+      "sha256": "8bd8b3e36250836b33c00a1091e6cf95f0b7cb44c5e6854c15ee30acde3e702d",
+      "gitBlob": "352f07a5c666da7fe9ef7c4a0dad7d05597d2aab"
+    },
+    {
+      "path": "tests/receipt-retirement-mixed.test.cjs",
+      "bytes": 2940,
+      "sha256": "5e99f286543f8bcf4ef67d607053df894706f4bb59eff505925517366ae85470",
+      "gitBlob": "927fa7d0e8bb4db06729a970360a1b8d12f8b1ae"
+    },
+    {
+      "path": "tests/recorder.test.cjs",
+      "bytes": 5837,
+      "sha256": "2cac1adad5e7136b3cc0917945007b11f252a15e0591c1e7365469fb42d0973f",
+      "gitBlob": "1a23e6a9b3c34c35f6e6ee4dc0c2d5d5f7d25239"
+    },
+    {
+      "path": "tests/test_backup.py",
+      "bytes": 2190,
+      "sha256": "bd54f188e0e31e9ffe651044dfab8f0de2b7ab7a8deee92fec78eb542bbe3ca9",
+      "gitBlob": "bdefe95e5aa31df1371cc33001d081247d93cfc7"
+    },
+    {
+      "path": "tests/test_cheat_optional.py",
+      "bytes": 5721,
+      "sha256": "6f01cc9e09ab29409fe7281a0397bcf9acb1a7bcc1535db8283a526d46e2242a",
+      "gitBlob": "6595d25e8c465aa9642a18ab7e6ff866324867c2"
+    },
+    {
+      "path": "tests/test_formats.py",
+      "bytes": 2175,
+      "sha256": "42d4af4d5ee6b45d40206e1c6166e8eecbfde1a01203cd10ad429294c62aa7cc",
+      "gitBlob": "de1dcc01a2f930122d9e0eeaa17a05a6f4024e31"
+    },
+    {
+      "path": "tests/test_visual.py",
+      "bytes": 3025,
+      "sha256": "96934db79c3e8540e6a85d45d073200520f61fd10d54f6093c8ca69ec40e2d60",
+      "gitBlob": "2b07387a9f1390fce327f952d42b4af965898f09"
+    },
+    {
+      "path": "tests/timeline.test.cjs",
+      "bytes": 9527,
+      "sha256": "ab6183c0b376debd62effb4180d4b3551785af57fdbb726b1facc3eb20249931",
+      "gitBlob": "337dfbda707a4202d3d4ae542b9ff427e0ad4634"
+    },
+    {
+      "path": "tests/ui-source-link.test.cjs",
+      "bytes": 6622,
+      "sha256": "a15a5d82df6fc14d1f112829deab3d5e26cbcd876f04b54a0ec1223444bde390",
+      "gitBlob": "a7a048990a7214a5918f5dd6e9ad891d350b98f9"
+    },
+    {
+      "path": "tests/viewport.test.cjs",
+      "bytes": 3096,
+      "sha256": "49b11b917983f6d609c156926594f9d7edcf72e5d73f4a7653bbe3fc4016f7f8",
+      "gitBlob": "c5777891c1e999577b21df4c9df28ded62f11ee9"
+    },
+    {
+      "path": "tests/workshop-origin.test.cjs",
+      "bytes": 2259,
+      "sha256": "42e4166a0bb18667cb3a5954903f7a95f48f5487af25b1a6a4e0b7a1717785bd",
+      "gitBlob": "909f9644d34a8b1d70e0822e72d07e33ea4dc7df"
+    }
+  ]
+}

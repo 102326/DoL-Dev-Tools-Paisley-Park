@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "candidate": "6.1.0 White Snake local RC-03",
+  "decision": "RC Accepted with Limitations",
+  "sourceCommit": "c09e45b2708fc6343bf6833dde2207276013e5e6",
+  "archiveSha256": "07424d2a862559a6ae2f0745427e2afa5125b636c081d1bb7213890790e8ebd7",
+  "previousCandidate": {
+    "sourceCommit": "fae92a640b5a67a289da753da4566c8444e92f4e",
+    "zipSha256": "a0becb484c9b5ab607da3be7b4d6e3b14b7c654e981af66a6efb3fb2be0fbe40",
+    "preserved": true
+  },
+  "productChange": "CE verify.cjs honors existing DOL_PYTHON before platform command fallback; invalid explicit path fails without fallback. Test and install/recipe docs updated. No tool manager or GER/schema/dependency change.",
+  "archiveChecks": {
+    "sourceCommit": "c09e45b2708fc6343bf6833dde2207276013e5e6",
+    "archiveSha256": "07424d2a862559a6ae2f0745427e2afa5125b636c081d1bb7213890790e8ebd7",
+    "fileCount": 295,
+    "markdownFiles": 66,
+    "localLinksAndAnchors": 321,
+    "fileSetAndBlobBytes": "passed",
+    "pathAndPrivacyChecks": "passed",
+    "thirdPartyOriginalAndGeneratedSlicesAbsent": true,
+    "internalStageReportExcluded": true
+  },
+  "maintenanceAcceptance": {
+    "status": "local Scoped Done",
+    "sourceCommit": "c09e45b2708fc6343bf6833dde2207276013e5e6",
+    "tools": {
+      "node": "24.22.0",
+      "npm": "11.19.1",
+      "python": "3.14.8",
+      "pip": "26.2.1",
+      "xstate": "5.33.2"
+    },
+    "tests": {
+      "node": {
+        "passed": 33,
+        "failed": 0,
+        "skipped": 0
+      },
+      "python": {
+        "total": 9,
+        "passed": 7,
+        "failed": 0,
+        "skipped": 2,
+        "skipReasons": [
+          "optional jsonschema/rfc3339-validator absent",
+          "optional Pillow absent"
+        ]
+      },
+      "m3": {
+        "preserved": 8,
+        "intentionalChanges": 3,
+        "negativeControls": 2,
+        "unknownUnexecuted": 1
+      }
+    },
+    "integrationSmoke": {
+      "status": "passed",
+      "node": "v24.22.0",
+      "python": "3.14.8",
+      "ownXstate": "5.33.2",
+      "cliVersionHelp": "passed",
+      "sqliteCreateCloseReopenReadCleanup": "passed",
+      "doctorPythonVersion": "passed",
+      "doctorOtherExternalChecks": "not executed (restricted injected runner)",
+      "privateStoreOrDeviceAccess": false
+    },
+    "host": {
+      "status": "passed",
+      "codexCli": "0.163.0-alpha.10.2",
+      "installedSkillReadFromProject": true,
+      "resolverAndCliActualUse": true,
+      "fixtureFilesUnchanged": true,
+      "taskCommandEvents": 16,
+      "noNpmGerFullSuiteOrDeviceCommands": true,
+      "normalCommandNode": "24.22.0",
+      "loginShellNode": "24.18.0",
+      "explicitPython": "3.14.8",
+      "pathResolutionLimitation": "Source activate.zsh in each new/login command process; DOL_PYTHON uses an absolute path",
+      "extraReadOnlyChecks": "Host checked optional tools and missing Pillow; no minimal-cost/general efficiency claim",
+      "initialAttempt": "Blocked by outer sandbox app-server initialization; approved read-only ephemeral invocation succeeded",
+      "configuredPluginStartup": "Existing Codex configuration attempted context7 marketplace auto-upgrade and timed out; no task-directed third-party Skill update"
+    },
+    "blocked": [
+      "Real fixed CE archive + existing TypeScript complete verification inputs unavailable in this workspace"
+    ],
+    "notRun": [
+      "ADB/device/WebView",
+      "Windows",
+      "real DoL",
+      "optional image comparison/schema-validator business paths"
+    ],
+    "globalSystemProfileStoreOrBrowserDataChanges": false,
+    "publication": false
+  },
+  "sourceAndArtifactEvidence": "Delivering-agent Git blob comparison; external reviewer has not independently checked this new unpublished commit",
+  "runtimeSourceVerification": "Official Node tarball SHA256 matches SHASUMS; Astral CPython archive matches GitHub asset digest. No detached-signature verification claimed; runtime archives are not bundled.",
+  "publication": {
+    "pushed": false,
+    "tagCreated": false,
+    "releasePublished": false,
+    "globalSkillChanged": false
+  },
+  "knownLimitations": [
+    "The host normally used Node24.22 but its login shell found old24.18; reactivation in each new command process verified to select24.22/Python3.14.8",
+    "Full real CE archive plus TypeScript verification is blocked by missing inputs in this workspace",
+    "ADB/device/WebView, Windows, real DoL and optional Pillow/schema-validator paths not run or skipped; no full-suite claim",
+    "The external RC-01 Conditional Accept and prior RC-02 results do not constitute independent acceptance of RC-03"
+  ]
+}

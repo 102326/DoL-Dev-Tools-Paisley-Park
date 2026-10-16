@@ -1,6 +1,6 @@
 # 6.1 — White Snake：范围与本地RC验收
 
-2026-10-16。6.1承接正式6.0提交 `c98ac280f13e9f4820c919fcf97c8d9281a526e4`；M1为 `98cbe5ae89a58aca2344c9618a686d3befa019cc`，M3为 `7835a5798e329f5c27dd07078fa753e08346d16c`。本页固定交付范围；每个本地RC的最终提交、ZIP摘要与实际验货结论，单独写入随附manifest和validation，不以本文替代制品验货。尚未授权推送、正式Tag或Release。
+2026-10-16。6.1承接正式6.0提交 `c98ac280f13e9f4820c919fcf97c8d9281a526e4`；M1为 `98cbe5ae89a58aca2344c9618a686d3befa019cc`，M3为 `7835a5798e329f5c27dd07078fa753e08346d16c`。本页固定交付范围；每个本地RC的最终提交、ZIP摘要与实际验货结论，单独写入随附manifest和validation，不以本文替代制品验货。2026-10-16已获授权提交到6.1测试分支；后续验收与发布由家中电脑接续，本机不创建正式Tag或Release。
 
 ## Delivered
 
@@ -62,7 +62,7 @@ RC-01（源码 `42c9321f06745a574cdf4d7913255ac9122cf29d`，ZIP摘要 `906ce64d6
 
 以下为Not validated / Additional coverage，不自动成为Remaining work：
 
-- 6.1当前制品在Windows、Android/WebView、真实DoL上的新运行，以及新宿主自动发现本版Skill；既有记录不冒充本次新验收。
+- 6.1当前制品在Windows、Android/WebView、真实DoL上的新运行，以及Windows或其它宿主自动发现本版Skill。后续Mac工具链维护已在真实新Codex宿主验证项目级Skill读取、resolver与CLI；其余范围不能由此替代，既有记录不冒充本次新验收。
 - M3真实SugarCube克隆/存读档、完整Mod、其它Hook引擎、任意Mod组合、长期性能/内存。
 - 原6.0 Coverage Ledger中的其它设备、完整框架/功能、全SugarCube执行图与自主部署闭环，仍按其条件保留。
 - 通用效率、成本或全生态兼容保证；M4故障缩减、Weather Report预测和其它未来语义研究。
