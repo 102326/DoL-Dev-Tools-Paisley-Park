@@ -59,7 +59,7 @@ test('Perfetto invokes only bounded categories with explicit serial and preserve
     runHeavy: async (exe, argv, options) => { args = [exe, ...argv]; config = options; fs.writeFileSync(path.join(output, 'trace.perfetto-trace'), 'trace-partial'); },
   }));
   assert.equal(result.collectorStatus, 'completed');
-  assert.equal(args[0], 'python');
+  assert.equal(args[0], process.env.DOL_PYTHON || 'python');
   assert.equal(args[1], helper);
   assert.deepEqual(args.slice(2), ['--serial','device-1','--user','--no-open','-t','7s','-b','32mb','-a','com.example.game','-o',path.join(output,'trace.perfetto-trace'),'sched','gfx','wm']);
   assert.equal(config.timeout, 37000);
