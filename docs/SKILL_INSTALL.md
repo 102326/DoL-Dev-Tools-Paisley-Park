@@ -34,15 +34,15 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；[Windows 补验](WINDOWS_5_1.md)已覆盖 NTFS 中文/空格路径、hard link、真实文件占用、竞争、失败及实际子进程中断，不外推其它文件系统。
 
-## 6.0.0 White Snake 安装与验货
+## 6.1.0 White Snake 候选安装与验货
 
-本文对应 `6.0.0 — White Snake`。从 [6.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 下载命名的工具 ZIP；[5.1.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0) 和原有安装可保留作回退。
+本文当前入口对应 `6.1.0 — White Snake` 本地RC，尚未发布GitHub Release。拿到本地 `DoL-Dev-Tools-6.1.0.zip` 后核对SHA-256、manifest和validation；公开已发布包仍见 [6.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0)，该包版本为6.0.0。保留旧Tools与Skill作为回退。
 
-核对 `DoL-Dev-Tools-6.0.0.zip`、SHA-256 和 manifest，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `6.0.0`，help 首行以 `DoL Dev Tools 6.0.0 — White Snake` 开头；两个 launcher 和 `node scripts/dol-dev.cjs` 继续使用原入口。
+解压候选到新的长期保留目录。macOS在该目录运行 `node scripts/dol-dev.cjs --version` 和 `node scripts/dol-dev.cjs --help`；版本应为 `6.1.0`，help首行以 `DoL Dev Tools 6.1.0 — White Snake` 开头。Windows继续使用 `DoL-Dev.cmd` 或 `Paisley-Park.cmd`；本轮Mac验货不等于Windows重新实测。
 
-普通诊断无需 npm 依赖。Gameplay 在该目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，仍锁定 XState 5.33.2。按本页开头命令向尚不存在的同名 Skill 目录安装，再执行 resolver，确认版本 6.0.0 和本次解压根目录。先用隔离目录验货，不自动替换全局 Skill。保留旧 Tools、Skill 和 Store；安装与升级不迁移或清理历史 Unknown。
+普通诊断无需npm依赖。Gameplay在该目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，仍锁定XState5.33.2。按本页现有命令向尚不存在的同名Skill目录安装，再执行resolver，确认版本6.1.0与本次解压根目录。先用隔离目录验货，不自动替换全局Skill。resolver通过只证明位置与安装完整性；宿主实际发现须在对应作用域另行验证。
 
-知识入口、MapleBirch/ModHub 参考和定向配方随包提供；第三方 Mod 与原始设备证据不提供。Patch 观测不是默认采集器，需要按配方审查当前源码与授权环境后显式启用。当前验收见 [6.0 支持范围](CLOSEOUT_6_0.md)。
+6.1保留知识入口、专业参考、定向配方和既有诊断路径；[行为保持案例](../examples/behavior-preservation/README.md)也随包提供，但固定CE源码须自行取得并审查，不捆绑原Mod或派生切片。Patch观测仍需审查并显式启用。安装与升级不迁移Store，不清理历史Unknown。范围与限制见 [6.1收口](CLOSEOUT_6_1.md)；既有6.0证据见 [历史验收](CLOSEOUT_6_0.md)。
 
 ## 历史：5.1.0 安装与验货
 

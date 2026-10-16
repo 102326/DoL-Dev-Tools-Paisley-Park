@@ -2,7 +2,9 @@
 
 Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 Android / WebView 现场诊断、源码与制品核验、Mod 兼容性调查，以及可接续的研究经验。它帮助你从运行问题找到相关源码，核对构建包与实际加载结果，并用证据比较修改前后。可以独立使用，也可以由宿主 Agent 调用。
 
-**6.0.0 — White Snake** · [下载](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_6.0.0.md) · [支持范围](docs/CLOSEOUT_6_0.md)
+**6.1.0 — White Snake（本地 RC，尚未发布）** · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_6.1.0.md) · [支持范围](docs/CLOSEOUT_6_1.md)
+
+已发布版本仍为 [6.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0)；本源码中的6.1版本号不代表GitHub Release已上线。
 
 它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。宿主 Agent 负责判断，工具提供调查、执行和验证依据。
 
@@ -25,7 +27,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 An
 
 ### 1. 解压并确认版本
 
-从 [6.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 下载 `DoL-Dev-Tools-6.0.0.zip`，核对随附的 SHA-256，解压到长期保留的新目录。升级时保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。页面自动生成的 Source code 是源码归档；首次使用请下载上面命名的工具包。
+当前6.1仅提供经授权构建的本地候选 `DoL-Dev-Tools-6.1.0.zip`；拿到候选后核对随附的 SHA-256 和验货记录，解压到长期保留的新目录。公开下载仍见 [6.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0)，其包和版本输出为6.0.0。升级时保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。页面自动生成的 Source code 是源码归档；首次使用请下载上面命名的工具包。
 
 需要 **Node.js 22.12+**。在 Tools 根目录运行：
 
@@ -34,7 +36,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 An
 .\DoL-Dev.cmd --help
 ```
 
-版本输出应为 `6.0.0`，help 首行以 `DoL Dev Tools 6.0.0 — White Snake` 开头。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
+6.1候选的版本输出应为 `6.1.0`，help 首行以 `DoL Dev Tools 6.1.0 — White Snake` 开头。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
 
 ### 2. 连接已授权的 Android App
 
@@ -84,7 +86,14 @@ Android CLI、Chrome Inspect/CDP 和 ADB 负责设备与运行现场；Source Li
 
 Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前控件、样式和页面状态，结合截图与系统日志调查问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装某个特定 Mod 或 UI Runtime。
 
-## 6.0 新增内容
+## 6.1 新增内容
+
+- **MSV 使用指导**：按当前声明和实际风险选择检查，复用仍有效的证据，明确停止与缺失必要证明的边界；工具位置可按条件复用，现场身份仍需核对。见 [开发流程](docs/DEVELOPMENT_FLOW.md#验证选择与停止)。
+- **重构行为保持**：按需比较关键状态、回调次数与顺序、异常和副作用，区分应保持行为、有意修复、退化与Unknown。随包提供 [固定Hook案例](examples/behavior-preservation/README.md)，需要自行取得并审查指定历史源码，不包含第三方Mod。
+
+这些改进使用现有Skill和项目测试，不增加Runtime或通用行为等价引擎，也没有证明所有任务普遍加速。
+
+## 6.0 已有能力
 
 White Snake 将 Mod 专业研究、兼容性调查、按需执行观测和经验接续接到既有开发流程：
 
@@ -109,7 +118,7 @@ White Snake 将 Mod 专业研究、兼容性调查、按需执行观测和经验
 
 ## 当前验证范围
 
-6.0 已有真实 Android 上的消费者加载、可选框架探测修复前后与原组合相关入口验证；共享目标的带/不带探针对照、真实 Chrome 发布夹具和独立会话经验应用分别保留证据边界。当前候选的离线与安装验货见 [6.0 收口](docs/CLOSEOUT_6_0.md)，不把此前 CI 或 Mac 结果计为本轮 Windows 通过数。
+6.0 已有真实 Android 上的消费者加载、可选框架探测修复前后与原组合相关入口验证；共享目标的带/不带探针对照、真实 Chrome 发布夹具和独立会话经验应用分别保留证据边界。这些是既有6.0证据；当前6.1候选的范围见 [6.1 收口](docs/CLOSEOUT_6_1.md)，实际制品验货以随附 `validation.json` 为准，不把历史结果计为本轮Windows通过数。
 
 未改动的安装与执行行为复用 [5.1 Windows 验收](docs/WINDOWS_5_1.md)：Node 24 完整套件 429 项通过、1 项跳过；Node 22.12 定向检查 24 项通过、1 项跳过。两个 Windows 启动器、NTFS 中文/空格路径、真实文件占用和新进程 Skill 发现有对应记录，不外推所有宿主或文件系统。
 
@@ -136,7 +145,7 @@ Integration 缺失、不支持或失败会单独记录，已成功的通用采�
 | 修改、构建、部署 | [Workshop](docs/WORKSHOP.md) |
 | 调查框架、Mod 关系与相似历史问题 | [知识入口](docs/MOD_KNOWLEDGE.md) · [框架注册与缓存采用](docs/MAPLEBIRCH.md) · [依赖与补丁检查](docs/MODHUB.md) |
 | 接入专属诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [Schema 与格式](docs/FORMATS.md) |
-| 查询验收、限制与历史 | [6.0 收口](docs/CLOSEOUT_6_0.md) · [5.1 Windows 验收](docs/WINDOWS_5_1.md) · [历史索引](docs/HISTORY.md) |
+| 查询验收、限制与历史 | [6.1 收口](docs/CLOSEOUT_6_1.md) · [6.0 历史验收](docs/CLOSEOUT_6_0.md) · [5.1 Windows 验收](docs/WINDOWS_5_1.md) · [历史索引](docs/HISTORY.md) |
 | 贡献与打包 | [项目规则](AGENTS.md) · [架构](docs/ARCHITECTURE.md) · [包清单](docs/RELEASE_PACKAGE.md) |
 
 ## 贡献与开发
