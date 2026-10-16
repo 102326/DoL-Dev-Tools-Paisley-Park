@@ -30,7 +30,7 @@ node examples/cheat-extended-optional-probe/verify.cjs PATH_TO_ORIGINAL_ZIP PATC
 
 先由标准库 `verify.py` 独立核对固定原包SHA-256、三个原成员摘要，以及每个候选成员的完整预期字节（不是仅核对允许变化的文件名或四处表达式），逐成员读取同时检查CRC。检查在加载TypeScript模块前执行；同三个文件其它位置夹带逻辑也会拒绝。之后保留原AST/语义检查，从实际三个脚本中提取四处消费者表达式。在Maple单独、Simple单独、两者存在及两者缺失四种注册表替身中，16项检查要求原决策结果不变、缺失可选查询不再打印error、无关错误仍保留。另验证未知输入拒绝及已有输出保全。
 
-验证入口在macOS/Linux调用已有 `python3`，Windows调用已有 `python`；不安装解释器或TypeScript。6.1新增字节检查的回归使用完全合成ZIP与测试专用固定身份，覆盖额外逻辑、同长度改写、原成员变化、其它成员变化和陌生输入拒绝；测试替换身份不暴露为CLI绕过选项。当前Mac未取得真实固定CE附件及已有TypeScript模块，未重跑真实附件的完整16项语义验证。历史16项结果保持原版本归属。
+验证入口优先使用已有 `DOL_PYTHON` 指定的解释器；未设置时macOS/Linux使用 `python3`，Windows使用 `python`。显式路径失效则失败，不静默回退；不安装解释器或TypeScript。登录shell可能重排PATH，需在实际调用进程确认解释器；用绝对 `DOL_PYTHON` 可与Doctor/Visual Diff保持一致。6.1新增字节检查的回归使用完全合成ZIP与测试专用固定身份，覆盖额外逻辑、同长度改写、原成员变化、其它成员变化和陌生输入拒绝；测试替换身份不暴露为CLI绕过选项。当前Mac未取得真实固定CE附件及已有TypeScript模块，未重跑真实附件的完整16项语义验证。历史16项结果保持原版本归属。
 
 这些替身不证明真实Simple Frameworks全功能。实机另验证获准测试App中MapleBirch5.4.3与CE设置区的共存、102个加载成员，以及目标错误由三次变为零；没有验证时空旅行、纹身应用或所有作弊功能。
 

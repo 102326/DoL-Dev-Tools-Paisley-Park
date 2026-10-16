@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),vm=require('node:vm'),assert=require('node:assert/strict'),{execFileSync,spawnSync}=require('node:child_process');
 const [source,patched,typescript]=process.argv.slice(2);
 assert.ok(source&&patched&&typescript,'Provide original ZIP, patched ZIP and an existing TypeScript module path');
-const python=process.platform==='win32'?'python':'python3';
+const python=process.env.DOL_PYTHON || (process.platform==='win32'?'python':'python3');
 const files=JSON.parse(execFileSync(python,[path.join(__dirname,'verify.py'),path.resolve(source),path.resolve(patched)],{encoding:'utf8',maxBuffer:4*1024*1024,env:{...process.env,PYTHONUTF8:'1'}}));
 const ts=require(path.resolve(typescript));
 function expressions(text){

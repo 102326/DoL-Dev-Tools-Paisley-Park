@@ -17,6 +17,8 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 缺依赖拒绝不表示设备故障。只使用自有临时库做环境 smoke，不打开旧 Store 来测试是否加载成功。
 
+可选Python入口使用已选解释器，不覆盖系统Python。Doctor、Visual Diff、Perfetto辅助调用及CE定向验证支持当前进程的 `DOL_PYTHON`；需要时设为已有受支持解释器的绝对路径。未设置时各入口沿用原命令名（CE验证在非Windows为python3，其它入口为python）。系统/登录shell、GUI宿主及CLI子进程的PATH可能不同；虚拟环境或PATH选择需在实际进程核对，resolver成功只证明Tools位置。显式解释器失效应修正原配置，不把回退到另一版本当作修复。直接执行Python脚本时使用所选解释器；这些配置不是新的运行时管理器，也未提高Tools最低Node版本。
+
 ## 安装失败与重试
 
 5.1 采用隔离暂存而非直接逐文件暴露入口。先完整读取必要源文件，再在目标同一父目录的本轮独占 `.dol-dev-tools-install-*` 中写入并核对字节；暂存文件不叫 SKILL.md，不供宿主发现。最终目标用 exclusive mkdir 创建（已有空目录、文件、坏链接或并发创建都拒绝），逐文件使用同文件系统的 exclusive hard link 发布，**SKILL.md 最后出现**。不用可替换 POSIX 空目录的 rename 来冒充“不覆盖”保证。

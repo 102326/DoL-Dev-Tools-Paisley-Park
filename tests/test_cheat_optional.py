@@ -1,8 +1,11 @@
 """Synthetic archive checks; not a rerun against the real CE release asset."""
 import hashlib
 import importlib.util
+import os
 from pathlib import Path
 import subprocess
+import shutil
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -83,6 +86,14 @@ class ArchiveVerificationTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Source SHA-256", result.stderr)
         self.assertNotIn("Cannot find module", result.stderr)
+        # A GUI/login shell may reorder PATH. The explicit toolkit override must win.
+        env = {**os.environ, "DOL_PYTHON": sys.executable, "PATH": str(self.root)}
+        selected = subprocess.run([shutil.which("node"), str(RECIPE / "verify.cjs"), str(self.source), str(self.output), str(self.root / "absent-typescript")], env=env, capture_output=True, text=True)
+        self.assertNotEqual(selected.returncode, 0)
+        self.assertIn("Source SHA-256", selected.stderr)
+        invalid = subprocess.run([shutil.which("node"), str(RECIPE / "verify.cjs"), str(self.source), str(self.output), str(self.root / "absent-typescript")], env={**os.environ, "DOL_PYTHON": str(self.root / "absent-python")}, capture_output=True, text=True)
+        self.assertNotEqual(invalid.returncode, 0)
+        self.assertIn("ENOENT", invalid.stderr)  # Do not silently fall back after a stale override.
 
 
 if __name__ == "__main__":
