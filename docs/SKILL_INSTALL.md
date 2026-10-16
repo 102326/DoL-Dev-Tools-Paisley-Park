@@ -36,11 +36,11 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；[Windows 补验](WINDOWS_5_1.md)已覆盖 NTFS 中文/空格路径、hard link、真实文件占用、竞争、失败及实际子进程中断，不外推其它文件系统。
 
-## 6.1.0 White Snake 候选安装与验货
+## 6.1.0 White Snake 安装与验货
 
-本文当前入口对应 `6.1.0 — White Snake` 本地RC，尚未发布GitHub Release。拿到本地 `DoL-Dev-Tools-6.1.0.zip` 后核对SHA-256、manifest和validation；公开已发布包仍见 [6.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0)，该包版本为6.0.0。保留旧Tools与Skill作为回退。
+本文对应 `6.1.0 — White Snake`。从 [6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 下载命名的工具 ZIP；保留原 [6.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 安装及 Skill 作回退。Windows 实际验货范围见[补验记录](WINDOWS_6_1.md)。
 
-解压候选到新的长期保留目录。macOS在该目录运行 `node scripts/dol-dev.cjs --version` 和 `node scripts/dol-dev.cjs --help`；版本应为 `6.1.0`，help首行以 `DoL Dev Tools 6.1.0 — White Snake` 开头。Windows继续使用 `DoL-Dev.cmd` 或 `Paisley-Park.cmd`；本轮Mac验货不等于Windows重新实测。
+解压到新的长期保留目录。macOS在该目录运行 `node scripts/dol-dev.cjs --version` 和 `node scripts/dol-dev.cjs --help`；版本应为 `6.1.0`，help首行以 `DoL Dev Tools 6.1.0 — White Snake` 开头。Windows使用 `DoL-Dev.cmd` 或 `Paisley-Park.cmd`。Mac与Windows的实际结果分别记录，不互相代替。
 
 普通诊断无需npm依赖。Gameplay在该目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，仍锁定XState5.33.2。按本页现有命令向尚不存在的同名Skill目录安装，再执行resolver，确认版本6.1.0与本次解压根目录。先用隔离目录验货，不自动替换全局Skill。resolver通过只证明位置与安装完整性；宿主实际发现须在对应作用域另行验证。
 

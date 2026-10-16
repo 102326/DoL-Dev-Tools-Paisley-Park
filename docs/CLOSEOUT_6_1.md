@@ -1,5 +1,7 @@
 # 6.1 — White Snake：范围与本地RC验收
 
+**当前状态：** [Windows 补验](WINDOWS_6_1.md)已完成，包含真实 CE 原附件、最低 Node、新宿主发现与独立包验货；用户已授权无阻塞后正式发布。下文 Mac RC 的“未执行 Windows / 缺少原包”保留当时范围，不再表示当前缺口。最终制品见 [v6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 的 manifest、validation 与 SHA256SUMS，不沿用旧候选摘要。
+
 2026-10-16。6.1承接正式6.0提交 `c98ac280f13e9f4820c919fcf97c8d9281a526e4`；M1为 `98cbe5ae89a58aca2344c9618a686d3befa019cc`，M3为 `7835a5798e329f5c27dd07078fa753e08346d16c`。本页固定交付范围；每个本地RC的最终提交、ZIP摘要与实际验货结论，单独写入随附manifest和validation，不以本文替代制品验货。2026-10-16已获授权提交到6.1测试分支；后续验收与发布由家中电脑接续，本机不创建正式Tag或Release。本文旧本地SHA与公开等价提交的对应关系见[跨电脑交接](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/test/paisley-park-6.1/docs/HANDOFF_6_1.md)，两者源码tree相同；原始验货身份不改写。
 
 ## Delivered
@@ -34,7 +36,7 @@ M0/M1已Scoped Done，M2必要能力保全已做，M3在单一受控案例范围
 - MSV是使用指导，不是强制验证调度器；模型和宿主行为仍有不确定性，不承诺普遍加速。
 - 行为案例只研究历史R0的一段Hook生命周期；候选不代表CE R1，不恢复原始对象身份或回滚正在执行的回调。重入、长期性能、其它Hook所有权、连续同对象passagestart叠层和完整配置热更新在案例之外。
 - VM不是执行不可信代码的权限沙箱；必须审查固定输入。Unknown不能变成通过数。
-- 当前RC只在Mac验货；Windows启动器及最低Node的旧证据可按未改入口复用，但不宣称本轮重新执行。未升级全局依赖或更改用户配置。
+- 早期RC只在Mac验货；后续Windows的实际检查独立记录在[补验](WINDOWS_6_1.md)，未将Mac结果计入Windows通过数。发布阶段向新目录安装，保留旧工具和Skill备份。
 
 ## RC-02复核处置
 
@@ -62,7 +64,7 @@ RC-01（源码 `42c9321f06745a574cdf4d7913255ac9122cf29d`，ZIP摘要 `906ce64d6
 
 以下为Not validated / Additional coverage，不自动成为Remaining work：
 
-- 6.1当前制品在Windows、Android/WebView、真实DoL上的新运行，以及Windows或其它宿主自动发现本版Skill。后续Mac工具链维护已在真实新Codex宿主验证项目级Skill读取、resolver与CLI；其余范围不能由此替代，既有记录不冒充本次新验收。
+- Android/WebView、真实DoL上的6.1新运行，以及其它宿主与桌面GUI热刷新。Mac和Windows分别已有新CLI进程的项目级Skill读取、resolver与CLI证据；不替代其余平台或真实业务验收。
 - M3真实SugarCube克隆/存读档、完整Mod、其它Hook引擎、任意Mod组合、长期性能/内存。
 - 原6.0 Coverage Ledger中的其它设备、完整框架/功能、全SugarCube执行图与自主部署闭环，仍按其条件保留。
 - 通用效率、成本或全生态兼容保证；M4故障缩减、Weather Report预测和其它未来语义研究。

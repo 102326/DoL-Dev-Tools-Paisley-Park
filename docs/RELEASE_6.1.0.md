@@ -1,26 +1,31 @@
 # DoL Dev Tools 6.1.0 — White Snake
 
-Release Candidate说明。当前通过6.1测试分支交接，尚未创建正式Tag或发布GitHub Release；版本号用于候选验货，不表示正式版本已发布。
+6.1 让 Agent 更清楚地判断：这次改动该验证什么，哪些有效结果可以复用，以及什么时候证据已经足够。重构时也有了可参考的行为对照方法，帮助发现“最终数字相同，但回调多执行了一次”这类问题。
 
-6.1改善现有Skill的研发使用方式与重构行为保持方法，继续使用原有诊断、Action/Journey、GER、Workshop和Evidence。
+原有 Android/WebView 诊断、Debug、GER、Workshop 和 Evidence 继续使用，不需要换一套工具链。
 
 ## 更新内容
 
-- **MSV使用指导更具体**：按当前声明和实际风险选择验证，复用必要输入仍有效的证据，明确停止和缺失必要证明的边界。工具位置在安装与命令环境未变时可以复用；页面、设备和执行现场身份不缓存。
-- **按需重构行为对照**：比较状态、回调次数/顺序、异常和部分副作用，区分Preserved、Intentional Change、Regression与Unknown；旧实现不自动是正确规范，普通源码修改无需先建行为模型。见[开发流程](DEVELOPMENT_FLOW.md#重构行为保持按需)。
-- **固定Hook生命周期配方**：真实历史源码切片与隔离研究候选展示“最终数值相同但回调多执行一次”，也展示已确认缺陷的有意修复。配方随包提供；第三方源码、Mod包、派生切片及私人原始证据不分发，输入须另行取得并审查。见[案例与许可](../examples/behavior-preservation/README.md)。
-- **局部维护**：校正过期验收入口；Skill安装不再要求先安装Gameplay依赖，固定历史研究不要求无关最新版下载。CE定向验证增加原包身份及完整输出成员字节检查；Patch配方复制直接入口的资源选择，并以单调时钟限制摘要等待。边界与定向回归见[复核处置](CLOSEOUT_6_1.md#rc-02复核处置)。
+- Skill 补充最小充分验证指导：检查围绕当前改动和实际风险，输入没变的有效证据可以复用，必要证明缺失时如实停止。设备和页面身份仍要核对，不能借“复用”跳过。
+- 增加按需使用的[行为保持案例](../examples/behavior-preservation/README.md)：同时比较状态、回调次数与顺序、异常和副作用；明确要保留的行为与有意修复的缺陷。普通编辑不要求先搭一套行为模型。
+- 补强配方验证：CE 检查固定原包和完整输出成员，拒绝允许文件里夹带的额外修改；指定 Python 路径无效时明确失败，不偷偷换解释器。
+- 修正 Patch 观测的两个边界：安装后保留最初选定的资源；等待摘要使用单调时钟，系统时间回拨也能按时停止。
+- 安装说明区分普通诊断与 Gameplay。安装 Skill 不要求先装 XState，固定历史复现也不必下载无关的新版本。
 
-没有新增Agent Runtime、独立MSV Skill、Judge或通用行为等价引擎，也不将M4故障缩减与Weather Report预测写成已交付功能。
+这些改进沿用已有 Skill、配方和测试。历史 Unknown 和原执行记录保留，不迁移 Store，也不重放结果未知的动作。
 
-## 候选使用
+## 安装与升级
 
-候选文件名为 `DoL-Dev-Tools-6.1.0.zip`。核对随附 `SHA256SUMS.txt`、`artifact-manifest.json` 和 `validation.json`，解压到新目录，再按[安装说明](SKILL_INSTALL.md#610-white-snake-候选安装与验货)验证CLI与隔离Skill。公开已发布版本仍为[6.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0)。
+从 [6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 下载 `DoL-Dev-Tools-6.1.0.zip`，核对 `SHA256SUMS.txt` 后解压到新目录。保留旧 Tools、Skill 和执行记录，再按[安装说明](SKILL_INSTALL.md#610-white-snake-安装与验货)验证版本与安装位置。
 
-最低Node.js22.12.0；普通诊断无需npm依赖。Gameplay仍按锁文件安装XState5.33.2，最低Node版本使用 `--experimental-sqlite`。保留旧Tools、Skill与Store；升级不迁移数据、不清理或重放历史Unknown。
+最低 Node.js 22.12.0。普通诊断无需 npm 依赖；Gameplay 仍按锁文件安装 XState 5.33.2，最低 Node 版本使用 `--experimental-sqlite`，两个 Windows 启动器已包含该参数。
+
+`artifact-manifest.json` 记录包的源码来源和文件摘要，`validation.json` 说明实际测过什么；它们是验货材料，不需要导入游戏。工具包不包含第三方 Mod、历史源码切片、游戏或私人现场数据。
 
 ## 证据与限制
 
-M1的五次真实Codex合成任务通过独立断言；未证明所有任务普遍加速、token节省或总研发成本下降。M3的8组保持、3组有意修复及2个负对照符合预期；另1项Unknown未执行，不计作通过。研究候选不是CE R1修复、正式补丁或完整Mod验收。
+Windows 完整 Node 回归 **449 通过、1 跳过**，最低 Node 22.12 定向检查 **48 通过、1 跳过**，Python **8 通过、1 项可选 Pillow 跳过**，均无失败。真实 CE 原包的完整字节和 16 项表达式检查、带空格的解释器路径、独立包安装及新会话项目 Skill 发现均通过，详见[Windows 记录](WINDOWS_6_1.md)。
 
-本地RC按当前制品核对导出文件、字节、路径、许可、依赖和安装入口，具体结果以随附验货记录为准。未重跑Windows、Android或真实DoL，不将历史设备证据计为本轮通过数。范围、复用依据与剩余限制见[6.1收口](CLOSEOUT_6_1.md)。
+行为保持案例有 8 组保持、3 组有意修复和 2 个负对照符合预期；另有 1 项 Unknown 未执行。它只研究固定历史 Hook 与合成宿主，不是 CE R1 修复、可安装补丁或完整 Mod 验收。
+
+本轮未重跑 Android、真实 DoL 或 Chrome；未改动的运行合同按原范围复用已有证据。没有证明所有任务普遍提速或全平台兼容，桌面 GUI 的 Skill 自动热刷新也未验证。更多边界见[6.1 收口](CLOSEOUT_6_1.md)。

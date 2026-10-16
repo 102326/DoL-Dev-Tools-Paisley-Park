@@ -4,8 +4,8 @@
 
 | 历史版本 | 记录 |
 | --- | --- |
-| 6.1.0 / 本地RC，尚未发布 | [更新说明](RELEASE_6.1.0.md)、[范围与验收](CLOSEOUT_6_1.md)；正式Tag与Release尚未创建。 |
-| 6.0.0 / v6.0.0 — White Snake | [更新说明](RELEASE_6.0.0.md)、[验收记录](CLOSEOUT_6_0.md)；当前公开已发布版本。 |
+| 6.1.0 / v6.1.0 — White Snake | [更新说明](RELEASE_6.1.0.md)、[范围与验收](CLOSEOUT_6_1.md)、[Windows 补验](WINDOWS_6_1.md)；最终制品身份以Release四件套为准。 |
+| 6.0.0 / v6.0.0 — White Snake | [更新说明](RELEASE_6.0.0.md)、[验收记录](CLOSEOUT_6_0.md)；6.1的正式研发基线。 |
 | 5.1.0 / v5.1.0 — Paisley Park | [更新说明](RELEASE_5.1.0.md)、[Windows 验收](WINDOWS_5_1.md)；6.0 的已发布研发基线。 |
 | 5.0.0 / v5.0.0 — Paisley Park | [范围与验收](CLOSEOUT_5_0.md)；Source Link / Lab / 研发接续的原始边界。 |
 | 4.0.1 / v4.0.1 — Bites the Dust | [验货修订说明](RELEASE_4.0.1.md)、[定向修复与验证](F1_F5_CLOSEOUT_4_0.md) |

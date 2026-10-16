@@ -1,6 +1,6 @@
 # DoL Dev Tools: Paisley Park — 诊断工作流
 
-当前6.1.0 White Snake本地候选保留通用诊断/Schema 1与共享[Gameplay Runtime](GAMEPLAY.md)，当前范围与候选验货入口见[6.1收口](CLOSEOUT_6_1.md)；[5.0收口](CLOSEOUT_5_0.md)保留原版本证据，不是本轮实测。通用核心不要求 Soft & Wet 或 Gameplay 依赖；Integration 为可选增强，业务 Scene/Memory 不自动进入 Evidence/Support。旧阶段文档保留为验证历史；3.0.0/3.0.1 公开 Release/tag 已按用户要求移除。
+当前6.1.0 White Snake保留通用诊断/Schema 1与共享[Gameplay Runtime](GAMEPLAY.md)，当前范围与验货入口见[6.1收口](CLOSEOUT_6_1.md)；[5.0收口](CLOSEOUT_5_0.md)保留原版本证据，不是本轮实测。通用核心不要求 Soft & Wet 或 Gameplay 依赖；Integration 为可选增强，业务 Scene/Memory 不自动进入 Evidence/Support。旧阶段文档保留为验证历史；3.0.0/3.0.1 公开 Release/tag 已按用户要求移除。
 历史首批说明见 [0.3.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/FIRST_BATCH.md)，长期约束见 [架构](ARCHITECTURE.md)。本文描述当前入口。
 
 仓库Skill可通过`install-skill --out NEW_DIRECTORY_NAMED_dol-dev-tools-paisley-park`独立安装；已有安装不覆盖，位置解析器指向同一份Tools。见[安装与搬迁](SKILL_INSTALL.md)。
