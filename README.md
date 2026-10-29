@@ -1,4 +1,8 @@
-# DoL Dev Tools: Paisley Park
+# 你只管开车，办法由老爹来想！
+
+你定目标、作最终决策；Agent 借助 Paisley Park，在授权范围内尽可能自主完成 DoL 调查、复现、源码定位、开发与验证，减少人工操作，并用实际证据确认结果。
+
+## DoL Dev Tools: Paisley Park
 
 Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 Android / WebView 现场诊断、源码与制品核验、Mod 兼容性调查，以及可接续的研究经验。它帮助你从运行问题找到相关源码，核对构建包与实际加载结果，并用证据比较修改前后。可以独立使用，也可以由宿主 Agent 调用。
 

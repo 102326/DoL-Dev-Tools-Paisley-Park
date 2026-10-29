@@ -141,6 +141,8 @@ async function run(options, loaded, overrides = {}) {
       } catch(error) {
         const timeout=ctx.timedOut||error?.code==='ETIMEDOUT'||error?.killed;
         entry.reason=timeout?'deadline-or-command-timeout':'step-failed';entry.errorContent='omitted';
+        const detail = require('./diagnostics.cjs').describe(error);
+        if (detail) entry.diagnostic = detail;
         if(error?.notDispatched === true)entry.outcome='not dispatched; guard rejection acknowledged';
         else if(ctx.actionDispatched)entry.outcome='unknown; side effect may have occurred';
         throw error;

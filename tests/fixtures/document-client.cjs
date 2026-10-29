@@ -2,7 +2,7 @@
 module.exports = (client, onEvent) => {
   const send = client.send;
   client.send = async (method, params, settings) => {
-    if (method === 'Page.getFrameTree') return { frameTree: { frame: { id: 'fixture', loaderId: 'fixture-loader', url: 'https://fixture.invalid/' } } };
+    if (method === 'Page.getFrameTree') return { frameTree: { frame: { id: 'fixture', loaderId: 'fixture-loader', url: 'https://fixture.invalid/',urlFragment:'' } } };
     if (method === 'Runtime.enable') {
       onEvent('Runtime.executionContextCreated', { context: { id: 1, uniqueId: 'fixture-context', auxData: { isDefault: true, frameId: 'fixture' } } });
       return {};

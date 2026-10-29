@@ -1,0 +1,146 @@
+{
+  "format": "paisley-maintenance-handoff-identity",
+  "schemaVersion": 1,
+  "date": "2026-10-29",
+  "baseCommit": "cfd76a75e6c28efbbdcf447b25679cd9f257ef54",
+  "branch": "maintenance/diagnostic-feedback-20261029",
+  "identityScope": "Production and regression source bytes; this file does not attest independent reruns or full platform acceptance.",
+  "files": [
+    {
+      "path": "scripts/dol-dev.cjs",
+      "sha256": "5775fcb9948458596c7f411bbe72e19bce3748f42779e80ed04a84108b4200dd"
+    },
+    {
+      "path": "scripts/lib/action.cjs",
+      "sha256": "1bf1ab334c0d5bba1d327c63706f56d95f95badfa055b7fd414440963342425a"
+    },
+    {
+      "path": "scripts/lib/cdp.cjs",
+      "sha256": "37e10c4b78a30ca72df029dff565d35c03415c46305fc97532ffa70f20f25edb"
+    },
+    {
+      "path": "scripts/lib/collectors.cjs",
+      "sha256": "7e5aef1ffa206f94acba7a630ba2b6b20835b4faba1cf8a0a28abc3177803995"
+    },
+    {
+      "path": "scripts/lib/diagnostics.cjs",
+      "sha256": "4677d21bfbe93d863a5389bc403a8406545d3747d169e72652908a337d48dbbd"
+    },
+    {
+      "path": "scripts/lib/environment.cjs",
+      "sha256": "4705a4f8222b631f6efed8ee1c88c5725af276c6a70faecdb8fd4918e8283f77"
+    },
+    {
+      "path": "scripts/lib/evidence.cjs",
+      "sha256": "d99e300041e0669bfdb3af7bc4c89b71ef4ebc54222e8f5d3ab07868b21a53ef"
+    },
+    {
+      "path": "scripts/lib/execution-context.cjs",
+      "sha256": "f19d40c7a992efa283bba10c66b53cf7f155cd000732608c66596bb73bf16258"
+    },
+    {
+      "path": "scripts/lib/journey.cjs",
+      "sha256": "743e7d193589537054cf9e4aa51f10d23048b54c58d8ef8c1ce56835e3b067b5"
+    },
+    {
+      "path": "tests/action.test.cjs",
+      "sha256": "ff9bdf5b58f4b3882a2f7c92985bb49ec81baf040a44c84f0f3c31d113ff520b"
+    },
+    {
+      "path": "tests/cdp.test.cjs",
+      "sha256": "ecb24259ceb39d3dd54e8822612e3682f8f0a94a0430c288e680295fac942c15"
+    },
+    {
+      "path": "tests/cli-errors.test.cjs",
+      "sha256": "b68025d06e3e64bb0d0e9a785f4c38aa233f0e06c77c9123a0c990467afb4261"
+    },
+    {
+      "path": "tests/diagnostics.browser.cjs",
+      "sha256": "4dcca12bd0fe488377e0d7db82d8a574fab885daa409deb81c6a5fc801b463fe"
+    },
+    {
+      "path": "tests/environment.test.cjs",
+      "sha256": "6b41a58f36e422cbd13b6c3645dfa0015ea13500fecdbf5d8b9e2a12a10277f1"
+    },
+    {
+      "path": "tests/execution-context.test.cjs",
+      "sha256": "4c5d7446ecad4d0e4c8234570d9232932a83a28af0cc1f7a42f5b37706345b54"
+    },
+    {
+      "path": "tests/fixtures/document-client.cjs",
+      "sha256": "ace32273ceb51861723b5a3be38e8562f587b27498d0e85ef965bd4b745fd1e9"
+    },
+    {
+      "path": "tests/journey.test.cjs",
+      "sha256": "dbdbd995e10ba9cd748ce2d675416772d4edfc931707a0728ae17f7bcb92e017"
+    }
+  ],
+  "protectedUnchanged": [
+    {
+      "path": "package.json",
+      "sha256": "dec7c27fe34892f0f05bb65ccf28855b717b82d6eea4c9341da0897fafa15867",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "ce32ab5cd3242f05c2477f26311150e1e11cee497b15768d559b75a14cfc41b4",
+      "unchangedFromBase": true
+    },
+    {
+      "path": ".agents/skills/dol-dev-tools-paisley-park/SKILL.md",
+      "sha256": "e750943b403ae99f1fd5bc2f6069b4e983c7df40543bde493767e484d5ed0091",
+      "unchangedFromBase": true
+    },
+    {
+      "path": ".agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs",
+      "sha256": "4ae5588d50928e5a162148307849dbbe2d8c8da67022cebd8d3d95edec030b3e",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "scripts/lib/game-runtime.cjs",
+      "sha256": "27a6e9231df53c61ee54ac6b59d65cbf8e41b092c9df69030c3b637509d2cd3a",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "scripts/lib/game-goal.cjs",
+      "sha256": "d453f57b6051267e250dfe35d0f5fed1f2516143edaea67868cc1acccbabbb36",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "scripts/lib/game-receipts.cjs",
+      "sha256": "a6428423f9716b3e3277ac2005d3b8d5c454b5eeedadb0bbb6a190138afc3132",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "scripts/lib/install-skill.cjs",
+      "sha256": "cd46fcabdcf6c118444d01ec0613f4d9f60e16df375a6fa2c7e93b97397b270d",
+      "unchangedFromBase": true
+    }
+  ],
+  "validationRecords": [
+    {
+      "kind": "core",
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "localRecordSha256": "5562c9d9ef878572bcc2c9ec603bb546f237c4736aa0913d704f1f0befc6912a",
+      "rawRecordUploaded": false
+    },
+    {
+      "kind": "consumers",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "localRecordSha256": "e27ed013af4eeff8bd4a5a89691a9ea5b25559f36794770ec38672a08c84d6ca",
+      "rawRecordUploaded": false
+    },
+    {
+      "kind": "owned-chrome",
+      "passedCases": 11,
+      "localRecordSha256": "d5a6b92a88685da84a6d7db9b554c2ea5550fbf4aa5cc6c600785fcb44f3b200",
+      "rawRecordUploaded": false,
+      "scope": "Owned Chrome DOM/CDP; Android host substituted; no game or real device",
+      "browser": "Chrome/156.0.8078.73"
+    }
+  ]
+}

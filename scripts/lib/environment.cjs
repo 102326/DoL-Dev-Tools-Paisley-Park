@@ -4,10 +4,12 @@ function snapshot() {
   const utils = window.modUtils;
   const mods = { status: 'unavailable', items: [], truncated: false, unreadable: 0,
     scope: 'loader-reported runtime list; imported/disabled inventory not inspected', orderBasis: 'reported-list; execution-order-unverified' };
+  let reportedNames = null;
   if (typeof utils?.getModListNameNoAlias === 'function' && typeof utils?.getMod === 'function') {
     try {
       const names = utils.getModListNameNoAlias();
       if (!Array.isArray(names)) throw Error('Invalid mod list');
+      reportedNames = names;
       mods.status = 'available'; mods.truncated = names.length > 300;
       const seen = new Set();
       for (const [reportedIndex, name] of names.slice(0, 300).entries()) {
@@ -20,8 +22,9 @@ function snapshot() {
       }
     } catch { mods.status = 'failed'; }
   }
-  return { gameVersion: version(() => window.StartConfig?.version ?? utils?.getMod?.('GameVersion')?.version),
-    gameVersionSources: { startConfig: version(() => window.StartConfig?.version), gameVersionMod: version(() => utils?.getMod?.('GameVersion')?.version) },
+  const gameVersionMod = version(() => reportedNames?.includes('GameVersion') ? utils.getMod('GameVersion')?.version : null);
+  return { gameVersion: version(() => window.StartConfig?.version ?? gameVersionMod),
+    gameVersionSources: { startConfig: version(() => window.StartConfig?.version), gameVersionMod },
     loaderVersion: version(() => typeof utils?.version === 'function' ? utils.version() : utils?.version),
     viewport: { width: innerWidth, height: innerHeight, devicePixelRatio: devicePixelRatio },
     capabilities: { modList: typeof utils?.getModListNameNoAlias === 'function' && typeof utils?.getMod === 'function',

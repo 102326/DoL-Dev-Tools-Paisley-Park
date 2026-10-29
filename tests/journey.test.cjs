@@ -22,6 +22,25 @@ function adbFixture(){
   };return {adb,calls};
 }
 const load=steps=>({plan:{schemaVersion:1,steps},sha256:'a'.repeat(64)});
+
+test('Journey diagnostics are additive and do not change legacy timeout categories or Unknown',async t=>{
+  const root=fixture(t);
+  for(const [code,stage,reason,mark] of [
+    ['CDP_DISCOVERY_TIMEOUT','cdp.discovery','step-failed',false],
+    ['ETIMEDOUT','cdp.discovery','deadline-or-command-timeout',false],
+    ['CDP_CONNECT_TIMEOUT','cdp.connect','step-failed',false],
+    ['ETIMEDOUT','cdp.command','deadline-or-command-timeout',true],
+  ]){
+    const f=adbFixture();let attempts=0;
+    const report=await journey.run(options(path.join(root,stage+'-'+code)),load([{type:'home'},{type:'home'}]),{adb:f.adb,executeAction:async ctx=>{
+      attempts++;if(mark)ctx.markSideEffect();throw Object.assign(Error('PRIVATE_RAW'),{code,cdpStage:stage,cdpMethod:'Runtime.evaluate'});
+    }});
+    assert.equal(attempts,1);assert.equal(report.steps.length,1);assert.equal(report.steps[0].reason,reason);
+    assert.equal(report.steps[0].diagnostic.stage,stage);
+    if(mark)assert.match(report.steps[0].outcome,/unknown/);else assert.equal(report.steps[0].outcome,undefined);
+    assert(!JSON.stringify(report).includes('PRIVATE'));
+  }
+});
 test('Journey validates the full plan before output and plan mode makes no device calls',async t=>{
   const root=fixture(t),f=adbFixture();
   const loaded=load([{type:'web-input',selector:'#test',value:'private-text'},{type:'wait',milliseconds:1}]);

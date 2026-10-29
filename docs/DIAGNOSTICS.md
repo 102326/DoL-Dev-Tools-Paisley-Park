@@ -37,7 +37,21 @@ Screenshot / Record 是当前屏幕，可能包含系统栏、用户资料或其
 
 ## 常规 Evidence、复现说明与 Support
 
+受绑定执行若报告`ANDROID_DOCUMENT_URL_UNAVAILABLE stage=context.identity`，表示当前CDP信息不足以独立核对完整文档URL。核对原目标、协议能力和现有绑定，不把可选字段缺失猜成空片段，也不通过换Tab/Store或重放未决动作绕过失败。普通诊断不因此强制建立GER Goal。
+
+已知CDP失败可在CLI及失败步骤的附加`diagnostic`中区分`cdp.discovery`（发现）、`cdp.connect`（连接）和`cdp.command`（命令等待）。新分类的发现/连接超时分别为`CDP_DISCOVERY_TIMEOUT`/`CDP_CONNECT_TIMEOUT`；发现阶段本来携带的`ETIMEDOUT`及命令等待的`ETIMEDOUT`仍保留，避免改变旧有失败分类。仅固定白名单方法名可进入method字段，其余省略；原始请求、页面异常和路径不输出。旧命令超时message/reason仍保留历史标签`CDP evaluation timeout`，实际阶段与方法读新增字段，不据旧标签推断所有命令都是JS求值。无新字段的旧制品仍按原范围解释。超时不证明设备故障、远端取消或可以重放，partial状态及已成功制品保留。
+
+| 已有诊断阶段 | 按缺口检查 | 证据边界 |
+| --- | --- | --- |
+| `cdp.discovery` | 原endpoint、目标列表及显式target选择是否仍可核对 | 发现超时不证明App崩溃；不自动选择标题相似的其它页面。 |
+| `cdp.connect` | 原目标的调试连接是否可建立，现有端点与宿主生命周期是否变化 | 连接失败不自动授权重启或重建目标。 |
+| `cdp.command` | 实际method、原请求收据和已保留的成功制品；缺method时保留未知 | 等待结束不证明远端取消；有副作用的原操作须按原结果证据处理。 |
+
+这些是调查出口，不是自动重试步骤。授权内的独立只读补采可按当前目标继续，不能把它与未知副作用重放混为一谈，见[恢复与收口](DEVELOPMENT_FLOW.md#恢复与收口)。
+
 CLI会区分采集状态与内容覆盖：DOM截断在manifest步骤coverage与dom-contract.json中显示，已判定的原因见truncationReasons。Console的captureStart/End是主机接收窗口，Runtime.enable可能回放缓存事件；timestampMs是目标事件时间，两端时钟可能不同。events保留最多200条，omitted/truncated表示遗漏，不是“窗口内新增错误数”。游戏版本来自CDP GameVersion查询，包装App版本来自ADB package versionName；前者unknown时不以后者替代。
+
+可选`GameVersion`来源只在安全名称列表确认存在后查询。缺列表、列表无效或对象未列出时该来源为null/unknown，不靠试查缺失对象来取得版本；已列出对象的真实查询仍执行，既有异常与日志不被屏蔽。unknown本身不证明游戏或Loader故障；该取舍可能使旧Loader少一个可用来源，且列表与查询不是原子快照，不能保证并发卸载时绝无日志，也不外推到所有Loader版本。
 
 ```powershell
 node scripts/dol-dev.cjs evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages' --logcat-seconds 30

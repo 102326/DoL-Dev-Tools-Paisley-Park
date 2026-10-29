@@ -38,3 +38,8 @@ docs/WHITE_SNAKE_6_1.md export-ignore
 docs/HANDOFF_6_1.md export-ignore
 docs/handoff/6.1-rc03 export-ignore
 docs/handoff/6.1-rc03/** export-ignore
+
+docs/MAINTENANCE_2026_10_29.md export-ignore
+docs/HANDOFF_MAINTENANCE_2026_10_29.md export-ignore
+docs/handoff/maintenance-20261029 export-ignore
+docs/handoff/maintenance-20261029/** export-ignore

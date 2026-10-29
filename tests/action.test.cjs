@@ -110,6 +110,37 @@ function png(width = 20, height = 10) {
   result.writeUInt32BE(height, 20);
   return result;
 }
+
+test('ordinary web rejection reports fixed categories without acquiring zero-effect authority',async()=>{
+  class Element {isConnected=true;matches(){return false}closest(){return null}getClientRects(){return[1]}}
+  class Input extends Element {type='password'}
+  let nodes=[],marked=0;
+  const {ctx}=fixture();ctx.markSideEffect=()=>marked++;
+  ctx.ensureWebview=async()=>({evaluate:source=>vm.runInNewContext(source,{document:{querySelectorAll:()=>nodes},HTMLElement:Element,HTMLInputElement:Input,HTMLTextAreaElement:class {},getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1'})})});
+  for(const [list,type,reason] of [[[],'web-click','missing'],[[new Element(),new Element()],'web-click','ambiguous'],[[new Input()],'web-input','unsupported-type']]){
+    nodes=list;
+    await assert.rejects(execute(ctx,{type,selector:'#PRIVATE_SELECTOR',...(type==='web-input'?{value:'PRIVATE_INPUT'}:{})}),e=>e.code==='WEB_ACTION_REJECTED'&&e.actionReason===reason&&e.notDispatched!==true&&!e.message.includes('PRIVATE'));
+  }
+  assert.equal(marked,3);
+  ctx.ensureWebview=async()=>({evaluate:async()=>({ok:false,reason:'PRIVATE_PAGE_REASON',notDispatched:true})});
+  await assert.rejects(execute(ctx,{type:'web-click',selector:'#x'}),e=>e.code==='WEB_ACTION_REJECTED'&&e.actionReason===undefined&&e.notDispatched!==true);
+  ctx.ensureWebview=async()=>({evaluate:async()=>({ok:false,reason:'missing',notDispatched:true})});
+  await assert.rejects(execute(ctx,{type:'web-click',selector:'#x'}),e=>{
+    const detail=require('../scripts/lib/diagnostics.cjs').describe(e);
+    return detail.source==='page-reported'&&detail.hint.includes('page reported')&&e.notDispatched!==true;
+  });
+});
+
+test('action validation classifies bounded fields before any device or page call',async()=>{
+  const {ctx,calls}=fixture();
+  for(const [action,code,field] of [
+    [{type:'web-input',selector:'#PRIVATE'},'ACTION_FIELD_MISSING','value'],
+    [{type:'web-input',selector:'#x',value:'PRIVATE'.repeat(200)},'ACTION_LENGTH_EXCEEDED','value'],
+    [{type:'web-click',selector:4},'ACTION_FIELD_INVALID','selector'],
+    [{type:'input',value:'PRIVATE%CONTENT'},'ACTION_INPUT_UNSUPPORTED','value'],
+  ])await assert.rejects(execute(ctx,action),e=>e.code===code&&e.actionField===field&&!e.message.includes('PRIVATE'));
+  assert.equal(calls.length,0);
+});
 function fixture(overrides = {}) {
   const calls = [], cleanupCalls = [], cleanup = [];
   const settings = { accelerometer_rotation: '1', user_rotation: '0' };

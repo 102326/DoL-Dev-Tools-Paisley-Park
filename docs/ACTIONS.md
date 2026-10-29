@@ -83,6 +83,8 @@ home→launch表达后台返回；restart表达强制停止后重新启动，不
 
 ## Agent task notes
 
+普通web动作拒绝可提供有界的`diagnostic`：`missing`、`ambiguous`、`unavailable`、`unsupported-type`或`focus-unconfirmed`。这是`source=page-reported`的提示，不是独立身份或零副作用证明；页面可伪造白名单值。原status/reason/outcome与失败停止行为保留，已派发或不确定结果不自动重试。受审绑定操作继续使用原guard与恢复合同，不用普通诊断提示结清effect。参数缺失、类型或长度问题在设备I/O前以固定code/stage/field提示，字段内容不输出。
+
 从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
 
 For an explicit reproduction workflow, inspect any available plan first, verify the current selector/target and bound waits. Keep successful checkpoints on failure; clean up temporary resources and restore experiment settings such as network conditions/orientation when the task requires it. Do not silently retry a Journey until it passes or introduce a new automation framework to compensate for a missing command.

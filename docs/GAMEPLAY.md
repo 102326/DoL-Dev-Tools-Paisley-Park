@@ -25,6 +25,16 @@ TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见
 
 版本更新原则上改现场/领域Provider、Adapter与执行/Outcome合同；不因新增Passage向核心增加专用handler，也不以有限逐场景指纹证明跨版本玩法能力。未知普通场景先读现场、理解动作与原行为，选择有可靠Outcome的能力；尚无安全结果合同不能靠模型置信度派发。恢复保留旧attempt发生时的完整binding与证据边界，新Provider合同不能无依据追认旧effect成功或未发生。缺失/不匹配仍pending，无盲目重放。
 
+### 目标仲裁与派发身份的解释边界
+
+同一SQLite Store内的targetKey、租约和fencing不构成跨Store或跨主机全局锁；targetKey同时包含serial、package与规范化Android user。禁止换Store、别名或直接工具绕过相依Unknown。`claimDispatch`持久标记先于副作用调用，标记后、调用前崩溃也可能留下Unknown，不能把标记当作网络字节已发出；原绑定和可信终态仍是结算依据。
+
+C1结合当前transport、PID、主frame、loader、完整文档URL和uniqueContextId检查身份；boot_id不属于其当前强绑定字段。6.1.0固定发布源码只比较Frame.url，本工作区后续修正按[CDP片段字段](https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame)核对fragment：已报告字段须合法，与旧式完整URL不矛盾；可选字段缺失不当作空值，而从[浏览器当前导航项](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getNavigationHistory)核对完整URL与主frame基址一致。无法取得可信URL时以ANDROID_DOCUMENT_URL_UNAVAILABLE拒绝，不降低为origin/path绑定。
+
+主frame的Page.navigatedWithinDocument事件会使旧持有者持续失效，即使URL后来恢复原值；显式关闭后重新绑定不会复活旧持有者。未收到事件时，快照检查仍能发现当前URL变化，但不承诺发现所有已恢复的历史导航。前后身份检查不是与远端操作原子执行的锁；调用期间变化可能在后检才发现，已发生副作用不能撤销，Unknown仍按原合同恢复。
+
+fragment元数据缺失时，协议会返回该标签页的导航列表，代码只取当前项URL，不保存或导出历史标题、其它条目与输入URL；该路径每次受绑定调用的前后检查通常各增加一次协议读取，并受原期限与响应上限约束。不支持该能力的旧WebView可能安全拒绝；真实旧协议及Android兼容性仍需定向补验。这是后续源码修正，不追改已发布6.1.0，也不证明重启/PID复用实机行为。
+
 ### Provider/profile维护边界
 
 本轮检查未发现新增普通 profile 必须复制整段执行器的要求。已有复用路径：

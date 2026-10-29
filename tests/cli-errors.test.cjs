@@ -2,6 +2,23 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const {spawnSync}=require('node:child_process');
 const cli=path.resolve(__dirname,'../scripts/dol-dev.cjs');
 const run=(args,extra=[])=>spawnSync(process.execPath,[...extra,cli,...args],{encoding:'utf8',windowsHide:true});
+
+test('safe CDP diagnostics retain method and phase while omitting supplied data and unknown method names',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-cdp-error-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const shim=path.join(root,'shim.cjs');
+  for(const [phase,method,expected] of [['cdp.command','Page.getFrameTree',/ETIMEDOUT stage=cdp.command.*method=Page.getFrameTree/],['cdp.connect','PRIVATE_METHOD',/ETIMEDOUT stage=cdp.connect/],['PRIVATE_PHASE','PRIVATE_METHOD',/ETIMEDOUT stage=command.timeout/]]){
+    fs.writeFileSync(shim,`require(${JSON.stringify(require.resolve('../scripts/lib/game-goal.cjs'))}).session=async()=>{throw Object.assign(Error('PRIVATE_RAW'),{code:'ETIMEDOUT',cdpStage:${JSON.stringify(phase)},cdpMethod:${JSON.stringify(method)}})};`);
+    const result=run(['game-session','--goal','PRIVATE_GOAL','--operation','dispatch','--test-environment','yes'],['-r',shim]);
+    assert.equal(result.status,1);assert.match(result.stderr,expected);assert(!result.stderr.includes('PRIVATE'));assert.match(result.stderr,/Do not blindly replay/);
+  }
+});
+
+test('known Action input errors keep fixed fields and refuse before output or devices',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-action-error-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const file=path.join(root,'PRIVATE_INPUT.json'),out=path.join(root,'out');fs.writeFileSync(file,JSON.stringify({type:'web-input',selector:'#PRIVATE'}));
+  const result=run(['action','--file',file,'--serial','offline','--package','com.example.fixture','--out',out,'--plan']);
+  assert.equal(result.status,1);assert.match(result.stderr,/ACTION_FIELD_MISSING stage=action.validate.*field=value/);assert(!result.stderr.includes('PRIVATE'));assert.equal(fs.existsSync(out),false);
+});
 test('checkpoint field errors remain before output/device I/O and disclose only the fixed field',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-cli-error-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const file=path.join(root,'PRIVATE_FILE.json'),out=path.join(root,'out');

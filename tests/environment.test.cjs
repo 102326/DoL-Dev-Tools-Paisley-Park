@@ -14,6 +14,26 @@ function runtime(utils) {
 }
 const utils = { version: () => '2.101.1', getModListNameNoAlias: () => ['Example'],
   getMod: () => ({ version: '1.2.3', get bootJson() { throw Error('whole metadata must not be read'); } }) };
+
+test('version discovery does not query missing names and keeps actual dependency errors observable',async()=>{
+  for(const reader of ['environment','versions']){
+    for(const mode of ['missing','present','dependency-error','no-list','invalid-list']){
+      const calls=[],logs=[];
+      const loader={getModListNameNoAlias:()=>mode==='invalid-list'?null:mode==='missing'?[]:['GameVersion'],getMod:name=>{
+        calls.push(name);
+        if(mode==='missing'||mode==='no-list'||mode==='invalid-list'){logs.push('missing-name');return null}
+        if(mode==='dependency-error'){logs.push('actual-dependency-error');throw Error('PRIVATE_DEPENDENCY')}
+        return {version:'1.2.3'};
+      }};
+      if(mode==='no-list')delete loader.getModListNameNoAlias;
+      const window={modUtils:loader},globals={window,innerWidth:800,innerHeight:600,devicePixelRatio:1};
+      const value=reader==='environment'?vm.runInNewContext(`(${env.snapshot.toString()})()`,globals):await require('../scripts/lib/collectors.cjs').versions({client:{evaluate:source=>vm.runInNewContext(source,globals)}});
+      if(['missing','no-list','invalid-list'].includes(mode)){assert.deepEqual(calls,[]);assert.deepEqual(logs,[]);assert.equal(value.gameVersionSources.gameVersionMod,null)}
+      if(mode==='present'){assert.equal(value.gameVersionSources.gameVersionMod,'1.2.3');assert.equal(calls.length,reader==='environment'?2:1)}
+      if(mode==='dependency-error'){assert(logs.includes('actual-dependency-error'));assert.equal(value.gameVersionSources.gameVersionMod,null)}
+    }
+  }
+});
 test('version observations retain separate sources and preserve legacy Environment contracts', async()=>{
   const result=runtime({...utils,getMod:name=>name==='GameVersion'?null:{version:'1.2.3'}});
   assert.equal(result.gameVersion,'0.5.12.13');assert.deepEqual(result.gameVersionSources,{startConfig:'0.5.12.13',gameVersionMod:null});
@@ -67,4 +87,27 @@ test('environment profile avoids screenshot/performance and requested CSS failur
   assert.equal(partial.steps.find(s=>s.name==='css-contract').errorContent,'omitted');
   await assert.rejects(evidence({...base,out:path.join(root,'invalid'),css:true}),/requires --scope/);
   assert.equal(fs.existsSync(path.join(root,'invalid')),false);
+});
+
+test('a real failed CDP collection step retains earlier artifacts and legacy reason with additive diagnostics',async t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-cdp-partial-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  for(const [code,stage,message,reason] of [
+    ['ETIMEDOUT','cdp.command','CDP evaluation timeout','CDP evaluation timeout'],
+    ['ETIMEDOUT','cdp.discovery','CDP discovery timeout','timeout'],
+    ['CDP_DISCOVERY_TIMEOUT','cdp.discovery','CDP discovery timeout','collector-error'],
+    ['CDP_CONNECT_TIMEOUT','cdp.connect','CDP connection timeout','CDP connection timeout'],
+  ]){
+    const output=path.join(root,stage+'-'+code);
+    const report=await evidence({serial:'owned-fixture',package:'com.example.fixture',out:output,profile:'environment',windowMs:0},
+      {adb:()=>{throw Error('Device access forbidden')},collectors:{
+        device:async ctx=>{ctx.deviceReady=true;return {model:'owned'}},app:async ctx=>{ctx.appPid='1';return {package:'com.example.fixture'}},
+        provider:async()=>({status:'unsupported'}),forward:async ctx=>{ctx.endpoint='http://127.0.0.1:1';return {verified:true}},
+        cdp:async()=>{throw Object.assign(Error(message),{code,cdpStage:stage,cdpMethod:'Page.getFrameTree'})},
+      }});
+    assert.equal(report.status,'partial');const failed=report.steps.find(s=>s.name==='cdp');assert.equal(failed.status,'failed');
+    assert.equal(failed.reason,reason);assert.equal(failed.diagnostic.stage,stage);
+    if(stage==='cdp.command')assert.equal(failed.diagnostic.method,'Page.getFrameTree');
+    assert(report.steps.filter(s=>s.artifact).length>=2);
+    for(const step of report.steps.filter(s=>s.artifact))assert(fs.existsSync(path.join(output,step.artifact.filename)));
+  }
 });

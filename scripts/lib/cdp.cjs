@@ -1,21 +1,29 @@
 // Shared local CDP transport; target selection stays explicit and unambiguous.
+const {cdpTimeout} = require('./diagnostics.cjs');
 const DEFAULT_MAX_RESPONSE_BYTES=4*1024*1024,PROPERTIES_MAX_RESPONSE_BYTES=16*1024*1024,ABSOLUTE_MAX_RESPONSE_BYTES=64*1024*1024;
 async function targets(endpoint, timeoutMs = 10000) {
   const url = new URL(endpoint);
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || url.protocol !== 'http:' || url.username || url.password) {
     throw new Error('CDP endpoint must be a local HTTP address');
   }
-  const response = await fetch(new URL('/json/list', url), { signal: AbortSignal.timeout(timeoutMs), redirect: 'error' });
-  if (!response.ok) throw new Error(`CDP target listing failed: ${response.status}`);
-  const list = await response.json();
-  if (!Array.isArray(list) || list.length > 100 || Buffer.byteLength(JSON.stringify(list)) > 65536) throw new Error('Invalid CDP target inventory');
-  return list;
+  try {
+    const response = await fetch(new URL('/json/list', url), { signal: AbortSignal.timeout(timeoutMs), redirect: 'error' });
+    if (!response.ok) throw new Error(`CDP target listing failed: ${response.status}`);
+    const list = await response.json();
+    if (!Array.isArray(list) || list.length > 100 || Buffer.byteLength(JSON.stringify(list)) > 65536) throw new Error('Invalid CDP target inventory');
+    return list;
+  } catch (error) {
+    if (error?.code === 'ETIMEDOUT') throw Object.assign(cdpTimeout('cdp.discovery'),{code:'ETIMEDOUT'});
+    if (error?.name === 'TimeoutError') throw cdpTimeout('cdp.discovery');
+    throw error;
+  }
 }
 async function connect(endpoint, timeoutMs = 10000, onEvent = () => {}, targetId = null) {
   if (targetId !== null && (typeof targetId !== 'string' || !/^[A-Za-z0-9._:-]{1,128}$/.test(targetId))) throw new Error('Invalid CDP target ID');
   const list = await targets(endpoint, timeoutMs);
   const pages = list.filter(item => item?.type === 'page' && (targetId === null ? item.title === 'Degrees of Lewdity' : item.id === targetId));
-  if (pages.length !== 1) throw new Error(`Expected one game page, found ${pages.length}`);
+  if (pages.length !== 1) throw Object.assign(new Error(`Expected one game page, found ${pages.length}`),
+    {code:pages.length === 0 ? 'CDP_TARGET_MISSING' : 'CDP_TARGET_AMBIGUOUS'});
   const socketUrl = new URL(pages[0].webSocketDebuggerUrl);
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(socketUrl.hostname) || socketUrl.protocol !== 'ws:' || socketUrl.username || socketUrl.password) {
     throw new Error('CDP WebSocket must be local');
@@ -45,7 +53,7 @@ async function connect(endpoint, timeoutMs = 10000, onEvent = () => {}, targetId
   }
   try {
     await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('CDP connection timeout')), timeoutMs);
+      const timer = setTimeout(() => reject(cdpTimeout('cdp.connect')), timeoutMs);
       socket.onopen = () => { clearTimeout(timer); resolve(); };
       socket.onerror = () => { clearTimeout(timer); reject(codedError('CDP_CONNECTION_CLOSED')); };
       socket.onclose = () => { clearTimeout(timer); reject(codedError('CDP_CONNECTION_CLOSED')); };
@@ -84,7 +92,7 @@ async function connect(endpoint, timeoutMs = 10000, onEvent = () => {}, targetId
     if (closed) return Promise.reject(codedError('CDP_CONNECTION_CLOSED'));
     return new Promise((resolve, reject) => {
       const id = ++nextId;
-      const timer = setTimeout(() => { pending.delete(id); reject(Object.assign(new Error('CDP evaluation timeout'), { code: 'ETIMEDOUT' })); }, timeoutMs);
+      const timer = setTimeout(() => { pending.delete(id); reject(cdpTimeout('cdp.command',method)); }, timeoutMs);
       pending.set(id, { resolve, reject, timer, maxResponseBytes });
       try { socket.send(JSON.stringify({ id, method, params })); }
       catch { pending.delete(id); clearTimeout(timer); reject(new Error('CDP send failed')); }

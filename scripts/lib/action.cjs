@@ -1,5 +1,6 @@
 const { createHash } = require('node:crypto');
 const { android } = require('./collectors.cjs');
+const diagnostics = require('./diagnostics.cjs');
 
 const fields = {
   'web-click': ['selector'], 'web-focus': ['selector'], 'web-input': ['selector', 'value'],
@@ -11,18 +12,25 @@ function sanitized(error, message) {
   if (typeof error?.code === 'string' && /^[A-Z0-9_]{1,32}$/.test(error.code)) result.code = error.code;
   else if (Number.isInteger(error?.code)) result.code = error.code;
   if (error?.killed === true) result.killed = true;
+  const detail = diagnostics.describe(error);
+  if (detail?.code === 'ETIMEDOUT') {
+    result.cdpStage = detail.stage;
+    if (detail.method) result.cdpMethod = detail.method;
+  }
   return result;
 }
 
 function validate(action) {
+  const invalid = (message,code,actionField) => Object.assign(new Error(message),{code,actionField});
   if (!action || typeof action !== 'object' || Array.isArray(action) || !own(action, 'type') || !own(fields, action.type) ||
-      Object.keys(action).some(key => key !== 'type' && !fields[action.type].includes(key)) ||
-      fields[action.type].some(key => !own(action, key))) throw new Error('Invalid action');
-  if (action.type.startsWith('web-') && (typeof action.selector !== 'string' || !action.selector || action.selector.length > 256)) throw new Error('Invalid selector');
-  if (action.type === 'web-input' && (typeof action.value !== 'string' || action.value.length > 1024)) throw new Error('Invalid web input');
-  if (action.type === 'input' && (typeof action.value !== 'string' || !action.value || action.value.length > 256 || !/^[A-Za-z0-9 .,_@:+-]+$/.test(action.value))) throw new Error('Invalid native input');
-  if (action.type === 'tap' && (!Number.isSafeInteger(action.x) || action.x < 0 || !Number.isSafeInteger(action.y) || action.y < 0)) throw new Error('Invalid tap');
-  if (action.type === 'rotate' && ![0, 90, 180, 270].includes(action.degrees)) throw new Error('Invalid rotation');
+      Object.keys(action).some(key => key !== 'type' && !fields[action.type].includes(key))) throw invalid('Invalid action','ACTION_INVALID','action');
+  const missing = fields[action.type].find(key => !own(action,key));
+  if (missing) throw invalid('Invalid action','ACTION_FIELD_MISSING',missing);
+  if (action.type.startsWith('web-') && (typeof action.selector !== 'string' || !action.selector || action.selector.length > 256)) throw invalid('Invalid selector',typeof action.selector==='string'&&action.selector.length>256?'ACTION_LENGTH_EXCEEDED':'ACTION_FIELD_INVALID','selector');
+  if (action.type === 'web-input' && (typeof action.value !== 'string' || action.value.length > 1024)) throw invalid('Invalid web input',typeof action.value==='string'?'ACTION_LENGTH_EXCEEDED':'ACTION_FIELD_INVALID','value');
+  if (action.type === 'input' && (typeof action.value !== 'string' || !action.value || action.value.length > 256 || !/^[A-Za-z0-9 .,_@:+-]+$/.test(action.value))) throw invalid('Invalid native input',typeof action.value!=='string'||!action.value?'ACTION_FIELD_INVALID':action.value.length>256?'ACTION_LENGTH_EXCEEDED':'ACTION_INPUT_UNSUPPORTED','value');
+  if (action.type === 'tap' && (!Number.isSafeInteger(action.x) || action.x < 0 || !Number.isSafeInteger(action.y) || action.y < 0)) throw invalid('Invalid tap','ACTION_FIELD_INVALID',!Number.isSafeInteger(action.x)||action.x<0?'x':'y');
+  if (action.type === 'rotate' && ![0, 90, 180, 270].includes(action.degrees)) throw invalid('Invalid rotation','ACTION_FIELD_INVALID','degrees');
   return action;
 }
 
@@ -42,14 +50,15 @@ const reviewedOperations=new WeakSet();
 function reviewedOperation(name,source){const value=Object.freeze({name,source});reviewedOperations.add(value);return value}
 function webExpression(action, guard = '', operation, hasGuard = false, invocation=false) {
   const rejected = hasGuard ? '{ok:false,guardRejected:true}' : '{ok:false}';
+  const reject = reason => hasGuard ? rejected : `{ok:false,reason:${JSON.stringify(reason)}}`;
   return `(() => {
     const nodes = document.querySelectorAll(${JSON.stringify(action.selector)});
-    if (nodes.length !== 1) return ${rejected};
+    if (nodes.length !== 1) return ${hasGuard ? rejected : "{ok:false,reason:nodes.length===0?'missing':'ambiguous'}"};
     const node = nodes[0];
     if (!(node instanceof HTMLElement) || !node.isConnected || node.matches(':disabled') || node.closest('[inert]') ||
-        !node.getClientRects().length) return ${rejected};
+        !node.getClientRects().length) return ${reject('unavailable')};
     const style = getComputedStyle(node);
-    if (style.display === 'none' || style.visibility !== 'visible' || style.opacity === '0') return ${rejected};
+    if (style.display === 'none' || style.visibility !== 'visible' || style.opacity === '0') return ${reject('unavailable')};
     ${invocation?`const currentClick=()=>{for(let p=boundReceiver,i=0;p&&i<16;p=Object.getPrototypeOf(p),i++){const d=Object.getOwnPropertyDescriptor(p,'click');if(d)return Object.hasOwn(d,'value')?d.value:null}return null};
     if(!(boundReceiver instanceof HTMLElement)||!boundReceiver.isConnected||typeof boundCallable!=='function'||currentClick()!==boundCallable)return ${rejected};
     const invokeBoundClick=receiver=>{if(receiver!==boundReceiver||currentClick()!==boundCallable)throw Error('Native invocation identity changed');return Reflect.apply(boundCallable,boundReceiver,[])};`:''}
@@ -61,14 +70,14 @@ function webExpression(action, guard = '', operation, hasGuard = false, invocati
     return operated&&typeof operated.then==='function'?Promise.resolve(operated).then(completed):completed(operated);` : ''}
     if (${JSON.stringify(action.type)} === 'web-input') {
       const input = node instanceof HTMLInputElement, area = node instanceof HTMLTextAreaElement;
-      if (!input && !area) return ${rejected};
-      if (node.readOnly || (input && ['password','file','hidden','button','submit','radio','checkbox'].includes(node.type))) return ${rejected};
+      if (!input && !area) return ${reject('unsupported-type')};
+      if (node.readOnly || (input && ['password','file','hidden','button','submit','radio','checkbox'].includes(node.type))) return ${reject('unsupported-type')};
       const setter = Object.getOwnPropertyDescriptor(input ? HTMLInputElement.prototype : HTMLTextAreaElement.prototype, 'value').set;
       setter.call(node, ${JSON.stringify(action.value || '')});
       node.dispatchEvent(new Event('input', {bubbles:true}));
       node.dispatchEvent(new Event('change', {bubbles:true}));
     } else if (${JSON.stringify(action.type)} === 'web-click') ${invocation?'invokeBoundClick(node)':'node.click()'};
-    else { node.focus(); if (document.activeElement !== node) return {ok:false}; }
+    else { node.focus(); if (document.activeElement !== node) return ${hasGuard ? '{ok:false}' : reject('focus-unconfirmed')}; }
     return {ok:true};
   })()`;
 }
@@ -167,6 +176,10 @@ async function execute(ctx, action) {
     if (ctx.webGuard && result?.ok === false && result.guardRejected === true) throw Object.assign(new Error('Semantic guard rejected'), { code: 'WEB_GUARD_REJECTED', notDispatched: true });
     if (result?.ok !== true) {
       const error=new Error('Web target unavailable');
+      if (!ctx.webGuard) {
+        error.code = 'WEB_ACTION_REJECTED';
+        if (['missing','ambiguous','unavailable','unsupported-type','focus-unconfirmed'].includes(result?.reason)) error.actionReason = result.reason;
+      }
       // Only internal fixed categories reach the private Gameplay report; never
       // forward a page-supplied message or arbitrary JS result as diagnostics.
       if(operation?.name==='native-passage')error.operationReason=[

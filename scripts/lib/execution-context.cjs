@@ -1,6 +1,28 @@
 const collectors = require('./collectors.cjs');
 const { connect } = require('./cdp.cjs');
 
+async function documentURL(frame, transport) {
+  const unavailable = () => Object.assign(Error('Android document URL unavailable'),{code:'ANDROID_DOCUMENT_URL_UNAVAILABLE'});
+  const url = frame.url, hash = url.indexOf('#');
+  if (Object.hasOwn(frame,'urlFragment')) {
+    const fragment = frame.urlFragment;
+    if (typeof fragment !== 'string' || fragment !== '' && !fragment.startsWith('#') ||
+        hash >= 0 && url.slice(hash) !== fragment) throw unavailable();
+    return hash >= 0 ? url : url + fragment;
+  }
+  if (hash >= 0) return url; // Older peers may report the complete URL in this field.
+  // Missing optional metadata is not proof of an empty fragment. Read browser-owned
+  // history, not page JS, and correlate its current entry with this main-frame URL.
+  let history;
+  try { history = await transport.send('Page.getNavigationHistory'); }
+  catch (error) { if (error?.code === 'CDP_COMMAND_REJECTED') throw unavailable(); throw error; }
+  const index = history?.currentIndex;
+  if (!Array.isArray(history?.entries) || !Number.isSafeInteger(index) || index < 0 || index >= history.entries.length) throw unavailable();
+  const full = history.entries[index]?.url;
+  if (typeof full !== 'string' || !full || full.split('#',1)[0] !== url) throw unavailable();
+  return full;
+}
+
 function create(options, overrides = {}, settings = {}) {
   const baseAdb = overrides.adb || collectors.android(options);
   const controller = new AbortController();
@@ -71,6 +93,7 @@ function create(options, overrides = {}, settings = {}) {
           contexts.delete(params.executionContextId);
         }
         if (method === 'Runtime.executionContextsCleared') { contexts.clear(); if (binding) invalid = 'ANDROID_DOCUMENT_CHANGED'; }
+        if (method === 'Page.navigatedWithinDocument' && binding && params.frameId === binding.frameId) invalid = 'ANDROID_DOCUMENT_CHANGED';
         capture?.onEvent(method, params);
       };
       try {
@@ -81,7 +104,8 @@ function create(options, overrides = {}, settings = {}) {
         const frame = (await transport.send('Page.getFrameTree')).frameTree?.frame;
         const defaults = [...contexts.values()].filter(c => c.auxData?.isDefault === true && c.auxData.frameId === frame?.id && typeof c.uniqueId === 'string' && c.uniqueId);
         if (!frame || !['id', 'loaderId', 'url'].every(k => typeof frame[k] === 'string' && frame[k]) || defaults.length !== 1) throw Error('Android default document unavailable');
-        binding = Object.freeze({ frameId: frame.id, loaderId: frame.loaderId, url: frame.url, uniqueContextId: defaults[0].uniqueId });
+        binding = Object.freeze({ frameId: frame.id, loaderId: frame.loaderId, url: frame.url,
+          documentURL: await documentURL(frame,transport), uniqueContextId: defaults[0].uniqueId });
         const bound = {
           async assertBound() {
             assertActive();
@@ -90,8 +114,11 @@ function create(options, overrides = {}, settings = {}) {
             if (transport.isOpen && !transport.isOpen()) reject('CDP_CONNECTION_CLOSED');
             if ((await adb('shell', 'pidof', options.package)).toString().trim() !== pid) reject('ANDROID_TARGET_CHANGED');
             const current = (await transport.send('Page.getFrameTree')).frameTree?.frame;
-            if (invalid || !current || current.id !== binding.frameId || current.loaderId !== binding.loaderId || current.url !== binding.url ||
-              ![...contexts.values()].some(c => c.uniqueId === binding.uniqueContextId && c.auxData?.isDefault === true && c.auxData.frameId === binding.frameId)) reject('ANDROID_DOCUMENT_CHANGED');
+            if (invalid || !current || current.id !== binding.frameId || current.loaderId !== binding.loaderId || current.url !== binding.url) reject('ANDROID_DOCUMENT_CHANGED');
+            let fullURL;
+            try { fullURL = await documentURL(current,transport); }
+            catch (error) { if (error?.code === 'ANDROID_DOCUMENT_URL_UNAVAILABLE') reject(error.code); throw error; }
+            if (invalid || fullURL !== binding.documentURL || ![...contexts.values()].some(c => c.uniqueId === binding.uniqueContextId && c.auxData?.isDefault === true && c.auxData.frameId === binding.frameId)) reject('ANDROID_DOCUMENT_CHANGED');
             assertActive();
           },
           async evaluate(expression) {

@@ -120,6 +120,8 @@ async function evidence(options, overrides = {}) {
       if (known.includes(error?.message)) record.reason = error.message;
       if (['ENOENT','EACCES','ENOSPC','EEXIST'].includes(error?.code)) record.reason = error.code;
       record.errorContent = 'omitted';
+      const detail = require('./diagnostics.cjs').describe(error);
+      if (detail) record.diagnostic = detail;
     } finally {
       record.captureEnd = new Date().toISOString(); record.durationMs = Math.round(performance.now() - begin);
       checkpoint();
