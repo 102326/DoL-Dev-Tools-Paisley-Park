@@ -1,0 +1,164 @@
+{
+  "format": "paisley-maintenance-mac-validation",
+  "schemaVersion": 1,
+  "date": "2026-10-29",
+  "sourceCommit": "d4c826aa1abd54ddbb847ee2a0cf28e18394e73f",
+  "scope": "Local maintenance verification; no release, Windows, real Android or game acceptance",
+  "environment": {
+    "os": "macOS 27.0.1",
+    "arch": "arm64",
+    "node": "22.12.0",
+    "chrome": "156.0.8078.73"
+  },
+  "runtimeArchive": {
+    "origin": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-arm64.tar.gz",
+    "sha256": "293dcc6c2408da21562d135b0412525e381bb6fe150d688edb58fe850d0f3e13",
+    "matchedOfficialShaList": true,
+    "globalInstall": false
+  },
+  "maintenanceArchive": {
+    "sha256": "25635b4a5d3c57d3e5d9f96fdd931594d1978d54311a02951798341cdef29f76",
+    "exportedFiles": 298,
+    "gitBlobBytesMatched": true,
+    "crcPassed": true,
+    "postChecksSourceBytesUnchanged": true,
+    "localDocumentLinksChecked": 331,
+    "rawArchiveUploaded": false
+  },
+  "targetedTests": {
+    "files": [
+      "tests/cdp.test.cjs",
+      "tests/action.test.cjs",
+      "tests/cli-errors.test.cjs",
+      "tests/environment.test.cjs",
+      "tests/journey.test.cjs",
+      "tests/evidence.test.cjs",
+      "tests/execution-context.test.cjs",
+      "tests/game-receipts.test.cjs",
+      "tests/game-semantic.test.cjs",
+      "tests/game-execution-window.test.cjs",
+      "tests/install-skill.test.cjs",
+      "tests/install-skill-failures.test.cjs"
+    ],
+    "tests": 102,
+    "pass": 101,
+    "fail": 0,
+    "skipped": 1,
+    "skipReason": "Windows exclusive file handles require Windows"
+  },
+  "chromeFixture": {
+    "sourceCommit": "d4c826aa1abd54ddbb847ee2a0cf28e18394e73f",
+    "nodeVersion": "v22.12.0",
+    "browser": "Chrome/156.0.8078.73",
+    "cases": 11,
+    "status": "passed",
+    "scope": "Owned Chrome DOM/CDP; Android host substituted; no game or real device",
+    "cleanup": {
+      "ownedBrowserExited": true,
+      "serverClosed": true
+    }
+  },
+  "sqliteSmoke": {
+    "node": "v22.12.0",
+    "xstateVersion": "5.33.2",
+    "xstatePackageLocal": true,
+    "sqliteIntegrity": "ok",
+    "reopens": 1,
+    "schemaVersion": 2,
+    "tables": 3,
+    "scope": "owned empty Store smoke; no device or business dispatch"
+  },
+  "entryChecks": [
+    {
+      "name": "isolation",
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "name": "version",
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "name": "help",
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "name": "missing-runtime",
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "name": "install",
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "name": "resolver",
+      "exitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "name": "existing-install",
+      "exitCode": 1,
+      "expectedExitCode": 1
+    }
+  ],
+  "skillHostDiscovery": "not attempted; resolver only",
+  "linuxCI": {
+    "url": "https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/40839507298",
+    "sourceCommit": "d4c826aa1abd54ddbb847ee2a0cf28e18394e73f",
+    "node": "22.23.4",
+    "nodeTests": {
+      "passed": 465,
+      "failed": 0,
+      "skipped": 2,
+      "skipReasons": [
+        "Windows exclusive handles",
+        "macOS unprivileged filesystem"
+      ]
+    },
+    "python": "3.10.22",
+    "pythonTests": {
+      "ran": 9,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 1,
+      "skipReason": "Optional Pillow not installed"
+    }
+  },
+  "localRecordDigests": [
+    {
+      "record": "minimum-tests.stdout.txt",
+      "sha256": "0ca5a4e0f38a84924b91ad85a6bcb3b3817c34af4f617857640f364897303875",
+      "rawRecordUploaded": false
+    },
+    {
+      "record": "minimum-browser.stdout.txt",
+      "sha256": "853f21ba45932601c1237ba6f075faf4778a260c300caa5ddb3f0ce3bcb46ce2",
+      "rawRecordUploaded": false
+    },
+    {
+      "record": "sqlite.stdout.txt",
+      "sha256": "b9c52e8f20adada06a9dc8db459083f3bbd0049df63ac2218dc6957b42b20f8b",
+      "rawRecordUploaded": false
+    },
+    {
+      "record": "package-links.json",
+      "sha256": "cf2b3cd5d03176db0b034f6eacb4878a1eb53bd2646ec601d2d2f9e25656c76d",
+      "rawRecordUploaded": false
+    },
+    {
+      "record": "ci-linux.txt",
+      "sha256": "6f3cc257f6f79e2af16edbdfd6e79404eb306bc6b1c3410cc3585066b3fa5aaf",
+      "rawRecordUploaded": false
+    }
+  ],
+  "notValidated": [
+    "Windows maintenance changes",
+    "real Android WebView and actual older protocols",
+    "real DoL and Loader",
+    "new Agent host Skill discovery"
+  ]
+}

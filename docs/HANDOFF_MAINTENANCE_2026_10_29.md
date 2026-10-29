@@ -3,6 +3,8 @@
 日期：2026-10-29。源码基线：正式6.1.0，`cfd76a75e6c28efbbdcf447b25679cd9f257ef54`。
 交接分支：`maintenance/diagnostic-feedback-20261029`。
 
+**当前补验：** 最低Node22.12与独立维护归档已在Mac补验通过，见[本机后续验证](#mac后续验证最低node与独立归档)；Windows、Android和真实游戏范围仍未替代。此前维护代码提交为`d4c826aa1abd54ddbb847ee2a0cf28e18394e73f`，本次补验后没有修改生产代码或测试输入。
+
 本文是适合公开的交付摘要。维护实现已在Mac限定范围完成并验证，尚不构成新版本发行或全部平台验收；正式版本号与Tag保持6.1.0。内部报告、原始Agent轨迹、Profile、现场日志与全局记忆不随本次提交上传。Windows端有更完整的历史材料，应先补齐来源，再判断是否存在本轮遗漏；不重复打开已解决事项。
 
 ## Delivered
@@ -80,8 +82,31 @@ R02在此结束，不宣称普遍提速、节费或减少手操，不追加样�
 
 ## Not validated 与已知限制
 
-- 本次新增修改的Windows运行、最低Node22.12、Android CLI/WebView真机、真实DoL/Loader均未验证；历史正式6.1.0证据不替代新代码定向验证。
+- 本次新增修改的Windows运行、Android CLI/WebView真机、真实DoL/Loader均未验证；最低Node22.12的Mac定向与浏览器证据见下节，不代表最低版本的全平台或全套验收。历史正式6.1.0证据不替代新代码定向验证。
 - 设备重启/PID复用及真实旧协议兼容未实测。快照不能捕获所有未报告且已恢复的瞬时导航；后检失败保留执行不确定性。
 - C02缺安全列表时选择unknown、R03缺可信URL时拒绝，是明确兼容取舍；不能包装成全部平台兼容。
 - R01多Agent共控需求与跨库仲裁仍未定义/实现；当前证据不要求在本次维护引入分布式锁。
 - 本次为独立维护分支交接，不修改main、版本号、Tag或Release，不创建PR。后续平台验证和发布由负责人另行安排。
+
+## Mac后续验证：最低Node与独立归档
+
+负责人要求先解决本机能够处理的事项。本轮补齐两项具体证据缺口，没有追加R02、修改日常MCP或开启实验室。机器已有Node24/26，故从[Node官方22.12.0发布](https://nodejs.org/en/blog/release/v22.12.0)取得固定macOS ARM64二进制，并与[官方SHA清单](https://nodejs.org/dist/v22.12.0/SHASUMS256.txt)核对；仅在本地忽略目录运行，不改系统Node、PATH或全局依赖。
+
+验证对象为固定维护提交`d4c826aa1abd54ddbb847ee2a0cf28e18394e73f`，不是正式Release候选。用`git -c core.autocrlf=false -c core.eol=lf archive`导出，解压至源码树之外的新临时目录，先确认无法从祖先解析XState。结果与可公开摘要见[Mac验证记录](handoff/maintenance-20261029/mac-validation.json)。二进制、ZIP、Profile、SQLite与原始日志均不上传。
+
+| 检查 | 实际结果与边界 |
+| --- | --- |
+| 固定归档 | 298个导出文件；集合符合该提交export-ignore，每个文件逐字节等于Git blob，ZIP CRC通过。包内331个本地文档链接/锚点通过；安装和测试后298个原文件仍未变。 |
+| Node22.12入口 | help/version、隔离Skill安装与resolver通过，已有目标拒绝覆盖；缺XState时Runtime明确拒绝且不创建Store。resolver只证明安装和定位，本轮没有调用新Agent宿主发现。 |
+| Node22.12定向回归 | 原核心/消费者加安装器两文件，共102项，101通过、0失败、1跳过。唯一跳过是Windows独占文件句柄；Mac权限失败、hard-link发布/回滚和异常中断等现有安装器回归实际执行。该集合包含此前核心/消费者，不把数字相加成额外覆盖。 |
+| Node22.12真实Chrome | 11项通过；仍是自有HTML、真实Chrome/CDP、Android宿主替身及旧协议字段/事件替身。自有浏览器退出、服务器关闭。 |
+| 锁定依赖与SQLite | 只在独立解压目录`npm ci --ignore-scripts --no-audit --no-fund`；XState5.33.2实际解析到包内node_modules，锁文件未变。自有空库由生产Runtime创建、关闭后重开，schema2、三张表、integrity_check=ok；不证明真实Session/设备/业务派发。 |
+| 已有Linux CI | [固定维护提交的CI](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/40839507298)通过：Node22.23.4下465通过、0失败、2跳过；Python3.10.22运行9项，8通过、1跳过。Node跳过Windows句柄与Mac权限专属项；Python跳过未装可选Pillow的视觉测试。此为GitHub托管Linux证据，不计为Mac或Windows通过。 |
+
+最低版本测试在独立解压目录执行，显式选定22.12.0解释器；除上文两条核心/消费者命令外，附加现有安装器文件：
+
+```sh
+node --experimental-sqlite --test tests/install-skill.test.cjs tests/install-skill-failures.test.cjs
+```
+
+记录中的102项来自一次合并的12文件调用，未通过反复重跑掩盖失败。Mac本轮没有新生产缺陷需要修复，维护代码及测试输入未变；新增内容仅为可复核的验证记录。留待外部环境的仍是Windows/真实Android/真实DoL及旧协议实测，缺失历史原件由Windows端补齐。
