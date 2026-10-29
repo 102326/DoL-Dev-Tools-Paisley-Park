@@ -3,7 +3,7 @@
 日期：2026-10-29。源码基线：正式6.1.0，`cfd76a75e6c28efbbdcf447b25679cd9f257ef54`。
 交接分支：`maintenance/diagnostic-feedback-20261029`。
 
-**当前补验：** 最低Node22.12与独立维护归档已在Mac补验通过，见[本机后续验证](#mac后续验证最低node与独立归档)；Windows、Android和真实游戏范围仍未替代。此前维护代码提交为`d4c826aa1abd54ddbb847ee2a0cf28e18394e73f`，本次补验后没有修改生产代码或测试输入。
+**当前状态：** 负责人已要求将本维护源码最低要求同步为Node26.0.0+，CI使用Node26；Mac已验证26.0.0，日常环境为26.13.0 LTS，见[Node26同步与最终接续](#node26同步与最终接续)。此前Node22.12及诊断维护记录继续作为各自固定输入的历史证据保留，不再代表当前源码最低要求。Windows、Android和真实游戏范围仍未替代。
 
 本文是适合公开的交付摘要。维护实现已在Mac限定范围完成并验证，尚不构成新版本发行或全部平台验收；正式版本号与Tag保持6.1.0。内部报告、原始Agent轨迹、Profile、现场日志与全局记忆不随本次提交上传。Windows端有更完整的历史材料，应先补齐来源，再判断是否存在本轮遗漏；不重复打开已解决事项。
 
@@ -30,7 +30,7 @@
 - 当前绑定或新诊断不能结清旧effect；原provider/contract/contextNonce/requestDigest及可信终态要求保留。
 - 缺片段元数据时，原生history响应会将该Tab导航列表带入内存；代码只用当前项URL，不输出其它历史条目。每次受绑定evaluate前后通常增加两次协议读取。无充分URL证据的旧peer拒绝，不退化成origin/path匹配。
 
-GER Runtime、Goal、原生终态生产者、回执reader、数据库Schema、预算、主Skill、安装器、resolver及生产依赖未修改；Node仍要求`>=22.12.0`，CommonJS及`xstate@5.33.2`保留。普通Debug不因此要求完整GER流程。
+上述诊断维护阶段没有修改GER Runtime、Goal、原生终态生产者、回执reader、数据库Schema、预算、主Skill、安装器、resolver及生产依赖，当时Node要求仍为`>=22.12.0`。后续Node26同步仅改变最低版本元数据、CI及前提提示/对应测试和文档；CommonJS及`xstate@5.33.2`保留，普通Debug不因此要求完整GER流程。
 
 ## Validated
 
@@ -82,7 +82,8 @@ R02在此结束，不宣称普遍提速、节费或减少手操，不追加样�
 
 ## Not validated 与已知限制
 
-- 本次新增修改的Windows运行、Android CLI/WebView真机、真实DoL/Loader均未验证；最低Node22.12的Mac定向与浏览器证据见下节，不代表最低版本的全平台或全套验收。历史正式6.1.0证据不替代新代码定向验证。
+- 当前源码最低Node要求已从22.12提升为26.0.0，向负责人提供的UI Mod最低26方向对齐；本轮仅修改Paisley Park，未重新核验或修改其它UI工作区。已发布6.1.0包及原Node22验证保留各自历史要求。
+- 本次新增修改的Windows运行、Android CLI/WebView真机、真实DoL/Loader均未验证；Node26最低版本的Mac定向与浏览器证据见末节，前次Node22补验见下节，两者均不代表全平台或全套验收。历史正式6.1.0证据不替代新代码定向验证。
 - 设备重启/PID复用及真实旧协议兼容未实测。快照不能捕获所有未报告且已恢复的瞬时导航；后检失败保留执行不确定性。
 - C02缺安全列表时选择unknown、R03缺可信URL时拒绝，是明确兼容取舍；不能包装成全部平台兼容。
 - R01多Agent共控需求与跨库仲裁仍未定义/实现；当前证据不要求在本次维护引入分布式锁。
@@ -110,3 +111,27 @@ node --experimental-sqlite --test tests/install-skill.test.cjs tests/install-ski
 ```
 
 记录中的102项来自一次合并的12文件调用，未通过反复重跑掩盖失败。Mac本轮没有新生产缺陷需要修复，维护代码及测试输入未变；新增内容仅为可复核的验证记录。留待外部环境的仍是Windows/真实Android/真实DoL及旧协议实测，缺失历史原件由Windows端补齐。
+
+## Node26同步与最终接续
+
+负责人要求在本机完成项目Node26同步，剩余工作交Windows。本分支的`package.json`与锁文件根元数据现在要求`>=26.0.0`，CI选择Node26。README、安装/诊断/Gameplay当前指导及两处Runtime前提提示已对齐；主Skill沿用已有安装前提入口。版本号未变，已发布6.1.0的文件、Tag、Release和历史Node22记录未追改。
+
+选择26.0.0作为主版本下限，日常推荐Node26 LTS；本机已更新至26.13.0。没有增加新的CLI版本闸门，低于声明下限偶尔能运行个别命令不构成支持承诺。两个Windows launcher及现有SQLite参数保持原样，Node26.0下显式参数已验证可用；未迁移Store、改预算/Unknown或替换GER执行合同。
+
+本轮以Git暂存树固定变更，从源码依赖之外的独立目录验证，原始输出只留本地。可公开结果与输入身份见[Node26验证记录](handoff/maintenance-20261029/node26-validation.json)：
+
+| 检查 | 实际结果 |
+| --- | --- |
+| 前提提示回归 | 更新原有断言后旧提示确定失败；修正后Node26.13和26.0分别1项通过，保留code/stage、隐私、无设备I/O及创建Session/Store前拒绝的行为。 |
+| 最低Node26.0定向 | 12文件102项：101通过、0失败、Windows句柄专属1跳过。与旧验证集合重叠，不把数目累加成独立覆盖。 |
+| 最低Node26.0真实Chrome | 11项通过；真实DOM/CDP与自有页面，Android和旧协议字段/事件仍为替身。自有浏览器退出、服务器关闭。 |
+| 隔离安装与SQLite | help/version、Skill安装/resolver、已有目标拒绝、缺依赖拒绝通过；按锁安装后XState实际解析到包内5.33.2，自有空库schema2及完整性、关闭重开通过；未调用新Agent宿主发现。 |
+| 归档与依赖身份 | 298个导出文件与固定树Git blob逐字节一致，CRC及导出集合通过；安装/测试后原文件不变。锁文件仅根engine变化，没有依赖图升级。 |
+
+### Windows接手顺序
+
+1. 保留本地修改，获取本维护分支，确认自己的源码提交、Node26版本和实际进程入口；不要把Mac安装路径或本机Profile当作输入。
+2. 对照上列三份历史原件去重，只处理真实遗漏和新证据，不重开已解决H/C/M/R项。
+3. 在Windows Node26下定向核对两个launcher、安装/文件占用、中文空格路径及独立包；Mac替身不替代这些合同。
+4. 仅在获授权设备和测试数据上验证真实Android WebView、旧协议完整URL取证、相关Gameplay/恢复和实际Loader行为。真实DoL与设备重启/PID复用等范围按具体风险及授权选择，不自动扩成全矩阵或清理Unknown。
+5. 独立复审及正式版本号/发布收口由负责人在Windows安排；当前分支不合入main、不创建PR/Tag/Release。实验室仍单独定路线，不作为本轮维护前置条件。

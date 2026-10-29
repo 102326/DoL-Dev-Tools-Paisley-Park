@@ -485,7 +485,7 @@ test('missing Gameplay prerequisites report installation steps before any Androi
       require(${JSON.stringify(path.resolve(__dirname,'../scripts/lib/collectors.cjs'))}).android=()=>{throw Error('Android I/O before prerequisites')};`);
     const file=path.join(base,'goal.json');fs.writeFileSync(file,JSON.stringify({name:'dependency-check',mode:'gameplay',goal:{kind:'reach-passage',passage:'Bedroom'},budget:{timeoutMs:60000,maxActions:2,maxObservations:4}}));
     const run=require('node:child_process').spawnSync(process.execPath,['--experimental-sqlite','-r',denied,path.resolve(__dirname,'../scripts/dol-dev.cjs'),'game-goal-start','--file',file,'--serial','DEVICE','--package','com.example.game','--out',out,'--store',store,'--test-environment','yes'],{encoding:'utf8'});
-    assert.equal(run.status,1);assert.match(run.stderr,/Gameplay Runtime requires XState and Node SQLite/);assert.match(run.stderr,/npm ci --ignore-scripts --no-audit --no-fund in the Tools root/);assert.match(run.stderr,/--experimental-sqlite/);
+    assert.equal(run.status,1);assert.match(run.stderr,/Gameplay Runtime requires XState and Node SQLite/);assert.match(run.stderr,/npm ci --ignore-scripts --no-audit --no-fund in the Tools root/);assert.match(run.stderr,/Node.js 26\+/);assert(!run.stderr.includes('Node 22'));
     assert.equal(run.stderr.includes('Android I/O'),false);assert.equal(fs.existsSync(out),false);assert.equal(fs.existsSync(store),false);
   }
 });

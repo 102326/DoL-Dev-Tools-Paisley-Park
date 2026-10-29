@@ -13,7 +13,7 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 ## 运行前提
 
-最低 Node.js 22.12.0。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2；直接运行 Gameplay CLI 时使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，兼容最低 Node 22.12 的 SQLite 启动条件。维护环境 Node 24 可直接加载内置 SQLite；显式带参数的示例同样可用。两个 Windows launcher 已包含参数，不需修改系统配置。
+当前维护源码最低 Node.js 26.0.0，建议使用Node26 LTS；已发布6.1.0工具包保持原Node22.12.0要求，不能用新分支要求改写旧包验收。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2。Node26提供内置SQLite；直接运行Gameplay CLI的现有示例仍使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，两个Windows launcher也保留该参数，不需修改系统配置。最低版本声明不是新的设备授权、Store迁移或自动环境安装。
 
 缺依赖拒绝不表示设备故障。只使用自有临时库做环境 smoke，不打开旧 Store 来测试是否加载成功。
 

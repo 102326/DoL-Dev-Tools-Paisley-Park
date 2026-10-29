@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=26.0.0"
   },
   "scripts": {
     "test": "node --experimental-sqlite --test tests/*.test.cjs experiments/gold-runtime/test/*.test.cjs"

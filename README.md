@@ -31,7 +31,7 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 An
 
 从 [6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 下载 `DoL-Dev-Tools-6.1.0.zip`，核对随附的 SHA-256 后解压到长期保留的新目录。升级时保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。页面自动生成的 Source code 是源码归档；首次使用请下载上面命名的工具包。
 
-需要 **Node.js 22.12+**。在 Tools 根目录运行：
+当前维护源码要求 **Node.js 26.0.0+**，建议使用Node26 LTS。已发布的6.1.0工具ZIP仍按原Node22.12+要求使用，本分支的最低版本调整不追改该发布包。在 Tools 根目录运行：
 
 ```powershell
 .\DoL-Dev.cmd --version
@@ -71,7 +71,7 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 npm ci --ignore-scripts --no-audit --no-fund
 ```
 
-安装器拒绝覆盖已有 Skill。更新时先备份并移出旧安装，保留原 Tools，再向空目录安装；Tools 必须留在稳定位置。Node 22 直接运行 Gameplay CLI 需要 `--experimental-sqlite`，Windows launcher 已包含。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
+安装器拒绝覆盖已有 Skill。更新时先备份并移出旧安装，保留原 Tools，再向空目录安装；Tools 必须留在稳定位置。当前源码使用Node26内置SQLite，现有Gameplay示例及Windows launcher保留显式`--experimental-sqlite`参数。旧6.1.0包在Node22下仍需该参数。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
 
 安装后按宿主支持的方法刷新或开启新会话，确认 Skill 确实被发现；文件安装和 resolver 成功不保证下一回合自动可用。发现后显式使用 `$dol-dev-tools-paisley-park`，告诉 Agent 工作区、设备、App、问题或目标，以及获准操作的数据范围。例如：
 

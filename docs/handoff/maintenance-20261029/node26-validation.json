@@ -1,0 +1,164 @@
+{
+  "format": "paisley-node26-validation",
+  "schemaVersion": 1,
+  "date": "2026-10-29",
+  "parentCommit": "bea5ca1f5abae0be79981e5a26aaf0b2ad617513",
+  "validatedSourceTreeBeforeHandoffNotes": "77515fcaca6f0f7267704819a787e8372d5fbd21",
+  "scope": "Mac minimum Node26 maintenance verification; no formal release or Windows/Android acceptance",
+  "minimumNode": ">=26.0.0",
+  "ciNodeMajor": "26",
+  "localDefaultNode": "26.13.0",
+  "environment": {
+    "os": "macOS 27.0.1",
+    "arch": "arm64",
+    "chrome": "156.0.8078.73"
+  },
+  "minimumRuntimeArchive": {
+    "origin": "https://nodejs.org/dist/v26.0.0/node-v26.0.0-darwin-arm64.tar.gz",
+    "sha256": "dcee8564c1a9342f9594dd5e52d533894dfef6b85aa771bbbb870baa3c403235",
+    "matchedOfficialShaList": true,
+    "defaultNodeChanged": false
+  },
+  "targetedTests": {
+    "tests": 102,
+    "pass": 101,
+    "fail": 0,
+    "skipped": 1
+  },
+  "prerequisiteRegression": {
+    "oldHintExpectedFailure": true,
+    "fixedNode26_13Passed": 1,
+    "fixedNode26_0Passed": 1,
+    "assertions": [
+      "Node26 advice",
+      "stable code/stage",
+      "no Android I/O before refusal",
+      "no Session/Store write before refusal"
+    ]
+  },
+  "chromeFixture": {
+    "status": "passed",
+    "browser": "Chrome/156.0.8078.73",
+    "scope": "Owned Chrome DOM/CDP; Android host substituted; no game or real device",
+    "cleanup": {
+      "ownedBrowserExited": true,
+      "serverClosed": true
+    },
+    "cases": 11,
+    "node": "26.0.0"
+  },
+  "sqliteSmoke": {
+    "node": "v26.0.0",
+    "xstate": "5.33.2",
+    "packageLocalDependency": true,
+    "schema": 2,
+    "integrity": "ok",
+    "reopens": 1,
+    "scope": "owned empty Store; no business dispatch"
+  },
+  "archive": {
+    "sha256": "4ad0611ed5cd72c02a2f0218e2b927f98b98e9da5a321b8f474c9ce6575e6ba2",
+    "exportedFiles": 298,
+    "gitBlobBytesMatched": true,
+    "crcPassed": true,
+    "postChecksSourceBytesUnchanged": true,
+    "rawArchiveUploaded": false
+  },
+  "dependencyGraphUnchanged": true,
+  "xstateVersion": "5.33.2",
+  "engineChangeOnlyInLockfile": true,
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "ea3655418297baab7a6c2577be309103d26d61cf6b86f64fab9aac49864f9d9b"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "0010fe98fd62ca7a3d74ac7d0e59f0b706b7d82b9c39ea2681d1b534e442e9a1"
+    },
+    {
+      "path": ".github/workflows/check.yml",
+      "sha256": "5a24dbdbf7c9b34719e7199bbf825aa1a258f934d162cdcbe26663fe7dd84ae6"
+    },
+    {
+      "path": "scripts/dol-dev.cjs",
+      "sha256": "ed8ba42f8e36b32880c33869e8fc75cdea443e1b0dc07435a2f97160b26a16b2"
+    },
+    {
+      "path": "scripts/lib/game-goal.cjs",
+      "sha256": "5c07d516eaf7f53f713211267b4d299c6d896d7ff6f5f4b511881e4e833e368c"
+    },
+    {
+      "path": "tests/game-goal.test.cjs",
+      "sha256": "1a28f83dcaaa490094ea2a84d87e7a4a14abc1d51ad968bf4d483f8c0266324e"
+    }
+  ],
+  "protectedUnchangedFromParent": [
+    {
+      "path": "scripts/lib/game-runtime.cjs",
+      "sha256": "27a6e9231df53c61ee54ac6b59d65cbf8e41b092c9df69030c3b637509d2cd3a"
+    },
+    {
+      "path": "scripts/lib/game-receipts.cjs",
+      "sha256": "a6428423f9716b3e3277ac2005d3b8d5c454b5eeedadb0bbb6a190138afc3132"
+    },
+    {
+      "path": "scripts/lib/install-skill.cjs",
+      "sha256": "cd46fcabdcf6c118444d01ec0613f4d9f60e16df375a6fa2c7e93b97397b270d"
+    },
+    {
+      "path": ".agents/skills/dol-dev-tools-paisley-park/SKILL.md",
+      "sha256": "e750943b403ae99f1fd5bc2f6069b4e983c7df40543bde493767e484d5ed0091"
+    },
+    {
+      "path": ".agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs",
+      "sha256": "4ae5588d50928e5a162148307849dbbe2d8c8da67022cebd8d3d95edec030b3e"
+    },
+    {
+      "path": "DoL-Dev.cmd",
+      "sha256": "2eb504cc4cf7afeee441d5baac4cff4d8385eed507366f062e5800bec96b58e2"
+    },
+    {
+      "path": "Paisley-Park.cmd",
+      "sha256": "2eb504cc4cf7afeee441d5baac4cff4d8385eed507366f062e5800bec96b58e2"
+    }
+  ],
+  "rawRecords": [
+    {
+      "record": "red.txt",
+      "sha256": "d074c2c0ec19f296bed40eaf7a9e826c04825d1489b2e84e70283c13a5a15356",
+      "uploaded": false
+    },
+    {
+      "record": "green-prerequisites.txt",
+      "sha256": "92a0e736f1423224dbd20c49473c45fd8f3a71be36eb5506d4821d990d2efb6d",
+      "uploaded": false
+    },
+    {
+      "record": "minimum-tests.stdout.txt",
+      "sha256": "318530f2d492e216ee70ece40fc5ac6cf62e06e01c3ec8362e25115be48b5ed4",
+      "uploaded": false
+    },
+    {
+      "record": "minimum-prerequisites.stdout.txt",
+      "sha256": "ddabc5b880ed77228a8f640569cd3bedc20714dcbd59b42e2281070dbfe07698",
+      "uploaded": false
+    },
+    {
+      "record": "minimum-browser.stdout.txt",
+      "sha256": "42a91b3b607794ac49d7dec5f7b17a96a177c3d55fd6fd91f3d4a8ad684d0825",
+      "uploaded": false
+    },
+    {
+      "record": "sqlite.stdout.txt",
+      "sha256": "8ac623223921444eff5db0070456f93e4d64fdeae1b1805dfe272436f83a4190",
+      "uploaded": false
+    }
+  ],
+  "notValidated": [
+    "Windows Node26 launchers and installation",
+    "real Android and actual older protocols",
+    "real DoL and Loader",
+    "new Agent host Skill discovery"
+  ]
+}

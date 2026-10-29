@@ -92,7 +92,7 @@ function errorMessage(error) {
   const detail = require('./lib/diagnostics.cjs').describe(error);
   if (detail) return `[${detail.code} stage=${detail.stage}] ${detail.method?'method='+detail.method+'; ':''}${detail.field?'field='+detail.field+': ':''}${detail.reason?'reason='+detail.reason+'; ':''}${detail.hint}`;
   const known={
-    GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Run npm ci --ignore-scripts --no-audit --no-fund in the Tools root; Node 22.12 needs --experimental-sqlite. Generic diagnostics remain available.'],
+    GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Use Node.js 26+ and run npm ci --ignore-scripts --no-audit --no-fund in the Tools root. Generic diagnostics remain available.'],
     INVALID_CLI_ARGUMENTS:['cli.parse','Unknown, duplicate or incomplete option; use --help. Supplied arguments omitted.'],
     UNSUPPORTED_CHECKPOINT_NAME:['journey.validate','field=name: Action/Journey checkpoints do not accept name. See docs/ACTIONS.md.'],
     CLI_OPTION_NOT_APPLICABLE:['cli.validate','field=seconds: omit --seconds for this command. Use logcat, record or perf --deep for supported timed collection; see --help.'],

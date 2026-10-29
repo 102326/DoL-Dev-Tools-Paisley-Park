@@ -25,7 +25,7 @@ function validateSelection(selected,intent,g){
   const owner=capabilities.capability({selected});owner.validateAction(selected,intent,g);return owner;
 }
 function loadRuntime(){
-  try{return require('./game-runtime.cjs').Runtime}catch(e){if(e.code==='ERR_UNKNOWN_BUILTIN_MODULE'||e.code==='MODULE_NOT_FOUND')throw Object.assign(Error('Gameplay Runtime requires XState and Node SQLite. Run npm ci --ignore-scripts --no-audit --no-fund in the Tools root; Node 22.12 needs --experimental-sqlite. Generic diagnostics remain available.'),{code:'GAMEPLAY_RUNTIME_UNAVAILABLE'});throw e}
+  try{return require('./game-runtime.cjs').Runtime}catch(e){if(e.code==='ERR_UNKNOWN_BUILTIN_MODULE'||e.code==='MODULE_NOT_FOUND')throw Object.assign(Error('Gameplay Runtime requires XState and Node SQLite. Use Node.js 26+ and run npm ci --ignore-scripts --no-audit --no-fund in the Tools root. Generic diagnostics remain available.'),{code:'GAMEPLAY_RUNTIME_UNAVAILABLE'});throw e}
 }
 function open(store,overrides={}){
   if(!path.isAbsolute(store))throw Error('Absolute shared Store required');

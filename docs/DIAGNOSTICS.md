@@ -19,7 +19,7 @@ node scripts/dol-dev.cjs record --serial DEVICE_SERIAL --package YOUR.APP.PACKAG
 ```
 
 Windows 可用 `Paisley-Park.cmd` 替换 `node scripts/dol-dev.cjs`。先创建输出父目录；目标目录或 JSON 文件必须不存在。
-Node.js 22.12+ 为必需。ADB 不在 PATH 时设 `DOL_ADB`，其值是已有 adb 可执行文件；不自动安装或修改系统 PATH。
+当前维护源码要求Node.js 26.0.0+；已发布6.1.0包保留原Node22.12+要求。ADB 不在 PATH 时设 `DOL_ADB`，其值是已有 adb 可执行文件；不自动安装或修改系统 PATH。
 Doctor的ADB `unavailable / ENOENT`优先检查已有SDK/platform-tools位置；仅当前进程设`$env:DOL_ADB = 'PATH_TO_EXISTING_PLATFORM_TOOLS/adb.exe'`，用`& $env:DOL_ADB version`核对后重新采集到新输出，不覆盖初次partial。不要把可选scrcpy缺失当作ADB缺失。
 其他可选工具环境变量为 `DOL_ANDROID_CLI / DOL_PYTHON / DOL_SCRCPY`。所有设备命令绑定显式 serial 和 package，不猜目标。
 

@@ -15,7 +15,7 @@ TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见
 
 ## 当前 Runtime 与冻结 Foundation 的区别
 
-3.0.3 的 `game-goal` 使用共享 XState/SQLite 核心，以下旧接口说明保留为冻结 Foundation 历史。Gameplay 需要根目录 `npm ci --ignore-scripts --no-audit --no-fund`；Node 22 运行时加 `--experimental-sqlite`，Windows launcher 已包含，Generic 可独立使用。参见[共享核心设计记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md#10-m2共享内核迁移进展)。
+3.0.3 的 `game-goal` 使用共享 XState/SQLite 核心，以下旧接口说明保留为冻结 Foundation 历史。当前维护源码要求Node26.0.0+；Gameplay需要根目录 `npm ci --ignore-scripts --no-audit --no-fund`。示例和Windows launcher仍保留`--experimental-sqlite`参数，Generic可独立使用。旧版本在Node22下的启动条件保留为当时记录。参见[共享核心设计记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md#10-m2共享内核迁移进展)。
 
 ### 版本与语义边界
 
@@ -288,7 +288,7 @@ Android 新 Session 在采集前后、派发前和 checkpoint 提交前核对原
 
 从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
 
-For Gameplay, read [GAMEPLAY](GAMEPLAY.md): the shared XState/SQLite Session core owns execution coordination, persistent budgets/Memory, event return subgoals, checkpoints and Effect Ledger. The host Agent interprets the Scene and supplies Decisions; Tools is not an unattended model service. Generic Diagnostics stays independent. Check the actual root/version/dependencies; Gameplay needs the locked XState installation and Node 22 needs `--experimental-sqlite`. Frozen Foundation journals are read-only and are not automatically migrated.
+For Gameplay, read [GAMEPLAY](GAMEPLAY.md): the shared XState/SQLite Session core owns execution coordination, persistent budgets/Memory, event return subgoals, checkpoints and Effect Ledger. The host Agent interprets the Scene and supplies Decisions; Tools is not an unattended model service. Generic Diagnostics stays independent. Check the actual root/version/dependencies; current maintenance source requires Node 26.0.0+ and Gameplay needs the locked XState installation. Existing examples and Windows launchers retain `--experimental-sqlite`. Published older packages keep their original prerequisites. Frozen Foundation journals are read-only and are not automatically migrated.
 
 Native DoL Gameplay is the primary Runtime model. Clothing is one domain Provider and an effects test; new Scene/Event/Navigation/Dialogue/Combat/Memory/Replan capabilities should grow from native gameplay. S1 conditional purchase/return/equip and S2 native resource activity/return have representative real-device acceptance, including ordinary events and fresh-host recovery. This does not mean every native or Mod action has a reviewed terminal contract. Missing preparation/Outcome support refuses dispatch rather than improvising a receipt.
 
