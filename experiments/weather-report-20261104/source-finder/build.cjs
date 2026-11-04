@@ -25,12 +25,26 @@ if(diagnostics.length){
   const emit = module => ts.transpileModule(source,{fileName:'source-find.ts',compilerOptions:{target:ts.ScriptTarget.ES2022,module,newLine:ts.NewLineKind.LineFeed}}).outputText;
   const generated = `// Generated from source-find.mts by TypeScript 6.0.2; source-lf-sha256=${createHash('sha256').update(source).digest('hex')}\n` + emit(ts.ModuleKind.CommonJS);
   if(process.argv.length>3 || process.argv[2] && !['--write-production','--check'].includes(process.argv[2])) throw Error('Use --check or --write-production');
-  if(process.argv[2]==='--write-production') fs.writeFileSync(runtimeFile,generated);
-  if(!fs.existsSync(runtimeFile)||lf(fs.readFileSync(runtimeFile,'utf8'))!==generated){
+  const writing = process.argv[2]==='--write-production';
+  if(!writing && (!fs.existsSync(runtimeFile)||lf(fs.readFileSync(runtimeFile,'utf8'))!==generated)){
     console.error('SOURCE_BUILD_DRIFT: regenerate with build.cjs --write-production; runtime was not changed.');process.exitCode=1;
   } else {
+    // Prepare fallible experiment output first. Publish the tracked runtime last.
     fs.mkdirSync(path.join(__dirname,'dist'));
     fs.writeFileSync(path.join(__dirname,'dist/source-find.mjs'),emit(ts.ModuleKind.ES2022));
+    if(writing){
+      const {owned}=require('../../../scripts/lib/owned-files.cjs');
+      const stage=fs.mkdtempSync(path.join(path.dirname(runtimeFile),'.source-find-build-'));
+      const tracker=owned();let recorded=false;
+      try{
+        tracker.adopt(stage);recorded=true;
+        const staged=path.join(stage,'runtime.cjs');tracker.write(staged,generated);
+        if(fs.readFileSync(staged,'utf8')!==generated)throw Error('Generated staging verification failed');
+        fs.renameSync(staged,runtimeFile); // Intentional atomic replacement of this generated file only.
+      }finally{
+        if(!recorded||!tracker.cleanup())console.error('SOURCE_BUILD_CLEANUP_UNKNOWN: preserve unconfirmed temporary files.');
+      }
+    }
     console.log('PASS: strict types and tracked CommonJS runtime match authoritative TS');
   }
 }

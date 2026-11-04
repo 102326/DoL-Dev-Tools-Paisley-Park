@@ -19,6 +19,7 @@ test('failed compiler discovery or version check removes stale runtime output', 
     await assert.rejects(fs.access(path.join(dir,'dist','engine.js')),{code:'ENOENT'});
   }
 });
+function actualHelperRoot(){return path.resolve(__dirname,'../../../../scripts/lib')}
 test('checker rejects generated drift and accepts checkout-only CRLF without rewriting it',async t=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'weather-build-drift-'));
   t.after(()=>fs.rm(dir,{recursive:true,force:true}));
@@ -26,6 +27,7 @@ test('checker rejects generated drift and accepts checkout-only CRLF without rew
   await fs.mkdir(home,{recursive:true});await fs.mkdir(lib,{recursive:true});
   const actual=path.resolve(__dirname,'../../../../scripts/lib');
   const build=path.join(home,'build.cjs');
+  await fs.copyFile(path.join(actualHelperRoot(),'owned-files.cjs'),path.join(lib,'owned-files.cjs'));
   await fs.copyFile(path.join(__dirname,'../build.cjs'),build);
   const runtime=await fs.readFile(path.join(actual,'source-find.cjs'),'utf8'),source=await fs.readFile(path.join(actual,'source-find.mts'),'utf8');
   await fs.writeFile(path.join(lib,'source-find.mts'),source.replaceAll('\n','\r\n'));
@@ -37,4 +39,10 @@ test('checker rejects generated drift and accepts checkout-only CRLF without rew
   const drift=run();assert.equal(drift.status,1);assert.match(drift.stderr,/SOURCE_BUILD_DRIFT/);
   assert.equal(await fs.readFile(path.join(lib,'source-find.cjs'),'utf8'),changed,'check mode cannot overwrite a tracked runtime');
   await assert.rejects(fs.access(path.join(home,'dist')),{code:'ENOENT'});
+  const shim=path.join(dir,'write-failure.cjs');
+  await fs.writeFile(shim,`const fs=require('node:fs'),write=fs.writeFileSync;fs.writeFileSync=function(fd,bytes,...args){if(typeof fd==='number'){fs.writeSync(fd,Buffer.from(bytes).subarray(0,9));throw Object.assign(Error('synthetic partial write'),{code:'EIO'})}return write.call(this,fd,bytes,...args)};`);
+  const failed=spawnSync(process.execPath,['-r',shim,build,'--write-production'],{encoding:'utf8',env});
+  assert.equal(failed.status,1);assert.equal(await fs.readFile(path.join(lib,'source-find.cjs'),'utf8'),changed,'partial staging failure must preserve previous runtime');
+  const refreshed=spawnSync(process.execPath,[build,'--write-production'],{encoding:'utf8',env});
+  assert.equal(refreshed.status,0,refreshed.stderr);assert.equal(await fs.readFile(path.join(lib,'source-find.cjs'),'utf8'),runtime);
 });
