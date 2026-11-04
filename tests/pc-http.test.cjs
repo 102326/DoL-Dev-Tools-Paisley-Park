@@ -8,16 +8,17 @@ test('selected HTTP resources are snapshotted; private siblings and invalid mani
  fs.writeFileSync(manifest,JSON.stringify({schemaVersion:1,resources:[{urlPath:'/assets/app.js',file:path.join(root,'app.js')}]}));
  const bundle=load(html,manifest);assert.equal(bundle.files.size,2);assert.match(bundle.digest,/^[a-f0-9]{64}$/);
  fs.writeFileSync(path.join(root,'app.js'),'changed');assert.equal(bundle.files.get('/assets/app.js').bytes.toString(),'window.ready=true');
- for(const urlPath of ['/../secret.js','/assets/../secret.js','/index.html','/secret.txt','//bad.js','/bad%2e.js']){
+ for(const urlPath of ['/../secret.js','/assets/../secret.js','/index.html','/secret.txt','//bad.js','/bad%2f.js','/%2e%2e/secret.js','/bad%ff.js']){
   fs.writeFileSync(manifest,JSON.stringify({schemaVersion:1,resources:[{urlPath,file:path.join(root,'app.js')}]}));
   assert.throws(()=>load(html,manifest),{code:'PC_RESOURCES_INVALID'});
  }
 });
 test('HTTP accepts only the selected authority and files, closes its own port',async t=>{
- const root=fixture(t),bundle=load(path.join(root,'page.html'));
+ const root=fixture(t),manifest=path.join(root,'manifest.json');fs.writeFileSync(manifest,JSON.stringify({schemaVersion:1,resources:[{urlPath:'/assets/虚构 file.js',file:path.join(root,'app.js')}]}));const bundle=load(path.join(root,'page.html'),manifest);
  const allocator=net.createServer();await new Promise(r=>allocator.listen(0,'127.0.0.1',r));const port=allocator.address().port;await new Promise(r=>allocator.close(r));
  const instance=await serve(bundle,port);try{
   assert.equal((await fetch(instance.url)).status,200);
+  assert.equal(await (await fetch(new URL('/assets/虚构%20file.js',instance.url))).text(),'window.ready=true');
   assert.equal((await fetch(new URL('/private.txt',instance.url))).status,404);
   assert.equal((await fetch(instance.url,{method:'POST'})).status,403);
   const http=require('node:http');const status=await new Promise((resolve,reject)=>{http.get(instance.url,{headers:{Host:'example.invalid'}},r=>{r.resume();resolve(r.statusCode)}).on('error',reject)});assert.equal(status,403);

@@ -26,14 +26,14 @@ async function bind(file,targetId,url,out){
  try{if(h.binding.url!==wanted.href)throw invalid();const next={...r,target:{...fresh,document:h.binding}};save(out,next);return next}finally{h.close()}
 }
 async function start(options){
- if(!options.out||!path.isAbsolute(options.file||'')||!path.isAbsolute(options.chrome||'')||!['headless','visible'].includes(options.mode)||!/^[0-9]{4,5}$/.test(options.port||''))throw invalid();
+ if(!options.out||!path.isAbsolute(options.file||'')||!path.isAbsolute(options.chrome||'')||!['headless','visible'].includes(options.mode)||!/^[0-9]{4,5}$/.test(options.port||'')||options['allow-resource-update']!==undefined&&(options['allow-resource-update']!=='yes'||!options['resume-from']))throw invalid();
  const bundle=require('./pc-http.cjs').load(options.file,options.resources);
  const resume=options['resume-from']?record(options['resume-from']):undefined;
- if(resume&&(resume.resourceDigest!==bundle.digest||resume.target.origin!=='http://127.0.0.1:'+Number(options.port)))throw Object.assign(Error('Keep the original origin and resource selection for a retained profile'),{code:'PC_RESUME_IDENTITY_CHANGED'});
+ if(resume&&(resume.resourceDigest!==bundle.digest&&options['allow-resource-update']!=='yes'||resume.target.origin!=='http://127.0.0.1:'+Number(options.port)))throw Object.assign(Error('Keep the original origin and review resource changes for a retained profile'),{code:'PC_RESUME_IDENTITY_CHANGED'});
  const output=path.resolve(options.out);fs.mkdirSync(output,{mode:0o700});
  save(path.join(output,'resources.json'),{schemaVersion:1,resourceDigest:bundle.digest,inventory:bundle.inventory});
  const server=await require('./pc-http.cjs').serve(bundle,Number(options.port));let browser;
- try{browser=await require('./chrome-launch.cjs').launch({out:path.join(output,'chrome'),executable:options.chrome,url:server.url,mode:options.mode,resourceDigest:bundle.digest,resume});}
+ try{browser=await require('./chrome-launch.cjs').launch({out:path.join(output,'chrome'),executable:options.chrome,url:server.url,mode:options.mode,resourceDigest:bundle.digest,resume,allowResourceUpdate:options['allow-resource-update']==='yes'});}
  catch(e){await server.close();throw e}
  return {...browser,url:server.url,async stop(){let failure;try{await browser.stop()}catch(e){failure=e}finally{await server.close()}if(failure)throw failure}};
 }

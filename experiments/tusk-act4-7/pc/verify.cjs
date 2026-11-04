@@ -1,7 +1,7 @@
 'use strict';
 // Own synthetic content, real installed Chrome and actual CLI subprocesses. No game input.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{spawn,execFileSync}=require('node:child_process');
-const root=path.resolve(__dirname,'../../..'),pc=require(root+'/scripts/lib/pc-session.cjs'),{connect}=require(root+'/scripts/lib/cdp.cjs');
+const root=path.resolve(process.env.PAISLEY_TOOL_ROOT||path.join(__dirname,'../../..')),pc=require(root+'/scripts/lib/pc-session.cjs'),{connect}=require(root+'/scripts/lib/cdp.cjs');
 const [chrome,outArg,mode='headless']=process.argv.slice(2),out=path.resolve(outArg||'');
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 let server,admin;const results={schemaVersion:1,mode,node:process.version,platform:process.platform,checks:[]};
@@ -27,6 +27,9 @@ async function main(){
  cli(['pc-action','--host-file',hostFile,'--file',action,'--probe',probe,'--out',path.join(out,'purchase'),'--test-environment','yes']);
  const after=JSON.parse(fs.readFileSync(path.join(out,'purchase/state-after.json')));assert.deepEqual({credits:after.credits,tokens:after.tokens},{credits:90,tokens:1});
  assert.equal(await admin.evaluate('Number(document.querySelector("#tokens").textContent)'),1);check('shared Web Action dispatch and independent fixture state/DOM verify one effect');
+ const journey=path.join(out,'journey.json');fs.writeFileSync(journey,JSON.stringify({schemaVersion:1,scope:'main',timeoutMs:20000,steps:[{type:'web-click',selector:'#save'},{type:'wait',selector:'#tokens',condition:'visible',timeoutMs:1000},{type:'checkpoint',capture:['dom','css','console','network','storage','environment','web-performance','screenshot']}]}));
+ cli(['journey','--host','chrome','--host-file',hostFile,'--file',journey,'--out',path.join(out,'journey'),'--test-environment','yes']);
+ const journeyResult=JSON.parse(fs.readFileSync(path.join(out,'journey/manifest.json')));assert.equal(journeyResult.status,'complete');assert.equal(journeyResult.steps[2].artifacts.length,8);check('shared Journey executes Web Action, waits and captures eight bound Chrome checkpoints');
  const {ChromeHost}=require(root+'/scripts/lib/chrome-host.cjs');let held=await new ChromeHost(r.target).open();held.close();await assert.rejects(held.evaluate('window.neutralWorkshop.read()'));await held.open();assert.equal((await held.evaluate('window.neutralWorkshop.read()')).tokens,1);held.close();check('explicit reconnect retains the same document; disconnected operation refuses dispatch');
  const decoy=(await admin.send('Target.createTarget',{url:info.url})).targetId;
  await until(async()=>JSON.parse(cli(['pc-pages','--host-file',hostFile])).length===2);
@@ -55,7 +58,26 @@ async function main(){
   const loadAction=path.join(out,'load-action.json');fs.writeFileSync(loadAction,JSON.stringify({type:'web-click',selector:'#load'}));
   cli(['pc-action','--host-file',resumed.hostFile,'--file',loadAction,'--probe',probe,'--out',path.join(out,'retained-load'),'--test-environment','yes']);
   assert.equal(JSON.parse(fs.readFileSync(path.join(out,'retained-load/state-after.json'))).tokens,1);check('retained profile resumes only the original origin and resource snapshot; saved fixture state survives');
+  const uncertainHost=await new ChromeHost(resumed.record.target).open(),observer=await connect(resumed.record.target.endpoint,5000,()=>{},resumed.record.target.targetId);
+  try{
+   const pending=uncertainHost.evaluate('(()=>{document.querySelector("#purchase").click();return new Promise(r=>setTimeout(()=>r("ack"),4000))})()').then(()=>({ack:true}),e=>({code:e.code}));
+   await until(async()=>(await observer.evaluate('window.neutralWorkshop.read().tokens'))===2);uncertainHost.close();assert.equal((await pending).ack,undefined);
+   await uncertainHost.open();assert.equal((await uncertainHost.evaluate('window.neutralWorkshop.read()')).tokens,2);check('effect before lost ACK remains uncertain; reconnect observes once without re-dispatch');
+  }finally{uncertainHost.close();observer.close()}
  }finally{await resumed.stop()}
+ const updatedScript=path.join(out,'updated-app.js'),updatedResources=path.join(out,'updated-resources.json');
+ fs.writeFileSync(updatedScript,fs.readFileSync(path.join(fixture,'app.js'),'utf8')+'\nwindow.reviewedBuildMarker="synthetic-update";\n');
+ fs.writeFileSync(updatedResources,JSON.stringify({schemaVersion:1,resources:[{urlPath:'/assets/site.css',file:path.join(fixture,'site.css')},{urlPath:'/assets/app.js',file:updatedScript}]}));
+ const updateOptions={file:path.join(fixture,'index.html'),resources:updatedResources,chrome,port:String(port),mode,out:path.join(out,'updated'),'resume-from':resumed.hostFile};
+ await assert.rejects(pc.start({...updateOptions,out:path.join(out,'unreviewed-update')}),{code:'PC_RESUME_IDENTITY_CHANGED'});
+ assert.equal(fs.existsSync(path.join(out,'unreviewed-update')),false);
+ const updated=await pc.start({...updateOptions,'allow-resource-update':'yes'});
+ try{
+  assert.equal(updated.record.previousResourceDigest,resumed.record.resourceDigest);assert.equal(updated.record.target.profileId,r.target.profileId);
+  const observed=await new ChromeHost(updated.record.target).open();try{assert.equal(await observed.evaluate('window.reviewedBuildMarker'),'synthetic-update')}finally{observed.close()}
+  cli(['pc-action','--host-file',updated.hostFile,'--file',path.join(out,'load-action.json'),'--probe',probe,'--out',path.join(out,'updated-load'),'--test-environment','yes']);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(out,'updated-load/state-after.json'))).tokens,1);check('reviewed source update keeps profile and origin; unreviewed resource change refuses; actual new marker verified');
+ }finally{await updated.stop()}
  results.status='passed';
 }
 main().catch(e=>{results.status='failed';results.failure=e.message;process.exitCode=1}).finally(async()=>{

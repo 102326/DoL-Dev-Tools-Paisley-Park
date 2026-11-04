@@ -14,7 +14,7 @@ const { support } = require('./lib/support.cjs');
 const { version, displayName, releaseName } = require('../package.json');
 const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''} (local development and diagnostics)
   --version
-  pc-start --file ABS_HTML --chrome ABS_CHROME --port PORT --mode visible|headless --out NEW_DIR [--resources ABS_MANIFEST] [--resume-from ABS_OLD_HOST_JSON]
+  pc-start --file ABS_HTML --chrome ABS_CHROME --port PORT --mode visible|headless --out NEW_DIR [--resources ABS_MANIFEST] [--resume-from ABS_OLD_HOST_JSON] [--allow-resource-update yes]
     Selected files only; loopback HTTP and owned Chrome. Keep this process running; Ctrl+C closes only its resources. Profiles are retained.
   pc-pages --host-file ABS_HOST_JSON
   pc-bind --host-file ABS_HOST_JSON --target-id ID --url EXACT_URL --out NEW_HOST_JSON
@@ -75,7 +75,8 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
   storage-snapshot --endpoint LOCAL_HTTP_CDP --out NEW_JSON
   storage-diff --before JSON --after JSON --out NEW_JSON
   action | journey --file REVIEWED_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
-    --plan creates a static plan only; --target-id and --webview-socket are optional explicit target overrides
+    Chrome: --host chrome --host-file ABS_HOST_JSON --out NEW_DIR --test-environment yes
+    --plan creates a static plan only; --target-id and --webview-socket are optional Android target overrides
   journey-record --endpoint LOCAL_HTTP_CDP --scope SELECTOR --milliseconds 1000 --out NEW_JSON
   matrix --file REVIEWED_JSON --out NEW_DIR --test-environment yes [--plan]
   animation-frames --input LOCAL_MP4_OR_WEBM --out NEW_DIR [--interval-ms 250] [--max-frames 30]
@@ -111,9 +112,10 @@ function errorMessage(error) {
     PC_BROWSER_UNAVAILABLE:['pc.browser','The original owned browser is unavailable. Inspect its instance records; no other browser will be adopted.'],
     PC_BROWSER_IDENTITY_CHANGED:['pc.browser','Live browser, debug endpoint or Profile identity differs from the owned record. Preserve records and select the original instance.'],
     PC_DOCUMENT_CHANGED:['pc.document','Old document binding is invalid. Observe current pages and explicitly pc-bind a new document; preserve original uncertain actions.'],
-    PC_RESUME_IDENTITY_CHANGED:['pc.resume','Resume requires the same origin and reviewed resource inventory. Preserve the old Profile; do not interpret changed origin as missing save data.'],
+    PC_RESUME_IDENTITY_CHANGED:['pc.resume','Keep the same origin and resource inventory; reviewed source edits can use --allow-resource-update yes with --resume-from. Preserve the old Profile and confirm the actually loaded version.'],
     PC_PROFILE_IN_USE:['pc.resume','The previous owned browser or endpoint may still be running. Close it before resuming; no profile was taken over.'],
     PC_STOP_UNCONFIRMED:['pc.cleanup','Browser termination was not confirmed. Retain its Profile and local records; inspect this instance before reusing it.'],
+    PC_ACTION_UNSUPPORTED:['pc.action','Chrome supports reviewed Web actions. Android actions and internal semantic guards are unavailable on this PC path; see docs/PC_RUNTIME.md.'],
     GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Use Node.js 26+ and run npm ci --ignore-scripts --no-audit --no-fund in the Tools root. Generic diagnostics remain available.'],
     INVALID_CLI_ARGUMENTS:['cli.parse','Unknown, duplicate or incomplete option; use --help. Supplied arguments omitted.'],
     UNSUPPORTED_CHECKPOINT_NAME:['journey.validate','field=name: Action/Journey checkpoints do not accept name. See docs/ACTIONS.md.'],
@@ -139,13 +141,14 @@ async function main(args = process.argv.slice(2)) {
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
   if(command==='pc-start'){
-    const options=parse(args,['--file','--chrome','--port','--mode','--out','--resources','--resume-from']);
+    const options=parse(args,['--file','--chrome','--port','--mode','--out','--resources','--resume-from','--allow-resource-update']);
     let finish;const ended=new Promise(resolve=>{finish=resolve});
     const signal=()=>finish();process.once('SIGINT',signal);process.once('SIGTERM',signal);
     let instance;
     try{
       instance=await require('./lib/pc-session.cjs').start(options);
       instance.browser.once('close',signal);
+      if(instance.isClosed()||instance.browser.exitCode!==null||instance.browser.signalCode!==null)signal();
       console.log(JSON.stringify({url:instance.url,hostFile:instance.hostFile,processId:instance.record.target.processId,mode:instance.record.mode,profileRetained:true}));
       await ended;
     }finally{process.removeListener('SIGINT',signal);process.removeListener('SIGTERM',signal);if(instance)await instance.stop()}
@@ -284,7 +287,8 @@ async function main(args = process.argv.slice(2)) {
     write(options.out,'bounded WebView manual recorder; native actions and input content omitted',{recording:data,candidate:recorder.candidate(data,options.scope)});
     console.log('Review-required candidates saved; input placeholders cannot be executed as Journey steps.');if(data.cleanupConflicts>0)process.exitCode=1;
   } else if (['action','journey'].includes(command)) {
-    const options=parse(args,['--file','--serial','--package','--out','--plan','--authorization-file','--store','--test-environment','--target-id','--webview-socket']);
+    const options=parse(args,['--file','--serial','--package','--out','--plan','--authorization-file','--store','--test-environment','--target-id','--webview-socket','--host','--host-file']);
+    if(options.host!==undefined&&options.host!=='chrome'||options.host===undefined&&options['host-file']!==undefined)throw Error('Invalid host options');
     if(!options.file || options['test-environment']!==undefined && options['test-environment']!=='yes')throw Error('Invalid execution options');
     options.testEnvironment=options['test-environment']==='yes';options.targetId=options['target-id'];options.webviewSocket=options['webview-socket'];
     if(options['authorization-file']){if(fs.statSync(options['authorization-file']).size>8192)throw Error('Oversized authorization scope');options.authorization=JSON.parse(fs.readFileSync(options['authorization-file'],'utf8'));if(!require('./lib/game-scope.cjs').validate(options.authorization))throw Error('Invalid host-granted authorization scope')}

@@ -8,11 +8,12 @@ const failure=code=>Object.assign(Error(code),{code});
 // M1 supports an explicitly owned Chrome and one immutable document. No title
 // selection, automatic retarget, navigation adoption or dispatched-action retry.
 class ChromeHost {
- constructor(target,{timeoutMs=5000,binding=null}={}){
+ constructor(target,{timeoutMs=5000,binding=null,assertActive=()=>{}}={}){
   this.target=validateTarget(target);binding??=target.document??null;
   if(target.host!=='chrome'||!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>10000)throw Error('Chrome host identity required');
   if(binding&&(!['frameId','loaderId','url','uniqueContextId'].every(k=>typeof binding[k]==='string'&&binding[k].length>0)||Object.keys(binding).length!==4||new URL(binding.url).origin!==target.origin))throw Error('Invalid immutable Chrome document');
-  this.timeoutMs=timeoutMs;this.capture=events();this.contexts=new Map();this.client=null;this.binding=binding?Object.freeze({...binding}):null;
+  if(typeof assertActive!=='function')throw Error('Invalid lifecycle guard');
+  this.assertActive=assertActive;this.timeoutMs=timeoutMs;this.capture=events();this.contexts=new Map();this.client=null;this.binding=binding?Object.freeze({...binding}):null;
  }
  async verifyBrowser(){
   let response;try{process.kill(this.target.processId,0);response=await fetch(new URL('/json/version',this.target.endpoint),{signal:AbortSignal.timeout(this.timeoutMs),redirect:'error'})}catch(e){if(e.name==='TimeoutError')throw Object.assign(failure('ETIMEDOUT'),{cdpStage:'pc.browser'});throw failure('PC_BROWSER_UNAVAILABLE')}
@@ -29,6 +30,7 @@ class ChromeHost {
   if(method==='Runtime.executionContextsCleared')this.contexts.clear();
  }
  async open(){
+  this.assertActive();
   if(this.client)throw Error('Close Chrome transport before explicit reconnect');
   if(this.invalid)throw Object.assign(Error('Chrome document changed; explicit new contract required'),{code:'PC_DOCUMENT_CHANGED'});
   await this.verifyBrowser();
@@ -56,14 +58,16 @@ class ChromeHost {
    }while(true);
    const binding={frameId:frame.id,loaderId:frame.loaderId,url:fullURL,uniqueContextId:contexts[0].uniqueId};
    if(this.binding&&JSON.stringify(binding)!==JSON.stringify(this.binding))throw failure('PC_DOCUMENT_CHANGED');
-   this.binding=Object.freeze(binding);this.client=client;return this;
+   this.assertActive();this.binding=Object.freeze(binding);this.client=client;return this;
   }catch(error){client.close();throw error}
  }
  async assertBound(){
+  this.assertActive();
   if(!this.client?.isOpen())throw failure('CDP_CONNECTION_CLOSED');
   await this.verifyBrowser();
   const frame=(await this.client.send('Page.getFrameTree')).frameTree.frame,b=this.binding;
   if(this.invalid||frame.id!==b.frameId||frame.loaderId!==b.loaderId||(await documentURL(frame,this.client))!==b.url||![...this.contexts.values()].some(c=>c.uniqueId===b.uniqueContextId))throw Object.assign(Error('Chrome document changed; no automatic retarget'),{code:'PC_DOCUMENT_CHANGED'});
+  this.assertActive();
  }
  async evaluate(expression){
   await this.assertBound();

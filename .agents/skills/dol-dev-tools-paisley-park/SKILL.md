@@ -1,6 +1,6 @@
 ---
 name: dol-dev-tools-paisley-park
-description: "Use DoL Dev Tools for live DoL Mod diagnosis, scoped fixes and verification, or authorized short gameplay goals with original-state checks. Uses Android, WebView/CDP and local evidence across vanilla, UI, content, framework and manager Mods; optional integrations enhance diagnosis and mapping."
+description: "Use DoL Dev Tools for live DoL Mod diagnosis, scoped fixes and verification, or authorized short gameplay goals with original-state checks. Uses owned PC Chrome, Android, WebView/CDP and local evidence; optional integrations enhance diagnosis and mapping."
 ---
 
 # DoL Dev Tools: Paisley Park — White Snake
@@ -15,7 +15,7 @@ Before the first toolkit CLI call in a task, run `node <this-skill-directory>/sc
 
 | Task | Direct starting path | Required task material |
 |---|---|---|
-| An authorized local HTML test in independent PC Chrome | `pc-start`, explicit page selection/bind, `pc-observe` or reviewed `pc-action` | [PC_RUNTIME](../../../docs/PC_RUNTIME.md); development branch only, shared Chrome GER/Journey not integrated yet |
+| An authorized local HTML test in independent PC Chrome | `pc-start`, explicit page selection/bind, `pc-observe`, reviewed `pc-action` or shared Action/Journey | [PC_RUNTIME](../../../docs/PC_RUNTIME.md); development branch only, Chrome GER not integrated yet |
 | A CSS/layout/Console question | Existing evidence or scoped DOM/CSS/CDP; capture/environment only if needed | [INSPECTORS](../../../docs/INSPECTORS.md), [DIAGNOSTICS](../../../docs/DIAGNOSTICS.md); DOM/layout notes before interpreting truncation |
 | A reviewed click, input or reproduction | Debug Action/Journey; static --plan where useful | [ACTIONS](../../../docs/ACTIONS.md), including target, outcome and own-resource cleanup |
 | Modify source, build, verify loading | Target-owned source/build/deploy and same-scene checks | [WORKSHOP](../../../docs/WORKSHOP.md), [development flow Recipe](../../../docs/DEVELOPMENT_FLOW.md); [game source lookup](../../../docs/GAME_SOURCE.md) when native game code is needed; [5.0 Source Link/Lab limits](../../../docs/PAISLEY_PARK_5_0.md) if used |

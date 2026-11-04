@@ -141,6 +141,10 @@ async function executeWeb(ctx, action, assertForeground = ctx.assertForeground) 
 async function execute(ctx, action) {
   validate(action);
   const options = ctx?.options;
+  if (options?.host === 'chrome') {
+    if (!action.type.startsWith('web-') || ctx.webGuard) throw Object.assign(Error('Unsupported Chrome action'),{code:'PC_ACTION_UNSUPPORTED',notDispatched:true});
+    return executeWeb(ctx, action);
+  }
   if (!options || typeof options.serial !== 'string' || !options.serial ||
       typeof options.package !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+$/.test(options.package)) throw new Error('Target unavailable');
   const rawAdb = ctx.adb || android(options);

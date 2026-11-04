@@ -169,6 +169,24 @@ function create(options, overrides = {}, settings = {}) {
       return results;
     },
   };
+  if (options.host === 'chrome') {
+    let opened = false;
+    ctx.assertForeground = async () => { assertActive(); if (client) await client.assertBound(); assertActive(); };
+    ctx.ensureWebview = async () => {
+      assertActive();
+      if (client) { await client.assertBound(); assertActive(); return client; }
+      if (opened) throw Object.assign(Error('Chrome transport closed; no automatic reconnect'),{code:'PC_DOCUMENT_CHANGED'});
+      opened = true;
+      ctx.cdpCaptureStart = new Date().toISOString();
+      client = overrides.chromeHostFactory ? overrides.chromeHostFactory(options.chromeRecord.target) : new (require('./chrome-host.cjs').ChromeHost)(options.chromeRecord.target,{assertActive,timeoutMs:Math.max(1,Math.min(5000,deadline-Date.now()))});
+      try {
+        await client.open(); assertActive();
+        ctx.client = client; ctx.capture = client.capture; ctx.channels = {Runtime:'available',Network:'available'};
+        return client;
+      } catch (error) { client?.close(); client = undefined; throw error; }
+    };
+    ctx.closeTransport = async () => { client?.close(); client = undefined; ctx.client = undefined; };
+  }
   return ctx;
 }
 

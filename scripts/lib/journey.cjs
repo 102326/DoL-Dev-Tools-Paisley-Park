@@ -56,14 +56,18 @@ function waitProbe(scope, condition) {
 }
 async function run(options, loaded, overrides = {}) {
   const plan = validate(loaded.plan);
-  if (!/^[\w.:-]{1,128}$/.test(options.serial || '') || !/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/.test(options.package || '')
+  if (options.host === 'chrome') {
+    options = {...options,chromeRecord:require('./host-options.cjs').chrome(options)};
+    if (plan.steps.some(s => !['wait','checkpoint'].includes(s.type) && !s.type.startsWith('web-'))) throw Object.assign(Error('Unsupported Chrome action'),{code:'PC_ACTION_UNSUPPORTED'});
+    if (!options.out) throw Error('Explicit valid target/output required');
+  } else if (options.host !== undefined || !/^[\w.:-]{1,128}$/.test(options.serial || '') || !/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/.test(options.package || '')
     || !options.out || options.targetId !== undefined && !/^[A-Za-z0-9._:-]{1,128}$/.test(options.targetId)
     || options.webviewSocket !== undefined && !/^(?:browser_)?webview_devtools_remote_[0-9]+$/.test(options.webviewSocket)) throw Error('Explicit valid target/output required');
   if (!options.plan && options.testEnvironment !== true) throw Error('Execution requires explicit test environment');
   const output = path.resolve(options.out); fs.mkdirSync(output);
   const incidentId = randomUUID(), started = Date.now();
   const report = { schemaVersion: 1, incidentId, toolVersion: version, source: options.plan ? 'Journey plan' : 'Journey execution',
-    package: options.package, selectedDevice: 'explicit; serial omitted', planSha256: loaded.sha256,
+    ...(options.host === 'chrome' ? {host:'chrome', identity:{profileId:options.chromeRecord.target.profileId,browserId:options.chromeRecord.target.browserId,targetId:options.chromeRecord.target.targetId,document:options.chromeRecord.target.document}} : {package:options.package,selectedDevice:'explicit; serial omitted'}), planSha256: loaded.sha256,
     captureStart: new Date(started).toISOString(), timeoutMs: plan.timeoutMs, status: 'failed', steps: [], cleanup: [],
     privacy: { inputContent: 'omitted', screenshotsRequireManualReview: true }, remoteCancellationGuaranteed: false };
   function save(name, source, value) {
@@ -85,7 +89,14 @@ async function run(options, loaded, overrides = {}) {
     const scope=step.scope||plan.scope; ctx.options={...options,scope,timelineMs:step.timelineMs,observerInstrumentation:step.observerInstrumentation===true}; entry.artifacts=[];
     for(const kind of step.capture) {
       assertActive(); const name=`step-${index}-${kind}`;
-      if(kind==='screenshot') {
+      if(options.host==='chrome') {
+        const value=await require('./chrome-evidence.cjs').collect(ctx,kind,{captureStart:report.captureStart,captureEnd:new Date().toISOString()});
+        if(kind==='screenshot') {
+          const filename=name+'.png';fs.writeFileSync(path.join(output,filename),value.binary,{flag:'wx'});
+          entry.artifacts.push({filename,sha256:hash(value.binary),...value.metadata,requiresPrivacyReview:true});
+        } else entry.artifacts.push(save(name,`Journey Chrome ${kind} checkpoint`,value));
+        if(['failed','unsupported'].includes(value?.collectorStatus)) throw Error('Requested checkpoint capability incomplete');
+      } else if(kind==='screenshot') {
         const value=await collectors.screenshot(ctx), filename=name+'.png';fs.writeFileSync(path.join(output,filename),value.binary,{flag:'wx'});
         entry.artifacts.push({filename,sha256:hash(value.binary),...value.metadata,requiresPrivacyReview:true});
       } else if(kind==='performance') {
@@ -115,8 +126,10 @@ async function run(options, loaded, overrides = {}) {
   }
   checkpoint();
   try {
-    ctx.deviceData=await collectors.device(ctx);ctx.appData=await collectors.app(ctx);
-    report.device=redact(ctx.deviceData);report.app=redact(ctx.appData);
+    if(options.host!=='chrome') {
+      ctx.deviceData=await collectors.device(ctx);ctx.appData=await collectors.app(ctx);
+      report.device=redact(ctx.deviceData);report.app=redact(ctx.appData);
+    }
     for(const [index,step] of plan.steps.entries()) {
       const begin=Date.now(), entry={index,...summarize(step),captureStart:new Date().toISOString(),status:'failed'};
       report.steps.push(entry);checkpoint();
@@ -136,13 +149,20 @@ async function run(options, loaded, overrides = {}) {
             }
           }
         } else if(step.type==='checkpoint') await captureCheckpoint(step,index,entry);
-        else { ctx.recordResource=value=>{entry.artifacts??=[];entry.artifacts.push(save('resource-'+index+'-'+entry.artifacts.length,'native App data generation proof',value))};if(['launch','restart','data-reset'].includes(step.type)) await ctx.closeTransport();await (overrides.executeAction||action.execute)(ctx,step); }
+        else {
+          ctx.recordResource=value=>{entry.artifacts??=[];entry.artifacts.push(save('resource-'+index+'-'+entry.artifacts.length,'native App data generation proof',value))};
+          if(['launch','restart','data-reset'].includes(step.type)) await ctx.closeTransport();
+          if(options.host==='chrome'){entry.outcome='unknown; side effect may have occurred';checkpoint()}
+          await (overrides.executeAction||action.execute)(ctx,step);
+          if(options.host==='chrome')delete entry.outcome;
+        }
         assertActive();entry.status='completed';
       } catch(error) {
         const timeout=ctx.timedOut||error?.code==='ETIMEDOUT'||error?.killed;
         entry.reason=timeout?'deadline-or-command-timeout':'step-failed';entry.errorContent='omitted';
         const detail = require('./diagnostics.cjs').describe(error);
         if (detail) entry.diagnostic = detail;
+        if(options.host==='chrome' && !ctx.actionDispatched)delete entry.outcome;
         if(error?.notDispatched === true)entry.outcome='not dispatched; guard rejection acknowledged';
         else if(ctx.actionDispatched)entry.outcome='unknown; side effect may have occurred';
         throw error;

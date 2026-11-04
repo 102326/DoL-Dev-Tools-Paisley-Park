@@ -18,3 +18,21 @@ test('owned launcher reports failed startup when executable is not Chrome and re
  assert.equal(fs.existsSync(path.join(out,'host.json')),false);
  assert.equal(JSON.parse(fs.readFileSync(path.join(out,'launch.json'))).scope,'Owned launch; preserve on unconfirmed termination');
 });
+test('a deadline crossed during identity reads prevents subsequent evaluation',async()=>{
+ let expired=false,evaluations=0;const host=Object.create(ChromeHost.prototype);
+ host.binding={frameId:'frame',loaderId:'loader',url:'http://127.0.0.1:18767/index.html',uniqueContextId:'context'};
+ host.contexts=new Map([[1,{uniqueId:'context'}]]);host.verifyBrowser=async()=>{};
+ host.assertActive=()=>{if(expired)throw Object.assign(Error('deadline'),{code:'ETIMEDOUT'})};
+ host.client={isOpen:()=>true,async send(method){if(method==='Page.getFrameTree'){expired=true;return {frameTree:{frame:{id:'frame',loaderId:'loader',url:host.binding.url,urlFragment:''}}}}evaluations++;return {result:{value:true}}}};
+ await assert.rejects(host.evaluate('true'),{code:'ETIMEDOUT'});assert.equal(evaluations,0);
+});
+test('pc-start cleans up when owned Chrome closes before the CLI registers its listener',async()=>{
+ const session=require('../scripts/lib/pc-session.cjs'),{EventEmitter}=require('node:events');
+ const original=session.start,log=console.log;let stops=0,timer;
+ const browser=new EventEmitter();browser.exitCode=0;browser.signalCode=null;
+ session.start=async()=>{browser.emit('close');return {browser,isClosed:()=>true,url:'http://127.0.0.1:18767/index.html',hostFile:'owned-host.json',record:{target:{processId:123},mode:'headless'},stop:async()=>{stops++}}};console.log=()=>{};
+ try{
+  await Promise.race([require('../scripts/dol-dev.cjs').main(['pc-start']),new Promise((_,reject)=>{timer=setTimeout(()=>{browser.emit('close');reject(Error('Missed Chrome close event'))},250)})]);
+  assert.equal(stops,1);
+ }finally{clearTimeout(timer);session.start=original;console.log=log}
+});

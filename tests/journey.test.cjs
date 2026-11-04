@@ -119,3 +119,64 @@ test('Journey preserves a collector command budget and cancellation without disp
  assert.equal(actions,1);assert.equal(result.steps.length,1);assert.equal(result.status,'failed');
  assert.equal(settings.at(-1).timeout,123);assert.equal(settings.at(-1).signal.aborted,true);
 });
+
+function chromeFixture(t) {
+  const root=fixture(t),profilePath=path.join(root,'profile');fs.mkdirSync(profilePath);const profile=fs.realpathSync(profilePath);
+  const profileId=require('node:crypto').createHash('sha256').update(profile).digest('hex');
+  const target={host:'chrome',profileId,browserId:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',processId:123,endpoint:'http://127.0.0.1:9222',targetId:'page',origin:'http://127.0.0.1:8000',profilePath:profile,document:{frameId:'frame',loaderId:'loader',url:'http://127.0.0.1:8000/index.html#scene',uniqueContextId:'context'}};
+  const file=path.join(root,'host.json');fs.writeFileSync(file,JSON.stringify({format:'paisley-owned-chrome',version:1,profilePath:profile,executable:'/chrome',resourceDigest:'a'.repeat(64),target}));
+  return {root,file,target,options:out=>({host:'chrome','host-file':file,out,testEnvironment:true})};
+}
+function fakeChrome({evaluate=async()=>({ok:true}),send=async()=>({}),open=async()=>{}}={}) {
+  let closes=0;const capture={snapshot:()=>({console:[],network:[],omittedConsole:0,omittedNetwork:0})};
+  const host={capture,async open(){await open();return host},async assertBound(){},evaluate,send,close(){closes++}};
+  return {host,get closes(){return closes}};
+}
+test('Chrome Journey executes shared web actions, waits and checkpoints without Android',async t=>{
+ const f=chromeFixture(t),calls=[];
+ const png=Buffer.alloc(24);Buffer.from([137,80,78,71,13,10,26,10]).copy(png);png.writeUInt32BE(1,16);png.writeUInt32BE(1,20);
+ const mock=fakeChrome({evaluate:async source=>{calls.push(source);if(source.includes('waitProbe'))return {satisfied:true};if(source.includes('querySelectorAll')&&source.includes('node.click()'))return {ok:true};return {}},send:async method=>method==='Page.captureScreenshot'?{data:png.toString('base64')}: {}});
+ const r=await journey.run(f.options(path.join(f.root,'run')),load([{type:'wait',selector:'#a',condition:'exists',timeoutMs:100},{type:'web-click',selector:'#a'},{type:'checkpoint',scope:'body',capture:['screenshot','dom','css','console','network']}]),{chromeHostFactory:()=>mock.host,adb:async()=>{throw Error('Android called')}});
+ assert.equal(r.status,'complete');assert.equal(r.host,'chrome');assert.equal(r.steps.length,3);assert.equal(r.steps[2].artifacts.length,5);assert.equal(mock.closes,1);assert.equal(r.cleanup[0].status,'completed');assert.ok(calls.some(s=>s.includes('node.click()')));
+});
+test('Chrome Journey rejects native action before output and preserves unsupported checkpoint before stopping',async t=>{
+ const f=chromeFixture(t),native=path.join(f.root,'native');
+ await assert.rejects(journey.run(f.options(native),load([{type:'home'}])),/Unsupported Chrome action/);assert.equal(fs.existsSync(native),false);
+ let evaluations=0;const mock=fakeChrome({evaluate:async()=>{evaluations++;return {ok:true}}});
+ const out=path.join(f.root,'unsupported');const r=await journey.run(f.options(out),load([{type:'checkpoint',capture:['performance']},{type:'web-click',selector:'#a'}]),{chromeHostFactory:()=>mock.host});
+ assert.equal(r.status,'partial');assert.equal(r.steps.length,1);assert.equal(evaluations,0);
+ assert.equal(JSON.parse(fs.readFileSync(path.join(out,'step-0-performance.json'))).data.collectorStatus,'unsupported');
+});
+test('Chrome deadline closes transport and preserves uncertain action without dispatching another',async t=>{
+ const f=chromeFixture(t);let attempts=0;
+ const mock=fakeChrome({evaluate:async()=>{attempts++;await new Promise(r=>setTimeout(r,50));return {ok:true}}});
+ const loaded=load([{type:'web-click',selector:'#a'},{type:'web-click',selector:'#a'}]);loaded.plan.timeoutMs=20;
+ const r=await journey.run(f.options(path.join(f.root,'deadline')),loaded,{chromeHostFactory:()=>mock.host});
+ assert.equal(attempts,1);assert.equal(r.steps.length,1);assert.match(r.steps[0].outcome,/unknown/);assert.ok(mock.closes>=1);
+});
+test('Chrome supported storage, environment and performance use the bound host',async t=>{
+ const f=chromeFixture(t),methods=[];
+ const mock=fakeChrome({evaluate:async source=>source.includes('indexedDB')?{source:'storage',local:{status:'available'},session:{status:'available'},indexedDB:{status:'available'}}:{mods:{status:'unavailable'}},send:async method=>{methods.push(method);if(method==='Browser.getVersion')return {product:'Chrome/1',protocolVersion:'1',jsVersion:'1'};if(method==='Performance.getMetrics')return {metrics:[{name:'JSHeapUsedSize',value:1},{name:'Nodes',value:2},{name:'JSEventListeners',value:3}]};if(method==='Memory.getDOMCounters')return {nodes:2,jsEventListeners:3};return {}}});
+ const r=await journey.run(f.options(path.join(f.root,'evidence')),load([{type:'checkpoint',capture:['storage','environment','web-performance']}]),{chromeHostFactory:()=>mock.host});
+ assert.equal(r.status,'complete');assert.equal(r.steps[0].artifacts.length,3);assert.ok(methods.includes('Performance.disable'));
+});
+test('Chrome host open exceeding deadline is closed and cannot dispatch',async t=>{
+ const f=chromeFixture(t);let calls=0;const mock=fakeChrome({open:()=>new Promise(r=>setTimeout(r,35)),evaluate:async()=>{calls++;return {ok:true}}});
+ const loaded=load([{type:'web-click',selector:'#a'}]);loaded.plan.timeoutMs=10;
+ const r=await journey.run(f.options(path.join(f.root,'open-timeout')),loaded,{chromeHostFactory:()=>mock.host});
+ assert.equal(calls,0);assert.equal(r.steps.length,1);assert.equal(r.steps[0].outcome,undefined);assert.ok(mock.closes>=1);
+});
+test('Chrome records uncertainty before an action can dispatch',async t=>{
+ const f=chromeFixture(t),out=path.join(f.root,'intent');const mock=fakeChrome({evaluate:async()=>{
+  const pending=JSON.parse(fs.readFileSync(path.join(out,'manifest.json')));assert.match(pending.steps[0].outcome,/unknown/);return {ok:true};
+ }});
+ const r=await journey.run(f.options(out),load([{type:'web-click',selector:'#a'}]),{chromeHostFactory:()=>mock.host});
+ assert.equal(r.status,'complete');assert.equal(r.steps[0].outcome,undefined);
+});
+test('CLI Chrome plan accepts the owned host and rejects mixed Android options',async t=>{
+ const f=chromeFixture(t),plan=path.join(f.root,'action.json');fs.writeFileSync(plan,JSON.stringify({type:'web-click',selector:'#a'}));
+ const run=require('node:child_process').spawnSync,cli=path.resolve(__dirname,'../scripts/dol-dev.cjs');
+ const args=[cli,'action','--file',plan,'--host','chrome','--host-file',f.file,'--out',path.join(f.root,'plan'),'--plan'];
+ const result=run(process.execPath,args,{encoding:'utf8'});assert.equal(result.status,0,result.stderr);assert.equal(JSON.parse(fs.readFileSync(path.join(f.root,'plan/manifest.json'))).status,'planned');
+ const mixed=run(process.execPath,[...args,'--serial','device'],{encoding:'utf8'});assert.notEqual(mixed.status,0);
+});

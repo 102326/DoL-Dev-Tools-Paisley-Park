@@ -11,7 +11,7 @@ async function launch(options){
  let profile=path.join(output,'browser-profile');
  if(options.resume){
   const old=options.resume;
-  if(old.resourceDigest!==options.resourceDigest||old.target.origin!==url.origin)throw fail('PC_RESUME_IDENTITY_CHANGED');
+  if(old.resourceDigest!==options.resourceDigest&&!options.allowResourceUpdate||old.target.origin!==url.origin)throw fail('PC_RESUME_IDENTITY_CHANGED');
   try{process.kill(old.target.processId,0);throw fail('PC_PROFILE_IN_USE')}catch(e){if(e.code!=='ESRCH')throw e}
   let live=false;try{await targets(old.target.endpoint,500);live=true}catch{}if(live)throw fail('PC_PROFILE_IN_USE');
   profile=fs.realpathSync(old.profilePath);
@@ -40,9 +40,10 @@ async function launch(options){
   if(pages.length!==1||closed)throw fail('PC_TARGET_UNAVAILABLE');
   const target={host:'chrome',profileId:createHash('sha256').update(profile).digest('hex'),browserId:socket.slice('/devtools/browser/'.length),processId:browser.pid,endpoint,targetId:pages[0].id,origin:url.origin,profilePath:profile};
   host=await new ChromeHost(target).open();
-  const record={format:'paisley-owned-chrome',version:1,executable:options.executable,profilePath:profile,mode:options.mode,createdAt:new Date().toISOString(),browserVersion:await host.verifyBrowser(),resourceDigest:options.resourceDigest,target:{...target,document:host.binding}};
+  const record={format:'paisley-owned-chrome',version:1,executable:options.executable,profilePath:profile,mode:options.mode,createdAt:new Date().toISOString(),browserVersion:await host.verifyBrowser(),resourceDigest:options.resourceDigest,...(options.resume&&options.resume.resourceDigest!==options.resourceDigest?{previousResourceDigest:options.resume.resourceDigest,resourceUpdateReviewed:true}:{}),target:{...target,document:host.binding}};
+  if(closed||failed)throw fail('PC_LAUNCH_FAILED');
   const hostFile=path.join(output,'host.json');fs.writeFileSync(hostFile,JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
-  return {record,hostFile,browser,stop};
+  return {record,hostFile,browser,isClosed:()=>closed,stop};
  }catch(e){host?.close();await stop();throw e}finally{logs.forEach(fd=>fs.closeSync(fd));host?.close()}
 }
 module.exports={launch};

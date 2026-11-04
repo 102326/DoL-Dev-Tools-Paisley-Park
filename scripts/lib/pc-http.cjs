@@ -8,6 +8,12 @@ const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset
   '.webp':'image/webp','.gif':'image/gif','.ico':'image/x-icon','.woff':'font/woff','.woff2':'font/woff2',
   '.ttf':'font/ttf','.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav','.mp4':'video/mp4'};
 const error = () => Object.assign(Error('Review the selected HTML and explicit resource manifest'),{code:'PC_RESOURCES_INVALID'});
+function resourcePath(value){
+  if(typeof value!=='string'||!value.startsWith('/')||/[\\?#\u0000-\u001f\u007f]/.test(value))throw error();
+  const parts=value.slice(1).split('/').map(part=>{let decoded;try{decoded=decodeURIComponent(part)}catch{throw error()}
+    if(!decoded||decoded==='.'||decoded==='..'||/[\\/\u0000-\u001f\u007f]/.test(decoded))throw error();return decoded});
+  return '/'+parts.join('/');
+}
 function load(html, manifest) {
   const entries = [{urlPath:'/index.html',file:html}];
   if (manifest !== undefined) {
@@ -18,10 +24,10 @@ function load(html, manifest) {
   }
   const files = new Map(); let total = 0;
   for (const entry of entries) {
-    if (!entry || Object.keys(entry).sort().join() !== 'file,urlPath' || typeof entry.urlPath !== 'string' ||
-        !/^\/(?:[A-Za-z0-9_~-]+\/)*[A-Za-z0-9_.~-]+$/.test(entry.urlPath) || entry.urlPath.split('/').some(p=>p==='.'||p==='..') ||
-        files.has(entry.urlPath) || typeof entry.file !== 'string' || !path.isAbsolute(entry.file)) throw error();
-    const type = mime[path.extname(entry.urlPath).toLowerCase()];
+    if (!entry || Object.keys(entry).sort().join() !== 'file,urlPath' || typeof entry.file !== 'string' || !path.isAbsolute(entry.file)) throw error();
+    const key=resourcePath(entry.urlPath);
+    if(files.has(key))throw error();
+    const type = mime[path.extname(key).toLowerCase()];
     if (!type || fs.lstatSync(entry.file).isSymbolicLink()) throw error();
     const fd = fs.openSync(entry.file,'r'); let bytes;
     try {
@@ -31,7 +37,7 @@ function load(html, manifest) {
       if (bytes.length !== stat.size) throw error();
     } finally { fs.closeSync(fd); }
     total += bytes.length;
-    files.set(entry.urlPath,{bytes,type,sha256:createHash('sha256').update(bytes).digest('hex')});
+    files.set(key,{bytes,type,sha256:createHash('sha256').update(bytes).digest('hex')});
   }
   // Explicit snapshots avoid serving later edits, symlink substitutions or directory contents.
   const inventory=[...files].map(([urlPath,f])=>({urlPath,sha256:f.sha256,bytes:f.bytes.length}));
@@ -43,7 +49,8 @@ async function serve(bundle,port) {
   const server=http.createServer((req,res)=>{
     if (req.headers.host !== authority || !['GET','HEAD'].includes(req.method)) { res.writeHead(403); return res.end(); }
     let url; try { url=new URL(req.url,'http://'+authority); } catch { res.writeHead(400); return res.end(); }
-    const file=bundle.files.get(url.pathname==='/'?'/index.html':url.pathname);
+    let key;try{key=url.pathname==='/'?'/index.html':resourcePath(url.pathname)}catch{res.writeHead(404);return res.end()}
+    const file=bundle.files.get(key);
     if (!file || url.origin!=='http://'+authority) { res.writeHead(404); return res.end(); }
     res.writeHead(200,{'Content-Type':file.type,'Content-Length':file.bytes.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
     res.end(req.method==='HEAD'?undefined:file.bytes);
