@@ -167,3 +167,36 @@ test('literal lookup includes native TS modules and stylesheet sources',async t=
     assert.ok(result.candidates.some(c=>c.file==='new.'+extension),extension);
   }
 });
+
+test('long-line context shows the earliest Unicode match and identifies omitted text', async t => {
+  const root = await fixture(t);
+  await fs.writeFile(path.join(root,'long.js'), '😀'.repeat(1001) + 'needle' + '尾'.repeat(300) + '\nshort needle\n');
+  const result = await findSource(req(root,'text','needle',{limits:{contextLines:1}}));
+  const hit = result.candidates.find(c => c.file === 'long.js' && c.line === 1);
+  assert.equal(hit.column,1002);
+  assert.ok(hit.context[0].text.includes('needle'));
+  assert.ok(hit.context[0].text.startsWith('…'));
+  assert.ok(hit.context[0].text.endsWith('…'));
+  assert.equal(hit.context[0].truncated,true);
+  assert.ok(hit.context[0].column > 1);
+  assert.equal(hit.context[0].column + Array.from(hit.context[0].text.slice(1).split('needle')[0]).length, hit.column);
+  assert.ok(Array.from(hit.context[0].text).length <= 240);
+  assert.deepEqual(hit.context[1],{line:2,column:1,text:'short needle',truncated:false});
+  const combined = req(root,'path','long.js',{limits:{contextLines:0}});
+  combined.clues.push({kind:'text',value:'needle'});
+  const mixed = (await findSource(combined)).candidates.find(c => c.file === 'long.js' && c.line === 1);
+  assert.equal(mixed.column,1); // Preserve path-match candidate coordinates.
+  assert.ok(mixed.context[0].text.includes('needle'));
+  await fs.writeFile(path.join(root,'end.js'),'x'.repeat(300)+'needle');
+  const endHit = (await findSource(req(root,'text','needle'))).candidates.find(c => c.file === 'end.js');
+  assert.ok(endHit.context[0].text.startsWith('…'));
+  assert.ok(endHit.context[0].text.endsWith('needle'));
+  assert.equal(endHit.context[0].truncated,true);
+  const longClue = '界'.repeat(512);
+  await fs.writeFile(path.join(root,'clue.js'),'x'.repeat(300) + longClue);
+  const longHit = (await findSource(req(root,'text',longClue))).candidates.find(c => c.file === 'clue.js');
+  assert.equal(longHit.column,301);
+  assert.ok(longHit.context[0].text.includes('界'));
+  assert.ok(!longHit.context[0].text.includes(longClue));
+  assert.equal(longHit.context[0].truncated,true);
+});

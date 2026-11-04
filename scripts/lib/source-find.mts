@@ -23,7 +23,7 @@ export interface Request {
 export interface Candidate {
   file: string; line: number; column: number; sha256: string; score: number;
   basis: { clue: number; role: 'definition' | 'reference' | 'path' }[];
-  context: { line: number; text: string; truncated: boolean }[];
+  context: { line: number; column: number; text: string; truncated: boolean }[];
 }
 export interface Result {
   schemaVersion: 1;
@@ -211,7 +211,7 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
       if (i % 128 === 0) { await new Promise<void>(resolve => setImmediate(resolve)); active(); }
       const line = lines[i]!;
       const basis: Candidate['basis'] = [];
-      let column = Infinity;
+      let column = Infinity, textColumn = Infinity;
       request.clues.forEach((clue,index) => {
         if (clue.kind === 'path') {
           if (i === 0 && entry.file.includes(clue.value)) { basis.push({clue:index,role:'path'}); column = 1; }
@@ -220,6 +220,7 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
         const at = line.indexOf(clue.value);
         if (at < 0) return;
         column = Math.min(column,at + 1);
+        textColumn = Math.min(textColumn,at + 1);
         basis.push({clue:index,role:definition(clue.kind,line,clue.value) ? 'definition' : 'reference'});
       });
       if (!basis.length) continue;
@@ -230,12 +231,35 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
         if (offset % 16384 === 0) active();
         offset += line.codePointAt(offset)! > 0xffff ? 2 : 1; codepoints++;
       }
+      if (textColumn !== Infinity && textColumn !== column) {
+        let textCodepoints = 0;
+        for (let offset=0; offset < textColumn-1;) {
+          if (offset % 16384 === 0) active();
+          offset += line.codePointAt(offset)! > 0xffff ? 2 : 1; textCodepoints++;
+        }
+        textColumn = textCodepoints + 1;
+      } else textColumn = codepoints + 1;
       column = codepoints + 1;
       const context = [];
       for (let j=Math.max(0,i-request.limits.contextLines); j<=Math.min(lines.length-1,i+request.limits.contextLines); j++) {
+        const contextLine = lines[j]!;
         let excerpt = '', count = 0, truncated = false;
-        for (const char of lines[j]!) { if (++count > 240) { truncated = true; break; } excerpt += char; }
-        context.push({line:j+1,text:excerpt,truncated});
+        for (const char of contextLine) { if (++count > 240) { truncated = true; break; } excerpt += char; }
+        let start = 0;
+        if (truncated) {
+          start = j === i ? Math.max(0,textColumn - 120) : 0;
+          excerpt = ''; count = 0;
+          const capacity = start ? 238 : 239;
+          let more = false;
+          for (const char of contextLine) {
+            if (count % 16384 === 0) active();
+            if (count++ < start) continue;
+            if (count - start > capacity) { more = true; break; }
+            excerpt += char;
+          }
+          excerpt = (start ? '…' : '') + excerpt + (more ? '…' : '');
+        }
+        context.push({line:j+1,column:start+1,text:excerpt,truncated});
       }
       candidates.push({file:entry.file,line:i+1,column,sha256,basis,context,score:basis.reduce((sum,b) => sum + (b.role === 'definition' ? 10 : 1),0)});
       if (candidates.length > request.limits.maxResults) { candidates.sort(compare); candidates.pop(); reasons.add('max-results'); }

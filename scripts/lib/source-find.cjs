@@ -1,4 +1,4 @@
-// Generated from source-find.mts by TypeScript 6.0.2; source-lf-sha256=9a02dc32769de23e8cd6fa28652dbca2d7d43d56b81d588b3f20802c3eb48535
+// Generated from source-find.mts by TypeScript 6.0.2; source-lf-sha256=91a98dd7b92c1cfaf3b2ea84fa3b7ca56376e1f6d11b9a0f7e488d9b237319f3
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -327,7 +327,7 @@ async function search(request, signal, until) {
             }
             const line = lines[i];
             const basis = [];
-            let column = Infinity;
+            let column = Infinity, textColumn = Infinity;
             request.clues.forEach((clue, index) => {
                 if (clue.kind === 'path') {
                     if (i === 0 && entry.file.includes(clue.value)) {
@@ -340,6 +340,7 @@ async function search(request, signal, until) {
                 if (at < 0)
                     return;
                 column = Math.min(column, at + 1);
+                textColumn = Math.min(textColumn, at + 1);
                 basis.push({ clue: index, role: definition(clue.kind, line, clue.value) ? 'definition' : 'reference' });
             });
             if (!basis.length)
@@ -353,18 +354,51 @@ async function search(request, signal, until) {
                 offset += line.codePointAt(offset) > 0xffff ? 2 : 1;
                 codepoints++;
             }
+            if (textColumn !== Infinity && textColumn !== column) {
+                let textCodepoints = 0;
+                for (let offset = 0; offset < textColumn - 1;) {
+                    if (offset % 16384 === 0)
+                        active();
+                    offset += line.codePointAt(offset) > 0xffff ? 2 : 1;
+                    textCodepoints++;
+                }
+                textColumn = textCodepoints + 1;
+            }
+            else
+                textColumn = codepoints + 1;
             column = codepoints + 1;
             const context = [];
             for (let j = Math.max(0, i - request.limits.contextLines); j <= Math.min(lines.length - 1, i + request.limits.contextLines); j++) {
+                const contextLine = lines[j];
                 let excerpt = '', count = 0, truncated = false;
-                for (const char of lines[j]) {
+                for (const char of contextLine) {
                     if (++count > 240) {
                         truncated = true;
                         break;
                     }
                     excerpt += char;
                 }
-                context.push({ line: j + 1, text: excerpt, truncated });
+                let start = 0;
+                if (truncated) {
+                    start = j === i ? Math.max(0, textColumn - 120) : 0;
+                    excerpt = '';
+                    count = 0;
+                    const capacity = start ? 238 : 239;
+                    let more = false;
+                    for (const char of contextLine) {
+                        if (count % 16384 === 0)
+                            active();
+                        if (count++ < start)
+                            continue;
+                        if (count - start > capacity) {
+                            more = true;
+                            break;
+                        }
+                        excerpt += char;
+                    }
+                    excerpt = (start ? '…' : '') + excerpt + (more ? '…' : '');
+                }
+                context.push({ line: j + 1, column: start + 1, text: excerpt, truncated });
             }
             candidates.push({ file: entry.file, line: i + 1, column, sha256, basis, context, score: basis.reduce((sum, b) => sum + (b.role === 'definition' ? 10 : 1), 0) });
             if (candidates.length > request.limits.maxResults) {
