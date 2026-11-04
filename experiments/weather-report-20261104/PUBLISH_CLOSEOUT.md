@@ -22,7 +22,7 @@
 | GitHub / build guards | 2通过、0失败；严格类型、生成漂移及类型负对照步骤通过。 |
 | GitHub Python3.10.22 / unittest | 10项，9通过、1个可选Pillow项跳过。 |
 
-这是48fc4f2的实际远端结果，不冒充后续提交的CI。后续增量仅实验代码与验证材料，生产308文件payload未变；最终分支引用和最新工作流结果须在推送后核对。
+上述统计属于48fc4f2。代码收口提交 **`99e65ef7c593706b7ccddcc88539ce37dd097ec7`** 的[后续CI run 41780872005](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41780872005)也已实际success；远端引用与本地相同，GitHub author/committer均关联Codex bot。该增量仅实验代码与验证材料，生产308文件payload未变；随后归档此CI收据的文档提交不改变受验代码。
 
 ### Mac
 
