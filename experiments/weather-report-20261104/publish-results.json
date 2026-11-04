@@ -1,0 +1,110 @@
+{
+  "date": "2026-11-04",
+  "initialPublishedCommit": "48fc4f2ab9f3379cb7f5eae45a7e0022160e9f84",
+  "initialCI": {
+    "runId": 41778691640,
+    "url": "https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41778691640",
+    "conclusion": "success",
+    "node": {
+      "tests": 492,
+      "pass": 490,
+      "fail": 0,
+      "skip": 2
+    },
+    "python": {
+      "tests": 10,
+      "pass": 9,
+      "fail": 0,
+      "skip": 1
+    },
+    "buildGuardTests": {
+      "pass": 2,
+      "fail": 0
+    }
+  },
+  "githubAttribution": {
+    "authorLogin": "chatgpt-codex-connector[bot]",
+    "committerLogin": "chatgpt-codex-connector[bot]"
+  },
+  "hostDiscovery": {
+    "codexVersion": "codex-cli 0.166.0-alpha.6",
+    "archiveSha256": "b4441894dba00719bba30d2660f1980057aa77ef75cb4889f519658f6d0a9601",
+    "beforeProjectMatch": 0,
+    "afterForceReloadMatch": 1,
+    "afterProcessRestartMatch": 1,
+    "scope": "repo",
+    "enabled": true,
+    "interfaceDisplayName": "DoL Dev Tools: Paisley Park",
+    "resolvedToolsMatchesPackage": true,
+    "globalSkillInstallRequested": false,
+    "modelTurnsStarted": 0,
+    "requestMethods": [
+      "initialize",
+      "skills/list"
+    ],
+    "hostExits": [
+      {
+        "code": 0,
+        "signal": null
+      },
+      {
+        "code": 0,
+        "signal": null
+      }
+    ],
+    "unrelatedSkillErrors": 0,
+    "scopeLimit": "separate Codex app-server processes; no live Desktop session reload"
+  },
+  "packageRuntime": {
+    "current": {
+      "node": "v26.13.0",
+      "archiveSha256": "b4441894dba00719bba30d2660f1980057aa77ef75cb4889f519658f6d0a9601",
+      "missingDependencyRefused": true,
+      "offlineLockedInstall": true,
+      "xstateVersion": "5.33.2",
+      "dependencyResolvedInsidePackage": true,
+      "sqliteSchema": 2,
+      "integrity": "ok",
+      "sessionReopened": true,
+      "openEffects": 0,
+      "dispatched": 0
+    },
+    "minimum": {
+      "node": "v26.0.0",
+      "archiveSha256": "b4441894dba00719bba30d2660f1980057aa77ef75cb4889f519658f6d0a9601",
+      "missingDependencyRefused": true,
+      "offlineLockedInstall": true,
+      "xstateVersion": "5.33.2",
+      "dependencyResolvedInsidePackage": true,
+      "sqliteSchema": 2,
+      "integrity": "ok",
+      "sessionReopened": true,
+      "openEffects": 0,
+      "dispatched": 0
+    }
+  },
+  "kotlinEventWindow": {
+    "disconnectDistinguished": true,
+    "gapDistinguished": true,
+    "emptyWindowDistinguished": true,
+    "futureCursorRejectedByNewAPI": true,
+    "legacyReadCursorBehaviorPreserved": true,
+    "redThenGreen": true,
+    "jvmProcessTests": "passed"
+  },
+  "androidBuild": {
+    "status": "pending owner choice; no SDK acquired",
+    "candidateDownloadBytes": 86211241,
+    "initialExplorationBudgetBytes": 83886080,
+    "budgetWasUserImposed": false,
+    "apkBuilt": false,
+    "deviceUsed": false,
+    "license": "https://developer.android.com/studio/terms"
+  },
+  "notValidated": [
+    "live Desktop conversation instruction reload",
+    "Windows",
+    "Android APK/device/WebView",
+    "real game source scenes or gameplay"
+  ]
+}

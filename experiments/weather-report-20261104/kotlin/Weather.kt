@@ -8,6 +8,7 @@ import java.util.UUID
 data class Identity(val runId: String, val processStartId: String, val activityInstanceId: String)
 data class Ticket(val identity: Identity, val workId: String)
 data class Event(val seq: Long, val identity: Identity, val phase: String, val workId: String? = null)
+data class EventWindow(val latestSeq: Long, val gap: Boolean, val events: List<Event>)
 sealed interface Outcome {
     data class Committed(val ticket: Ticket) : Outcome
     data object Unknown : Outcome
@@ -77,6 +78,13 @@ class WeatherCore(private val runId: String, private val store: CommitStore, pri
     }
     fun disconnect() { connected = false }
     fun reconnect() { connected = true }
+    // null means disconnected; gap means at least one requested event was evicted.
+    fun readWindow(after: Long): EventWindow? {
+        require(after in 0..seq)
+        if (!connected) return null
+        val first = events.firstOrNull()?.seq
+        return EventWindow(seq, first != null && first - after > 1, events.filter { it.seq > after })
+    }
     fun read(after: Long): List<Event> = if (connected) events.filter { it.seq > after } else emptyList()
     fun lookup(workId: String): Outcome = store.lookup(runId, workId)
     private fun event(identity: Identity, phase: String, workId: String? = null) {
