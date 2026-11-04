@@ -94,6 +94,8 @@ Windows Chrome、Android SDK/APK/设备/WebView、真实DoL/Mod/存档及原生�
 
 ## 后续交接
 
+Windows具体执行顺序、固定身份和验收入口见[Windows接续任务书](../../../docs/HANDOFF_TUSK_ACT4_7_WINDOWS.md)。
+
 本轮约定的Mac接线、独立包、错误反馈和无内容恢复合同已完成，没有需要为本轮继续追加的本机实现门禁。Windows后续先同步固定代码、检查Node26/Chrome/依赖，运行新PC及GER夹具，再在获准环境验证真实HTML/资源、原生业务profile、存取和多标签/断连恢复。Android SDK/APK与设备代理对照仍按既定Windows分工；不把Mac结果计作实机通过。
 
 本轮Scoped Done不等于7.0正式发布许可。未修改main、发布正式版本或上传私人实验数据。
