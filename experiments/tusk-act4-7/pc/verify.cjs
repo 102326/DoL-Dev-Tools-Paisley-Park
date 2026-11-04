@@ -5,7 +5,23 @@ const root=path.resolve(process.env.PAISLEY_TOOL_ROOT||path.join(__dirname,'../.
 const [chrome,outArg,mode='headless']=process.argv.slice(2),out=path.resolve(outArg||'');
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 let server,admin;const results={schemaVersion:1,mode,node:process.version,platform:process.platform,checks:[]};
-async function stopServer(){if(server&&server.exitCode===null){const closed=new Promise(r=>server.once('close',r));server.kill('SIGINT');await Promise.race([closed,pause(10000)]);assert.notEqual(server.exitCode,null,'pc-start must close');server=null}}
+async function stopServer(){
+ if(!server)return;
+ if(server.exitCode===null&&server.signalCode===null){
+  const closed=new Promise(r=>server.once('close',()=>r(true)));
+  if(process.platform==='win32'){
+   // Windows process signals bypass Node's cleanup handlers; close only this owned browser.
+   const record=pc.record(path.join(out,'instance/chrome/host.json'));
+   await new (require(root+'/scripts/lib/chrome-host.cjs').ChromeHost)(record.target).verifyBrowser();
+   const pages=await require(root+'/scripts/lib/cdp.cjs').targets(record.target.endpoint);
+   const page=pages.find(p=>p.type==='page');assert.ok(page,'owned browser must expose a cleanup target');
+   const cleanup=await connect(record.target.endpoint,5000,()=>{},page.id);
+   try{await cleanup.send('Browser.close')}finally{cleanup.close()}
+  }else server.kill('SIGINT');
+  assert.equal(await Promise.race([closed,pause(10000).then(()=>false)]),true,'pc-start must close');
+ }
+ server=null;
+}
 function cli(args){return execFileSync(process.execPath,[root+'/scripts/dol-dev.cjs',...args],{encoding:'utf8',timeout:20000})}
 async function until(fn){const until=Date.now()+15000;while(Date.now()<until){try{const value=await fn();if(value)return value}catch{}await pause(50)}throw Error('Fixture readiness unavailable')}
 function check(name){results.checks.push(name)}
@@ -81,7 +97,12 @@ async function main(){
  results.status='passed';
 }
 main().catch(e=>{results.status='failed';results.failure=e.message;process.exitCode=1}).finally(async()=>{
- admin?.close();await stopServer();
+ admin?.close();try{await stopServer()}catch(e){
+  results.cleanup='unconfirmed';results.cleanupFailure=e.message;process.exitCode=1;
+  // The verifier owns this Node child, but cannot close a browser whose identity failed.
+  try{if(server&&server.exitCode===null&&server.signalCode===null)server.kill('SIGKILL')}catch{results.serverTermination='unconfirmed'}
+  server?.stdout?.destroy();server?.stderr?.destroy();server?.unref();
+ }
  if(outArg&&fs.existsSync(out)){fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(results,null,2));}
  console.log(JSON.stringify(results));
 });

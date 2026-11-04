@@ -32,7 +32,9 @@ function load(html, manifest) {
     const fd = fs.openSync(entry.file,'r'); let bytes;
     try {
       const stat=fs.fstatSync(fd);
-      if (!stat.isFile() || stat.size > 64*1024*1024 || total+stat.size > 512*1024*1024) throw error();
+      // Compiled ModLoader games can exceed 64 MiB; keep auxiliary resources at their original limit.
+      const maxFileBytes=(entry===entries[0]?128:64)*1024*1024;
+      if (!stat.isFile() || stat.size > maxFileBytes || total+stat.size > 512*1024*1024) throw error();
       bytes=fs.readFileSync(fd);
       if (bytes.length !== stat.size) throw error();
     } finally { fs.closeSync(fd); }

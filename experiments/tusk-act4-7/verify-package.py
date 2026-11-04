@@ -1,7 +1,7 @@
 """Verify a reviewed git-archive ZIP against its fixed Git objects; local extraction only."""
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import subprocess
 import sys
 import zipfile
@@ -20,7 +20,7 @@ for entry in git('ls-tree', '-rz', '--full-tree', revision).split(b'\0'):
         tree[raw_name.decode()] = blob
 paths = set(tree)
 for name in tuple(paths):
-    paths.update(str(p) for p in Path(name).parents if str(p) != '.')
+    paths.update(str(p) for p in PurePosixPath(name).parents if str(p) != '.')
 attributes = git('check-attr', '--source=' + revision, '-z', '--stdin', 'export-ignore',
                  input=b''.join(p.encode() + b'\0' for p in sorted(paths))).split(b'\0')
 ignored = {attributes[i].decode() for i in range(0, len(attributes) - 1, 3)

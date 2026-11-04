@@ -29,7 +29,7 @@ test('checker rejects generated drift and accepts checkout-only CRLF without rew
   const build=path.join(home,'build.cjs');
   await fs.copyFile(path.join(actualHelperRoot(),'owned-files.cjs'),path.join(lib,'owned-files.cjs'));
   await fs.copyFile(path.join(__dirname,'../build.cjs'),build);
-  const runtime=await fs.readFile(path.join(actual,'source-find.cjs'),'utf8'),source=await fs.readFile(path.join(actual,'source-find.mts'),'utf8');
+  const runtime=(await fs.readFile(path.join(actual,'source-find.cjs'),'utf8')).replaceAll('\r\n','\n'),source=(await fs.readFile(path.join(actual,'source-find.mts'),'utf8')).replaceAll('\r\n','\n');
   await fs.writeFile(path.join(lib,'source-find.mts'),source.replaceAll('\n','\r\n'));
   await fs.writeFile(path.join(lib,'source-find.cjs'),runtime.replaceAll('\n','\r\n'));
   const env={...process.env,PAISLEY_TSC:process.env.PAISLEY_TSC||require.resolve('typescript/bin/tsc'),PAISLEY_TYPE_ROOTS:process.env.PAISLEY_TYPE_ROOTS||path.resolve(__dirname,'../node_modules/@types')};

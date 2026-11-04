@@ -54,7 +54,8 @@ test('bounds distinguish partial from no matches, preserve ambiguity and exclude
   await fs.mkdir(path.join(root,'profiles'));
   await fs.writeFile(path.join(root,'profiles','private.js'),'secret-marker');
   await fs.writeFile(path.join(root,'.env'),'secret-marker');
-  await fs.symlink(path.join(root,'events','actions.js'),path.join(root,'linked.js'));
+  await fs.symlink(path.join(root,'events'),path.join(root,'linked-events'),'junction');
+  assert.deepEqual((await findSource(req(root,'text','practice:done'))).candidates.map(c => c.file),['events/actions.js']);
   assert.equal((await findSource(req(root,'text','secret-marker'))).candidates.length,0);
   const r = await findSource(req(root,'text','not present',{limits:{maxFiles:1}}));
   assert.equal(r.complete,false);

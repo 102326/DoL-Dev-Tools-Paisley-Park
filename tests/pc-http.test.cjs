@@ -31,3 +31,15 @@ test('existing Android target keys remain identical and Chrome binding has a sep
  const android={serial:'synthetic-device',package:'org.example.fixture',userId:'0'};
  assert.equal(key(android),createHash('sha256').update(JSON.stringify([android.serial,android.package,android.userId])).digest('hex'));
 });
+
+test('compiled game HTML can exceed 64 MiB; HTML and auxiliary resources keep distinct hard bounds',t=>{
+ const root=fixture(t),html=path.join(root,'page.html'),manifest=path.join(root,'large.json');
+ const resize=(file,bytes)=>{const fd=fs.openSync(file,'w');try{fs.ftruncateSync(fd,bytes)}finally{fs.closeSync(fd)}};
+ resize(html,64*1024*1024+1);
+ assert.equal(load(html).inventory[0].bytes,64*1024*1024+1);
+ resize(html,128*1024*1024+1);
+ assert.throws(()=>load(html),{code:'PC_RESOURCES_INVALID'});
+ resize(html,1);const resource=path.join(root,'large.js');resize(resource,64*1024*1024+1);
+ fs.writeFileSync(manifest,JSON.stringify({schemaVersion:1,resources:[{urlPath:'/large.js',file:resource}]}));
+ assert.throws(()=>load(html,manifest),{code:'PC_RESOURCES_INVALID'});
+});
