@@ -111,3 +111,13 @@ test('a real failed CDP collection step retains earlier artifacts and legacy rea
     for(const step of report.steps.filter(s=>s.artifact))assert(fs.existsSync(path.join(output,step.artifact.filename)));
   }
 });
+
+test('Chrome environment validates browser metadata and preserves Android contract compatibility',()=>{
+  const android=data(), chrome={schemaVersion:1,source:'Chrome environment',browser:{product:'Chrome/154.0.0.0',protocolVersion:'1.3',jsVersion:'1.0'},runtime:runtime(utils)};
+  assert.equal(Object.hasOwn(env.contract(android),'host'),false);
+  assert.equal(env.contract(chrome).host,'chrome');
+  assert.deepEqual(env.diff(chrome,structuredClone(chrome)).changes,[]);
+  assert.throws(()=>env.diff(android,chrome),/hosts differ/);assert.throws(()=>env.diff(chrome,android),/hosts differ/);
+  assert.equal(env.contract({...chrome,incomplete:true}).incomplete,true);
+  assert.throws(()=>env.contract({...chrome,browser:{...chrome.browser,product:'PRIVATE/invalid/path'}}),/Invalid environment field/);
+});

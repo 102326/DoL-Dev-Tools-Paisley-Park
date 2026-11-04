@@ -18,8 +18,9 @@ const profiles = {
   lifecycle: ['device','app','app-lifecycle'],
 };
 function validate(options) {
-  if (!options.serial || !/^[\w.:-]{1,128}$/.test(options.serial)) throw new Error('Provide explicit --serial');
-  if (!/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/.test(options.package || '')) throw new Error('Provide valid --package');
+  if (options.host !== undefined && options.host !== 'chrome') throw new Error('Unsupported host');
+  if (options.host !== 'chrome' && (!options.serial || !/^[\w.:-]{1,128}$/.test(options.serial))) throw new Error('Provide explicit --serial');
+  if (options.host !== 'chrome' && !/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/.test(options.package || '')) throw new Error('Provide valid --package');
   if (!options.out) throw new Error('Provide a new --out directory');
   if (options.scope !== undefined && (typeof options.scope !== 'string' || !options.scope.trim() || options.scope.length > 256)) throw new Error('Invalid --scope');
   if (!Number.isInteger(options.windowMs) || options.windowMs < 0 || options.windowMs > 10000) throw new Error('--window-ms must be 0..10000');
@@ -28,11 +29,13 @@ function validate(options) {
   if (options.timelineMs !== undefined && (!options.scope || !Number.isInteger(options.timelineMs) || options.timelineMs < 1 || options.timelineMs > 10000)) throw new Error('Timeline requires scope and 1..10000 ms');
   if (options.observerInstrumentation !== undefined && (typeof options.observerInstrumentation !== 'boolean' || options.observerInstrumentation && options.timelineMs === undefined)) throw new Error('Observer instrumentation requires timeline');
   if (options.inspectors !== undefined && (!options.scope || !Array.isArray(options.inspectors) || options.inspectors.length < 1 || options.inspectors.length > 6 || new Set(options.inspectors).size !== options.inspectors.length || options.inspectors.some(mode => !require('./inspectors.cjs').domModes.includes(mode)))) throw Error('Invalid scoped inspectors');
+  if (options.webPerformance && options.host !== 'chrome') throw Error('Web performance selection requires Chrome');
+  if (options.webPerformance !== undefined && typeof options.webPerformance !== 'boolean') throw Error('Invalid web performance selection');
   if (options.storage !== undefined && typeof options.storage !== 'boolean') throw Error('Invalid storage selection');
   if(options.processes!==undefined&&typeof options.processes!=='boolean')throw Error('Invalid process selection');
   if(options.lifecycle!==undefined&&typeof options.lifecycle!=='boolean')throw Error('Invalid lifecycle selection');
   if(options.layout!==undefined&&typeof options.layout!=='boolean'||options.allowHelper!==undefined&&typeof options.allowHelper!=='boolean')throw Error('Invalid native layout selection');
-  if((options.layout||options.profile==='layout')&&options.allowHelper!==true)throw Error('Native layout requires explicit helper side effects selection');
+  if(options.host !== 'chrome' && (options.layout||options.profile==='layout')&&options.allowHelper!==true)throw Error('Native layout requires explicit helper side effects selection');
   if (options.profile === 'series' || options.samples !== undefined) require('./performance-series.cjs').validate(options);
   if (options.seriesWebview !== undefined && typeof options.seriesWebview !== 'boolean') throw Error('Invalid WebView selection');
   if (options.targetId !== undefined && !/^[A-Za-z0-9._:-]{1,128}$/.test(options.targetId)) throw new Error('Invalid CDP target ID');
@@ -44,34 +47,41 @@ function validate(options) {
 }
 async function evidence(options, overrides = {}) {
   validate(options);
+  if (options.host === 'chrome') options = { ...options, chromeRecord: require('./host-options.cjs').chrome(options) };
   const repro = options.repro ? reproduction(options.repro) : null;
-  const selected = new Set(profiles[options.profile || 'evidence']);
+  const chrome = options.host === 'chrome';
+  const chromeProfiles = { evidence: ['screenshot','console','network','dom-contract'], capture: ['screenshot'], perf: ['web-performance'], environment: ['environment'] };
+  const selected = new Set((chrome && chromeProfiles[options.profile || 'evidence']) || profiles[options.profile || 'evidence']);
   if (options.logcatSeconds !== undefined) selected.add('logcat');
   if (options.recordSeconds !== undefined) selected.add('record');
   if (options.deepSeconds !== undefined) selected.add('perfetto');
   if (options.bugreport) selected.add('bugreport');
   if (options.css) selected.add('css-contract');
-  if (options.environment) { selected.add('provider'); selected.add('environment'); }
+  if (options.environment) { if (!chrome) selected.add('provider'); selected.add('environment'); }
   if (options.timelineMs !== undefined) selected.add('timeline');
   if (options.storage) selected.add('storage');
   if (options.layout) selected.add('native-layout');
   if(options.processes)selected.add('process-memory');
   if(options.lifecycle)selected.add('app-lifecycle');
   if (options.samples !== undefined) selected.add('performance-series');
+  if (options.webPerformance) selected.add('web-performance');
+  if (chrome) for (const mode of options.inspectors || []) selected.add(mode);
   if (options.seriesWebview) for(const name of ['provider','transport','cdp','webview']) selected.add(name);
   if (repro) selected.add('repro');
   const output = path.resolve(options.out);
   fs.mkdirSync(output); // Exclusive; parent must already exist. Never overwrite a partial incident.
   const incidentId = randomUUID(), started = new Date().toISOString();
   const manifest = { schemaVersion: 1, incidentId, toolVersion: version, captureStart: started,
-    localTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone, package: options.package,
-    selectedDevice: 'explicit; serial omitted', observationsAreSequential: true,
+    localTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    ...(chrome ? { host: 'chrome',target:require('./host-options.cjs').publicIdentity(options.chromeRecord.target) } : { package: options.package, selectedDevice: 'explicit; serial omitted' }), observationsAreSequential: true,
     profile: options.profile || 'evidence', status: 'failed', steps: [], integrations: [], privacy: {
       structured: 'allowlisted metadata plus aggregation redaction; no game state or control values',
       screenshot: 'requires manual privacy review; not automatically safe to share',
       integrations: 'reviewed module-specific allowlists plus heuristic core filtering; privacy not guaranteed',
     } };
-  const ctx = { options, output, adb: overrides.adb || collectors.android(options), connect: overrides.connect, runHeavy: overrides.runHeavy };
+  const ctx = chrome ? require('./execution-context.cjs').create(options, overrides, { captureEvents: true }) :
+    { options, output, adb: overrides.adb || collectors.android(options), connect: overrides.connect, runHeavy: overrides.runHeavy };
+  ctx.output = output;
   const methods = { ...collectors, ...require('./deep.cjs'), logcat: require('./logcat.cjs').collect, record: require('./record.cjs').collect,
     integration: require('./integration.cjs').collect, timeline: require('./timeline.cjs').collect, performanceSeries:require('./performance-series.cjs').collect, ...overrides.collectors };
   let evidenceCount = 0;
@@ -130,10 +140,30 @@ async function evidence(options, overrides = {}) {
   async function step(name, ...args) { if (selected.has(name)) await runStep(name, ...args); }
   checkpoint();
   try {
+    let noCdp, noDevice;
+    if (chrome) {
+      const supported = new Map([['screenshot','screenshot'],['dom-contract','dom'],['css-contract','css'],['console','console'],['network','network'],['storage','storage'],['environment','environment'],['web-performance','web-performance']]);
+      let windowReady = false;
+      for (const name of selected) {
+        if (name === 'repro') { await step('repro', 'User note', async () => repro); continue; }
+        const kind = supported.get(name);
+        if (!kind) { await runStep(name, 'Chrome', async () => ({ collectorStatus:'unsupported', reason:'not-supported-on-chrome' })); continue; }
+        const skip = name === 'dom-contract' && !options.scope ? 'no-scope-requested' : null;
+        await runStep(name, `Chrome ${kind}`, async () => {
+          if ((kind === 'console' || kind === 'network') && !windowReady) {
+            await ctx.ensureWebview(); await ctx.pause(options.windowMs); windowReady = true;
+          }
+          const value = await require('./chrome-evidence.cjs').collect(ctx,kind,{captureEnd:new Date().toISOString()});
+          if (kind === 'screenshot') value.extension = 'png';
+          return value;
+        }, name !== 'dom-contract' || !!options.scope, skip);
+      }
+      noCdp = !ctx.client ? 'cdp-unavailable' : null;
+    } else {
     await step('device', 'ADB / Android', async () => {
       const data = await methods.device(ctx); ctx.deviceData = data; manifest.device = redact(data); return data;
     });
-    const noDevice = !ctx.deviceReady ? 'device-check-failed' : null;
+    noDevice = !ctx.deviceReady ? 'device-check-failed' : null;
     await step('app', 'ADB / Android', async () => { const data = await methods.app(ctx); ctx.appData = data; manifest.app = redact(data); return data; }, true, noDevice);
     await step('provider', 'Android WebView update service', async () => { const data = await methods.provider(ctx); ctx.providerData = data; return data; }, true, noDevice);
     await step('screenshot', 'ADB current screen', () => methods.screenshot(ctx), true, noDevice);
@@ -147,7 +177,7 @@ async function evidence(options, overrides = {}) {
     await step('app-lifecycle','Android retained process exit metadata',()=>require('./app-lifecycle.cjs').collect(ctx),true,noDevice||(!ctx.appData?'app-check-failed':null));
     await step('transport', 'ADB forwarding', () => methods.forward(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('cdp', 'CDP event window', () => methods.cdp(ctx), true, !ctx.endpoint ? 'verified-webview-unavailable' : null);
-    const noCdp = !ctx.client ? 'cdp-unavailable' : null;
+    noCdp = !ctx.client ? 'cdp-unavailable' : null;
     await step('console', 'CDP Runtime events', () => methods.consoleSummary(ctx), true, noCdp);
     await step('network', 'CDP Network events', () => methods.networkSummary(ctx), true, noCdp);
     await step('webview', 'CDP', async () => { const data = await methods.webview(ctx); ctx.webviewData = data; manifest.webview = redact(data); return data; }, true, noCdp);
@@ -159,10 +189,14 @@ async function evidence(options, overrides = {}) {
     await step('storage', 'WebView storage metadata and readonly counts', () => require('./inspectors.cjs').collect(ctx, 'storage'), true, noCdp);
     for (const mode of options.inspectors || []) await runStep(mode, 'Scoped generic DOM inspection', () => require('./inspectors.cjs').collect(ctx, mode), true, noCdp);
     await step('performance-series','Sequential Android and selected WebView metrics',()=>methods.performanceSeries(ctx),true,noDevice||(!ctx.appPid?'app-check-failed':null));
+    }
     for (const [index, integration] of (overrides.integrations || []).entries()) {
       const info = { index, name: null, status: 'unavailable' };
       manifest.integrations.push(info);
-      if (integration.modulePath) {
+      if (integration.modulePath && chrome) {
+        info.status = 'unsupported';
+        await runStep(`integration-${index}`, 'Optional Integration interpretation', async () => ({ collectorStatus:'unsupported', reason:'not-supported-on-chrome' }), false);
+      } else if (integration.modulePath) {
         await runStep(`integration-${index}`, 'Optional Integration interpretation', async () => {
           const result = await methods.integration(ctx, integration.modulePath);
           Object.assign(info, result.description, { status: result.status });
@@ -189,10 +223,15 @@ async function evidence(options, overrides = {}) {
       if (record.status === 'failed') info.status = 'failed';
       if (record.status === 'completed' && info.status !== 'available') { record.status = info.status === 'failed' ? 'failed' : info.status === 'unsupported' ? 'unsupported' : 'skipped'; record.reason = info.reason || info.status; }
     }
+    if (!chrome) {
     await step('perfetto', 'Perfetto system trace', () => methods.perfetto(ctx), true, noDevice || (!ctx.appPid ? 'app-check-failed' : null));
     await step('bugreport', 'Android system bugreport', () => methods.bugreport(ctx), true, noDevice);
+    }
   } finally {
-    try { ctx.client?.close(); } catch { /* Forward cleanup and manifest still run. */ }
+    if (chrome) {
+      const cleanup = await ctx.finish();
+      if (cleanup.some(item => item.status === 'failed')) await runStep('chrome-cleanup', 'Owned Chrome transport', async () => { throw Error('Chrome cleanup failed'); });
+    } else try { ctx.client?.close(); } catch { /* Forward cleanup and manifest still run. */ }
     if (ctx.forwardPort) await runStep('transport-cleanup', 'ADB forwarding', () => methods.removeForward(ctx), true);
     manifest.captureEnd = new Date().toISOString();
     for (const status of ['completed','failed','skipped','unsupported']) manifest[status] = manifest.steps.filter(s => s.status === status).map(s => s.name);

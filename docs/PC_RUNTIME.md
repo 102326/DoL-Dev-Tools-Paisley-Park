@@ -1,6 +1,6 @@
 # PC 本地测试入口（7.0 开发中）
 
-这是 `experiment/tusk-act4-7` 的开发能力，正式发行版本尚未改变。PC Debug 入口复用当前 CDP、DOM/CSS、事件摘要和 Web Action；共享 Journey 已接 Chrome，GER 还未接入。需要持久预算、受保护业务动作和原回执恢复时，不能把这里的普通点击冒充 GER 派发。
+这是 `experiment/tusk-act4-7` 的开发能力，正式发行版本尚未改变。PC Debug、共享 Action/Journey、GER Goal/Session 和标准 Evidence 已接入 owned Chrome。需要持久预算、受保护业务动作和原回执恢复时，使用共享 GER，不能把普通点击补记成 GER 派发。
 
 ## 启动与资源
 
@@ -41,7 +41,7 @@ node scripts/dol-dev.cjs pc-observe --host-file "$NEW_HOST_JSON" --scope main --
 node scripts/dol-dev.cjs pc-action --host-file "$NEW_HOST_JSON" --file "$REVIEWED_ACTION_JSON" --out "$NEW_ACTION_EVIDENCE" --test-environment yes
 ```
 
-Action 格式复用 `web-click`、`web-focus`、`web-input`，例如 `{"type":"web-click","selector":"#purchase"}`。不支持 Android 原生动作。按目标串行调用，避免与 CUA、手动操作或另一个进程同时派发。普通 Debug 没有跨进程业务锁或去重；重复调用可以重复点击。需要这些保证时等待共享 GER 接线，不用本命令替代。
+Action 格式复用 `web-click`、`web-focus`、`web-input`，例如 `{"type":"web-click","selector":"#purchase"}`。不支持 Android 原生动作。按目标串行调用，避免与 CUA、手动操作或另一个进程同时派发。普通 Debug 没有跨进程业务锁或去重；重复调用可以重复点击。需要预算和未决效果仲裁时使用下述 GER，不用本命令替代。
 
 观察与动作均保存有界 DOM/CSS、截图、连接期间 Console/Network 元数据和文档身份。事件只覆盖本连接窗口，不保证捕获启动前错误。默认不读取正文或输入值；截图、URL 和可选状态探针仍可能包含私人内容。
 
@@ -57,6 +57,24 @@ Action 格式复用 `web-click`、`web-focus`、`web-input`，例如 `{"type":"w
 
 Windows PowerShell 同样调用 `node scripts/dol-dev.cjs ...`，变量用 `$HTML` 等，Chrome 路径如 `C:\Program Files\Google\Chrome\Application\chrome.exe`。清单中的 file 必须换成 Windows 本机路径；JSON 可用 `ConvertTo-Json` 生成。host.json 含本机进程和 Profile 身份，不作为另一台机器可直接重用的连接文件。Chrome 为外部可选依赖，不安装 SDK/ADB。
 
+## 共享 GER 与标准 Evidence
+
+```sh
+node scripts/dol-dev.cjs game-goal-start --host chrome --host-file "$HOST_JSON" --file "$REVIEWED_GOAL" --store "$SHARED_SQLITE" --out "$NEW_GOAL" --test-environment yes
+node scripts/dol-dev.cjs game-session --goal "$NEW_GOAL" --operation request --test-environment yes
+node scripts/dol-dev.cjs game-session --goal "$NEW_GOAL" --operation propose --file "$REVIEWED_CURRENT_PROPOSAL" --test-environment yes
+node scripts/dol-dev.cjs game-session --goal "$NEW_GOAL" --operation dispatch --test-environment yes
+node scripts/dol-dev.cjs evidence --host chrome --host-file "$HOST_JSON" --out "$NEW_EVIDENCE" --scope main --css yes --storage yes --environment yes --web-performance yes
+```
+
+GER 依赖根目录锁定的 XState/Node SQLite，沿用 [GAMEPLAY](GAMEPLAY.md) 的完整 Decision、预算、fencing、Memory、Effect Ledger 与原终态规则。Session 存储最初的 target/document；后续 request/resume/reconcile 不重新读取 host-file，不自动接受新文档。刷新、hash、导航、重启或更换标签后旧 Session 安全拒绝，旧 pending 保留。新 Session 仍共享整个 Profile 的 targetKey；换标签、origin、浏览器实例或绑定不能解除同 Store 中的未决效果，换 Store 也不是隔离证明。
+
+Chrome 的 Profile 路径摘要和资源摘要不是数据世代证明；不填充 Android nativeIdentity/resourceGeneration，也不声称识别所有原地清存储或游戏数据重置。当前合同限定最初的 live browser/document，不能把 Android pending 迁移到 PC。已持久结算的页面回执仅在所属 Chrome 执行上下文的批次中回收，其他标签不能代为确认；未决回执不参与回收。
+
+受审项目 Recipe 可使用 Chrome scope：`host:"chrome"`、绝对 `workspace`、选定 `profileId`、完整 `origin`、明确 `intents`、`dataDomain:"chrome-origin-storage"`。这记录宿主已授予的数据/任务范围，不自行授予权限，不接受 Android 占位 serial/package/signer 或 data-reset。详见 [项目 Recipe](PROJECT_EXPERIMENTS.md)。原生 DoL Provider 保留源码/函数指纹及终态要求；未匹配的游戏版本不会退回普通点击。
+
+标准 Evidence 保存 incident、原 target 的去路径身份摘要、通用采集和每步完整性；Android 专属请求标 unsupported，可选 Integration 当前不在 Chrome 上执行，不能因此伪造支持或使已完成的通用采集失效。Chrome 环境仅含 browser/runtime，不补造 Android 元数据；Compare/Known Good 的完整性要求见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
+
 ## 验证范围
 
-无内容真实 Chrome 回归入口：`node experiments/tusk-act4-7/pc/verify.cjs ABS_CHROME NEW_OUTPUT headless`（也可 `visible`）。`PAISLEY_TOOL_ROOT` 可指定独立解压包验证同一流程。Mac 无内容通过不等于 Windows、真实 DoL、Mod、存档、GER 或 Android 通过。自有合成 fixture 位于同目录；真实游戏资源不随包分发。7.0 其余接线和设备工作见源码仓库中的开发计划。
+无内容 Debug 回归：`node experiments/tusk-act4-7/pc/verify.cjs ABS_CHROME NEW_OUTPUT headless`（也可 `visible`）；正式 GER/Evidence 中断恢复回归：`node experiments/tusk-act4-7/ger/verify.cjs ABS_CHROME NEW_OUTPUT`。`PAISLEY_TOOL_ROOT` 可指定独立解压包验证同一流程。GER 夹具只模拟原始状态 API、受审 Recipe 和公共元数据，没有游戏/Mod 源码。Mac 通过不等于 Windows、真实 DoL/存档、原生业务 profile 或 Android 通过。

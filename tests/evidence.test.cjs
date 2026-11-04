@@ -229,3 +229,46 @@ test('performance parsers read memory totals and frame timing percentiles', () =
   assert.throws(() => memory('unrecognized'), /Unrecognized/);
   assert.throws(()=>memory('TOTAL PSS: 999999999999999999999 kB'),/Unrecognized/);
 });
+
+function chromeEvidenceFixture(t) {
+  const root=fixture(t), profilePath=path.join(root,'profile'); fs.mkdirSync(profilePath); const profile=fs.realpathSync(profilePath);
+  const profileId=require('node:crypto').createHash('sha256').update(profile).digest('hex');
+  const target={host:'chrome',profileId,browserId:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',processId:123,endpoint:'http://127.0.0.1:9222',targetId:'page',origin:'http://127.0.0.1:8000',profilePath:profile,document:{frameId:'frame',loaderId:'loader',url:'http://127.0.0.1:8000/index.html',uniqueContextId:'context'}};
+  const file=path.join(root,'host.json'); fs.writeFileSync(file,JSON.stringify({format:'paisley-owned-chrome',version:1,profilePath:profile,executable:'/chrome',resourceDigest:'a'.repeat(64),target}));
+  let closed=0, invalid=false;
+  const png=Buffer.alloc(24); Buffer.from([137,80,78,71,13,10,26,10]).copy(png); png.writeUInt32BE(1,16); png.writeUInt32BE(1,20);
+  const host={capture:{snapshot:()=>({console:[],network:[],omittedConsole:0,omittedNetwork:0})},async open(){},async assertBound(){if(invalid)throw Error('identity changed')},async evaluate(){await this.assertBound();return {}},async send(method){await this.assertBound();if(method==='Page.captureScreenshot')return {data:png.toString('base64')};if(method==='Performance.getMetrics')return {metrics:[{name:'JSHeapUsedSize',value:1},{name:'Nodes',value:1},{name:'JSEventListeners',value:1}]};return {}},close(){closed++}};
+  return {root,host,options:out=>({host:'chrome','host-file':file,out,scope:'body',windowMs:0}),get closed(){return closed},invalidate(){invalid=true}};
+}
+
+test('Chrome standard evidence collects bound capabilities and retains optional integration failure',async t=>{
+ const f=chromeEvidenceFixture(t),out=path.join(f.root,'capture');
+ const broken={describe(){throw Error('private')},detect:async()=>{},collect:async()=>{},redact:x=>x};
+ const m=await evidence({...f.options(out),css:true,environment:true,storage:true,webPerformance:true},{chromeHostFactory:()=>f.host,adb:()=>{throw Error('unexpected Android')},integrations:[broken,{modulePath:'/private/module'}]});
+ assert.equal(m.status,'complete');
+ for(const name of ['screenshot','dom-contract','css-contract','console','network','storage','environment','web-performance'])assert.equal(m.steps.find(s=>s.name===name).status,'completed',name);
+ assert.equal(m.steps.find(s=>s.name==='integration-0').status,'failed');assert.equal(m.steps.find(s=>s.name==='integration-1').status,'unsupported');
+ assert.equal(f.closed,1);assert.ok(fs.existsSync(path.join(out,'screenshot.png')));assert.doesNotMatch(fs.readFileSync(path.join(out,'manifest.json'),'utf8'),/private\/module|index.html/);
+});
+test('Chrome unsupported Android selections yield partial or failed without accessing Android',async t=>{
+ const f=chromeEvidenceFixture(t),overrides={chromeHostFactory:()=>f.host,adb:()=>{throw Error('unexpected Android')}};
+ const partial=await evidence({...f.options(path.join(f.root,'partial')),lifecycle:true},overrides);
+ assert.equal(partial.status,'partial');assert.equal(partial.steps.find(s=>s.name==='app-lifecycle').status,'unsupported');
+ const failed=await evidence({...f.options(path.join(f.root,'failed')),profile:'lifecycle'},overrides);
+ assert.equal(failed.status,'failed');assert.equal(failed.steps.every(s=>s.status==='unsupported'),true);
+});
+test('Chrome changed document fails later captures and closes its own transport',async t=>{
+ const f=chromeEvidenceFixture(t);const original=f.host.send;f.host.send=async function(method,...args){const result=await original.call(this,method,...args);if(method==='Page.captureScreenshot')f.invalidate();return result};
+ const m=await evidence(f.options(path.join(f.root,'changed')),{chromeHostFactory:()=>f.host});
+ assert.equal(m.status,'partial');assert.equal(m.steps.find(s=>s.name==='screenshot').status,'completed');assert.equal(m.steps.find(s=>s.name==='console').status,'failed');assert.equal(f.closed,1);
+});
+
+
+test('Chrome requires an owned host file and rejects mixed Android targets before creating output',async t=>{
+ const f=chromeEvidenceFixture(t);
+ for(const extra of [{serial:'device'},{package:'com.example.game'},{'host-file':path.join(f.root,'missing')}]) {
+  const out=path.join(f.root,'invalid-'+Object.keys(extra)[0]);
+  await assert.rejects(evidence({...f.options(out),...extra}),{code:'PC_INPUT_INVALID'});
+  assert.equal(fs.existsSync(out),false);
+ }
+});

@@ -170,6 +170,7 @@ function create(options, overrides = {}, settings = {}) {
     },
   };
   if (options.host === 'chrome') {
+    options={...options,chromeRecord:require('./host-options.cjs').chrome(options,{gameplay:options.gameplay===true})};ctx.options=options;
     let opened = false;
     ctx.assertForeground = async () => { assertActive(); if (client) await client.assertBound(); assertActive(); };
     ctx.ensureWebview = async () => {

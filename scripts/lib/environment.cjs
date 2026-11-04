@@ -53,7 +53,8 @@ const fields = {
 };
 function contract(value) {
   const data = value?.data ?? value;
-  if (!data || data.schemaVersion !== 1 || data.source !== 'Environment') throw Error('Unsupported environment snapshot');
+  if (!data || data.schemaVersion !== 1 || !['Environment','Chrome environment'].includes(data.source)) throw Error('Unsupported environment snapshot');
+  const chrome = data.source === 'Chrome environment';
   const plain = v => v && typeof v === 'object' && !Array.isArray(v);
   const result = {};
   const scalar = (v, kind) => {
@@ -64,7 +65,8 @@ function contract(value) {
       || kind === 'product' && !/^[0-9A-Za-z ._-]+\/[0-9A-Za-z._()+-]{1,64}$/.test(v)) throw Error('Invalid environment field');
     return v;
   };
-  for (const [group, properties] of Object.entries(fields)) {
+  const selectedFields = chrome ? { browser: fields.webview, runtime: fields.runtime } : fields;
+  for (const [group, properties] of Object.entries(selectedFields)) {
     if (!plain(data[group])) throw Error('Invalid environment group');
     for (const [key, kind] of Object.entries(properties)) result[`${group}.${key}`] = scalar(data[group][key], kind);
   }
@@ -91,10 +93,11 @@ function contract(value) {
     names.add(item.name);
     return { name: scalar(item.name,'text'), version: scalar(item.version,'version'), reportedIndex: item.reportedIndex };
   });
-  return { fields: result, mods: items, incomplete: mods.status !== 'available' || mods.truncated || mods.unreadable > 0 };
+  return { ...(chrome ? { host: 'chrome' } : {}), fields: result, mods: items, incomplete: mods.status !== 'available' || mods.truncated || mods.unreadable > 0 || chrome && data.incomplete === true };
 }
 function diff(before, after) {
   const a = contract(before), b = contract(after), changes = [];
+  if (a.host !== b.host) throw Error('Environment hosts differ');
   for (const key of Object.keys(a.fields)) if (a.fields[key] !== b.fields[key]) changes.push({ field: key, before: a.fields[key], after: b.fields[key] });
   const old = new Map(a.mods.map(m => [m.name,m])), current = new Map(b.mods.map(m => [m.name,m]));
   for (const name of new Set([...old.keys(),...current.keys()])) {

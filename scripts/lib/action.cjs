@@ -142,7 +142,7 @@ async function execute(ctx, action) {
   validate(action);
   const options = ctx?.options;
   if (options?.host === 'chrome') {
-    if (!action.type.startsWith('web-') || ctx.webGuard) throw Object.assign(Error('Unsupported Chrome action'),{code:'PC_ACTION_UNSUPPORTED',notDispatched:true});
+    if (!action.type.startsWith('web-')) throw Object.assign(Error('Unsupported Chrome action'),{code:'PC_ACTION_UNSUPPORTED',notDispatched:true});
     return executeWeb(ctx, action);
   }
   if (!options || typeof options.serial !== 'string' || !options.serial ||

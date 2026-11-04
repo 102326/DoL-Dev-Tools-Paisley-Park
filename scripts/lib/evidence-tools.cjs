@@ -53,11 +53,12 @@ function projectSnapshot(kind, value) {
     const parsed = environment.contract(data);
     if (parsed.incomplete || data.incomplete === true) throw Error('Incomplete reference snapshot');
     const fields = parsed.fields, group = (name, keys) => Object.fromEntries(keys.map(key => [key, fields[`${name}.${key}`]]));
-    const projected = { schemaVersion: 1, source: 'Environment',
-      device: group('device', ['model','androidVersion']),
-      app: group('app', ['package','versionName','versionCode','foregroundMatches']),
-      provider: group('provider', ['status','package','version']),
-      webview: group('webview', ['product','protocolVersion','jsVersion']),
+    const projected = { schemaVersion: 1, source: parsed.host === 'chrome' ? 'Chrome environment' : 'Environment',
+      ...(parsed.host === 'chrome' ? { browser: group('browser', ['product','protocolVersion','jsVersion']) } : {
+        device: group('device', ['model','androidVersion']),
+        app: group('app', ['package','versionName','versionCode','foregroundMatches']),
+        provider: group('provider', ['status','package','version']),
+        webview: group('webview', ['product','protocolVersion','jsVersion']) }),
       runtime: { ...group('runtime', ['gameVersion','loaderVersion']),
         gameVersionSources: group('runtime.gameVersionSources', ['startConfig','gameVersionMod']),
         viewport: group('runtime.viewport', ['width','height','devicePixelRatio']),
@@ -66,7 +67,7 @@ function projectSnapshot(kind, value) {
           items: parsed.mods.map(item => ({ name: sha(item.name), version: item.version,
             reportedIndex: item.reportedIndex, enabled: null, loadOrder: null })) } }, incomplete: false };
     for (const [part, key] of [['device','model'],['app','package'],['provider','package']])
-      if (projected[part][key]) projected[part][key] = sha(projected[part][key]);
+      if (projected[part]?.[key]) projected[part][key] = sha(projected[part][key]);
     environment.contract(projected);
     return projected;
   }

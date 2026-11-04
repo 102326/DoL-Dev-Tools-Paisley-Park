@@ -130,6 +130,7 @@ function guard(before) {
   `;
 }
 function validateTarget(options) {
+  if(options.host==='chrome'){require('./host-options.cjs').chrome(options,{gameplay:options.gameplay===true});if(!options.out)throw Error('Explicit output required');return}
   if (!/^[\w.:-]{1,128}$/.test(options.serial || '') || !/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/.test(options.package || '') ||
     !options.out || options.targetId !== undefined && !/^[A-Za-z0-9._:-]{1,128}$/.test(options.targetId) ||
     options.webviewSocket !== undefined && !/^(?:browser_)?webview_devtools_remote_[0-9]+$/.test(options.webviewSocket)) throw Error('Explicit semantic target/output required');
@@ -310,7 +311,7 @@ async function observe(options, overrides = {}) {
     actions: false, status: 'failed', observedAt: new Date().toISOString(), cleanup: [] };
   try {
     if (options.expectedUserId !== undefined && (await ctx.adb('shell','am','get-current-user')).toString().trim() !== options.expectedUserId) throw Error('Android user changed');
-    report.app = await collectors.app(ctx);
+    if(options.host==='chrome')report.host='chrome';else report.app = await collectors.app(ctx);
     const client = await ctx.ensureWebview();
     if (options.gameplay === true) {
       const scene = await client.evaluate(`(${gameplayReader.toString()})(${controlReader.toString()})`);

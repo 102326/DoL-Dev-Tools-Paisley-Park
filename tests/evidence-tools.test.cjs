@@ -293,3 +293,25 @@ test('Journey labels ignore arbitrary step names and excessive artifacts stay bo
   const issue = report(dir, path.join(base, 'issue'));
   assert.equal(JSON.stringify(issue).includes('SECRET_PRIVATE_NAME'), false);
 });
+
+test('Chrome environment compares and projects a private-safe reference without Android groups', t => {
+  const base=fixture(t);
+  const chrome={schemaVersion:1,source:'Chrome environment',browser:{product:'Chrome/1',protocolVersion:'1',jsVersion:'1',secret:'PRIVATE_BROWSER'},runtime:{gameVersion:'1',loaderVersion:'1',viewport:{width:100,height:100,devicePixelRatio:1},capabilities:{modList:true,performanceObserver:true,mutationObserver:true,indexedDB:true},mods:{status:'available',items:[{name:'PRIVATE_MOD',version:'1',reportedIndex:0,enabled:null,loadOrder:null}],truncated:false,unreadable:0}},secret:'PRIVATE_EXTRA'};
+  const other=structuredClone(chrome);other.runtime.viewport.width=120;
+  const first=incidentDir(base,'chrome-first',{environment:chrome}),second=incidentDir(base,'chrome-second',{environment:other});
+  const ordinary=compare(first.dir,second.dir,path.join(base,'ordinary'));
+  assert.equal(ordinary.status,'complete');assert.deepEqual(ordinary.comparisons[0].changes,[{field:'runtime.viewport.width'}]);
+  const ref=path.join(base,'chrome-ref');knownGood(first.dir,ref,{snapshots:['environment']});
+  const saved=fs.readFileSync(path.join(ref,'environment.json'),'utf8'),projected=JSON.parse(saved).data;
+  assert.equal(saved.includes('PRIVATE'),false);assert.equal(projected.source,'Chrome environment');assert.equal(projected.browser.product,'Chrome/1');
+  for(const key of ['device','app','provider','webview'])assert.equal(Object.hasOwn(projected,key),false);
+  for(const [n,a,b] of [['forward',ref,first.dir],['reverse',first.dir,ref]]){const result=compare(a,b,path.join(base,n));assert.equal(result.status,'complete');assert.deepEqual(result.comparisons[0].changes,[])}
+  const android={schemaVersion:1,source:'Environment',device:{},app:{},provider:{},webview:{},runtime:chrome.runtime};
+  const native=incidentDir(base,'android',{environment:android});
+  for(const [n,a,b] of [['cross',first.dir,native.dir],['cross-ref',ref,native.dir]]){const result=compare(a,b,path.join(base,n));assert.equal(result.status,'partial');assert.equal(result.comparisons[0].status,'unknown')}
+  for(const [name,change] of [['unavailable',{status:'unavailable'}],['truncated',{truncated:true}],['unreadable',{unreadable:1}]]){
+    const bad=structuredClone(chrome);Object.assign(bad.runtime.mods,change);const source=incidentDir(base,name,{environment:bad});
+    assert.throws(()=>knownGood(source.dir,path.join(base,name+'-ref'),{snapshots:['environment']}),/Invalid or incomplete/);
+    assert.equal(compare(first.dir,source.dir,path.join(base,name+'-compare')).comparisons[0].status,'unknown');
+  }
+});

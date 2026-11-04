@@ -23,6 +23,7 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
   pc-action --host-file ABS_HOST_JSON --file ABS_ACTION_JSON --out NEW_DIR --test-environment yes [--scope SELECTOR] [--probe ABS_REVIEWED_JS]
     Debug Web Action and local evidence only; no business Outcome inference, durable GER or automatic replay. See docs/PC_RUNTIME.md.
   game-goal-start --file REVIEWED_GOAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
+    Chrome: --host chrome --host-file ABS_HOST_JSON [--store ABS_SQLITE]; Session keeps the original document, never adopts a new binding.
     Native Gameplay Goals: reach-passage, native-state conditions, or native-knowledge membership with optional return Passage; clothing Goals belong to a domain provider.
   game-goal-step --goal GOAL_DIR --test-environment yes [--file REVIEWED_ACTION_JSON --intent navigation|dialogue|combat|buy|sell|equip|unequip|sleep|menu|settings|load-save|experiment|save|delete-save]
     Gameplay: reviewed native navigation/activity/combat selection; dol-shop browse/return/buy-one, native simple-head or optional sw-wardrobe. Host Agent supplies Decisions. No file: observe/check original Goal state.
@@ -35,6 +36,7 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
   game-open-wardrobe --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes [--plan]
     Gameplay: verified Bedroom entry only; original controls, no direct inventory/save writes or automatic retry.
   evidence --serial SERIAL --package PACKAGE --out NEW_DIR [--scope SELECTOR] [--window-ms 1000] [--integration soft-and-wet]
+    Chrome: --host chrome --host-file ABS_HOST_JSON; omit serial/package. Optional --web-performance yes.
     Optional: --logcat-seconds 30 --record-seconds 10 --repro NOTE_JSON --integration-file REVIEWED_LOCAL.cjs
     Optional: --css yes --environment yes --target-id ID --webview-socket VERIFIED_PID_SOCKET
     Optional: --timeline-ms 1000 --scope SELECTOR [--observer-instrumentation yes]
@@ -115,7 +117,7 @@ function errorMessage(error) {
     PC_RESUME_IDENTITY_CHANGED:['pc.resume','Keep the same origin and resource inventory; reviewed source edits can use --allow-resource-update yes with --resume-from. Preserve the old Profile and confirm the actually loaded version.'],
     PC_PROFILE_IN_USE:['pc.resume','The previous owned browser or endpoint may still be running. Close it before resuming; no profile was taken over.'],
     PC_STOP_UNCONFIRMED:['pc.cleanup','Browser termination was not confirmed. Retain its Profile and local records; inspect this instance before reusing it.'],
-    PC_ACTION_UNSUPPORTED:['pc.action','Chrome supports reviewed Web actions. Android actions and internal semantic guards are unavailable on this PC path; see docs/PC_RUNTIME.md.'],
+    PC_ACTION_UNSUPPORTED:['pc.action','Chrome supports reviewed Web actions. Native Android actions require their explicit Android target; see docs/PC_RUNTIME.md.'],
     GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Use Node.js 26+ and run npm ci --ignore-scripts --no-audit --no-fund in the Tools root. Generic diagnostics remain available.'],
     INVALID_CLI_ARGUMENTS:['cli.parse','Unknown, duplicate or incomplete option; use --help. Supplied arguments omitted.'],
     UNSUPPORTED_CHECKPOINT_NAME:['journey.validate','field=name: Action/Journey checkpoints do not accept name. See docs/ACTIONS.md.'],
@@ -177,7 +179,8 @@ async function main(args = process.argv.slice(2)) {
     if (command === 'game-goal-status') {
       const options = parse(args, ['--goal']); if (!options.goal) throw Error('Provide Goal directory'); result = goal.view(goal.status(options.goal));
     } else {
-      const options = parse(args, command === 'game-goal-start' ? ['--file','--serial','--package','--out','--test-environment','--target-id','--webview-socket','--store'] : ['--goal','--file','--intent','--test-environment','--resume']);
+      const options = parse(args, command === 'game-goal-start' ? ['--file','--serial','--package','--out','--test-environment','--target-id','--webview-socket','--store','--host','--host-file'] : ['--goal','--file','--intent','--test-environment','--resume']);
+      if(options.host!==undefined&&options.host!=='chrome'||options.host===undefined&&options['host-file']!==undefined)throw Object.assign(Error('Invalid host'),{code:'PC_INPUT_INVALID'});
       if (options['test-environment'] !== 'yes') throw Error('Explicit test environment required'); options.testEnvironment = true;
       if (command === 'game-goal-start') {
         if (!options.file || fs.statSync(options.file).size > 65536) throw Error('Provide bounded Goal request');
@@ -188,7 +191,8 @@ async function main(args = process.argv.slice(2)) {
     console.log(JSON.stringify(result, null, 2));
     if (['paused','exhausted','failed'].includes(result.status)) process.exitCode = 1;
   } else if (['game-observe','game-open-wardrobe'].includes(command)) {
-    const options = parse(args, ['--serial','--package','--out','--target-id','--webview-socket', ...(command === 'game-open-wardrobe' ? ['--test-environment','--plan'] : ['--gameplay','--shop'])]);
+    const options = parse(args, ['--serial','--package','--out','--target-id','--webview-socket','--host','--host-file', ...(command === 'game-open-wardrobe' ? ['--test-environment','--plan'] : ['--gameplay','--shop'])]);
+    if(options.host!==undefined&&options.host!=='chrome'||options.host===undefined&&options['host-file']!==undefined)throw Object.assign(Error('Invalid host'),{code:'PC_INPUT_INVALID'});
     if (options['test-environment'] !== undefined && options['test-environment'] !== 'yes') throw Error('Invalid test environment');
     options.testEnvironment = options['test-environment'] === 'yes'; options.targetId = options['target-id']; options.webviewSocket = options['webview-socket'];
     if (options.gameplay !== undefined && options.gameplay !== 'yes') throw Error('Invalid gameplay view');
@@ -209,7 +213,9 @@ async function main(args = process.argv.slice(2)) {
         ...(command === 'perf-series' ? ['--samples','--interval-ms','--webview','--target-id','--webview-socket'] : []),
         ...(command === 'native-layout' ? ['--allow-helper'] : []),
         ...(command === 'perf' ? ['--deep','--seconds','--sensitive'] : command === 'bugreport' ? ['--sensitive'] : [])];
-    const options = parse(args, allowed);
+    const options = parse(args, [...allowed,'--host','--host-file',...(command==='evidence'?['--web-performance']:[])]);
+    if(options.host!==undefined&&options.host!=='chrome'||options.host===undefined&&options['host-file']!==undefined)throw Object.assign(Error('Invalid host'),{code:'PC_INPUT_INVALID'});
+    if(options['web-performance']!==undefined){if(options['web-performance']!=='yes')throw Error('Explicit selection must be yes');options.webPerformance=true}
     if (options.integration && options.integration !== 'soft-and-wet') throw new Error('Unsupported integration');
     options.windowMs = options['window-ms'] === undefined ? 1000 : Number(options['window-ms']);
     options.profile = command==='app-lifecycle'?'lifecycle':command==='process-memory'?'processes':command==='native-layout'?'layout':command === 'perf-series' ? 'series' : command === 'perf' && options.deep ? 'deep' : command;

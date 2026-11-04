@@ -57,24 +57,30 @@ async function start(options,request,overrides={}){
   request=validate(request);
   if(options.testEnvironment!==true||!options.out)throw Error('Explicit tested Goal target required');
   loadRuntime(); // Fail before ADB, output creation or a Session when Gameplay prerequisites are missing.
-  const userId=(await(overrides.adb||collectors.android(options))('shell','am','get-current-user')).toString().trim();
+  const chrome=options.host==='chrome',chromeRecord=chrome?require('./host-options.cjs').chrome(options,{gameplay:true}):null;
+  const userId=chrome?null:(await(overrides.adb||collectors.android(options))('shell','am','get-current-user')).toString().trim();
   const authorization=request.scope??request.goal.scope;
-  if(authorization)require('./game-scope.cjs').assertTarget(options,{scope:authorization},userId,(await(overrides.adb||collectors.android(options))('shell','dumpsys','package',options.package)).toString());
+  if(chrome){if(authorization)require('./game-scope.cjs').assertSessionTarget(authorization,chromeRecord.target);await verifyChrome(chromeRecord.target)}
+  else if(authorization)require('./game-scope.cjs').assertTarget(options,{scope:authorization},userId,(await(overrides.adb||collectors.android(options))('shell','dumpsys','package',options.package)).toString());
   const store=options.store||process.env.PAISLEY_PARK_STORE||path.join(process.env.LOCALAPPDATA||os.homedir(),'PaisleyPark','sessions-v2.sqlite');
   const r=open(store,overrides);let s;
   try{
-    const t={serial:options.serial,package:options.package,userId};const resource=r.resource(hash([t.serial,t.package,t.userId]));
+    const t=chrome?chromeRecord.target:{serial:options.serial,package:options.package,userId};const resource=chrome?null:r.resource(hash([t.serial,t.package,t.userId]));
     const resourceProof=resource?await require('./game-resource.cjs').snapshot(overrides.adb||collectors.android(options),t,authorization,resource):undefined;
-    const nativeIdentityProof=resource?undefined:await require('./game-resource.cjs').identity(overrides.adb||collectors.android(options),t,authorization);
+    const nativeIdentityProof=chrome||resource?undefined:await require('./game-resource.cjs').identity(overrides.adb||collectors.android(options),t,authorization);
     fs.mkdirSync(path.resolve(options.out));
-    s=r.start({serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,...(authorization?{scope:authorization}:{}),goal:{description:request.description??request.name,...request.goal,...(request.goal.kind==='purchase-one'?{maxSpend:request.goal.maxSpend===undefined?null:request.goal.maxSpend}:{})},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:combinedLimit(request.budget.maxSpend,request.goal.maxSpend)}},{resourceProof,nativeIdentityProof});
+    s=r.start(chrome?chromeRecord.target:{serial:options.serial,package:options.package,userId,...(options.targetId?{targetId:options.targetId}:{}),...(options.webviewSocket?{webviewSocket:options.webviewSocket}:{})},{mode:request.mode,...(authorization?{scope:authorization}:{}),goal:{description:request.description??request.name,...request.goal,...(request.goal.kind==='purchase-one'?{maxSpend:request.goal.maxSpend===undefined?null:request.goal.maxSpend}:{})},...(request.requiredCheckpoints===undefined?{}:{requiredCheckpoints:request.requiredCheckpoints}),budget:{...request.budget,maxReplans:request.budget.maxReplans??192,maxSpend:combinedLimit(request.budget.maxSpend,request.goal.maxSpend)}},{resourceProof,nativeIdentityProof});
     try{fs.writeFileSync(path.join(options.out,'goal.json'),JSON.stringify({format:'paisley-session-link',version:2,sessionId:s.id,store:path.resolve(store)},null,2),{flag:'wx'})}catch(e){r.stop(s.id,'session-link-write-failed');throw e}
   }finally{r.close()}
   return advance(options.out,{testEnvironment:true},overrides);
 }
 function rejectionReceipts(effects){return effects.filter(e=>e.status==='dispatching'&&e.ack?.dispatch==='not-dispatched').map(e=>({attemptId:e.id,outcome:'not-occurred',remoteClosed:true,spent:0,source:'reviewed claimed synchronous guard rejection'}))}
+async function verifyChrome(target){
+  const host=new (require('./chrome-host.cjs').ChromeHost)(target);try{await host.open();await host.assertBound()}finally{host.close()}
+}
 async function verifyResource(r,s,options,overrides){
   r.assertResource(s);
+  if(s.target.host==='chrome'){if(s.nativeIdentity||s.resourceGeneration)throw Error('Chrome Session has Android resource identity');if(options.authorization)require('./game-scope.cjs').assertSessionTarget(options.authorization,s.target);await verifyChrome(s.target);return}
   if(!s.resourceGeneration){
     if(!s.nativeIdentity)throw Error('Original native resource identity unavailable for this historical Session');
     const proof=await require('./game-resource.cjs').identity(overrides.adb||collectors.android(options),s.target,options.authorization);
@@ -110,7 +116,7 @@ async function dispatchReady(r,s,dir,overrides={}){
   if(!approvedOwner.prepare&&typeof overrides.readOutcome!=='function')return view(r.pause(s.id,'reviewed-action-outcome-unavailable'));
   // Measured native shop attestation takes 84s; retain the existing bounded Journey window.
   const authorization=s.config.scope??s.config.goal.scope,executionWindow=require('./game-native-save.cjs').authorized(authorization)?120000:30000;
-  const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization,...(s.config.goal.kind==='project-experiment'?{projectGoal:s.config.goal}:{}),timeoutMs:Math.max(1,Math.min(executionWindow,s.deadline-Date.now()))};
+  const options={...require('./host-options.cjs').fromTarget(s.target),testEnvironment:true,gameplay:true,authorization,...(s.config.goal.kind==='project-experiment'?{projectGoal:s.config.goal}:{}),timeoutMs:Math.max(1,Math.min(executionWindow,s.deadline-Date.now()))};
     await verifyResource(r,s,options,overrides);
     const e=r.prepare(s.id,{expected:s});if(!e)return view(r.status(s.id));
     const descriptor=e.action,selected=descriptor.selected,intent=descriptor.kind,owner=capabilities.validateDescriptor(descriptor,s.config.goal),scene=s.scene;
@@ -146,7 +152,7 @@ async function advance(directory,settings,overrides={}){
     if(settings.resume){r.resume(s.id);s=r.status(s.id)}
     if(s.stopReason)return view(s);
     let selected;if(settings.file){selected=readJson(settings.file);validateSelection(selected,settings.intent,s.config.goal)}else if(settings.intent)throw Error('Intent requires an action');
-    const options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
+    const options={...require('./host-options.cjs').fromTarget(s.target),testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,timeoutMs:Math.max(1,Math.min(30000,s.deadline-Date.now()))};
     await verifyResource(r,s,options,overrides);
     const reservation=r.reserveObservation(s.id);if(!reservation)return view(r.status(s.id));
     const observed=await site.observe({...options,out:path.join(dir,'observation-'+randomUUID())},{...overrides,probeGoal:probe(s.config.goal),probeOutcome:client=>recoverWithMaintenance(r,s,client,dir,s.openEffects),probeCapabilities:client=>capabilities.observe(client,s.config.goal)});
@@ -170,7 +176,12 @@ async function session(directory,operation,settings={},overrides={}){
     try{
       const original=r.status(l.sessionId);if(!original.openEffects.some(e=>e.sessionId===original.id))return view(original);
       reservation=r.reserveReconciliation(original.id);const s=r.status(original.id),effects=s.openEffects.filter(e=>e.sessionId===s.id);
-      const deadline=Date.now()+30000,options={...s.target,expectedUserId:s.target.userId,testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,timeoutMs:30000,out:path.join(dir,'reconciliation-'+randomUUID())};
+      const deadline=Date.now()+30000,options={...require('./host-options.cjs').fromTarget(s.target),testEnvironment:true,gameplay:true,authorization:s.config.scope??s.config.goal.scope,timeoutMs:30000,out:path.join(dir,'reconciliation-'+randomUUID())};
+      if(s.target.host==='chrome'){
+        await verifyResource(r,s,options,overrides);
+        if(Date.now()>=deadline)throw Error('Reconciliation deadline');
+        options.timeoutMs=Math.max(1,deadline-Date.now());
+      }
       const observed=await site.observe(options,{...overrides,probeOutcome:async client=>{
         // A reviewed cleanup reader shares this transport and cannot create a new execution window.
         let timer;try{

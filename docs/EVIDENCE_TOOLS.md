@@ -52,3 +52,11 @@ For an ordinary user's issue, project a local Evidence Bundle using `support`; s
 - Console/Logcat omit message content by default; Network omits private bodies/paths. Say when these summaries cannot establish a root cause. Screenshots, recordings and reproduction notes need manual privacy review.
 
 - Keep successful evidence when another collector fails. No infinite retries, replacing baselines automatically, or upgrading to full/heavy capture without a concrete unresolved question.
+
+## Chrome 标准 Evidence
+
+Chrome 的标准 Evidence 复用同一 manifest、制品摘要和 complete/partial/failed 规则，要求 `--host chrome` 与已绑定文档的 owned `--host-file`，不接受 Android 目标参数。默认 `evidence` 采集截图、Console、Network 和有 scope 时的 DOM；`capture` 采集截图，`environment` 采集 Chrome 环境，`perf` 采集 Web 性能。`--css yes` 需要 scope，`--storage yes`、`--environment yes`、`--web-performance yes` 可明确加入对应采集。Console/Network 使用同一接收窗口，可能包含 CDP 缓存事件。Chrome 支持的八类为截图、DOM、CSS、Console、Network、Storage、Environment 和 Web 性能。
+
+显式请求当前 Chrome host 不支持的采集项会记录 unsupported；有成功的非 Integration 制品时为 partial，没有成功采集时为 failed。可选 Integration 的失败不降低通用采集完整性；现有模块 worker 尚未具备绑定 Chrome 文档的连接，因此 Chrome 下标为 unsupported，不执行模块。目标或文档身份变化后不自动重连，保留已采集制品并关闭本次连接。截图、复现和本地制品仍需隐私审阅，不自动上传。
+
+离线 Compare、Known Good 和 environment-diff 支持现有 Chrome Environment 格式，复用 runtime 合同，同时保留 Chrome browser 元数据，不构造 Android 字段。只有同 host 环境可比较；跨 Chrome/Android 的 Evidence 比较为 unknown，environment-diff 直接拒绝。Mods 未报告、截断或存在未读取项时，环境比较为 unknown，不能用于 Known Good；完整参考中 Mod 名称仍经过哈希。其他离线消费者对 Chrome 输入的覆盖尚未全面验证。

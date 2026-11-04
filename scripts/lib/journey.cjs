@@ -57,7 +57,7 @@ function waitProbe(scope, condition) {
 async function run(options, loaded, overrides = {}) {
   const plan = validate(loaded.plan);
   if (options.host === 'chrome') {
-    options = {...options,chromeRecord:require('./host-options.cjs').chrome(options)};
+    options = {...options,chromeRecord:require('./host-options.cjs').chrome(options,{gameplay:options.gameplay===true})};
     if (plan.steps.some(s => !['wait','checkpoint'].includes(s.type) && !s.type.startsWith('web-'))) throw Object.assign(Error('Unsupported Chrome action'),{code:'PC_ACTION_UNSUPPORTED'});
     if (!options.out) throw Error('Explicit valid target/output required');
   } else if (options.host !== undefined || !/^[\w.:-]{1,128}$/.test(options.serial || '') || !/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/.test(options.package || '')

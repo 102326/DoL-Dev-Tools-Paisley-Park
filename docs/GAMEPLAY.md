@@ -27,6 +27,8 @@ TargetKey 保持原义；获授权 native data-reset 启用 Store schema 3（见
 
 ### 目标仲裁与派发身份的解释边界
 
+7.0 开发分支的 owned Chrome 接线见 [PC_RUNTIME](PC_RUNTIME.md)：使用相同 GER/SQLite，Chrome key 为整个 Profile；Session 固定原 browser/target/document，后续不采纳新 host-file。Chrome 不伪造 Android 数据代次，原生游戏/设备验收另记；旧 Android key、历史只读 reconcile 及 native resource 校验保持原义。
+
 同一SQLite Store内的targetKey、租约和fencing不构成跨Store或跨主机全局锁；targetKey同时包含serial、package与规范化Android user。禁止换Store、别名或直接工具绕过相依Unknown。`claimDispatch`持久标记先于副作用调用，标记后、调用前崩溃也可能留下Unknown，不能把标记当作网络字节已发出；原绑定和可信终态仍是结算依据。
 
 C1结合当前transport、PID、主frame、loader、完整文档URL和uniqueContextId检查身份；boot_id不属于其当前强绑定字段。6.1.0固定发布源码只比较Frame.url，本工作区后续修正按[CDP片段字段](https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame)核对fragment：已报告字段须合法，与旧式完整URL不矛盾；可选字段缺失不当作空值，而从[浏览器当前导航项](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getNavigationHistory)核对完整URL与主frame基址一致。无法取得可信URL时以ANDROID_DOCUMENT_URL_UNAVAILABLE拒绝，不降低为origin/path绑定。
