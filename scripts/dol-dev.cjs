@@ -34,6 +34,9 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
   action | journey --file LOCAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     Optional: --authorization-file HOST_GRANTED_SCOPE_JSON --store ORIGINAL_SHARED_SQLITE
     data-reset clears scoped App data and records native generation proof; no Store/TargetKey substitution.
+  source-find --root REVIEWED_ABSOLUTE_SOURCE --file QUERY_JSON --out NEW_JSON [--revision REVIEWED_REF]
+    Read-only source candidates: Passage/widget/text/selector/event/symbol/path; no device or Goal.
+    Query schema: schemas/source-find-query-v1.schema.json. Partial results are written with exit code 2.
   inspect --endpoint LOCAL_HTTP_CDP --out NEW_JSON
   environment --serial SERIAL --package PACKAGE --out NEW_DIR [--target-id ID]
   capture --serial SERIAL --package PACKAGE --out NEW_DIR
@@ -116,7 +119,13 @@ async function main(args = process.argv.slice(2)) {
   const command = args.shift();
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
-  if(command==='game-session'){
+  if(command==='source-find'){
+    const options=parse(args,['--root','--file','--out','--revision']);
+    const {result,cleanup}=await require('./lib/source-find-cli.cjs').run(options);
+    console.log(`Source lookup ${result.outcome}; ${result.candidates.length} candidates. Output stays local and may contain private source.`);
+    if(cleanup!=='completed')console.log('Temporary cleanup unconfirmed; preserve unknown leftovers.');
+    if(!result.complete)process.exitCode=2;
+  } else if(command==='game-session'){
     const options=parse(args,['--goal','--operation','--file','--test-environment']);
     if(!options.goal||!['request','propose','dispatch','resume','reconcile','checkpoint','cancel','status'].includes(options.operation)||options['test-environment']!==undefined&&options['test-environment']!=='yes'||['propose','checkpoint'].includes(options.operation)&&!options.file||!['propose','checkpoint'].includes(options.operation)&&options.file)throw Error('Invalid Session operation/options');
     options.testEnvironment=options['test-environment']==='yes';let result;

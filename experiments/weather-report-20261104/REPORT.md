@@ -1,5 +1,7 @@
 # Weather Report：首批可运行实验与采用判断
 
+首批历史快照：源码与结果对应 `e2e66236af4f659f0cccd7e63bc6229fe8a91f8d`，以下“未接入”等结论不覆盖后续接线。
+
 2026-11-04。版本号未定；本轮已经进入实现，不再停在技术清单。以维护基线 `a29d5088107296843b048ef99b05784535d2b7bb` 为起点，实验分支为 `experiment/weather-report-20261104`。原维护分支保留，可按文件或提交撤回新实验。本报告与 [results.json](results.json) 是经过筛选的公开记录；原始日志、编译器、npm缓存、运行输出留在忽略的 `artifacts/weather-report-20261104/`，不加入Git。
 
 ## Delivered

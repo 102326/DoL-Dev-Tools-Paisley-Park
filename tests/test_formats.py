@@ -33,6 +33,16 @@ class PublicFormats(unittest.TestCase):
         lifecycle["profile"] = "invented-profile"
         self.assertFalse(validator.is_valid(lifecycle), "unknown profiles remain invalid")
 
+    def test_source_query_schema_matches_shared_cases(self):
+        root = Path(__file__).resolve().parents[1]
+        schema = json.loads((root / "schemas/source-find-query-v1.schema.json").read_text(encoding="utf-8"))
+        Draft202012Validator.check_schema(schema)
+        validator = Draft202012Validator(schema)
+        cases = json.loads((root / "tests/fixtures/source-find-queries.json").read_text(encoding="utf-8"))
+        for case in cases:
+            with self.subTest(name=case["name"]):
+                self.assertEqual(validator.is_valid(case["query"]), case["valid"])
+
 
 if __name__ == "__main__":
     unittest.main()

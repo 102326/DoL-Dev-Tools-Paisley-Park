@@ -1,7 +1,7 @@
 'use strict';
 const path = require('node:path');
 const assert = require('node:assert/strict');
-const { findSource } = require('./dist/engine.js');
+const { findSource } = require('../../../scripts/lib/source-find.cjs');
 // Existing real maintenance investigations, not newly discovered bugs or fair A/B trials.
 const root = path.resolve(__dirname,'../../../scripts/lib');
 const tasks = [

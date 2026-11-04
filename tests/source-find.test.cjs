@@ -5,8 +5,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
-// New contract: tests precede engine implementation; a missing module is not red/green bug proof.
-const { findSource, parseRequest } = require('../dist/engine.js');
+const { findSource, parseRequest } = require('../scripts/lib/source-find.cjs');
 const tree = {
   'map/rooms.twee': ':: TrainingRoom [room]\nEnter TrainingRoom\n<<routeMenu>>\n',
   'time/clock.js': 'function advanceClock() { return 1; }\n',
@@ -143,8 +142,9 @@ test('an abort delivered by the final directory read cannot become complete no-m
     if (args[0] === real) controller.abort();
     return value;
   };
+  require('node:module').syncBuiltinESMExports();
   try { await assert.rejects(findSource(req(root,'text','x'),controller.signal),{code:'SOURCE_CANCELLED'}); assert.equal(controller.signal.aborted,true); }
-  finally { fs.readdir = original; }
+  finally { fs.readdir = original; require('node:module').syncBuiltinESMExports(); }
 });
 test('a long final line cannot report success after its elapsed search budget', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(),'weather-longline-'));
@@ -158,4 +158,12 @@ test('a long final line cannot report success after its elapsed search budget', 
   catch (error) { assert.equal(error.code,'SOURCE_TIMEOUT'); return; }
   assert.equal(result.candidates.length,1);
   assert.ok(performance.now()-started < 120,'over-budget synchronous work must not return success');
+});
+test('literal lookup includes native TS modules and stylesheet sources',async t=>{
+  const root=await fixture(t);
+  for(const extension of ['mts','cts','tsx','jsx','scss','sass','less']){
+    await fs.writeFile(path.join(root,'new.'+extension),'typedScene_marker');
+    const result=await findSource(req(root,'text','typedScene_marker'));
+    assert.ok(result.candidates.some(c=>c.file==='new.'+extension),extension);
+  }
 });

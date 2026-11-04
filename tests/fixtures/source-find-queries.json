@@ -1,0 +1,265 @@
+[
+  {
+    "name": "kind-passage",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "passage",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "kind-widget",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "widget",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "kind-text",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "kind-selector",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "selector",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "kind-event",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "event",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "kind-symbol",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "symbol",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "kind-path",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "path",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "unicode-512",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "unicode-513",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪🌪"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "literal-metacharacters",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "[a+b]"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "blank",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "   "
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "bom-blank",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "﻿"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "controls",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "x\ny"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "unsupported-kind",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "regex",
+          "value": "demo"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "root-override",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "demo"
+        }
+      ],
+      "root": "/synthetic"
+    },
+    "valid": false
+  },
+  {
+    "name": "bad-limit",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "demo"
+        }
+      ],
+      "limits": {
+        "maxResults": 201
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "fraction",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "demo"
+        }
+      ],
+      "limits": {
+        "maxFiles": 1.5
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "null-limits",
+    "query": {
+      "schemaVersion": 1,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "demo"
+        }
+      ],
+      "limits": null
+    },
+    "valid": false
+  },
+  {
+    "name": "empty-clues",
+    "query": {
+      "schemaVersion": 1,
+      "clues": []
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-version",
+    "query": {
+      "schemaVersion": 2,
+      "clues": [
+        {
+          "kind": "text",
+          "value": "x"
+        }
+      ]
+    },
+    "valid": false
+  }
+]

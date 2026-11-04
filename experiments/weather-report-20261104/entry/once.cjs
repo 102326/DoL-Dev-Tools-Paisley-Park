@@ -1,5 +1,5 @@
 'use strict';
-const { findSource } = require('../source-finder/dist/engine.js');
+const { findSource } = require('./engine.cjs');
 const { MAX_FRAME, engineError } = require('./protocol.cjs');
 function send(value) { let text = JSON.stringify(value); if (Buffer.byteLength(text) > MAX_FRAME) text = JSON.stringify({ error: { code: 'RESPONSE_TOO_LARGE', stage: 'entry' } }); console.log(text); }
 let chunks = [], bytes = 0, over = false;

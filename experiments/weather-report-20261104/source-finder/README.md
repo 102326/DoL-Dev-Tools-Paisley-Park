@@ -1,50 +1,32 @@
-# TypeScript source-finder experiment
+# Typed source finder: implementation and comparison tools
 
-This is a runnable read-only candidate finder, separate from the shipped CLI and precise shop Source Link. It searches an explicitly selected local directory, or fixed Git commit, with literal Passage, widget/macro, text, selector, event, symbol and path clues. It does not execute source code or queries. No game source is included or downloaded.
+The authoritative implementation is now [scripts/lib/source-find.mts](../../../scripts/lib/source-find.mts), called by the existing `source-find` CLI. The formal CLI runs its pre-generated CommonJS module with Node >=26 and standard libraries; it does not load the TS parser. Git is required for fixed revisions and commit metadata; plain directory search can retain unknown Git identity when Git is unavailable. Ordinary use needs no TypeScript compiler, build step, experimental package, device or Goal. See [GAME_SOURCE](../../../docs/GAME_SOURCE.md#有界候选工具与接续) for CLI queries, local output, partial results, budgets and privacy.
 
-## Run
+The experiment's original implementation has moved. Its generated source-find.cjs is committed with the TS source hash, not maintained as another implementation. Precise shop Source Link remains separate. No game source is included or downloaded. First-batch evidence is frozen in `REPORT.md`/`results.json` at commit `e2e6623`; current files implement the follow-up integration.
 
-Node >=26 and Git are required. In this isolated directory, run `npm ci --ignore-scripts` in your approved npm environment, then `npm run build` (the lock pins TypeScript 6.0.2, Node types 25.9.5 and undici-types 7.24.6). TypeScript is a build/check dependency only; the resulting CommonJS engine uses Node standard libraries. An existing reviewed TypeScript 6.0.2 installation can instead be reused by setting `PAISLEY_TSC` to its `bin/tsc` and `PAISLEY_TYPE_ROOTS` to the parent containing `node/` types. No private local path is embedded in these scripts. Do not run concurrent builds against an active experiment host.
+## Development and reproducible checks
 
-From the repository root:
+In this directory, `npm ci --ignore-scripts` installs only the isolated locked checker dependencies: TypeScript6.0.2, Node types25.9.5 and undici-types7.24.6. `npm run build` applies strict/noEmitOnError/erasableSyntaxOnly, checks that the tracked runtime exactly matches TS6.0.2 emission, and emits an optional comparison `.mjs` into ignored `dist/`. After an intentional TS edit, use `node build.cjs --write-production` to update the known generated module; default/check mode never overwrites it. Failed checks remove stale experiment output but preserve the previously tracked runtime. Hashes/checks normalize CRLF to LF (source-lf-sha256), allowing Git checkout line endings without treating them as a semantic source edit. It is not required for the production CLI. An already reviewed compiler/type tree can alternatively be selected with `PAISLEY_TSC`/`PAISLEY_TYPE_ROOTS`; no private paths are embedded.
+
+From repository root:
 
 ```sh
-node --test experiments/weather-report-20261104/source-finder/test/*.test.cjs
+node --test tests/source-find.test.cjs tests/source-find-cli.test.cjs
+npm --prefix experiments/weather-report-20261104/source-finder run build
 node experiments/weather-report-20261104/source-finder/check-types.cjs
+node experiments/weather-report-20261104/source-finder/native-probe.cjs
 node experiments/weather-report-20261104/source-finder/replay-maintenance.cjs
-node experiments/weather-report-20261104/entry/once.cjs < REVIEWED_REQUEST.json
+node experiments/weather-report-20261104/entry/benchmark.cjs
 ```
 
-`check-types.cjs` needs the same compiler/type-root selection as the build. `entry/stdio.cjs` provides the alternative reusable process; see its README for request IDs, queueing, cancellation and shutdown. These entry points run the same compiled engine.
+Type negatives check four finite contract drifts. The native probe compares native execution of the authoritative `.mts` with the prebuilt CommonJS output for five queries and invalid/cancelled requests. Running TS is not type checking; the [Node26 official contract](https://github.com/nodejs/node/blob/v26.0.0/doc/api/typescript.md) documents the distinction. CI performs the isolated checker steps; installed users do not receive checker dependencies.
 
-A request JSON (replace the root with the actual reviewed absolute source directory):
+The entry experiment defaults to the same prebuilt CommonJS runtime. To compare native startup, set `PAISLEY_SOURCE_ENGINE=native` for `benchmark.cjs` (PowerShell uses `$env:PAISLEY_SOURCE_ENGINE='native'`). This is an experiment enum, never an arbitrary module path. Do not rebuild during a compiled-engine comparison. Each benchmark records the actual loaded file, entry/fixture hashes and mode; child compile caching is disabled for this comparison.
 
-```json
-{
-  "schemaVersion": 1,
-  "root": "/REVIEWED_SOURCE",
-  "clues": [{"kind":"passage","value":"TrainingRoom"}],
-  "limits": {"maxResults":50,"maxFiles":2000,"maxBytes":8388608,"contextLines":1,"timeoutMs":10000}
-}
-```
+`entry/once.cjs` and `stdio.cjs` accept a raw engine request containing `schemaVersion`, absolute `root`, optional `revision`, `clues`, and optional `limits`. The formal CLI instead supplies root/revision as flags and uses a query JSON without these keys. Do not interchange these two formats. For normal work use the formal CLI, which publishes complete local output without replacing files; the engine/experimental entries do not persist output themselves.
 
-`revision` optionally selects a reviewed Git ref, resolved to a full commit. Revision mode requires the repository root, reads Git objects, disables replace refs and inherited Git location overrides, and never checks out or resets. Worktree/directory mode reads files individually and reports their actual SHA-256; it is not an atomic whole-tree snapshot. Worktree `commit` is a base, not a claim that each byte is committed. `dirty` conservatively includes ignored files under the selected root, including excluded generated files; concurrent edits remain possible. A missing Git identity is null, not an invented revision.
+## Interpretation
 
-## Contract and limits
+Search is literal and definitions are syntax heuristics. Candidate rank is not a probability, exact runtime mapping or proof of loaded code. Supported source extensions include Twee, JS/TS variants, CSS/SCSS/Sass/Less, HTML, JSON and Markdown. Hidden/ignored-for-search private/generated paths and symlinks remain excluded. Worktree reads have per-file SHA-256, not atomic whole-tree consistency; fixed revision reads use Git objects and disable replace refs. Time limits are cooperative, not OS preemption. Context is bounded and visibly truncated.
 
-- Unknown request fields/types and invalid bounds fail before source reads. Limits cap results, attempted files, accepted bytes, context and elapsed time. Failed/oversized reads consume file attempts. Cancellation and elapsed timeout have distinct finite errors; no raw exception/root/query is echoed in errors.
-- Timeout is cooperative Node cancellation with monotonic checks; synchronous OS/native operations cannot be forcibly preempted at exactly the deadline. Over-budget work is rejected before success; this is not a hard real-time engine. No retries, side effects, GER Store or effect settlement are involved.
-- Candidates include relative file, one-based Unicode codepoint column, line, digest, bounded context, heuristic score and definition/reference/path basis. Context lines longer than 240 codepoints are visibly truncated; the excerpt begins at the line start. Definitions are syntax heuristics, not a full parser or proof of actual loaded code.
-- `complete` refers to the eligible selected search, not all repository content. Hidden paths, dependencies, generated directories, Profiles, saves/logs/credentials and symlinks are excluded; only the code/document extension allowlist is searched. Exclusion counts and attempted/read counts are reported. Enumeration stops at 50,000 filesystem entries or 20,001 eligible Git entries; result/byte/file/encoding/read limits produce partial reasons. Partial cannot certify no match.
-- Directory symlinks are not traversed. Files are rechecked and opened with NOFOLLOW; parent rename races are still possible. This is best-effort source selection, not an OS security sandbox. Windows filesystem/NOFOLLOW behavior is not validated.
-- Source content and clues in successful output can be private. Results stay local; there is no automatic upload or output file overwrite. Redirect only to a new reviewed local result path. The engine itself does not persist output.
-
-## Validation scope
-
-Owned multi-area fixtures exercise all seven clue types, ambiguity, no match, encoding and truncation; real Git repositories exercise dirty worktrees, fixed refs, replace refs and ignored source. Type negatives detect four finite contract drifts, while runtime tests cover failures that types do not detect. `replay-maintenance.cjs` locates actual public Paisley maintenance modules for version querying and hash invalidation, followed by existing project tests. These are already known investigations replayed as integration checks, not new discoveries or measured Agent efficiency.
-
-Real game source, non-shop real-game scenes, actual Android, Windows and Codex tool registration are not validated. Full game coverage cannot be inferred from synthetic fixtures or Paisley's own source. This first experiment is a basis for deciding integration; it does not change the stable product command/Store/Skill execution contracts.
-
-## Native TypeScript feasibility
-
-`node experiments/weather-report-20261104/source-finder/native-probe.cjs` copies the exact engine source bytes to a temporary `.mts`, runs Node 26 built-in stripping, and compares five query results plus invalid/cancelled requests against compiled CommonJS. An initial parameter-property constructor failed with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`; explicit class fields fixed this without a runtime loader. The build now enforces `erasableSyntaxOnly`. The authoritative source remains `.ts` under a CommonJS package: direct import is **not** the operational entry yet; the probe does not change release module layout or replace `tsc` checking. See the [Node 26 official contract](https://github.com/nodejs/node/blob/v26.0.0/doc/api/typescript.md).
+The existing real maintenance replays locate public tool modules; they are known investigations, not blind new bug discoveries or an Agent-efficiency trial. Full real-game/non-shop source acceptance, Windows, Android/WebView and Codex tool registration remain separate unvalidated scopes. This directory is not included in product archives; production code, root regression tests, query schema and usage Reference are.

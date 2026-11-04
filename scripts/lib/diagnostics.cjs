@@ -8,6 +8,18 @@ const cdpStages = ['cdp.discovery','cdp.connect','cdp.command'];
 const fields = ['action','type','selector','value','x','y','degrees'];
 /** @type {Record<string,[string,string]>} */
 const entries = {
+  SOURCE_REQUEST_INVALID: ['source.request','Use schemaVersion 1, bounded literal clues and limits. Supply an absolute --root; query files omit root/revision. See docs/GAME_SOURCE.md.'],
+  SOURCE_QUERY_INVALID: ['source.query','Provide a readable regular UTF-8 JSON query file at most 65536 bytes; no output was published. See schemas/source-find-query-v1.schema.json.'],
+  SOURCE_ROOT_UNAVAILABLE: ['source.identity','Check the reviewed source directory and permissions. No game download or alternate root was selected.'],
+  SOURCE_REVISION_UNAVAILABLE: ['source.identity','Use the repository root and a locally available reviewed Git ref. No checkout, fetch or fallback revision was used.'],
+  SOURCE_READ_FAILED: ['source.search','The selected source could not be read reliably. Inspect access and local source availability; cause unknown.'],
+  SOURCE_CANCELLED: ['source.search','Source search was cancelled before a result was published. No source or gameplay was modified.'],
+  SOURCE_TIMEOUT: ['source.search','Read-only search exceeded its elapsed budget; this does not diagnose a device. Narrow clues/root or review limits before a new local query.'],
+  SOURCE_RUNTIME_UNAVAILABLE: ['source.runtime','This command requires Node 26+ and the complete prebuilt scripts/lib/source-find.cjs file. No TypeScript compiler or runtime loader is needed or installed automatically.'],
+  SOURCE_OUTPUT_EXISTS: ['source.output','Existing output preserved. Choose a new local output filename; do not delete unknown data to retry.'],
+  SOURCE_OUTPUT_TOO_LARGE: ['source.output','Result exceeds the output budget. Narrow the query or reduce maxResults/contextLines; no output was published.'],
+  SOURCE_OUTPUT_FAILED: ['source.output','Result publication failed. Check the existing parent directory, permissions and same-filesystem hard-link support. No overwrite/copy fallback was performed. Inspect the selected output before retrying.'],
+  SOURCE_OUTPUT_INCOMPLETE: ['source.cleanup','Result publication or owned temporary cleanup could not be confirmed; an output may already exist. Preserve unknown leftovers; inspect the selected parent before retrying a new output name.'],
   ANDROID_DOCUMENT_URL_UNAVAILABLE: ['context.identity','The complete document URL could not be verified. Check the original peer capabilities and binding; do not weaken identity checks or replay an uncertain operation.'],
   CDP_TARGET_MISSING: ['cdp.target','The selected page is absent. Check the original target identity; do not select another page by title.'],
   CDP_TARGET_AMBIGUOUS: ['cdp.target','Page selection is ambiguous. Inspect the target inventory and bind the reviewed target ID.'],

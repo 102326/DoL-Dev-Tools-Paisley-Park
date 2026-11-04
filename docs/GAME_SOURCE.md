@@ -39,6 +39,37 @@ rg -n --fixed-strings -g '*.js' -g '*.twee' -g '*.ts' -- "REVIEWED_SYMBOL" "REVI
 
 按问题读取定义、调用点、注册/加载位置及相关测试；已有精确符号时不必先遍历全树。定位到原版实现后，再核对Mod覆盖、加载顺序和运行时实际采用的函数。源码存在、构建成功与现场实际执行分别举证，见[开发Reference](DEVELOPMENT_FLOW.md)及[Workshop](WORKSHOP.md)。
 
+## 有界候选工具与接续
+
+先核对已解析CLI的 `--help` 是否列出 `source-find`；旧发行包没有该入口时继续使用上述 `rg`，不为普通源码调查强制升级工具。本开发分支提供：
+
+```sh
+node RESOLVED_CLI source-find --root REVIEWED_ABSOLUTE_SOURCE --file QUERY_JSON --out NEW_JSON
+node RESOLVED_CLI source-find --root REVIEWED_REPOSITORY_ROOT --revision REVIEWED_COMMIT --file QUERY_JSON --out OTHER_NEW_JSON
+```
+
+查询文件遵守 [Schema](../schemas/source-find-query-v1.schema.json)，只含 `schemaVersion`、`clues` 和可选 `limits`；root/revision由CLI明确提供，不在JSON中重复或覆盖。例如用工具本身的源码练习：
+
+```json
+{
+  "schemaVersion": 1,
+  "clues": [{"kind":"symbol","value":"getModListNameNoAlias"}],
+  "limits": {"maxResults":20,"contextLines":1,"timeoutMs":10000}
+}
+```
+
+支持 `passage`、`widget`、`text`、`selector`、`event`、`symbol`、`path` 七类字面线索。可组合最多8个线索，每项1–512个Unicode码点且非纯空白；不是正则或执行表达式。建议把查询文件和历史结果放在被检索源码根之外，避免把自身查询当作候选。必要时缩小源码根或线索；不把无结果认定为功能不存在。工具不下载源码，不执行构建/游戏，不要求设备或GER Goal。
+
+- `NEW_JSON.selection` 保留所选绝对root、原revision及实际limits，`data.clues`保留线索，便于下一次任务接续；这些成功结果可能含私人路径和源码，不默认公开。固定revision以 `data.source.commit` 的已解析commit为身份，不把原分支名称当稳定输入。
+- `data.candidates` 提供相对文件、1起始行/Unicode列、SHA-256、有界上下文、定义/引用/路径依据。分数只是启发式，源码命中不证明现场采用。上下文每行最多240码点，长行显式标为truncated。
+- `complete=true` 只表示所选合格文件范围的查找完整；不包括隐藏文件、依赖、产物、私人存档/日志或符号链接。编码不支持、读取/枚举/文件/字节/结果上限会保留partial原因。完整无匹配为 `outcome=none`。
+- 成功完整查找退出0；`partial`仍保存可用结果、退出2，Agent必须读取 `partialReasons` 再决定是否缩小范围。输入、源码或输出失败退出1，有限错误给出发生阶段，不回显输入/原异常。不自动重试或换源码。
+- 同父目录暂存与独占硬链接发布完整结果，已有文件/符号链接/并发占位不覆盖。父目录必须已存在；文件系统不支持硬链接时明确失败，不退回可能留下部分文件的拷贝。发布确认或清理未知时保留输出/无法确认的残留，不清理其它目录。
+
+默认限制50结果、2000次文件尝试、8MiB读入、上下文前后各1行、10秒。上限和可选值见Schema。时间限制是协作式检查，不是OS硬实时抢占；工作树也不是跨文件原子快照。工作树commit只是基线，dirty保守包含ignored文件；候选摘要绑定实际读取字节。固定revision模式读取Git对象、禁用replace refs、不checkout/reset；需从仓库根调用。已有精确商店Source Link合同保持独立，候选结果不冒充matched。
+
+此入口以严格检查的TS维护、以预生成CommonJS运行；运行无需TypeScript编译器、类型擦除、npm开发依赖或额外loader。开发/CI检查源码与运行产物一致，原生TS保留在实验对照中。Windows文件系统、真实Android和非商店真实游戏源码尚未由本轮Mac验收；普通源码定位可以先做，实际加载验证仍按目标项目合同执行。
+
 ## 内容与执行边界
 
 游戏源码不随Tools或Skill分发，第三方许可不由Tools的MIT覆盖。链接和引用核对不等于授权下载全部资源、构建、部署或执行游戏；源码获取仍遵守任务的数据范围与当前环境限制。禁止游戏内容的环境只做允许的元数据/文档工作，不以研究为由下载剧情、图片或存档。

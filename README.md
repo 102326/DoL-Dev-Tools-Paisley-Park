@@ -153,7 +153,7 @@ Integration 缺失、不支持或失败会单独记录，已成功的通用采�
 | 运行或恢复游戏目标 | [Gameplay](docs/GAMEPLAY.md) |
 | 关联源码、接入 Lab、接续研发 | [5.0 入口](docs/PAISLEY_PARK_5_0.md) · [development-flow Recipe](docs/DEVELOPMENT_FLOW.md) |
 | 修改、构建、部署 | [Workshop](docs/WORKSHOP.md) |
-| 按版本查游戏源码、原生API与调用点 | [游戏源码Reference](docs/GAME_SOURCE.md) |
+| 按版本查游戏源码、原生API与调用点 | [游戏源码Reference与source-find](docs/GAME_SOURCE.md) |
 | 调查框架、Mod 关系与相似历史问题 | [知识入口](docs/MOD_KNOWLEDGE.md) · [框架注册与缓存采用](docs/MAPLEBIRCH.md) · [依赖与补丁检查](docs/MODHUB.md) |
 | 接入专属诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [Schema 与格式](docs/FORMATS.md) |
 | 查询验收、限制与历史 | [6.1 收口](docs/CLOSEOUT_6_1.md) · [6.1 Windows 验收](docs/WINDOWS_6_1.md) · [6.0 历史验收](docs/CLOSEOUT_6_0.md) · [历史索引](docs/HISTORY.md) |

@@ -19,3 +19,22 @@ test('failed compiler discovery or version check removes stale runtime output', 
     await assert.rejects(fs.access(path.join(dir,'dist','engine.js')),{code:'ENOENT'});
   }
 });
+test('checker rejects generated drift and accepts checkout-only CRLF without rewriting it',async t=>{
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'weather-build-drift-'));
+  t.after(()=>fs.rm(dir,{recursive:true,force:true}));
+  const home=path.join(dir,'experiments/weather-report-20261104/source-finder'),lib=path.join(dir,'scripts/lib');
+  await fs.mkdir(home,{recursive:true});await fs.mkdir(lib,{recursive:true});
+  const actual=path.resolve(__dirname,'../../../../scripts/lib');
+  const build=path.join(home,'build.cjs');
+  await fs.copyFile(path.join(__dirname,'../build.cjs'),build);
+  const runtime=await fs.readFile(path.join(actual,'source-find.cjs'),'utf8'),source=await fs.readFile(path.join(actual,'source-find.mts'),'utf8');
+  await fs.writeFile(path.join(lib,'source-find.mts'),source.replaceAll('\n','\r\n'));
+  await fs.writeFile(path.join(lib,'source-find.cjs'),runtime.replaceAll('\n','\r\n'));
+  const env={...process.env,PAISLEY_TSC:process.env.PAISLEY_TSC||require.resolve('typescript/bin/tsc'),PAISLEY_TYPE_ROOTS:process.env.PAISLEY_TYPE_ROOTS||path.resolve(__dirname,'../node_modules/@types')};
+  const run=()=>spawnSync(process.execPath,[build,'--check'],{encoding:'utf8',env});
+  const match=run();assert.equal(match.status,0,match.stdout+match.stderr);
+  const changed=runtime+'\n// synthetic runtime drift\n';await fs.writeFile(path.join(lib,'source-find.cjs'),changed);
+  const drift=run();assert.equal(drift.status,1);assert.match(drift.stderr,/SOURCE_BUILD_DRIFT/);
+  assert.equal(await fs.readFile(path.join(lib,'source-find.cjs'),'utf8'),changed,'check mode cannot overwrite a tracked runtime');
+  await assert.rejects(fs.access(path.join(home,'dist')),{code:'ENOENT'});
+});

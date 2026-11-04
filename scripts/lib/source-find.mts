@@ -50,7 +50,7 @@ export function parseRequest(raw: unknown): Request {
   const clues = raw.clues.map(c => {
     if (!record(c)) invalid();
     keys(c, ['kind','value']);
-    if (!kinds.includes(c.kind as Kind) || typeof c.value !== 'string' || !c.value.trim() || c.value.length > 512 || /[\x00-\x1f\x7f]/.test(c.value)) invalid();
+    if (!kinds.includes(c.kind as Kind) || typeof c.value !== 'string' || !c.value.trim() || c.value.length > 1024 || Array.from(c.value).length > 512 || /[\x00-\x1f\x7f]/.test(c.value)) invalid();
     return { kind: c.kind as Kind, value: c.value };
   });
   const limits = { maxResults: 50, maxFiles: 2000, maxBytes: 8 * 1024 * 1024, contextLines: 1, timeoutMs: 10000 };
@@ -68,7 +68,7 @@ export function parseRequest(raw: unknown): Request {
   return { schemaVersion: 1, root: path.resolve(raw.root), ...(raw.revision === undefined ? {} : {revision: raw.revision as string}), clues, limits };
 }
 const excluded = new Set(['node_modules','artifacts','dist','build','coverage','profiles','profile','saves','save','logs','backups','vendor']);
-const extensions = new Set(['.twee','.tw','.js','.ts','.cjs','.mjs','.css','.html','.htm','.json','.md']);
+const extensions = new Set(['.twee','.tw','.js','.ts','.mts','.cts','.tsx','.jsx','.cjs','.mjs','.css','.scss','.sass','.less','.html','.htm','.json','.md']);
 function allowed(file: string): boolean {
   const segments = file.split('/');
   return !segments.some(s => s.startsWith('.') || excluded.has(s.toLowerCase())) && extensions.has(path.posix.extname(file).toLowerCase())

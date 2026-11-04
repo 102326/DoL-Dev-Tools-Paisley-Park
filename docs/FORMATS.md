@@ -70,3 +70,7 @@ Known Good 使用 Evidence-compatible manifest/envelope，额外保存 originInc
 新增 `$defs.viewportManifest/timeAlignment/nativeLayout`；Evidence profile 也接受 layout。Viewport 的原设置是调用者声明，截图须审查；Time Alignment 记录 mapped/unmapped、时钟误差和源端/projection遗漏，部分观察不能推断因果；Native Layout 是有数量上限的 flat 固定投影，不含文字正文。Leak Probe 通过 artifactEnvelope 保存性能数值，unsupported 与清理未知独立呈现。Schema不证明命令恢复了真实原状态或测量得到了真实泄漏。
 
 `$defs.processMemory` 对应 Associated process memory，最多8个准确所属记录、PID/UID/名称哈希、普通/isolated及user信息和数值状态；Evidence profile新增processes，见 [PROCESS_MEMORY](PROCESS_MEMORY.md)。public关联仍不证明进程世代或JS renderer角色。Hitboxes新增 semanticControl/pointerEvents/disabled/hidden/centerHitWithinNode，SVG是结构地址与数值的离线表现，不是Evidence JSON。Workshop记录关联两个Evidence incident和目标自有构建部署SHA，独立于普通manifest。
+
+## Source candidates
+
+`source-find` 的查询使用 [source-find-query-v1](../schemas/source-find-query-v1.schema.json)，root/revision由CLI提供。输出保留本地selection与版本明确的data候选，不是Gameplay Outcome或精确Source Link；完整/partial和退出码见[源码入口](GAME_SOURCE.md#有界候选工具与接续)。成功输出可能含私人路径/源码，不能直接当作脱敏Support包。

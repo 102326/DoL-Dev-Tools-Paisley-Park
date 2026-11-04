@@ -7,6 +7,8 @@ const fs = require('node:fs');
 const crypto = require('node:crypto');
 const sha256 = p => crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const { start } = require('./host.cjs');
+const engineInfo = require('./engine.cjs');
+process.env.NODE_DISABLE_COMPILE_CACHE = '1'; // Child-only experiment setting, not global configuration.
 const request = { schemaVersion: 1, root: path.join(__dirname, 'fixture'), clues: [{ kind: 'text', value: 'blue umbrella' }], limits: { maxResults: 10, maxFiles: 100, maxBytes: 100000, contextLines: 2 } };
 function once(input = request, metrics = false) {
   return new Promise((resolve, reject) => {
@@ -40,6 +42,6 @@ function once(input = request, metrics = false) {
     assert.ok(oneShotMemory.rssBytes && reusedMemory, 'memory probes must report RSS');
     const closeStart = performance.now(); assert.deepEqual(await host.close(),{closed:true});
     const summary = xs => ({ min: Math.min(...xs), median: [...xs].sort((a,b) => a-b)[Math.floor(xs.length/2)], max: Math.max(...xs) });
-    console.log(JSON.stringify({ entrySha256: Object.fromEntries(['host.cjs','protocol.cjs','stdio.cjs','once.cjs'].map(f=>[f,sha256(path.join(__dirname,f))])), engineSha256: sha256(path.join(__dirname, '../source-finder/dist/engine.js')), fixtureSha256: sha256(path.join(__dirname, 'fixture/sample.twee')), node: process.version, platform: process.platform, arch: process.arch, input: 'fixture/sample.twee; text: blue umbrella', count: n, coldOnceMs: summary(cold), persistentFirstMs: firstMs, persistentReuseMs: summary(warm), oneShotAfterRequestRssBytes: oneShotMemory.rssBytes, persistentAfterTenRequestsRssBytes: reusedMemory, persistentCloseMs: performance.now() - closeStart, resultsEqual: true }, null, 2));
+    console.log(JSON.stringify({ entrySha256: Object.fromEntries(['host.cjs','protocol.cjs','stdio.cjs','once.cjs','engine.cjs'].map(f=>[f,sha256(path.join(__dirname,f))])), engineMode:engineInfo.mode,engineSha256:sha256(engineInfo.file),nodeCompileCache:'disabled for child processes', fixtureSha256: sha256(path.join(__dirname, 'fixture/sample.twee')), node: process.version, platform: process.platform, arch: process.arch, input: 'fixture/sample.twee; text: blue umbrella', count: n, coldOnceMs: summary(cold), persistentFirstMs: firstMs, persistentReuseMs: summary(warm), oneShotAfterRequestRssBytes: oneShotMemory.rssBytes, persistentAfterTenRequestsRssBytes: reusedMemory, persistentCloseMs: performance.now() - closeStart, resultsEqual: true }, null, 2));
   } finally { await host.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });
