@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-04",
+  "codeCommit": "346eb834a8309d81b5c5867b521b41a853f22fb2",
+  "workPackages": {
+    "sourceCli": "12d540b100351b994bc579a64a46caf3a7c2c8df",
+    "generator": "7295e05f583fd6559bbb79625ef1a5ec64f88646",
+    "kotlin": "346eb834a8309d81b5c5867b521b41a853f22fb2"
+  },
+  "tests": {
+    "fullNode": {
+      "pass": 491,
+      "fail": 0,
+      "skip": 1,
+      "skipReason": "Windows-specific file handles"
+    },
+    "node260Source": {
+      "pass": 24,
+      "fail": 0,
+      "skip": 0
+    },
+    "fullPython": {
+      "pass": 9,
+      "fail": 0,
+      "skip": 1,
+      "skipReason": "Pillow unavailable"
+    },
+    "buildGuards": {
+      "pass": 2,
+      "fail": 0
+    },
+    "finiteTypeNegativesRejected": 4,
+    "sharedSchemaQueries": 20,
+    "isolatedPackageSource": {
+      "pass": 24,
+      "fail": 0,
+      "skip": 0
+    },
+    "kotlinIndependentJvmAndSigkill": "passed; synthetic own effects only"
+  },
+  "entryBenchmarks": {
+    "compiled": {
+      "entrySha256": {
+        "host.cjs": "b42950c0a982518389ddd1a3d046ce5075353f291c8444d8f42802407d5c0b8d",
+        "protocol.cjs": "a74984300932cb4436bf34c2d3fd2969b22df6054b2c24061f5093c510ef3ccf",
+        "stdio.cjs": "3d40dfaf3b062c9df2ebf5b01c8d0826fcb5cd710c9637e060dd54eb9dbe94e1",
+        "once.cjs": "267685750ce23e4ce3e959144cdadbe9782efc772729f7c51db6982cd50afafd",
+        "engine.cjs": "3704cd95962027939f2b82c7505212f924f9ca1eb90588185a74b16769512dd7"
+      },
+      "engineMode": "compiled",
+      "engineSha256": "bf4d28d34519af972cf326a2c6675aad10e590a2cd546e5cd21ad37843126ade",
+      "nodeCompileCache": "disabled for child processes",
+      "fixtureSha256": "4bf525caa3c8073051f0839736e9a84490202074e7c806f6c36b0e7c2aa5292f",
+      "node": "v26.13.0",
+      "platform": "darwin",
+      "arch": "arm64",
+      "input": "fixture/sample.twee; text: blue umbrella",
+      "count": 10,
+      "coldOnceMs": {
+        "min": 78.61066700000003,
+        "median": 79.68829199999993,
+        "max": 98.71587500000001
+      },
+      "persistentFirstMs": 76.928584,
+      "persistentReuseMs": {
+        "min": 32.233666000000085,
+        "median": 32.68312500000002,
+        "max": 33.62875000000008
+      },
+      "oneShotAfterRequestRssBytes": 63209472,
+      "persistentAfterTenRequestsRssBytes": 66781184,
+      "persistentCloseMs": 3.1436670000000504,
+      "resultsEqual": true
+    },
+    "native": {
+      "entrySha256": {
+        "host.cjs": "b42950c0a982518389ddd1a3d046ce5075353f291c8444d8f42802407d5c0b8d",
+        "protocol.cjs": "a74984300932cb4436bf34c2d3fd2969b22df6054b2c24061f5093c510ef3ccf",
+        "stdio.cjs": "3d40dfaf3b062c9df2ebf5b01c8d0826fcb5cd710c9637e060dd54eb9dbe94e1",
+        "once.cjs": "267685750ce23e4ce3e959144cdadbe9782efc772729f7c51db6982cd50afafd",
+        "engine.cjs": "3704cd95962027939f2b82c7505212f924f9ca1eb90588185a74b16769512dd7"
+      },
+      "engineMode": "native",
+      "engineSha256": "9a02dc32769de23e8cd6fa28652dbca2d7d43d56b81d588b3f20802c3eb48535",
+      "nodeCompileCache": "disabled for child processes",
+      "fixtureSha256": "4bf525caa3c8073051f0839736e9a84490202074e7c806f6c36b0e7c2aa5292f",
+      "node": "v26.13.0",
+      "platform": "darwin",
+      "arch": "arm64",
+      "input": "fixture/sample.twee; text: blue umbrella",
+      "count": 10,
+      "coldOnceMs": {
+        "min": 106.02987499999995,
+        "median": 106.860458,
+        "max": 108.47416700000002
+      },
+      "persistentFirstMs": 103.74470799999995,
+      "persistentReuseMs": {
+        "min": 32.99624999999992,
+        "median": 35.717583000000104,
+        "max": 59.22929199999999
+      },
+      "oneShotAfterRequestRssBytes": 96468992,
+      "persistentAfterTenRequestsRssBytes": 99893248,
+      "persistentCloseMs": 5.364458000000013,
+      "resultsEqual": true
+    }
+  },
+  "nativeParity": {
+    "node": "v26.13.0",
+    "sourceSha256": "9a02dc32769de23e8cd6fa28652dbca2d7d43d56b81d588b3f20802c3eb48535",
+    "mode": "authoritative native .mts vs prebuilt CommonJS",
+    "equalQueries": 5,
+    "invalidAndCancelledEqual": true,
+    "typeCheckingAtRuntime": false
+  },
+  "package": {
+    "commit": "346eb834a8309d81b5c5867b521b41a853f22fb2",
+    "archiveSha256": "b4441894dba00719bba30d2660f1980057aa77ef75cb4889f519658f6d0a9601",
+    "files": 308,
+    "fileListAndGitBlobBytesEqual": true,
+    "node": "26.0.0",
+    "noNodeModulesAndXstateUnavailable": true,
+    "typeStrippingDisabled": true,
+    "cliHelpVersionLookup": true,
+    "selfSourceDefinitionLocated": true,
+    "existingOutputPreserved": true,
+    "isolatedSkillInstallationAndResolver": true,
+    "hostDiscovery": "not validated",
+    "packageSourceTests": {
+      "pass": 24,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "notValidated": [
+    "Windows",
+    "Android SDK/APK/physical device/WebView",
+    "real DoL/full game source scenes",
+    "Codex host discovery/registration",
+    "remote CI or release"
+  ],
+  "publication": "local commits only"
+}
