@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-04",
+  "sourceCommit": "6bca3dc83d76c17eacf741288d5b0f48d5300a1a",
+  "scope": "Mac synthetic content only; 7.0 not release accepted",
+  "environment": {
+    "os": "macOS 27.0.1",
+    "arch": "arm64",
+    "node": "v26.13.0",
+    "floorNode": "v26.0.0",
+    "python": "3.9.6"
+  },
+  "nodeTests": {
+    "total": 507,
+    "passed": 506,
+    "failed": 0,
+    "skipped": 1,
+    "skipReason": "Windows-specific handle behavior"
+  },
+  "pythonTests": {
+    "total": 10,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 1,
+    "skipReason": "Optional Pillow is not installed"
+  },
+  "focusedTests": {
+    "total": 36,
+    "passed": 36,
+    "failed": 0
+  },
+  "typeNegativeCases": 4,
+  "buildGuardTests": 2,
+  "chromeVisible": {
+    "schemaVersion": 1,
+    "mode": "visible",
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "checks": [
+      "CLI launch, external JS/CSS and private observation",
+      "shared Web Action dispatch and independent fixture state/DOM verify one effect",
+      "shared Journey executes Web Action, waits and captures eight bound Chrome checkpoints",
+      "explicit reconnect retains the same document; disconnected operation refuses dispatch",
+      "same-URL reload rejects old document before dispatch",
+      "explicit target selects one of duplicate URLs without changing the decoy",
+      "hash change invalidates old binding and can be explicitly rebound",
+      "same-context URL change between preflight and evaluation cannot click",
+      "closed target does not adopt duplicate page",
+      "retained profile resumes only the original origin and resource snapshot; saved fixture state survives",
+      "effect before lost ACK remains uncertain; reconnect observes once without re-dispatch",
+      "reviewed source update keeps profile and origin; unreviewed resource change refuses; actual new marker verified"
+    ],
+    "browser": "Chrome/156.0.8078.73",
+    "status": "passed"
+  },
+  "independentPackageChrome": {
+    "schemaVersion": 1,
+    "mode": "headless",
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "checks": [
+      "CLI launch, external JS/CSS and private observation",
+      "shared Web Action dispatch and independent fixture state/DOM verify one effect",
+      "shared Journey executes Web Action, waits and captures eight bound Chrome checkpoints",
+      "explicit reconnect retains the same document; disconnected operation refuses dispatch",
+      "same-URL reload rejects old document before dispatch",
+      "explicit target selects one of duplicate URLs without changing the decoy",
+      "hash change invalidates old binding and can be explicitly rebound",
+      "same-context URL change between preflight and evaluation cannot click",
+      "closed target does not adopt duplicate page",
+      "retained profile resumes only the original origin and resource snapshot; saved fixture state survives",
+      "effect before lost ACK remains uncertain; reconnect observes once without re-dispatch",
+      "reviewed source update keeps profile and origin; unreviewed resource change refuses; actual new marker verified"
+    ],
+    "browser": "Chrome/156.0.8078.73",
+    "status": "passed"
+  },
+  "skillHostDiscovery": {
+    "codexVersion": "codex-cli 0.166.0-alpha.6",
+    "archiveSha256": "48fafbe96abf65148f84200fb249a2f0754e085e7464fd4f2e4245cb26f4358a",
+    "beforeProjectMatch": 0,
+    "afterForceReloadMatch": 1,
+    "afterProcessRestartMatch": 1,
+    "scope": "repo",
+    "enabled": true,
+    "interfaceDisplayName": "DoL Dev Tools: Paisley Park",
+    "resolvedToolsMatchesPackage": true,
+    "globalSkillInstallRequested": false,
+    "modelTurnsStarted": 0,
+    "requestMethods": [
+      "initialize",
+      "skills/list"
+    ],
+    "hostExits": [
+      {
+        "code": 0,
+        "signal": null
+      },
+      {
+        "code": 0,
+        "signal": null
+      }
+    ],
+    "unrelatedSkillErrors": 0,
+    "scopeLimit": "separate Codex app-server processes; no live Desktop session reload"
+  },
+  "archive": {
+    "sha256": "48fafbe96abf65148f84200fb249a2f0754e085e7464fd4f2e4245cb26f4358a",
+    "files": 318,
+    "exactExportSet": true,
+    "bytesMatchGit": true,
+    "nodeModulesPresent": false
+  },
+  "githubCi": {
+    "runId": 41795639735,
+    "conclusion": "success"
+  },
+  "notValidated": [
+    "Windows",
+    "real DoL and Mods",
+    "Chrome GER",
+    "Android SDK/APK/device",
+    "real multi-region game-source lookup",
+    "Desktop current-chat Skill hot reload"
+  ]
+}
