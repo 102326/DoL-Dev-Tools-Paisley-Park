@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-04",
+  "codeCommit": "eff14d6c8a4344ddbae844b2faf7e92896e38c72",
+  "baseline": "241c77262b560481447dff75903d679bb2fedc2e",
+  "rootNodeTests": {
+    "total": 518,
+    "passed": 517,
+    "failed": 0,
+    "skipped": 1,
+    "skipReason": "Windows-specific handle behavior"
+  },
+  "pythonTests": {
+    "total": 10,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 1,
+    "skipReason": "Optional Pillow not installed"
+  },
+  "gerEvidenceChrome": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  },
+  "pcRegression": {
+    "sourceCommit": "5c132422889d2d3b28877bbf8d6ab19895edaf3c",
+    "node": "v26.0.0",
+    "mode": "headless",
+    "passed": 12,
+    "failed": 0,
+    "reuse": "GER, host and launcher code unchanged by subsequent diagnostic-only commit"
+  },
+  "archive": {
+    "sha256": "a0b80e12428ab9bb1c60ac1cd3f8fa92088367df59ff6901065c0eea668ea7d1",
+    "files": 319,
+    "exactExportSet": true,
+    "bytesMatchGit": true,
+    "dependencies": "original lock, offline npm ci, XState 5.33.2"
+  },
+  "skillHostDiscovery": {
+    "codexVersion": "codex-cli 0.166.0-alpha.6",
+    "archiveSha256": "a0b80e12428ab9bb1c60ac1cd3f8fa92088367df59ff6901065c0eea668ea7d1",
+    "beforeProjectMatch": 0,
+    "afterForceReloadMatch": 1,
+    "afterProcessRestartMatch": 1,
+    "scope": "repo",
+    "enabled": true,
+    "interfaceDisplayName": "DoL Dev Tools: Paisley Park",
+    "resolvedToolsMatchesPackage": true,
+    "globalSkillInstallRequested": false,
+    "modelTurnsStarted": 0,
+    "requestMethods": [
+      "initialize",
+      "skills/list"
+    ],
+    "hostExits": [
+      {
+        "code": 0,
+        "signal": null
+      },
+      {
+        "code": 0,
+        "signal": null
+      }
+    ],
+    "unrelatedSkillErrors": 0,
+    "scopeLimit": "separate Codex app-server processes; no live Desktop session reload"
+  },
+  "ci": {
+    "codeCommit": "eff14d6c8a4344ddbae844b2faf7e92896e38c72",
+    "runId": 41800367209,
+    "conclusion": "success"
+  },
+  "fixtureSha256": {
+    "verify.cjs": "6755e6f63d5d958e01f457bcdeff7d6f16d331ad9e7ac8e584b4cf9fdc46d096",
+    "fixture.html": "f8288815773e0e659e792ec7c64b7a8b9031d2b7548ee367c703bd3d85494750",
+    "fixture.js": "a7fb5611505bdc5bd099698408340737d0ddd10aeb2d1be494c5987a9908ef22"
+  },
+  "notValidated": [
+    "Windows Chrome",
+    "Android SDK/APK/device/WebView",
+    "real DoL/Mods/saves/native business profiles",
+    "Desktop current-chat Skill hot reload",
+    "Chrome optional Integration execution"
+  ],
+  "privacy": "Synthetic content and redacted summaries only; raw Profiles, SQLite and logs remain local"
+}

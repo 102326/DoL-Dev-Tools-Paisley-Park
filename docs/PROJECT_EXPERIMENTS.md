@@ -91,8 +91,9 @@ A completed execution phase is retained when a subsequent state read fails, but 
 从 5.0 主 Skill 迁入的任务专属执行提示；从对应任务路由按需阅读，不是普通 Debug 的额外前置流程。
 
 For a project experiment that belongs in a long-lived GER Session, use the existing `project-experiment` capability and a reviewed local Recipe; see [Recipe contract](PROJECT_EXPERIMENTS.md). Persist the host's actual granted scope, pin the real target, read fresh candidates after source edits and keep execute acknowledgement, independently observed Outcome and native Goal predicate separate. Recipe modules have local Node permissions, not a sandbox. Missing terminal proof stays Unknown; a new Recipe version never settles an old attempt. Ordinary Debug still uses its cheaper existing route.
-# Chrome scope（7.0 开发分支）
+
+## Chrome scope（7.0 开发分支）
 
 owned Chrome 的受审 Recipe 复用既有读取、报价、执行、独立 Outcome 和原回执流程。scope 使用 `host: "chrome"`、绝对 `workspace`、host.json 中的 `target.profileId` 与 `target.origin`、明确 `intents`、`dataDomain: "chrome-origin-storage"`。不要填写 Android serial/package/userId/signingHash；不支持 Chrome data-reset。字段仅记录已授权范围，不授予读取私人存档或操作真实数据的权限。
 
-同 Store 的整个 Profile 共享 pending 围栏；原 browser/document 失效后不能用新 Recipe 或新绑定结清旧 attempt。Profile/资源摘要不证明存储世代，真实游戏存取及跨实例连续性需在获准环境验证。启动及命令例子见 [PC_RUNTIME](PC_RUNTIME.md)。下文原 Android scope 仍按原合同适用。
+同 Store 的整个 Profile 共享 pending 围栏；原 browser/document 失效后不能用新 Recipe 或新绑定结清旧 attempt。Profile/资源摘要不证明存储世代，真实游戏存取及跨实例连续性需在获准环境验证。启动及命令例子见 [PC_RUNTIME](PC_RUNTIME.md)。现有 Android scope 仍按原合同适用。

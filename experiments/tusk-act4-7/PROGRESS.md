@@ -1,5 +1,7 @@
 # Paisley Park 7.0 TUSK ACT4 — Mac 首批实施报告
 
+> 后续进展：Chrome GER 与标准 Evidence 已接通，当前交付见 [接线报告](ger/REPORT.md)。下文保留首批6bca3dc快照及当时待办，不能再当作当前缺口。
+
 2026-11-04。**已交付可安装的 PC Debug / Action / Journey 开发路径，并完成真实 Chrome 的无内容场景验证。7.0 整体尚未完成，未进行正式发行。**
 
 ## 开发基线与同步
