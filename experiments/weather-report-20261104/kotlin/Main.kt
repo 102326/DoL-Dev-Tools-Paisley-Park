@@ -30,6 +30,7 @@ fun main() {
         check(commit.identity == old && commit.identity != fresh && commit.workId == "work1")
         check(core.lookup("work1") == Outcome.Committed(ticket))
         check(core.finish(core.begin(fresh, "work1")) == Outcome.Committed(ticket))
+        check(core.finish(ticket) == Outcome.Committed(ticket))
         check(core.read(0).count { it.phase == "workCommitted" } == 1)
         val restart = WeatherCore("run1", store)
         check(restart.processStartId != old.processStartId)
@@ -41,6 +42,13 @@ fun main() {
         val uncertain = WeatherCore("run2", failing)
         check(uncertain.finish(uncertain.begin(uncertain.create(), "w")) == Outcome.Unknown)
         check(uncertain.read(0).none { it.phase == "workCommitted" })
+        val throwing = object : CommitStore {
+            override fun commit(ticket: Ticket): Outcome = error("commit failure")
+            override fun lookup(runId: String, workId: String): Outcome = error("lookup failure")
+        }
+        val fault = WeatherCore("run4", throwing)
+        check(fault.finish(fault.begin(fault.create(), "w")) == Outcome.Unknown)
+        check(fault.read(0).none { it.phase == "workCommitted" })
         val bounded = WeatherCore("run3", store, 2)
         val activity = bounded.create(); bounded.lifecycle(activity, "started"); bounded.lifecycle(activity, "stopped")
         check(bounded.read(0).map { it.seq } == listOf(2L, 3L))

@@ -13,7 +13,8 @@ sealed interface Outcome {
     data object Unknown : Outcome
 }
 
-// A store must return a witness only for an atomic business commit that it can read back.
+// A store must make commit idempotent for a work key and return a witness only
+// for an atomic business commit that it can read back; Unknown cannot prove absence.
 interface CommitStore {
     fun commit(ticket: Ticket): Outcome
     fun lookup(runId: String, workId: String): Outcome
@@ -30,14 +31,16 @@ class AtomicFileStore(private val directory: Path) : CommitStore {
     override fun commit(ticket: Ticket): Outcome {
         val target = file(ticket.identity.runId, ticket.workId)
         if (Files.exists(target)) return lookup(ticket.identity.runId, ticket.workId)
-        val temp = Files.createTempFile(directory, "pending-", ".tmp")
+        if (!Files.notExists(target)) return Outcome.Unknown
+        var temp: Path? = null
         return try {
+            temp = Files.createTempFile(directory, "pending-", ".tmp")
             val i = ticket.identity
             require(listOf(i.processStartId, i.activityInstanceId).all { it.matches(Regex("[A-Za-z0-9_-]+")) })
             Files.writeString(temp, listOf(i.runId, i.processStartId, i.activityInstanceId, ticket.workId).joinToString("\n"))
             Files.move(temp, target, ATOMIC_MOVE)
             lookup(i.runId, ticket.workId)
-        } catch (_: Exception) { Outcome.Unknown } finally { Files.deleteIfExists(temp) }
+        } catch (_: Exception) { Outcome.Unknown } finally { temp?.let { runCatching { Files.deleteIfExists(it) } } }
     }
     override fun lookup(runId: String, workId: String): Outcome = try {
         val fields = Files.readAllLines(file(runId, workId))
@@ -66,7 +69,9 @@ class WeatherCore(private val runId: String, private val store: CommitStore, pri
     }
     fun finish(ticket: Ticket): Outcome {
         require(ticket.identity.runId == runId && ticket.identity.processStartId == processStartId)
-        val result = store.commit(ticket)
+        val existing = try { store.lookup(runId, ticket.workId) } catch (_: Exception) { Outcome.Unknown }
+        if (existing is Outcome.Committed) return existing
+        val result = try { store.commit(ticket) } catch (_: Exception) { Outcome.Unknown }
         if (result is Outcome.Committed && result.ticket == ticket) event(ticket.identity, "workCommitted", ticket.workId)
         return result
     }
