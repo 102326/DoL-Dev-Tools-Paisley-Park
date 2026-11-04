@@ -1,0 +1,160 @@
+{
+  "date": "2026-11-04",
+  "baseCommit": "a29d5088107296843b048ef99b05784535d2b7bb",
+  "environment": {
+    "macOS": "27.0.1",
+    "arch": "arm64",
+    "node": "26.13.0",
+    "typescript": "6.0.2",
+    "nodeTypes": "25.9.5",
+    "undiciTypes": "7.24.6",
+    "java": "21.0.11",
+    "kotlin": "2.0.21"
+  },
+  "validation": {
+    "sourceFinderTests": {
+      "pass": 12,
+      "fail": 0,
+      "skip": 0
+    },
+    "typeDriftsRejected": 4,
+    "maintenanceTests": {
+      "pass": 22,
+      "fail": 0,
+      "skip": 0
+    },
+    "protocolLifecycle": "passed explicit stub",
+    "hostFailureCleanup": "passed real missing executable and synthetic missing events",
+    "kotlinDriver": "compiled and passed JVM synthetic scenarios"
+  },
+  "entryBenchmark": {
+    "entrySha256": {
+      "host.cjs": "b42950c0a982518389ddd1a3d046ce5075353f291c8444d8f42802407d5c0b8d",
+      "protocol.cjs": "a74984300932cb4436bf34c2d3fd2969b22df6054b2c24061f5093c510ef3ccf",
+      "stdio.cjs": "e40a2c3b13b306f12575da7e7b71f0af1050afb228dff855c957ea8d3922265d",
+      "once.cjs": "0c4d80ad7605988e5be11df737a3e188e17d0b9a87d7910a7e7395100cf8d7ff"
+    },
+    "engineSha256": "dad6eabc5d39dcab384fbc6dd2a74dd74b2071d9be9aedde2888068c49c951e1",
+    "fixtureSha256": "4bf525caa3c8073051f0839736e9a84490202074e7c806f6c36b0e7c2aa5292f",
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "input": "fixture/sample.twee; text: blue umbrella",
+    "count": 10,
+    "coldOnceMs": {
+      "min": 77.09641700000009,
+      "median": 78.12941599999999,
+      "max": 113.76258299999999
+    },
+    "persistentFirstMs": 79.74783300000001,
+    "persistentReuseMs": {
+      "min": 31.092124999999896,
+      "median": 31.47437500000001,
+      "max": 32.40670799999998
+    },
+    "oneShotAfterRequestRssBytes": 63291392,
+    "persistentAfterTenRequestsRssBytes": 66699264,
+    "persistentCloseMs": 3.070500000000038,
+    "resultsEqual": true
+  },
+  "nativeProbe": {
+    "node": "v26.13.0",
+    "sourceSha256": "c54a34964110d23057197437146916aa5ba5b0f2595ca45e5d1a7e930ef3bed7",
+    "mode": "native .mts copy vs compiled CommonJS",
+    "equalQueries": 5,
+    "invalidAndCancelledEqual": true,
+    "typeCheckingAtRuntime": false
+  },
+  "maintenanceReplay": {
+    "scope": "existing public tool-source maintenance replays, not game validation",
+    "tasks": [
+      {
+        "name": "safe-game-version-query",
+        "source": {
+          "mode": "worktree",
+          "commit": "a29d5088107296843b048ef99b05784535d2b7bb",
+          "dirty": false,
+          "consistency": "per-file-read"
+        },
+        "candidates": [
+          {
+            "file": "collectors.cjs",
+            "line": 177,
+            "sha256": "7e5aef1ffa206f94acba7a630ba2b6b20835b4faba1cf8a0a28abc3177803995",
+            "basis": [
+              {
+                "clue": 0,
+                "role": "reference"
+              }
+            ]
+          },
+          {
+            "file": "environment.cjs",
+            "line": 8,
+            "sha256": "4705a4f8222b631f6efed8ee1c88c5725af276c6a70faecdb8fd4918e8283f77",
+            "basis": [
+              {
+                "clue": 0,
+                "role": "reference"
+              }
+            ]
+          },
+          {
+            "file": "environment.cjs",
+            "line": 10,
+            "sha256": "4705a4f8222b631f6efed8ee1c88c5725af276c6a70faecdb8fd4918e8283f77",
+            "basis": [
+              {
+                "clue": 0,
+                "role": "reference"
+              }
+            ]
+          },
+          {
+            "file": "environment.cjs",
+            "line": 30,
+            "sha256": "4705a4f8222b631f6efed8ee1c88c5725af276c6a70faecdb8fd4918e8283f77",
+            "basis": [
+              {
+                "clue": 0,
+                "role": "reference"
+              }
+            ]
+          }
+        ],
+        "followup": "tests/environment.test.cjs"
+      },
+      {
+        "name": "hash-navigation-invalidates-holder",
+        "source": {
+          "mode": "worktree",
+          "commit": "a29d5088107296843b048ef99b05784535d2b7bb",
+          "dirty": false,
+          "consistency": "per-file-read"
+        },
+        "candidates": [
+          {
+            "file": "execution-context.cjs",
+            "line": 96,
+            "sha256": "f19d40c7a992efa283bba10c66b53cf7f155cd000732608c66596bb73bf16258",
+            "basis": [
+              {
+                "clue": 0,
+                "role": "reference"
+              }
+            ]
+          }
+        ],
+        "followup": "tests/execution-context.test.cjs"
+      }
+    ]
+  },
+  "notValidated": [
+    "Windows",
+    "Android adapter/APK/device/ADB comparison",
+    "real game source scenes",
+    "real DoL gameplay",
+    "Codex tool registration",
+    "release package integration"
+  ]
+}

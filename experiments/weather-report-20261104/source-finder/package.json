@@ -1,0 +1,9 @@
+{
+  "name": "paisley-weather-source-finder",
+  "version": "0.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": { "build": "node build.cjs", "test": "node --test test/*.test.cjs" },
+  "engines": { "node": ">=26.0.0" },
+  "devDependencies": { "typescript": "6.0.2", "@types/node": "25.9.5" }
+}
