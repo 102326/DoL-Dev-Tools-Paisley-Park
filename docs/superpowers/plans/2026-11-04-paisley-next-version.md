@@ -12,7 +12,7 @@
 
 - 接续维护分支 `maintenance/diagnostic-feedback-20261029`，基线 `a29d5088107296843b048ef99b05784535d2b7bb`，保留原分支指针。实验在独立既有工作树的新分支 `experiment/weather-report-20261104` 进行；不reset/clean其它修改。
 - 维护链已有CDP/Action分阶段诊断、游戏版本安全查询、完整URL/hash及同文档事件的粘性失效处理。现有代码和既有Node26/Chrome夹具证据复用，不重新实现同一修复。
-- 本机Node26.13.0/macOS ARM64，源码最低Node26.0.0。Java21；无Android SDK/设备。负责人确认设备实测留到Windows。
+- 本机Node26.13.0/macOS ARM64，源码最低Node26.0.0。Java21；无Android SDK/设备。负责人确认SDK获取、APK构建及设备实测均留到Windows。
 - 公司环境继续禁止获取成人游戏资源。仅使用自有无内容夹具、公开工具代码和获准元数据；多个真实游戏区域的源码验收在合适环境进行。
 - 旧Lab四轮结论保持历史身份；新Weather Report有自己的源码和复现入口，不改旧实验输入，不重开已关闭R02会话凑收益数据。
 
@@ -46,4 +46,4 @@ Skill只提供[官方源码入口](../../GAME_SOURCE.md)与按任务确认来源
 
 本轮首批实验以可复跑实现、针对性回归、来源身份、实际对照和限制记录为Done。下一版正式交付另需所采用工具实际可调用、真实非商店任务有效、重要风险及受影响平台有结论。Windows/Android和受限游戏验收目前明确未执行；不得以它们为由否认已完成原型，也不得以原型通过代替正式验收。
 
-2026-11-04续：GitHub初次同步及Linux CI通过；Mac独立Codex宿主发现和包内依赖/SQLite实际验货补齐。Kotlin readWindow区别断连/历史gap/空窗口，旧read兼容保留。SDK无设备编译仍需负责人对新组件获取及许可的选择；80MiB仅内部探索预算，不构成Windows门槛。
+2026-11-04续：GitHub初次同步及Linux CI通过；Mac独立Codex宿主发现和包内依赖/SQLite实际验货补齐。Kotlin readWindow区别断连/历史gap/空窗口，旧read兼容保留。负责人已选择SDK获取与APK构建也留到Windows，本机无此待选项；80MiB仅此前内部探索预算，不构成Windows门槛。

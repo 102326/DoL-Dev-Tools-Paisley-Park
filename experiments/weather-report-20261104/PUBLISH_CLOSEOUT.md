@@ -8,7 +8,7 @@
 - 补齐真实Codex宿主发现验货。[host-discovery/probe.cjs](host-discovery/probe.cjs)从已审ZIP提取工具，在独立临时Git项目安装Skill，实际启动两个Codex App Server进程。安装前项目路径无匹配；forceReload后及冷启动新进程后均发现同一项目级Skill，enabled=true，展示名正确，resolver回到受验包。只调用initialize/skills/list；不创建thread/turn、模型任务或全局Skill安装，不重写全局配置。
 - 补齐独立包Runtime安装链。[package-check/runtime-smoke.cjs](package-check/runtime-smoke.cjs)确认缺XState时加载拒绝；按原锁从本地缓存离线安装后，确认5.33.2解析到包内，并在自有新SQLite中创建合成Session、检查schema2/integrity、关闭重开和原deadline，零Effect、零dispatch。Node26.13.0和最低26.0.0均通过。
 - Kotlin增加可靠的 `readWindow(after)`：区分断连null、事件淘汰gap、当前空窗口及非法未来游标。独立审查发现它初版无意改变旧 `read` 的负数/未来游标行为；回归先复现失败，再恢复旧实现，严格校验只属于新API。原JVM及真实子进程SIGKILL/重启场景仍通过。
-- 保留SDK无设备编译的具体可行性记录，没有用未编译Android源码或JVM替身冒充APK。SDK获取/许可选择仍等待负责人答复；它不是Windows技术门槛，也未因约82MiB候选组件略高于内部80MiB探索预算而认定Mac不能构建。
+- 保留SDK无设备编译的具体可行性记录，没有用未编译Android源码或JVM替身冒充APK。负责人现已明确选择：SDK获取与APK构建也留到Windows，本机不下载SDK；这是研发安排，不是Mac技术不可行的结论。
 
 ## Validated
 
@@ -42,14 +42,14 @@
 
 ## SDK选择与未验证范围
 
-无设备APK构建可以在Mac继续，但需要获取新的官方编译组件。候选HTTP metadata：platform-35_r02.zip 64,273,788字节、R8 8.7.18 17,650,417字节、aapt2 8.7.3 macOS 4,287,036字节，合计86,211,241字节（约82.2MiB）；不是已经验证完整的工具链，也未测解压尺寸/可执行架构。80MiB只是Primary最初给子任务的探索预算，不是用户上限或平台结论。
+此前对Mac无设备编译做过工具链元数据评估，未下载或验证可运行性。候选HTTP metadata：platform-35_r02.zip 64,273,788字节、R8 8.7.18 17,650,417字节、aapt2 8.7.3 macOS 4,287,036字节，合计86,211,241字节（约82.2MiB）；不是已经验证完整的工具链，也未测解压尺寸/可执行架构。80MiB只是Primary最初给子任务的探索预算，不是用户上限或平台结论。
 
-Primary已请求负责人决定是否允许隔离获取并同意[SDK适用许可](https://developer.android.com/studio/terms)。截至此记录尚无答复，所以没有下载/使用SDK、没有生成APK/签名或连接设备，也不尝试用许可不清晰的镜像替代。此前用户“不擅自安装大型依赖”的限制和新增SDK使用范围，是本次单独确认的原因；其它工作未等待此选择。后续若允许，仍须实际验证API/desugaring、打包及字节，再谈APK交付；若选择留Windows，就在那边继续，不将JVM通过替代Android验收。
+负责人已答复“SDK 与 APK 构建也留到 Windows”，此项不再等待确认。本机没有下载/使用SDK，没有生成APK/签名或连接设备。Windows接续时复核已有工具、[SDK适用许可](https://developer.android.com/studio/terms)和对应平台的官方组件，再实际验证API/desugaring、打包及字节；上述macOS候选不能直接当作Windows工具清单，不将JVM通过替代Android验收。
 
 以下仍为Not validated：Windows文件系统/文件占用/启动器，Android App/APK/真机/WebView与Android进程生命周期，真实DoL及非商店真实源码场景。Codex结论覆盖本机两个独立App Server进程，**不证明正在进行的Desktop对话热加载、自然语言选路效果、其它宿主版本或Windows**。这些边界与安装器/解析器是否成功分别记录。
 
 ## 当前结论与交接
 
-无需新增SDK的既定Mac开发、原型及验证收口已经完成并可同步。SDK/APK扩展仍等待负责人选择，不能宣称已构建或下一版全项目完成。没有合并main、创建PR、Tag或Release，没有修改正式版本号、全局Skill/系统配置、旧Store/Unknown或玩家数据。
+本轮既定Mac开发、原型及验证收口已完成；SDK获取和APK构建按负责人决定转交Windows，不再属于本机待办。不能宣称已构建APK或下一版全项目完成。没有合并main、创建PR、Tag或Release，没有修改正式版本号、全局Skill/系统配置、旧Store/Unknown或玩家数据。
 
 Windows接续应从本实验分支的固定提交开始，先检查本地未提交工作和来源，不用reset/clean覆盖。先做原维护分支的Windows定向项、真实源码多个区域的候选验证，再在授权自有App/设备上验证Kotlin归属/提交见证及与ADB/CDP的实际差异。完整战未来、跨版本索引和全仓语言迁移不因本次收口自动成为发布门禁。

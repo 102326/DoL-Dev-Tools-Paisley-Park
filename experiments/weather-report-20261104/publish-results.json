@@ -93,7 +93,9 @@
     "jvmProcessTests": "passed"
   },
   "androidBuild": {
-    "status": "pending owner choice; no SDK acquired",
+    "status": "deferred to Windows by explicit owner decision; no SDK acquired",
+    "ownerDecision": "SDK and APK build deferred to Windows",
+    "pendingOwnerChoice": false,
     "candidateDownloadBytes": 86211241,
     "initialExplorationBudgetBytes": 83886080,
     "budgetWasUserImposed": false,
