@@ -172,4 +172,4 @@ function create(options, overrides = {}, settings = {}) {
   return ctx;
 }
 
-module.exports = { create };
+module.exports = { create, documentURL };

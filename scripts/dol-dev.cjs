@@ -14,6 +14,14 @@ const { support } = require('./lib/support.cjs');
 const { version, displayName, releaseName } = require('../package.json');
 const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''} (local development and diagnostics)
   --version
+  pc-start --file ABS_HTML --chrome ABS_CHROME --port PORT --mode visible|headless --out NEW_DIR [--resources ABS_MANIFEST] [--resume-from ABS_OLD_HOST_JSON]
+    Selected files only; loopback HTTP and owned Chrome. Keep this process running; Ctrl+C closes only its resources. Profiles are retained.
+  pc-pages --host-file ABS_HOST_JSON
+  pc-bind --host-file ABS_HOST_JSON --target-id ID --url EXACT_URL --out NEW_HOST_JSON
+    Select an explicit page/new document in the same owned browser and origin; old effects are never settled.
+  pc-observe --host-file ABS_HOST_JSON --out NEW_DIR [--scope SELECTOR] [--probe ABS_REVIEWED_JS]
+  pc-action --host-file ABS_HOST_JSON --file ABS_ACTION_JSON --out NEW_DIR --test-environment yes [--scope SELECTOR] [--probe ABS_REVIEWED_JS]
+    Debug Web Action and local evidence only; no business Outcome inference, durable GER or automatic replay. See docs/PC_RUNTIME.md.
   game-goal-start --file REVIEWED_GOAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     Native Gameplay Goals: reach-passage, native-state conditions, or native-knowledge membership with optional return Passage; clothing Goals belong to a domain provider.
   game-goal-step --goal GOAL_DIR --test-environment yes [--file REVIEWED_ACTION_JSON --intent navigation|dialogue|combat|buy|sell|equip|unequip|sleep|menu|settings|load-save|experiment|save|delete-save]
@@ -95,6 +103,17 @@ function errorMessage(error) {
   const detail = require('./lib/diagnostics.cjs').describe(error);
   if (detail) return `[${detail.code} stage=${detail.stage}] ${detail.method?'method='+detail.method+'; ':''}${detail.field?'field='+detail.field+': ':''}${detail.reason?'reason='+detail.reason+'; ':''}${detail.hint}`;
   const known={
+    PC_INPUT_INVALID:['pc.validate','Review explicit absolute inputs, owned host file and command help. Private input omitted.'],
+    PC_RESOURCES_INVALID:['pc.resources','Select reviewed HTML and a bounded explicit resource manifest; see docs/PC_RUNTIME.md.'],
+    PC_LAUNCH_INVALID:['pc.launch','Use an installed absolute Chrome executable, visible/headless mode and the owned HTTP instance.'],
+    PC_LAUNCH_FAILED:['pc.launch','Owned Chrome startup did not complete. Inspect this instance local logs; do not use a personal profile.'],
+    PC_TARGET_UNAVAILABLE:['pc.target','Read pc-pages, select exact target ID and URL, then pc-bind. No replacement page was adopted.'],
+    PC_BROWSER_UNAVAILABLE:['pc.browser','The original owned browser is unavailable. Inspect its instance records; no other browser will be adopted.'],
+    PC_BROWSER_IDENTITY_CHANGED:['pc.browser','Live browser, debug endpoint or Profile identity differs from the owned record. Preserve records and select the original instance.'],
+    PC_DOCUMENT_CHANGED:['pc.document','Old document binding is invalid. Observe current pages and explicitly pc-bind a new document; preserve original uncertain actions.'],
+    PC_RESUME_IDENTITY_CHANGED:['pc.resume','Resume requires the same origin and reviewed resource inventory. Preserve the old Profile; do not interpret changed origin as missing save data.'],
+    PC_PROFILE_IN_USE:['pc.resume','The previous owned browser or endpoint may still be running. Close it before resuming; no profile was taken over.'],
+    PC_STOP_UNCONFIRMED:['pc.cleanup','Browser termination was not confirmed. Retain its Profile and local records; inspect this instance before reusing it.'],
     GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Use Node.js 26+ and run npm ci --ignore-scripts --no-audit --no-fund in the Tools root. Generic diagnostics remain available.'],
     INVALID_CLI_ARGUMENTS:['cli.parse','Unknown, duplicate or incomplete option; use --help. Supplied arguments omitted.'],
     UNSUPPORTED_CHECKPOINT_NAME:['journey.validate','field=name: Action/Journey checkpoints do not accept name. See docs/ACTIONS.md.'],
@@ -119,7 +138,26 @@ async function main(args = process.argv.slice(2)) {
   const command = args.shift();
   if (!command || command === '--help') { console.log(help); return; }
   if (command === '--version' && !args.length) { console.log(version); return; }
-  if(command==='source-find'){
+  if(command==='pc-start'){
+    const options=parse(args,['--file','--chrome','--port','--mode','--out','--resources','--resume-from']);
+    let finish;const ended=new Promise(resolve=>{finish=resolve});
+    const signal=()=>finish();process.once('SIGINT',signal);process.once('SIGTERM',signal);
+    let instance;
+    try{
+      instance=await require('./lib/pc-session.cjs').start(options);
+      instance.browser.once('close',signal);
+      console.log(JSON.stringify({url:instance.url,hostFile:instance.hostFile,processId:instance.record.target.processId,mode:instance.record.mode,profileRetained:true}));
+      await ended;
+    }finally{process.removeListener('SIGINT',signal);process.removeListener('SIGTERM',signal);if(instance)await instance.stop()}
+  }else if(command==='pc-pages'){
+    const options=parse(args,['--host-file']);console.log(JSON.stringify(await require('./lib/pc-session.cjs').pages(options['host-file']),null,2));
+  }else if(command==='pc-bind'){
+    const options=parse(args,['--host-file','--target-id','--url','--out']);
+    await require('./lib/pc-session.cjs').bind(options['host-file'],options['target-id'],options.url,options.out);console.log('Fresh document binding saved; old effects unchanged.');
+  }else if(['pc-observe','pc-action'].includes(command)){
+    const options=parse(args,command==='pc-observe'?['--host-file','--out','--scope','--probe']:['--host-file','--file','--out','--scope','--probe','--test-environment']);
+    const report=await require('./lib/pc-session.cjs').capture(options,command==='pc-action');console.log(JSON.stringify({status:report.status,businessOutcome:report.businessOutcome,automaticReplay:false}));
+  }else if(command==='source-find'){
     const options=parse(args,['--root','--file','--out','--revision']);
     const {result,cleanup}=await require('./lib/source-find-cli.cjs').run(options);
     console.log(`Source lookup ${result.outcome}; ${result.candidates.length} candidates. Output stays local and may contain private source.`);

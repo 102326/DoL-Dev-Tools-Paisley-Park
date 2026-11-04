@@ -82,6 +82,62 @@ function webExpression(action, guard = '', operation, hasGuard = false, invocati
   })()`;
 }
 
+async function executeWeb(ctx, action, assertForeground = ctx.assertForeground) {
+  validate(action);
+  if (!action.type.startsWith('web-') || typeof assertForeground !== 'function') throw Error('Explicit Web host required');
+    await assertForeground();
+    let client;
+    try { client = await ctx.ensureWebview(); } catch (error) { throw sanitized(error, 'WebView unavailable'); }
+    client ||= ctx.client;
+    if (!client || typeof client.evaluate !== 'function') throw new Error('WebView unavailable');
+    await assertForeground();
+    let result;
+    // Internal reviewed semantic callers may bind a CDP object and a synchronous guard.
+    // This is deliberately not an Action JSON field or an arbitrary-JS CLI option.
+    if(ctx.webGuard && (!['web-click','web-input'].includes(action.type) || typeof ctx.webGuard.objectId !== 'string' || typeof ctx.webGuard.source !== 'string'))
+      throw Object.assign(Error('Invalid internal guard'),{notDispatched:true});
+    const operation=ctx.webGuard?.operation;
+    const invocation=ctx.webGuard?.invocation;
+    if(invocation!==undefined&&(action.type!=='web-click'||!invocation||typeof invocation.receiverId!=='string'||!invocation.receiverId||typeof invocation.callableId!=='string'||!invocation.callableId))throw Object.assign(Error('Invalid internal invocation'),{notDispatched:true});
+    if(operation!==undefined && (action.type!=='web-click'||!ctx.webGuard||!operation||typeof operation!=='object'||Array.isArray(operation)||Object.keys(operation).length!==2||!Object.hasOwn(operation,'name')||!Object.hasOwn(operation,'source')||typeof operation.name!=='string'||!/^[a-z][a-z0-9-]{0,63}$/.test(operation.name)||typeof operation.source!=='string'||!operation.source.trim()||Buffer.byteLength(operation.source,'utf8')>32768))
+      throw Object.assign(Error('Invalid internal operation'),{notDispatched:true});
+    try {
+      ctx.markSideEffect?.();
+      if (ctx.webGuard) {
+        const response = await client.send('Runtime.callFunctionOn', {
+          objectId: ctx.webGuard.objectId,
+          functionDeclaration: `function(...allInputs) { const observedInputs=${invocation?'allInputs.slice(0,-2)':'allInputs'}; ${invocation?'const [boundReceiver,boundCallable]=allInputs.slice(-2);':''} const observedRoot = this; return ${webExpression(action, ctx.webGuard.source, operation, true,!!invocation)}; }`,
+          arguments: [...(ctx.webGuard.arguments || []),...(invocation?[{objectId:invocation.receiverId},{objectId:invocation.callableId}]:[])],
+          returnByValue: true, awaitPromise: true,
+        });
+        if (response?.exceptionDetails) throw Error('Guarded evaluation failed');
+        result = response?.result?.value;
+      } else result = await client.evaluate(webExpression(action));
+    } catch (error) { throw sanitized(error, 'Web action failed'); }
+    if (ctx.webGuard && result?.ok === false && result.guardRejected === true) throw Object.assign(new Error('Semantic guard rejected'), { code: 'WEB_GUARD_REJECTED', notDispatched: true });
+    if (result?.ok !== true) {
+      const error=new Error('Web target unavailable');
+      if (!ctx.webGuard) {
+        error.code = 'WEB_ACTION_REJECTED';
+        if (['missing','ambiguous','unavailable','unsupported-type','focus-unconfirmed'].includes(result?.reason)) error.actionReason = result.reason;
+      }
+      // Only internal fixed categories reach the private Gameplay report; never
+      // forward a page-supplied message or arbitrary JS result as diagnostics.
+      if(operation?.name==='native-passage')error.operationReason=[
+        'navigation-phase-incomplete','navigation-final-state-unavailable','passage-phase-order','passage-identity',
+        'passage-content','passage-phase-threw','footer-save-intent','footer-threw','addon-phase-order',
+        'addon-phase-threw','addon-promise-unavailable','addon-promise-observer-unavailable','addon-phase-rejected',
+        'addon-phase-timeout','observer-ownership-conflict','original-navigation-threw','unreviewed-save-intent',
+        'native-lifecycle-tasks-changed','native-environment-changed','native-environment-unavailable','native-history-changed',
+        'native-time-witness-unavailable','native-time-unavailable'
+      ].includes(result?.reason)?result.reason:'native-operation-failed';
+      throw error;
+    }
+    if (operation) return { status:'completed', ...summary(action), execution:'native-operation', operation:operation.name, receipt:result.receipt??null };
+
+  return { status:'completed', ...summary(action) };
+}
+
 async function execute(ctx, action) {
   validate(action);
   const options = ctx?.options;
@@ -144,55 +200,7 @@ async function execute(ctx, action) {
   };
 
   if (action.type.startsWith('web-')) {
-    await foreground();
-    let client;
-    try { client = await ctx.ensureWebview(); } catch (error) { throw sanitized(error, 'WebView unavailable'); }
-    client ||= ctx.client;
-    if (!client || typeof client.evaluate !== 'function') throw new Error('WebView unavailable');
-    await foreground();
-    let result;
-    // Internal reviewed semantic callers may bind a CDP object and a synchronous guard.
-    // This is deliberately not an Action JSON field or an arbitrary-JS CLI option.
-    if(ctx.webGuard && (!['web-click','web-input'].includes(action.type) || typeof ctx.webGuard.objectId !== 'string' || typeof ctx.webGuard.source !== 'string'))
-      throw Object.assign(Error('Invalid internal guard'),{notDispatched:true});
-    const operation=ctx.webGuard?.operation;
-    const invocation=ctx.webGuard?.invocation;
-    if(invocation!==undefined&&(action.type!=='web-click'||!invocation||typeof invocation.receiverId!=='string'||!invocation.receiverId||typeof invocation.callableId!=='string'||!invocation.callableId))throw Object.assign(Error('Invalid internal invocation'),{notDispatched:true});
-    if(operation!==undefined && (action.type!=='web-click'||!ctx.webGuard||!operation||typeof operation!=='object'||Array.isArray(operation)||Object.keys(operation).length!==2||!Object.hasOwn(operation,'name')||!Object.hasOwn(operation,'source')||typeof operation.name!=='string'||!/^[a-z][a-z0-9-]{0,63}$/.test(operation.name)||typeof operation.source!=='string'||!operation.source.trim()||Buffer.byteLength(operation.source,'utf8')>32768))
-      throw Object.assign(Error('Invalid internal operation'),{notDispatched:true});
-    try {
-      ctx.markSideEffect?.();
-      if (ctx.webGuard) {
-        const response = await client.send('Runtime.callFunctionOn', {
-          objectId: ctx.webGuard.objectId,
-          functionDeclaration: `function(...allInputs) { const observedInputs=${invocation?'allInputs.slice(0,-2)':'allInputs'}; ${invocation?'const [boundReceiver,boundCallable]=allInputs.slice(-2);':''} const observedRoot = this; return ${webExpression(action, ctx.webGuard.source, operation, true,!!invocation)}; }`,
-          arguments: [...(ctx.webGuard.arguments || []),...(invocation?[{objectId:invocation.receiverId},{objectId:invocation.callableId}]:[])],
-          returnByValue: true, awaitPromise: true,
-        });
-        if (response?.exceptionDetails) throw Error('Guarded evaluation failed');
-        result = response?.result?.value;
-      } else result = await client.evaluate(webExpression(action));
-    } catch (error) { throw sanitized(error, 'Web action failed'); }
-    if (ctx.webGuard && result?.ok === false && result.guardRejected === true) throw Object.assign(new Error('Semantic guard rejected'), { code: 'WEB_GUARD_REJECTED', notDispatched: true });
-    if (result?.ok !== true) {
-      const error=new Error('Web target unavailable');
-      if (!ctx.webGuard) {
-        error.code = 'WEB_ACTION_REJECTED';
-        if (['missing','ambiguous','unavailable','unsupported-type','focus-unconfirmed'].includes(result?.reason)) error.actionReason = result.reason;
-      }
-      // Only internal fixed categories reach the private Gameplay report; never
-      // forward a page-supplied message or arbitrary JS result as diagnostics.
-      if(operation?.name==='native-passage')error.operationReason=[
-        'navigation-phase-incomplete','navigation-final-state-unavailable','passage-phase-order','passage-identity',
-        'passage-content','passage-phase-threw','footer-save-intent','footer-threw','addon-phase-order',
-        'addon-phase-threw','addon-promise-unavailable','addon-promise-observer-unavailable','addon-phase-rejected',
-        'addon-phase-timeout','observer-ownership-conflict','original-navigation-threw','unreviewed-save-intent',
-        'native-lifecycle-tasks-changed','native-environment-changed','native-environment-unavailable','native-history-changed',
-        'native-time-witness-unavailable','native-time-unavailable'
-      ].includes(result?.reason)?result.reason:'native-operation-failed';
-      throw error;
-    }
-    if (operation) return { status:'completed', ...summary(action), execution:'native-operation', operation:operation.name, receipt:result.receipt??null };
+    return executeWeb(ctx, action, foreground);
   } else if (action.type === 'wake') {
     ctx.markSideEffect?.();
     await adb('shell','input','keyevent','KEYCODE_WAKEUP');
@@ -279,4 +287,4 @@ async function execute(ctx, action) {
   return { status: 'completed', ...summary(action) };
 }
 
-module.exports = { validate, summary, execute, reviewedOperation };
+module.exports = { validate, summary, execute, executeWeb, reviewedOperation };

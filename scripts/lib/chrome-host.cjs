@@ -1,0 +1,85 @@
+'use strict';
+const {connect,targets}=require('./cdp.cjs');
+const {target:validateTarget}=require('./runtime-target.cjs');
+const {events}=require('./collectors.cjs');
+const {documentURL}=require('./execution-context.cjs');
+const failure=code=>Object.assign(Error(code),{code});
+
+// M1 supports an explicitly owned Chrome and one immutable document. No title
+// selection, automatic retarget, navigation adoption or dispatched-action retry.
+class ChromeHost {
+ constructor(target,{timeoutMs=5000,binding=null}={}){
+  this.target=validateTarget(target);binding??=target.document??null;
+  if(target.host!=='chrome'||!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>10000)throw Error('Chrome host identity required');
+  if(binding&&(!['frameId','loaderId','url','uniqueContextId'].every(k=>typeof binding[k]==='string'&&binding[k].length>0)||Object.keys(binding).length!==4||new URL(binding.url).origin!==target.origin))throw Error('Invalid immutable Chrome document');
+  this.timeoutMs=timeoutMs;this.capture=events();this.contexts=new Map();this.client=null;this.binding=binding?Object.freeze({...binding}):null;
+ }
+ async verifyBrowser(){
+  let response;try{process.kill(this.target.processId,0);response=await fetch(new URL('/json/version',this.target.endpoint),{signal:AbortSignal.timeout(this.timeoutMs),redirect:'error'})}catch(e){if(e.name==='TimeoutError')throw Object.assign(failure('ETIMEDOUT'),{cdpStage:'pc.browser'});throw failure('PC_BROWSER_UNAVAILABLE')}
+  if(!response.ok)throw failure('PC_BROWSER_UNAVAILABLE');
+  const v=await response.json(),socket=new URL(v.webSocketDebuggerUrl);
+  if(!/^Chrome\//.test(v.Browser)||socket.protocol!=='ws:'||socket.host!==new URL(this.target.endpoint).host||socket.pathname!=='/devtools/browser/'+this.target.browserId||socket.username||socket.password)throw failure('PC_BROWSER_IDENTITY_CHANGED');
+  return v.Browser;
+ }
+ onEvent(method,params){
+  this.capture.onEvent(method,params);
+  if(this.binding&&(method==='Runtime.executionContextsCleared'||method==='Runtime.executionContextDestroyed'&&this.contexts.get(params.executionContextId)?.uniqueId===this.binding.uniqueContextId||method==='Page.navigatedWithinDocument'&&params.frameId===this.binding.frameId))this.invalid=true;
+  if(method==='Runtime.executionContextCreated')this.contexts.set(params.context.id,params.context);
+  if(method==='Runtime.executionContextDestroyed')this.contexts.delete(params.executionContextId);
+  if(method==='Runtime.executionContextsCleared')this.contexts.clear();
+ }
+ async open(){
+  if(this.client)throw Error('Close Chrome transport before explicit reconnect');
+  if(this.invalid)throw Object.assign(Error('Chrome document changed; explicit new contract required'),{code:'PC_DOCUMENT_CHANGED'});
+  await this.verifyBrowser();
+  const pages=(await targets(this.target.endpoint,this.timeoutMs)).filter(p=>p.type==='page'&&p.id===this.target.targetId);
+  if(pages.length!==1||new URL(pages[0].url).origin!==this.target.origin)throw failure('PC_TARGET_UNAVAILABLE');
+  const pageSocket=new URL(pages[0].webSocketDebuggerUrl);
+  if(pageSocket.host!==new URL(this.target.endpoint).host||pageSocket.pathname!=='/devtools/page/'+this.target.targetId)throw Error('Chrome page socket mismatch');
+  this.contexts.clear();
+  const client=await connect(this.target.endpoint,this.timeoutMs,(m,p)=>this.onEvent(m,p),this.target.targetId);
+  try{
+   if(this.target.profilePath){const command=await client.send('Browser.getBrowserCommandLine');if(!Array.isArray(command.arguments)||command.arguments.filter(a=>a.startsWith('--user-data-dir=')).length!==1||!command.arguments.includes('--user-data-dir='+this.target.profilePath))throw failure('PC_BROWSER_IDENTITY_CHANGED')}
+   await client.send('Page.enable');await client.send('Runtime.enable');await client.send('Network.enable');
+   // /json/list publishes the intended URL while initial navigation still has
+   // an empty document. Only wait for this exact target's requested document;
+   // never dispatch or switch targets to make readiness pass.
+   let frame,contexts,fullURL;const until=Date.now()+this.timeoutMs;
+   do{
+    frame=(await client.send('Page.getFrameTree')).frameTree.frame;
+    contexts=[...this.contexts.values()].filter(c=>c.auxData?.isDefault===true&&c.auxData.frameId===frame.id&&c.origin===this.target.origin&&typeof c.uniqueId==='string');
+    fullURL=null;
+    try{fullURL=await documentURL(frame,client)}catch(e){if(this.binding||e.code!=='ANDROID_DOCUMENT_URL_UNAVAILABLE')throw e}
+    if(fullURL===pages[0].url&&contexts.length===1&&frame.loaderId)break;
+    if(this.binding||Date.now()>=until)throw failure('PC_DOCUMENT_CHANGED');
+    await new Promise(resolve=>setTimeout(resolve,50));
+   }while(true);
+   const binding={frameId:frame.id,loaderId:frame.loaderId,url:fullURL,uniqueContextId:contexts[0].uniqueId};
+   if(this.binding&&JSON.stringify(binding)!==JSON.stringify(this.binding))throw failure('PC_DOCUMENT_CHANGED');
+   this.binding=Object.freeze(binding);this.client=client;return this;
+  }catch(error){client.close();throw error}
+ }
+ async assertBound(){
+  if(!this.client?.isOpen())throw failure('CDP_CONNECTION_CLOSED');
+  await this.verifyBrowser();
+  const frame=(await this.client.send('Page.getFrameTree')).frameTree.frame,b=this.binding;
+  if(this.invalid||frame.id!==b.frameId||frame.loaderId!==b.loaderId||(await documentURL(frame,this.client))!==b.url||![...this.contexts.values()].some(c=>c.uniqueId===b.uniqueContextId))throw Object.assign(Error('Chrome document changed; no automatic retarget'),{code:'PC_DOCUMENT_CHANGED'});
+ }
+ async evaluate(expression){
+  await this.assertBound();
+  // uniqueContextId prevents a same-number new context executing a stale action
+  // if a navigation happens after assertBound. Business guards remain local code.
+  const response=await this.client.send('Runtime.evaluate',{expression:this.expression(expression),uniqueContextId:this.binding.uniqueContextId,awaitPromise:true,returnByValue:true});
+  if(response.exceptionDetails)throw Error('Chrome evaluation failed');
+  await this.assertBound();return response.result?.value;
+ }
+ async send(method,params={},settings){
+  if(!['Page.captureScreenshot','Runtime.evaluate','Runtime.releaseObjectGroup','Runtime.releaseObject','Performance.enable','Performance.getMetrics','Performance.disable','Memory.getDOMCounters','Browser.getVersion'].includes(method))throw Error('Unsupported bound Chrome operation');
+  await this.assertBound();
+  if(method==='Runtime.evaluate'){if(params.contextId!==undefined||params.uniqueContextId!==undefined&&params.uniqueContextId!==this.binding.uniqueContextId)throw Error('Wrong Chrome context');params={...params,expression:this.expression(params.expression),uniqueContextId:this.binding.uniqueContextId}}
+  const result=await this.client.send(method,params,settings);await this.assertBound();return result;
+ }
+ expression(source){return `(()=>{if(location.href!==${JSON.stringify(this.binding.url)})throw Error('Bound URL changed');return (${source});})()`}
+ close(){this.client?.close();this.client=null}
+}
+module.exports={ChromeHost};
