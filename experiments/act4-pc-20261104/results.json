@@ -1,0 +1,293 @@
+{
+  "date": "2026-11-04",
+  "scope": "Mac neutral fixture only; experimental, no production integration",
+  "baseCommit": "91eb9b0500152e9d055f1424074698db3bf43560",
+  "historyCommit": "52a8893910c57ed420587c137472ffb008567b18",
+  "environment": {
+    "platform": "darwin",
+    "node": "v26.13.0",
+    "chrome": "Chrome/156.0.8078.73"
+  },
+  "sourceSha256": {
+    "fixture.html": "d7e8d7c3f8a96b956a20b139eed8300af2834dfa3a8f215bdb3bf1c52bf74288",
+    "server.cjs": "1eac78181baa8696baca2f751704b7a31faa52256b5d5c4cec04a06ea5a1e58a",
+    "bind-owned.cjs": "4e729db11ffb2d77858154523635db5e7adc8100be5b5b290e772415319d6758",
+    "verify.cjs": "7c4b156b5a9fb6a53e8fce682d9c31f2cc51c0e6526dcaea4add04b3efa61dc7"
+  },
+  "originalM2": {
+    "status": "complete",
+    "checks": [
+      {
+        "name": "A: formal CLI shared Gameplay completes one purchase",
+        "status": "passed"
+      },
+      {
+        "name": "formal Evidence DOM CSS Console Network storage screenshot performance and identity",
+        "status": "passed"
+      },
+      {
+        "name": "formal Journey shared wait and Chrome checkpoints",
+        "status": "passed"
+      },
+      {
+        "name": "requested Android Evidence explicitly unsupported",
+        "status": "passed"
+      },
+      {
+        "name": "B: observed node change refuses stale purchase",
+        "status": "passed"
+      },
+      {
+        "name": "B: observed quote change refuses stale purchase",
+        "status": "passed"
+      },
+      {
+        "name": "C: real CLI process death after purchase preserves pending and blocks replay",
+        "status": "passed"
+      },
+      {
+        "name": "C: independent CLI original-handler receipt settles without re-buy",
+        "status": "passed"
+      },
+      {
+        "name": "D: pending effect survives same-URL reload; old object/context/receipt cannot settle",
+        "status": "passed"
+      },
+      {
+        "name": "D: explicitly new document/session shares profile pending fence; no ledger dismissal",
+        "status": "passed"
+      },
+      {
+        "name": "closed target never adopts same-title decoy",
+        "status": "passed"
+      }
+    ],
+    "localEvidence": "history/artifacts/mac-original-20261104-authorized/acceptance.json"
+  },
+  "hostRegressions": {
+    "passed": 9,
+    "failed": 0,
+    "tests": [
+      "chrome-host.test.cjs",
+      "chrome-runtime.test.cjs",
+      "chrome-formal.test.cjs"
+    ]
+  },
+  "newScenarios": {
+    "format": "act4-pc-lab-v1",
+    "status": "complete",
+    "startedAt": "2026-11-04T07:02:32.065Z",
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "historyCommit": "52a8893910c57ed420587c137472ffb008567b18",
+    "checks": [
+      {
+        "name": "original host: same flow as Codex UI, DOM and state agree",
+        "status": "passed",
+        "final": {
+          "scene": "workshop",
+          "count": 1,
+          "revision": 2
+        }
+      },
+      {
+        "name": "original host: exact existing target among same-title tabs",
+        "status": "passed",
+        "selected": "1B3AF92729C7289D62686F4308B41F32",
+        "decoy": "E40469592A2900C771687A14BB787693"
+      },
+      {
+        "name": "original host: explicit reconnect to unchanged document",
+        "status": "passed"
+      },
+      {
+        "name": "original launcher: file and HTTPS rejected before Chrome starts",
+        "status": "passed",
+        "restriction": "application contract; not browser policy verdict"
+      },
+      {
+        "name": "original host: same-URL reload refuses stale binding",
+        "status": "passed",
+        "oldLoader": "8BFDBA233593F8BB75571F5FA4178831"
+      },
+      {
+        "name": "prototype: explicit fresh binding plus reviewed saved-state read after reload",
+        "status": "passed"
+      },
+      {
+        "name": "prototype CLI: exclusive fresh host record accepted by original formal host parser",
+        "status": "passed"
+      },
+      {
+        "name": "prototype: duplicate exact URLs refuse guessing; explicit target ID succeeds",
+        "status": "passed",
+        "duplicate": "2507BF418E13EB0BECC304128C3C8B43"
+      },
+      {
+        "name": "prototype: attach pre-existing tab with separate test-data key",
+        "status": "passed"
+      },
+      {
+        "name": "prototype: navigation requires explicit URL and fresh document binding",
+        "status": "passed"
+      },
+      {
+        "name": "prototype: stale requested URL refuses binding",
+        "status": "passed"
+      },
+      {
+        "name": "interruption before dispatch: disconnected host causes zero effect",
+        "status": "passed"
+      },
+      {
+        "name": "interruption after effect before ack: no replay; reconnect reads original terminal",
+        "status": "passed",
+        "transportResult": {
+          "error": "CDP_CONNECTION_CLOSED"
+        },
+        "attempt": "660d978c-9d1c-43f4-baba-83eef977f758",
+        "receipt": {
+          "id": "660d978c-9d1c-43f4-baba-83eef977f758",
+          "count": 2,
+          "revision": 3,
+          "documentId": "0d10882d-61ba-4edf-aaac-1d58ffdef5b4"
+        }
+      },
+      {
+        "name": "fixture-specific attempt ID: repeat rejected by original handler",
+        "status": "passed",
+        "notGenericExactlyOnce": true
+      },
+      {
+        "name": "ordinary repeated clicks execute twice: browser transport has no business deduplication",
+        "status": "passed"
+      },
+      {
+        "name": "fixture persistence: original receipt survives saved-state reload",
+        "status": "passed",
+        "notRealGameContinuity": true
+      },
+      {
+        "name": "disconnect does not cancel queued remote work: observe before further action",
+        "status": "passed",
+        "firstReadAfterMs": 918,
+        "firstCount": 4,
+        "visibility": "hidden",
+        "terminalAfterMs": 1061
+      },
+      {
+        "name": "closed selected tab never adopts same-title or same-URL replacement",
+        "status": "passed"
+      }
+    ],
+    "fixtureSha256": "d7e8d7c3f8a96b956a20b139eed8300af2834dfa3a8f215bdb3bf1c52bf74288",
+    "chrome": "Chrome/156.0.8078.73",
+    "endedAt": "2026-11-04T07:02:35.995Z"
+  },
+  "nativeChrome": {
+    "method": "cua.getApp(com.google.Chrome), AX input and visible screenshot",
+    "source": "observed CUA tool outputs in this chat; manually transcribed fixture fields only",
+    "flow": {
+      "actions": [
+        "workshop",
+        "add",
+        "save",
+        "reset",
+        "load"
+      ],
+      "afterReset": {
+        "scene": "room",
+        "count": 0,
+        "revision": 0
+      },
+      "afterLoad": {
+        "scene": "workshop",
+        "count": 1,
+        "revision": 2
+      }
+    },
+    "documentIds": {
+      "initial": "c954dfe7-1803-4d77-baa5-399568e99184",
+      "afterReload": "ce834c99-5518-4fd9-976c-7eb09e7294e9",
+      "afterNavigation": "b28b2576-1bd9-4625-b470-9e44a1a85ca0"
+    },
+    "decoyFinal": {
+      "caseId": "decoy-native",
+      "scene": "room",
+      "count": 0
+    },
+    "afterNavigationLoad": {
+      "scene": "workshop",
+      "count": 1,
+      "revision": 2
+    },
+    "afterAppReacquire": {
+      "scene": "workshop",
+      "count": 1
+    },
+    "asyncBefore": {
+      "count": 1,
+      "message": "queued"
+    },
+    "asyncAfter": {
+      "count": 2,
+      "revision": 3,
+      "terminalReceipt": true
+    },
+    "ordinaryClickAfter": {
+      "count": 3,
+      "revision": 4
+    },
+    "visualPreviewChecked": true,
+    "createdTabsClosed": true,
+    "realTransportTerminationTest": false
+  },
+  "failuresRetained": [
+    {
+      "run": "history/artifacts/mac-original-20261104",
+      "cause": "sandbox listen EPERM 127.0.0.1",
+      "checks": 0,
+      "resolution": "approved execution outside sandbox; no browser policy bypass"
+    },
+    {
+      "run": "artifacts/act4-pc-20261104/final",
+      "checksPassed": 15,
+      "cause": "fixed 900ms wait observed 4 before queued operation terminal 5",
+      "diagnosticRun": "artifacts/act4-pc-20261104/timing-diagnosed",
+      "diagnostic": {
+        "visibility": "hidden",
+        "firstReadAfterMs": 916,
+        "firstCount": 4,
+        "terminalAfterMs": 979
+      },
+      "resolution": "bounded terminal observation, no click replay; specific browser scheduler cause unproven"
+    }
+  ],
+  "outputProtection": {
+    "existingResultsPreserved": true,
+    "duplicateHostRecordRefused": true
+  },
+  "historicalEvidence": {
+    "reviewReport": "ACT4_PC测试能力与历史阻塞复核报告.md dated 2026-11-04",
+    "windowsFixtureGroups": 15,
+    "theHandWindows": {
+      "date": "2026-11-02",
+      "chrome": 156,
+      "game": "0.5.12.13",
+      "mods": 27,
+      "groups": 5,
+      "runsPerGroup": 3,
+      "scope": "startup and state checks"
+    },
+    "rawWindowsLogsRetrievedThisTurn": false
+  },
+  "notValidated": [
+    "real DoL",
+    "Windows current task",
+    "file://",
+    "daily Profile attach",
+    "visible ACT4 launch",
+    "CUA-to-GER same-page bridge",
+    "performance or release readiness"
+  ]
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ACT4 neutral workshop</title>
+<style>
+body{font:18px system-ui;max-width:760px;margin:48px auto;padding:24px;background:#f5f3ee;color:#243332}button,a{font:inherit;padding:10px;margin:6px}section{background:white;padding:24px;border-radius:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere}button:focus{outline:3px solid #35817a}
+</style>
+<h1>ACT4 无内容测试工坊</h1>
+<p id="identity"></p>
+<section id="fixture">
+<p>场景：<strong id="scene"></strong>　零件：<strong id="count"></strong></p>
+<button id="workshop">进入工坊</button><button id="room">返回房间</button>
+<button id="add">制作一个零件</button><button id="save">保存测试数据</button>
+<button id="reset">重置当前状态</button><button id="load">读取测试数据</button>
+<button id="delayed">延迟制作（中断实验）</button>
+<p id="message" role="status"></p><pre id="state"></pre>
+<a id="navigate" href="?case=native&amp;page=other">导航到另一个文档</a>
+</section>
+<script>
+'use strict';
+(() => {
+ const params=new URLSearchParams(location.search),caseId=params.get('case')||'native';
+ const key='act4-neutral-v1:'+caseId,documentId=crypto.randomUUID();
+ let state={scene:'room',count:0,revision:0},receipts={};
+ const $=s=>document.querySelector(s);
+ const render=message=>{ $('#scene').textContent=state.scene;$('#count').textContent=state.count;$('#message').textContent=message;$('#state').textContent=JSON.stringify({caseId,documentId,state,receipts},null,2);$('#add').disabled=state.scene!=='workshop'; };
+ const record=(id)=>{if(id&&receipts[id])return render('重复操作已拒绝');if(state.scene!=='workshop')return render('请先进入工坊');state.count++;state.revision++;if(id)receipts[id]={id,count:state.count,revision:state.revision,documentId};render('制作完成');};
+ $('#identity').textContent='测试域 '+caseId+' · 文档 '+documentId;
+ $('#workshop').onclick=()=>{state.scene='workshop';state.revision++;render('已进入工坊');};
+ $('#room').onclick=()=>{state.scene='room';state.revision++;render('已返回房间');};
+ $('#add').onclick=()=>record($('#add').dataset.attempt||null);
+ $('#delayed').onclick=()=>{const id=$('#delayed').dataset.attempt||crypto.randomUUID();render('制作已排队');setTimeout(()=>record(id),700);};
+ $('#save').onclick=()=>{localStorage.setItem(key,JSON.stringify({state,receipts}));render('测试数据已保存');};
+ $('#reset').onclick=()=>{state={scene:'room',count:0,revision:0};receipts={};render('当前状态已重置，保存数据仍保留');};
+ $('#load').onclick=()=>{const raw=localStorage.getItem(key);if(!raw)return render('没有保存数据');const saved=JSON.parse(raw);state=saved.state;receipts=saved.receipts;render('测试数据已读取');};
+ $('#navigate').href='?case='+encodeURIComponent(caseId)+'&page=other';
+ window.act4Lab=Object.freeze({read:()=>structuredClone({caseId,documentId,state,receipts})});
+ render('就绪');
+})();
+</script>
