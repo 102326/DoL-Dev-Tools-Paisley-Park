@@ -170,3 +170,9 @@ test('Support rejects nested version metadata even with matching incident and ch
     for (const secret of ['private-model','private-serial','private-account']) assert.equal(output.includes(secret), false);
   }
 });
+test('Chrome identity and authority diagnostics are finite and omit supplied paths and raw exceptions',()=>{
+ for(const [code,stage]of [['PC_DOCUMENT_CHANGED','pc.document'],['PC_TARGET_UNAVAILABLE','pc.target'],['PC_BROWSER_UNAVAILABLE','pc.browser'],['PC_BROWSER_IDENTITY_CHANGED','pc.browser'],['PROJECT_SCOPE_TARGET_CHANGED','gameplay.authority']]){
+  const result=require('../scripts/lib/diagnostics.cjs').describe({code,message:'PRIVATE_RAW',path:'PRIVATE_PATH',reason:'PRIVATE_REASON'});
+  assert.equal(result.stage,stage);assert.equal(result.code,code);assert.equal(JSON.stringify(result).includes('PRIVATE'),false);
+ }
+});

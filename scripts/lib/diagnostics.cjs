@@ -8,6 +8,13 @@ const cdpStages = ['cdp.discovery','cdp.connect','cdp.command'];
 const fields = ['action','type','selector','value','x','y','degrees'];
 /** @type {Record<string,[string,string]>} */
 const entries = {
+  PC_DOCUMENT_CHANGED: ['pc.document','The original document binding is invalid. Preserve pending effects; a fresh binding is for new work, not settlement or automatic replay.'],
+  PC_TARGET_UNAVAILABLE: ['pc.target','The exact owned page is unavailable. Inspect pc-pages; no replacement page was adopted.'],
+  PC_BROWSER_UNAVAILABLE: ['pc.browser','The original owned browser is unavailable. Inspect its local instance records; no other browser was adopted.'],
+  PC_BROWSER_IDENTITY_CHANGED: ['pc.browser','The live browser, endpoint or Profile differs from the original record. Preserve original execution evidence; do not retarget.'],
+  PC_ACTION_UNSUPPORTED: ['pc.action','Use reviewed Web actions for Chrome; native Android actions require their explicit Android target.'],
+  PROJECT_SCOPE_TARGET_CHANGED: ['gameplay.authority','The original authorized target/data domain does not match. Keep the original Session and unresolved effects; supplied identity omitted.'],
+  PROJECT_SCOPE_INTENT_CHANGED: ['gameplay.authority','The requested operation is outside the recorded authority. Review the task scope; no automatic expansion or retry.'],
   SOURCE_REQUEST_INVALID: ['source.request','Use schemaVersion 1, bounded literal clues and limits. Supply an absolute --root; query files omit root/revision. See docs/GAME_SOURCE.md.'],
   SOURCE_QUERY_INVALID: ['source.query','Provide a readable regular UTF-8 JSON query file at most 65536 bytes; no output was published. See schemas/source-find-query-v1.schema.json.'],
   SOURCE_ROOT_UNAVAILABLE: ['source.identity','Check the reviewed source directory and permissions. No game download or alternate root was selected.'],
