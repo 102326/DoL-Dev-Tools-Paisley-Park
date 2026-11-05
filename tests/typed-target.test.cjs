@@ -12,3 +12,14 @@ test('typed leaf modules preserve CJS exports and fixed Android/Chrome target ke
  assert.throws(()=>target.target({...android,host:'android'}),/Explicit canonical target required/);
  assert.equal(target.key({...chrome,targetId:'other-page'}),target.key(chrome));
 });
+test('canonical targets revalidate the serialized identity instead of returning erased fields',()=>{
+ const android={serial:'synthetic-device',package:'com.example.fixture',userId:'0'};
+ const chrome={host:'chrome',profileId:'a'.repeat(64),browserId:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',processId:123,endpoint:'http://127.0.0.1:9222',origin:'http://127.0.0.1:8000',targetId:'page'};
+ const inheritedChrome={...chrome,document:undefined};delete inheritedChrome.targetId;Object.setPrototypeOf(inheritedChrome,{targetId:'page'});
+ for(const value of [Object.create(android),Object.assign(Object.create({toJSON:()=>({})}),android),inheritedChrome,Object.assign(Object.create({toJSON:()=>({})}),chrome)])assert.throws(()=>target.target(value));
+});
+test('target lease keys use the same validated serialized identity that target returns',()=>{
+ const serialized={serial:'serialized-device',package:'com.example.fixture',userId:'0'};
+ const input=Object.assign(Object.create({toJSON:()=>serialized}),{...serialized,serial:'input-device'});
+ assert.deepEqual(target.target(input),serialized);assert.equal(target.key(input),target.key(serialized));
+});
