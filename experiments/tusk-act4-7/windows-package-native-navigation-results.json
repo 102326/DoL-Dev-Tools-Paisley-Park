@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "result": "passed",
+  "scope": "one real native navigation with a preceding proven non-dispatch scope rejection",
+  "orchestrationSourceCommit": "595eaa7e095b957852149db4b96744ecd8af5873",
+  "package": {
+    "sourceCommit": "cd28b0aba280f986145378d2d5c86b4ee853b5a7",
+    "zipSha256": "62b95509df39b010602235922a275d32109000b53a1423bc1b34a599bf39a8da",
+    "manifest": "windows-package-manifest.json",
+    "verifiedFilesBefore": 431,
+    "verifiedFilesAfter": 431,
+    "allFilesUnchanged": true,
+    "externalToSourceTree": true,
+    "noSourceModuleSupplement": true,
+    "cliVersion": "6.1.0",
+    "cliNode": "26.12.1",
+    "typeStrippingDisabled": true,
+    "xstate": "5.33.2",
+    "xstateResolvedInsidePackage": true
+  },
+  "environment": {
+    "os": "Windows",
+    "powerShell": "7.6.5",
+    "chrome": "156.0.8078.80",
+    "mode": "headless",
+    "game": "0.5.12.13",
+    "sugarCube": "2.36.1+34",
+    "htmlSha256": "0e804505ee6829170936922efce86669387ea17522cd1a3c89c9058edde4e6f8"
+  },
+  "isolation": {
+    "newBlankProfile": true,
+    "newOrigin": true,
+    "newStore": true,
+    "oldStoresTouched": false,
+    "userDataCopied": false,
+    "androidUsed": false,
+    "headless": true
+  },
+  "baseline": {
+    "passage": "Start2",
+    "destination": "Orphanage Intro",
+    "nativeDestinationControlUnique": true,
+    "receivingProfileHashMatches": true,
+    "autosaveDisabled": false,
+    "saveMetadataCount": 0,
+    "slot0Exists": false,
+    "pageReceiptNamespaceExists": false,
+    "flagsMatchWithoutSave": false,
+    "flagsMatchWithSave": true
+  },
+  "budget": {
+    "timeoutMs": 600000,
+    "maxActions": 4,
+    "maxObservations": 24,
+    "maxSpend": 0
+  },
+  "narrowRequest": {
+    "scopeIntents": [
+      "navigation"
+    ],
+    "cliDispatchCalled": true,
+    "attemptCount": 1,
+    "protectedRemoteOperationCalls": 0,
+    "semanticStatus": "unsupported",
+    "semanticDispatch": "not-dispatched",
+    "semanticReason": "optional-mapping-unavailable",
+    "effectStatus": "settled",
+    "outcome": "not-occurred",
+    "outcomeSource": "coordinator: reservation never crossed dispatch boundary",
+    "executionBindingPresent": false,
+    "originalNativeStateUnchanged": true,
+    "saveMetadataUnchanged": true,
+    "noPageReceipt": true,
+    "pending": false,
+    "sessionFinallyCancelled": true
+  },
+  "authorizedRequest": {
+    "scopeIntents": [
+      "navigation",
+      "save"
+    ],
+    "newSessionAndDecision": true,
+    "oldScopeUnchanged": true,
+    "sameDeterministicControlRef": true,
+    "completeFreshDecisionEnvelopeUsed": true,
+    "protectedRemoteOperationCalls": 1,
+    "productionCoordinator": true,
+    "readOutcomeOverride": false,
+    "ordinaryClickUsedForBusiness": false,
+    "originalTerminalAndBindingMatch": true,
+    "independentNativeStateMatches": true,
+    "contract": "native-passage-save-1d8f8a292c5c",
+    "status": "completed",
+    "attemptCount": 1,
+    "pending": false,
+    "spent": 0,
+    "reserved": 0
+  },
+  "nativeOutcome": {
+    "from": "Start2",
+    "intended": "Orphanage Intro",
+    "to": "Orphanage Intro",
+    "redirected": false,
+    "turns": [
+      2,
+      3
+    ],
+    "historyLength": [
+      2,
+      3
+    ],
+    "newMoment": true,
+    "money": [
+      500,
+      500
+    ],
+    "time": [
+      0,
+      0
+    ],
+    "passagePhases": 5,
+    "addonSettled": 5,
+    "autoSaveObserver": {
+      "kind": "native-idb-save",
+      "slot": 0,
+      "count": 0,
+      "transactions": 0,
+      "committed": true,
+      "readBack": true
+    },
+    "actualAutoSaveOccurred": false,
+    "nativeSaveMetadataAfter": 0,
+    "slot0ExistsAfter": false
+  },
+  "store": {
+    "sessions": 2,
+    "effects": 2,
+    "settled": 2,
+    "notOccurred": 1,
+    "occurred": 1,
+    "pending": 0,
+    "originalRejectionPreserved": true
+  },
+  "evidence": {
+    "passiveNodeTransportTrace": true,
+    "argumentsOrResultsModified": false,
+    "pageModifiedByTrace": false,
+    "preparationDebugActions": 3,
+    "dom": true,
+    "css": true,
+    "screenshots": true,
+    "connectionWindowEvents": true,
+    "originalDocumentUnchanged": true,
+    "rawLocalOnly": true
+  },
+  "harnessErrorPreserved": "Readonly proof initially treated outcomeContext as Store-wide; corrected to each Session plus readonly SQL; no action replay",
+  "cleanup": {
+    "stopReturned": true,
+    "ownChromeGone": true,
+    "httpListenerReleased": true,
+    "cdpListenerReleased": true,
+    "profileAndStoreRetainedLocally": true
+  },
+  "notValidated": [
+    "nonzero automatic save during navigation",
+    "real-game document replacement in this run",
+    "interruption/recovery in this run",
+    "Android in this run",
+    "other Gameplay paths and Mod combinations",
+    "Windows Node 26.0.0",
+    "full visual rendering"
+  ],
+  "knownLimitations": [
+    "HTML-only resource service",
+    "generic mapping refusal reason is not a dedicated permission error",
+    "historical F07 and background screenshot physical causes Unknown",
+    "prior batch transient PID 0 listener physical cause Unknown"
+  ],
+  "remainingAcceptance": {
+    "deviceFree": [
+      "generator publication against a real Windows file-sharing lock and rename refusal, distinct from injected failure tests",
+      "Windows Node 26.0.0 if retained as the supported floor; corresponding local runtime input absent"
+    ],
+    "deviceWindow": [
+      "representative current-TS Android document replacement and old-holder refusal, Action/GER original receipt and native resource generation seams"
+    ],
+    "historicalInputConditional": [
+      "original CRLF receipts and old stopped/expired Sessions under their original contract",
+      "exact 0.5.12.13 source correlation where required"
+    ],
+    "additionalCoverage": [
+      "nonzero automatic save in a navigation path",
+      "more business/Mod/device/visual combinations",
+      "device-agent performance exploration"
+    ],
+    "releaseJudgment": [
+      "historical startup and background screenshot physical causes remain Unknown",
+      "final candidate identity and documentation closeout remain in release stage; no main/version/tag/release in this batch"
+    ]
+  }
+}

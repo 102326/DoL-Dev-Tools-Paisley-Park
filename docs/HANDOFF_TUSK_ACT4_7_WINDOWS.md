@@ -8,6 +8,8 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 
 同日新增：[固定独立包的真实保存与原回执恢复](../experiments/tusk-act4-7/WINDOWS_PACKAGE_REAL_SAVE_RECOVERY_20261106.md)已通过。新建空白 PC 环境执行唯一保存，在原 terminal 返回边界实际中断自有 CLI，新 CLI 恢复同一 attempt 并结清，动作数仍为 1。没有占用平板或操作历史 Store；保留中断和清理首轮未确认记录。
 
+同日新增：[固定独立包原生导航及保存 Scope](../experiments/tusk-act4-7/WINDOWS_PACKAGE_NATIVE_NAVIGATION_20261106.md)已通过：窄 Scope 零受保护业务调用，另建 navigation/save 请求原生导航一次并结清；本次实际自动保存计数为 0。后续验收按该报告末尾清单区分无设备、实机/历史输入与额外覆盖，不自动扩大全游戏矩阵。
+
 完整Node核心TS迁移已完成本机Scoped Done；开发包P2，UI4.2优先级P1。95个原入口全部strict（含9源码载体），另17DOM-only源、21冻结JS输入共46函数体未类型化，运行清单133项。G另3个开发入口，Node Program98项/总133生成产物。详见[完整Mac收口](../experiments/tusk-act4-7/typescript/CLOSEOUT_MAC.md)。尚未完成Windows/Android/真实游戏验收，不能称整体7.0可发布。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序

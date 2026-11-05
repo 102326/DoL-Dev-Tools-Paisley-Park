@@ -10,6 +10,8 @@
 
 同日后续：[固定独立包的真实保存与 CLI 中断恢复](WINDOWS_PACKAGE_REAL_SAVE_RECOVERY_20261106.md)在另一新建空白 PC 环境通过。同一原 terminal 在新 CLI 恢复后结清，动作数仍为 1；未使用此前实验的 Profile / Store。
 
+同日后续：[固定独立包原生导航及保存 Scope](WINDOWS_PACKAGE_NATIVE_NAVIGATION_20261106.md)在另一新建空白 PC 环境通过。窄 Scope 的受保护业务调用为 0，另建授权请求导航一次并结清；实际自动保存次数为 0，不冒充非零事务验收。报告末尾区分了无设备检查、实机/历史输入和额外覆盖。
+
 ## 来源与范围
 
 最初接续 `01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd`，形成 Windows 修复 `ff72553ba4ffa933abade391abd1b9b9c39f74d7` 和截图诊断/夹具补充 `f15f92199b7a9af0773a92af6b7dec435a1454c5`。随后获取远端 TS / 启动诊断基线 `8670318c3947ffd0496582c28c0dfc7ebc3e0074`，保留两条历史并安全合并。
