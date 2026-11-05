@@ -10,3 +10,4 @@ window.SugarCube={Macro:{get:name=>({handler:handlers[name]})},Story:{getAllWidg
  return storyMode==='duplicate'?[item,item]:[item];
 }}};
 window.contractFixture={setStory:mode=>{storyMode=mode},tamperMacro:()=>{handlers.syntheticmacro=macroFactory(true)}};
+window.SugarCube.State={passage:'Synthetic Room',turns:0,variables:{money:100,worn:{head:{variable:'naked'}},wardrobe:{head:[]}}};

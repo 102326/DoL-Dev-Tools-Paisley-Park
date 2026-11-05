@@ -22,6 +22,7 @@
     "../../probes/typescript/inspectors.cts",
     "../../probes/typescript/journey-wait.cts",
     "../../probes/typescript/environment.cts",
-    "../../probes/typescript/widget-source.cts"
+    "../../probes/typescript/widget-source.cts",
+    "../../probes/typescript/goal-reader.cts"
   ]
 }
