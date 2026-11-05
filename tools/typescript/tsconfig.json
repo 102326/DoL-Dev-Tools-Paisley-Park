@@ -41,6 +41,9 @@
     "../../scripts/lib/performance.cts",
     "../../scripts/lib/logcat.cts",
     "../../scripts/lib/record.cts",
-    "../../scripts/lib/animation.cts"
+    "../../scripts/lib/animation.cts",
+    "../../scripts/lib/install-skill.cts",
+    "../../scripts/lib/doctor.cts",
+    "../../scripts/lib/source-find-cli.cts"
   ]
 }

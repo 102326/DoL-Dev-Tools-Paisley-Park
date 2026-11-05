@@ -176,3 +176,13 @@ test('Chrome identity and authority diagnostics are finite and omit supplied pat
   assert.equal(result.stage,stage);assert.equal(result.code,code);assert.equal(JSON.stringify(result).includes('PRIVATE'),false);
  }
 });
+
+test('Doctor applies the ACT4 Node 26 floor instead of the released 6.1 floor',async t=>{
+ const root=temp(t),original=Object.getOwnPropertyDescriptor(process.versions,'node');t.after(()=>Object.defineProperty(process.versions,'node',original));
+ const run=async(_exe,args)=>({stdout:args.includes('devices')?'List of devices attached\n':'fixture 1.2.3'});
+ for(const version of ['22.12.0','24.15.0','25.99.0','26.0.0','26.13.0']){
+  Object.defineProperty(process.versions,'node',{...original,value:version});
+  const report=await doctor({out:path.join(root,'doctor.json')},run);
+  assert.equal(report.checks.find(c=>c.name==='node').status,Number(version.split('.')[0])>=26?'available':'unavailable',version);
+ }
+});
