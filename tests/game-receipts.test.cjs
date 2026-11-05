@@ -44,3 +44,15 @@ test('retirement selects only matching settled terminals; lost response can safe
  await assert.rejects(receipts.cleanup(lost,[e]));assert.equal(Object.hasOwn(records,attemptId),false);
  const retry=await receipts.cleanup(f.client,[e]);assert.deepEqual(Array.from(retry.retired),[attemptId]);assert.equal(retry.remaining,0);
 });
+test('serialized retirement keeps the validated binding instead of an inherited toJSON projection',async()=>{
+ const f=fixture(),nonce=await receipts.context(f.client);
+ const binding=Object.assign(Object.create({toJSON:()=>({})}),{provider:'native-dol',contract:'reviewed-v1',contextNonce:nonce,requestDigest:'a'.repeat(64)});
+ const result={outcome:'occurred',remoteClosed:true,spent:0},effect={id:attemptId,status:'settled',executionBinding:binding,result};
+ f.globals.window[receipts.namespace].records[attemptId]={...binding,attemptId,status:'terminal',...result};
+ const retired=await receipts.cleanup(f.client,[effect]);
+ assert.deepEqual(Array.from(retired.retired),[attemptId]);assert.equal(retired.remaining,0);assert.equal(Object.hasOwn(f.globals.window[receipts.namespace].records,attemptId),false);
+});
+test('receipt binding digests require primitive strings before any recovery query',async()=>{
+ const binding={provider:'native-dol',contract:'reviewed-v1',contextNonce:attemptId,requestDigest:'a'.repeat(64)};
+ for(const requestDigest of [[binding.requestDigest],new String(binding.requestDigest)])assert.throws(()=>receipts.validate({...binding,requestDigest}),/Invalid gameplay receipt binding/);
+});

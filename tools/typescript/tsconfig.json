@@ -67,6 +67,7 @@
     "../../scripts/lib/game-contract.cts",
     "../../scripts/lib/game-goal-reader.cts",
     "../../scripts/lib/game-scope.cts",
-    "../../scripts/lib/game-resource.cts"
+    "../../scripts/lib/game-resource.cts",
+    "../../scripts/lib/game-receipts.cts"
   ]
 }
