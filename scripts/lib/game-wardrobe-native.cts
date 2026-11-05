@@ -16,7 +16,7 @@ type Held=wardrobe.Attested;
 interface RemoteView {exceptionDetails?:unknown;result?:{type?:unknown;objectId?:unknown;value?:unknown}}
 const {createHash}:typeof import('node:crypto')=require('node:crypto'),mapping:typeof import('./game-wardrobe.cjs')=require('./game-wardrobe.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const {functionSource}=contracts,environment:typeof import('./game-native-environment.cjs')=require('./game-native-environment.cjs'),receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
-const {operation}:{operation:(...args:unknown[])=>unknown}=require('./game-wardrobe-operation.cjs'),profile:business.Profile&{id:string;terminalReviewed:boolean}=require('./game-wardrobe-profile.json');
+const {operation}:typeof import('./game-wardrobe-operation.cjs')=require('./game-wardrobe-operation.cjs'),profile:business.Profile&{id:string;terminalReviewed:boolean}=require('./game-wardrobe-profile.json');
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 const {bind:bindBusiness,checkBindings}:typeof import('./game-native-business-bindings.cjs')=require('./game-native-business-bindings.cjs');
 

@@ -78,6 +78,15 @@
     "../../scripts/lib/game-native-navigation.cts",
     "../../scripts/lib/game-native-history.cts",
     "../../scripts/lib/game-native-save.cts",
-    "../../scripts/lib/game-native-environment.cts"
+    "../../scripts/lib/game-native-environment.cts",
+    "../../scripts/lib/game-native-daily-state.cts",
+    "../../scripts/lib/game-native-garden-state.cts",
+    "../../scripts/lib/game-native-hall-state.cts",
+    "../../scripts/lib/game-native-hour-state.cts",
+    "../../scripts/lib/game-native-street-state.cts",
+    "../../scripts/lib/game-navigation-operation.cts",
+    "../../scripts/lib/game-shop-operation.cts",
+    "../../scripts/lib/game-shop-menu-operation.cts",
+    "../../scripts/lib/game-wardrobe-operation.cts"
   ]
 }

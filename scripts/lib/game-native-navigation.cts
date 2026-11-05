@@ -19,7 +19,7 @@ interface EnvironmentView {terminalReviewed?:unknown;id?:unknown;guard?:unknown;
 const {createHash,randomUUID}:typeof import('node:crypto')=require('node:crypto');
 const {functionSource,captured,member,sameObject}:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
-const {operation,preflight}:{operation:(...args:unknown[])=>unknown;preflight:(...args:unknown[])=>unknown}=require('./game-navigation-operation.cjs');
+const {operation,preflight}:typeof import('./game-navigation-operation.cjs')=require('./game-navigation-operation.cjs');
 const historyContract:typeof import('./game-native-history.cjs')=require('./game-native-history.cjs');
 const digest=(value:string)=>createHash('sha256').update(value).digest('hex');
 const sources={

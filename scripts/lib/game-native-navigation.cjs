@@ -1,4 +1,4 @@
-// Generated from game-native-navigation.cts by TypeScript 6.0.2; source-lf-sha256=013a69c56333305c818ede078b94cacf3c86112b9ca45110c7628bebded35f12
+// Generated from game-native-navigation.cts by TypeScript 6.0.2; source-lf-sha256=d41837a2b730b3783c19fdf53989713824cfacfcac5c54ad488fc1a1b6773ca1
 "use strict";
 // Native DoL link provenance. Destination and payload come from the actual
 // control closure, never a wardrobe adapter or a planned Journey path.

@@ -20,7 +20,7 @@ interface RemoteView {exceptionDetails?:unknown;result?:{type?:unknown;objectId?
 const {branch,readCurrent,dateGetterOf,sourceCheck}:{branch:nativeShop.SourceFunction;readCurrent:nativeShop.SourceFunction;dateGetterOf:nativeShop.SourceFunction;sourceCheck:nativeShop.SourceFunction}=require('./browser-abi/native-shop.cjs');
 const {createHash}:typeof import('node:crypto')=require('node:crypto'),shop:typeof import('./game-shop.cjs')=require('./game-shop.cjs'),control:typeof import('./game-native-control.cjs')=require('./game-native-control.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const {bind,checkBindings}:typeof import('./game-native-business-bindings.cjs')=require('./game-native-business-bindings.cjs'),environment:typeof import('./game-native-environment.cjs')=require('./game-native-environment.cjs'),receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
-const {operation}:{operation:(...args:unknown[])=>unknown}=require('./game-shop-operation.cjs'),profile:business.Profile&{id:string;payloadSha256:string;shadowKeys:unknown}=require('./game-shop-profile.json');
+const {operation}:typeof import('./game-shop-operation.cjs')=require('./game-shop-operation.cjs'),profile:business.Profile&{id:string;payloadSha256:string;shadowKeys:unknown}=require('./game-shop-profile.json');
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 const button='#buy-send-home > .buy-button > .buy-button-inner',anchor=button+' > a.link-internal';
 async function prepare(client:nativeShop.Client,raw:unknown,goal:unknown,attemptId:unknown,{quote,attestOnly=false,scope}:nativeShop.Options={}):Promise<nativeShop.Attested|nativeShop.Prepared>{
