@@ -1,0 +1,54 @@
+{
+  "codeCommit": "0196e86989facae13e765dc3bff58046b53502a7",
+  "strictCoreModules": 4,
+  "baselineCoreModules": 95,
+  "rootTests": {
+    "total": 527,
+    "passed": 526,
+    "failed": 0,
+    "skipped": 1
+  },
+  "buildTests": {
+    "total": 4,
+    "passed": 4
+  },
+  "typeNegatives": 14,
+  "legacyTargetCases": 16,
+  "legacyDiagnosticCases": 9,
+  "independentPackageChrome": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Synthetic Chrome Integration document binding only",
+    "checks": [
+      "formal Evidence CLI uses reviewed worker on the original Chrome document",
+      "same-URL peer never substitutes for the selected target",
+      "parent remembers a URL roundtrip before the worker binds, even when current identity fields match",
+      "hash between detect and collect rejects mixed data while retaining Generic Evidence",
+      "reload between detect and collect rejects mixed data while retaining Generic Evidence",
+      "explicit new-document binding permits a new collection",
+      "document change during redact cannot publish a stale successful Integration",
+      "missing local module remains optional and does not erase Generic artifacts",
+      "unresolved remote read returns a bounded optional failure with exactly one module attempt",
+      "closed original target fails without adopting the surviving same-URL peer"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  },
+  "floorEntrypoints": {
+    "node": "26.0.0",
+    "disabledTypeStripping": true,
+    "help": true,
+    "version": true,
+    "installSkill": true,
+    "resolver": true,
+    "sourceFind": true,
+    "sanitizedFailure": true,
+    "formalBuildCheck": true
+  },
+  "notValidated": [
+    "Windows",
+    "Android device/WebView",
+    "real game"
+  ]
+}

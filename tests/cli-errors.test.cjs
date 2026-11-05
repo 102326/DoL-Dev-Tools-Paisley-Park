@@ -98,3 +98,12 @@ test('incomplete Skill sources and owned write failures expose fixed recovery ad
   const failed=run(['install-skill','--out',path.join(root,'write/dol-dev-tools-paisley-park')],['-r',writeShim]);
   assert.equal(failed.status,1);assert.match(failed.stderr,/SKILL_INSTALL_FAILED stage=install.write/);assert.match(failed.stderr,/retry an unused target/);assert(!failed.stderr.includes('PRIVATE'));assert(!failed.stderr.includes(root));
 });
+
+test('initial PC refusal is actionable while arbitrary startup metadata stays private',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-startup-cli-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));const shim=path.join(root,'shim.cjs');
+ for(const reason of ['initial-empty-document','PRIVATE_REASON']){
+  fs.writeFileSync(shim,`require(${JSON.stringify(require.resolve('../scripts/lib/pc-session.cjs'))}).start=async()=>{throw Object.assign(Error('PRIVATE_RAW'),{code:'PC_DOCUMENT_CHANGED',pcDocumentReason:${JSON.stringify(reason)},url:'PRIVATE_URL'})};`);
+  const result=run(['pc-start'],['-r',shim]);assert.equal(result.status,1);assert.match(result.stderr,/PC_DOCUMENT_CHANGED stage=pc.document/);assert.equal(result.stderr.includes('PRIVATE'),false);
+  if(reason==='initial-empty-document'){assert.match(result.stderr,/reason=initial-empty-document/);assert.match(result.stderr,/startup-failure.json/)}else assert.equal(result.stderr.includes('reason='),false);
+ }
+});

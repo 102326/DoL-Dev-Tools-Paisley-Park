@@ -1,0 +1,67 @@
+{
+  "codeCommit": "10082eff5715e26f086d19310f815c22872b9dfe",
+  "rootTests": {
+    "total": 523,
+    "passed": 522,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": {
+    "total": 43,
+    "passed": 42,
+    "failed": 0,
+    "skipped": 1
+  },
+  "buildTests": {
+    "total": 3,
+    "passed": 3
+  },
+  "expectedTypeErrors": 8,
+  "floorNode": {
+    "node": "26.0.0",
+    "version": "6.1.0",
+    "typeStrippingDisabled": true,
+    "installedScripts": [
+      "resolve.cjs"
+    ],
+    "rootMatchesExtractedPackage": true,
+    "help": true,
+    "successKeys": [
+      "cli",
+      "docs",
+      "name",
+      "root",
+      "validation",
+      "version"
+    ]
+  },
+  "hostDiscovery": {
+    "codexVersion": "codex-cli 0.166.0-alpha.6",
+    "archiveSha256": "f2704fbdc0b204800ed3b895098f531884aba78bda88d000ec677c4a2f30c38b",
+    "beforeProjectMatch": 0,
+    "afterForceReloadMatch": 1,
+    "afterProcessRestartMatch": 1,
+    "scope": "repo",
+    "enabled": true,
+    "interfaceDisplayName": "DoL Dev Tools: Paisley Park",
+    "resolvedToolsMatchesPackage": true,
+    "globalSkillInstallRequested": false,
+    "modelTurnsStarted": 0,
+    "requestMethods": [
+      "initialize",
+      "skills/list"
+    ],
+    "hostExits": [
+      {
+        "code": 0,
+        "signal": null
+      },
+      {
+        "code": 0,
+        "signal": null
+      }
+    ],
+    "unrelatedSkillErrors": 0,
+    "scopeLimit": "separate Codex app-server processes; no live Desktop session reload"
+  }
+}

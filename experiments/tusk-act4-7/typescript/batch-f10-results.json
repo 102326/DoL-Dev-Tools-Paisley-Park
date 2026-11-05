@@ -1,0 +1,67 @@
+{
+  "codeCommit": "325a08301a53cf6f172173b8791f6d0c29b8bd59",
+  "strictNodeModules": 57,
+  "strictBrowserModules": 8,
+  "frozenBrowserAbiAssets": 6,
+  "frozenUntypedFunctions": 11,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 109,
+  "artifacts": 74,
+  "rootTests": {
+    "total": 582,
+    "passed": 581,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 52,
+  "floorPackageTargetedTests": 52,
+  "buildProtectionTests": 5,
+  "typeNegatives": 99,
+  "independentReviewerTests": 10,
+  "oldProtocolCases": {
+    "control": 8,
+    "navigation": 15
+  },
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "notValidated": [
+    "Windows",
+    "Android WebView/device",
+    "real DoL",
+    "original native game function profile attestation or business execution"
+  ],
+  "sourceChromeControl": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Real Chrome synthetic V8 lexical ownership and event reader; no native game profile attestation or Gameplay acceptance",
+    "checks": [
+      "actual V8 State closure resolves to the exact original fixture State",
+      "primitive lexical values remain actual remote metadata rather than assumed object IDs",
+      "an absent lexical name refuses without selecting a different object",
+      "the original event reader retains the actual single original synthetic handler",
+      "an additional business handler refuses and no synthetic handler has run",
+      "caller-owned group release rejects the old closure by its exact ownership error while the same bound session remains live"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  },
+  "floorPackageChromeControl": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Real Chrome synthetic V8 lexical ownership and event reader; no native game profile attestation or Gameplay acceptance",
+    "checks": [
+      "actual V8 State closure resolves to the exact original fixture State",
+      "primitive lexical values remain actual remote metadata rather than assumed object IDs",
+      "an absent lexical name refuses without selecting a different object",
+      "the original event reader retains the actual single original synthetic handler",
+      "an additional business handler refuses and no synthetic handler has run",
+      "caller-owned group release rejects the old closure by its exact ownership error while the same bound session remains live"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  }
+}

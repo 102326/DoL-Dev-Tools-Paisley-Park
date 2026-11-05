@@ -1,0 +1,29 @@
+{
+  "codeCommit": "067d6b5a47e8c0ef91202671f37db3524de33a07",
+  "strictNodeModules": 45,
+  "strictBrowserModules": 5,
+  "frozenBrowserAbiAssets": 1,
+  "frozenUntypedFunctions": 2,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 101,
+  "artifacts": 56,
+  "rootTests": {
+    "total": 554,
+    "passed": 553,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 40,
+  "floorPackageTargetedTests": 40,
+  "buildProtectionTests": 5,
+  "typeNegatives": 68,
+  "pinnedOriginalLFRenderDigest": "f796e657ba5fa87891932226fdbae629827405e15a3b77c51986dfcce55ed7ba",
+  "independentReviewerTests": {
+    "initial": 28,
+    "newlineFix": 2
+  },
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "withoutNodeModules": true
+  }
+}

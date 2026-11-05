@@ -25,6 +25,18 @@ HTML 位于 `/index.html`，`/` 同样提供该文件。按 HTML 中真实相对
 
 保持启动命令运行。Ctrl+C、SIGTERM 或本轮 Chrome 退出后释放自己的 HTTP/Chrome；不处理日常 Profile，不自动删除任何 Profile。强制杀死宿主进程或断电不能保证清理；通过实例内 `chrome/launch.json` 和 host.json 核对原进程，不按进程名批量杀浏览器。启动失败也保留日志和记录；`PC_STOP_UNCONFIRMED` 表示退出尚未确认。
 
+## 初始绑定失败的定位记录
+
+`PC_DOCUMENT_CHANGED` 保留原错误码。首次绑定在原就绪期限内未完成时，可以附带有限 `reason`：`initial-empty-document`、`initial-url-mismatch`、`initial-context-unavailable` 或 `initial-loader-unavailable`。它们只说明观测到的未就绪状态，不推断 Node、HTTP、GPU 或设备根因。已经建立的文档绑定失效仍沿原语义拒绝，不被归类为初始等待。
+
+`pc-start` 在 HTTP 服务建立后、Chrome launch 拒绝时，会尽力在实例目录独占创建 `startup-failure.json`。记录只含固定诊断与 HTTP 计数，无路径、页面 URL、请求头、正文或原始异常；不能写入或已有同名文件时不覆盖、不替换原启动异常，也不跳过原有 HTTP 清理。其他直接绑定入口不保证产生这个文件。
+
+HTTP 字段是关闭服务前的快照：`connections`、`requests`、规范首页 GET 的 `mainGetRequests`、`mainResponsesFinished`、`mainResponsesClosedEarly`。各计数到65535饱和，`truncated`说明丢失精确总数。HEAD、错误 Host 和其他资源不计入首页GET；Node默认 HTTP 解析错误处理不变。
+
+结合原 `chrome/launch.json` 和本地 Chrome 日志，可以区分“尚无完整请求”“首页请求未完成响应”“响应已结束但文档仍未提交”等观测位置。服务计数不能归属于某个Tab，也不能证明浏览器已提交文档或脚本已就绪。`readyRecordReturned:false`只表示没有返回可用owned记录，不证明页面从未运行脚本，更不能结清GER副作用。记录不改变超时、目标选择、身份检查或重试策略，不默认上传。
+
+F07历史两次空文档的物理原因仍未定位。受控扣住首页可重现相同表象，扣住脚本可得到另一种状态；这些控制与后续成功运行不能追认为旧失败根因已修复。
+
 ## 选页和新文档
 
 ```sh
@@ -73,7 +85,7 @@ Chrome 的 Profile 路径摘要和资源摘要不是数据世代证明；不填�
 
 受审项目 Recipe 可使用 Chrome scope：`host:"chrome"`、绝对 `workspace`、选定 `profileId`、完整 `origin`、明确 `intents`、`dataDomain:"chrome-origin-storage"`。这记录宿主已授予的数据/任务范围，不自行授予权限，不接受 Android 占位 serial/package/signer 或 data-reset。详见 [项目 Recipe](PROJECT_EXPERIMENTS.md)。原生 DoL Provider 保留源码/函数指纹及终态要求；未匹配的游戏版本不会退回普通点击。
 
-标准 Evidence 保存 incident、原 target 的去路径身份摘要、通用采集和每步完整性；Android 专属请求标 unsupported，可选 Integration 当前不在 Chrome 上执行，不能因此伪造支持或使已完成的通用采集失效。Chrome 环境仅含 browser/runtime，不补造 Android 元数据；Compare/Known Good 的完整性要求见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
+标准 Evidence 保存 incident、原 target 的去路径身份摘要、通用采集和每步完整性；Android 专属请求标 unsupported。已审查的可选 Integration 可通过原 `--integration` / `--integration-file` 入口在 Chrome worker 中执行，固定原 target/document；导航或模块失败不使已完成的通用采集失效，详见 [Integration 文档绑定](INTEGRATIONS.md#chrome-原文档绑定)。Chrome 环境仅含 browser/runtime，不补造 Android 元数据；Compare/Known Good 的完整性要求见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
 
 ## 验证范围
 

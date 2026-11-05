@@ -1,0 +1,64 @@
+{
+  "codeCommit": "1c2b27ada8c2e44bd1508a3204b8eee4302a504c",
+  "strictNodeModules": 47,
+  "strictBrowserModules": 7,
+  "frozenBrowserAbiAssets": 1,
+  "frozenUntypedFunctions": 2,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 103,
+  "artifacts": 62,
+  "rootTests": {
+    "total": 560,
+    "passed": 559,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 77,
+  "floorPackageTargetedTests": 77,
+  "oldProbeCases": 30,
+  "oldRequestCases": 6,
+  "oldQuoteCases": 5,
+  "normalizationRejectionCases": 4,
+  "buildProtectionTests": 5,
+  "typeNegatives": 74,
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "sourceChromeGoalProof": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Real Chrome DOM and self-authored original-state stand-in; no DoL engine or gameplay acceptance",
+    "checks": [
+      "reach proof agrees with real DOM and the selected fixture state",
+      "DOM and original-state mismatch refuses an available proof",
+      "matching equipment reads actual fixture worn and inventory fields",
+      "purchase proof requires actual positive spend and one exact variant",
+      "spend beyond the explicit bound cannot satisfy the purchase proof",
+      "matching browser state alone cannot complete purchase-and-equip without its settled receipt",
+      "ambiguous Passage roots refuse an available proof",
+      "all observations leave fixture business call counters untouched"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  },
+  "floorPackageChromeGoalProof": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Real Chrome DOM and self-authored original-state stand-in; no DoL engine or gameplay acceptance",
+    "checks": [
+      "reach proof agrees with real DOM and the selected fixture state",
+      "DOM and original-state mismatch refuses an available proof",
+      "matching equipment reads actual fixture worn and inventory fields",
+      "purchase proof requires actual positive spend and one exact variant",
+      "spend beyond the explicit bound cannot satisfy the purchase proof",
+      "matching browser state alone cannot complete purchase-and-equip without its settled receipt",
+      "ambiguous Passage roots refuse an available proof",
+      "all observations leave fixture business call counters untouched"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  }
+}

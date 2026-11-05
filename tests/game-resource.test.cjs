@@ -113,3 +113,19 @@ test('Store open cannot downgrade a concurrent genuine schema-3 upgrade or erase
  const reopened=f.open();assert.equal(reopened.db.prepare('PRAGMA user_version').get().user_version,3);
  }
 });
+test('read-only native identity rejects coercible target fields before any device query',async()=>{
+ for(const field of ['serial','package','userId']){
+  let calls=0;const adb=async()=>{calls++;throw Error('Unexpected device query')};
+  await assert.rejects(resource.inspect(adb,{...target,[field]:[target[field]]},undefined,{readOnlyIdentity:true}),/Explicit native identity target required/);
+  assert.equal(calls,0);
+ }
+});
+test('native resource operations retain their selected target across caller mutation during a query',async t=>{
+ for(const mode of ['identity','rebuild']){
+  const f=fixture(t);if(mode==='identity')await resource.rebuild(f.r,f.adb,target,f.authorization);
+  const selected={...target};let changed=false;
+  const adb=async(...args)=>{if(args[0]==='get-state'&&!changed){changed=true;Object.assign(selected,{serial:'changed-device',package:'com.example.other',userId:'1'})}return f.adb(...args)};
+  const result=mode==='identity'?await resource.identity(adb,selected,f.authorization):await resource.rebuild(f.r,adb,selected,f.authorization);
+  assert.deepEqual(result.target,target);assert.equal(changed,true);assert.equal(f.commands.some(command=>command.includes('com.example.other')),false);
+ }
+});

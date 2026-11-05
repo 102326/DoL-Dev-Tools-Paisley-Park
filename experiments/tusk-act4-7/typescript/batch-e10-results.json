@@ -1,0 +1,37 @@
+{
+  "codeCommit": "a1a2e775855c3c3f8d2ff62edbbedc5dbc3ae3db",
+  "strictNodeModules": 81,
+  "sourceCarrierNodeModules": 9,
+  "strictBrowserModules": 15,
+  "frozenBrowserAbiAssets": 15,
+  "frozenUntypedFunctions": 37,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 125,
+  "artifacts": 112,
+  "rootTests": {
+    "total": 592,
+    "passed": 591,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 65,
+  "floorPackageTargetedTests": 65,
+  "buildProtectionTests": 5,
+  "typeNegatives": 117,
+  "independentReviewerTests": 50,
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "realChrome": {
+    "sourceProbes": 5,
+    "floorProbes": 5,
+    "sourceIntegration": 10,
+    "floorIntegration": 10
+  },
+  "notValidated": [
+    "Windows",
+    "Android WebView/device",
+    "real DoL"
+  ]
+}

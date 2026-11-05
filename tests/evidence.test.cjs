@@ -247,7 +247,8 @@ test('Chrome standard evidence collects bound capabilities and retains optional 
  const m=await evidence({...f.options(out),css:true,environment:true,storage:true,webPerformance:true},{chromeHostFactory:()=>f.host,adb:()=>{throw Error('unexpected Android')},integrations:[broken,{modulePath:'/private/module'}]});
  assert.equal(m.status,'complete');
  for(const name of ['screenshot','dom-contract','css-contract','console','network','storage','environment','web-performance'])assert.equal(m.steps.find(s=>s.name===name).status,'completed',name);
- assert.equal(m.steps.find(s=>s.name==='integration-0').status,'failed');assert.equal(m.steps.find(s=>s.name==='integration-1').status,'unsupported');
+ assert.equal(m.steps.find(s=>s.name==='integration-0').status,'failed');assert.equal(m.steps.find(s=>s.name==='integration-1').status,'failed');
+ assert.equal(m.integrations[1].reason,'integration-load-failed');
  assert.equal(f.closed,1);assert.ok(fs.existsSync(path.join(out,'screenshot.png')));assert.doesNotMatch(fs.readFileSync(path.join(out,'manifest.json'),'utf8'),/private\/module|index.html/);
 });
 test('Chrome unsupported Android selections yield partial or failed without accessing Android',async t=>{
@@ -271,4 +272,23 @@ test('Chrome requires an owned host file and rejects mixed Android targets befor
   await assert.rejects(evidence({...f.options(out),...extra}),{code:'PC_INPUT_INVALID'});
   assert.equal(fs.existsSync(out),false);
  }
+});
+
+test('version metadata cannot replace Evidence identity, steps or privacy while its full artifact is retained',async t=>{
+ const out=path.join(fixture(t),'incident');
+ const observed={gameVersion:'synthetic-1',schemaVersion:'bad',incidentId:'not-original',steps:[{name:'injected',status:'completed'}],profile:'injected',privacy:{injected:true},extraMetadata:'retained-in-artifact'};
+ const manifest=await evidence(options(out),{collectors:stubs({versions:async()=>observed})});
+ assert.equal(manifest.schemaVersion,1);assert.match(manifest.incidentId,/^[a-f0-9-]{36}$/);assert.equal(manifest.profile,'evidence');
+ assert.equal(manifest.steps.some(s=>s.name==='injected'),false);assert.equal(manifest.steps.find(s=>s.name==='versions').status,'completed');
+ assert.equal(typeof manifest.privacy.structured,'string');assert.equal(manifest.status,'complete');assert.equal(manifest.gameVersion,'synthetic-1');assert.equal(manifest.extraMetadata,undefined);
+ const artifact=JSON.parse(fs.readFileSync(path.join(out,'versions.json'),'utf8'));assert.equal(artifact.incidentId,manifest.incidentId);assert.deepEqual(artifact.data,observed);
+});
+
+test('Integration description metadata cannot replace the core index or collection status',async t=>{
+ const out=path.join(fixture(t),'incident');
+ const result={status:'available',data:{status:'available',observation:'synthetic'},description:{name:'fixture-description',version:'1',index:'injected',status:'failed',extraMetadata:'unsupported-description-field'}};
+ const manifest=await evidence(options(out),{collectors:stubs({integration:async()=>result}),integrations:[{modulePath:'reviewed-synthetic.cjs'}]});
+ assert.equal(manifest.integrations[0].index,0);assert.equal(manifest.integrations[0].name,'fixture-description');assert.equal(manifest.integrations[0].version,'1');assert.equal(manifest.integrations[0].status,'available');assert.equal(manifest.integrations[0].extraMetadata,undefined);
+ assert.equal(manifest.steps.find(s=>s.name==='integration-0').status,'completed');assert.equal(manifest.status,'complete');
+ assert.deepEqual(JSON.parse(fs.readFileSync(path.join(out,'integration-0.json'),'utf8')).data,result.data);
 });

@@ -12,6 +12,8 @@ node scripts/dol-dev.cjs evidence-compare --before artifacts/reference --after a
 
 比较目录中的结构化结果是`compare.json`；Issue Report目录保存`report.json`与`report.md`。
 
+Evidence的顶层manifest由采集核心维护。版本观察只投影`gameVersion`、`gameVersionSources`与`loaderVersion`，不能替换incidentId、schemaVersion、steps或privacy等字段。完整脱敏版本观察仍保留在原`versions.json`制品中；自定义collector的其它版本元数据应从该制品读取，不能依赖旧的任意顶层合并。版本观察和采集状态都不代表游戏功能验收。Optional Integration描述仅投影标准`name`、`version`、`supportedApiVersion`与`capabilities`；索引和状态由核心维护，自定义解释内容应放入经脱敏的data制品。
+
 Compare 输出步骤状态、制品 SHA 变化，以及有效完整 DOM/CSS/Environment/Storage 的描述性变化；不完整来源为 unknown。Android 性能只比较已知非负数值。时间/incidentId变化也改变 JSON 文件 SHA，不能把文件变化当作业务变化。Journey 比较步骤结构和制品哈希；Integration 只比较状态，不解释私有正文。conditionsVerified=false、automaticTestVerdict=not-inferred，不自动判断兼容回归、性能提升或根因。
 
 `app-lifecycle` 在普通Evidence中另有语义比较，复用[生命周期Diff](APP_LIFECYCLE.md)：输出目标可比性、PID是否变化、新增报告的退出摘要和不再报告的数量，不复制PID/UID、本地时间、原进程名或任意扩展。不同目标/boot、缺失、无效或不完整输入形成unknown/partial。Journey的同序号checkpoint也只对双方显式声明的生命周期类型比较，按固定文件名配对，capture顺序变化不会误配。序号和完整状态不证明两次业务条件相同。生命周期不加入Known Good。
@@ -57,6 +59,6 @@ For an ordinary user's issue, project a local Evidence Bundle using `support`; s
 
 Chrome 的标准 Evidence 复用同一 manifest、制品摘要和 complete/partial/failed 规则，要求 `--host chrome` 与已绑定文档的 owned `--host-file`，不接受 Android 目标参数。默认 `evidence` 采集截图、Console、Network 和有 scope 时的 DOM；`capture` 采集截图，`environment` 采集 Chrome 环境，`perf` 采集 Web 性能。`--css yes` 需要 scope，`--storage yes`、`--environment yes`、`--web-performance yes` 可明确加入对应采集。Console/Network 使用同一接收窗口，可能包含 CDP 缓存事件。Chrome 支持的八类为截图、DOM、CSS、Console、Network、Storage、Environment 和 Web 性能。
 
-显式请求当前 Chrome host 不支持的采集项会记录 unsupported；有成功的非 Integration 制品时为 partial，没有成功采集时为 failed。可选 Integration 的失败不降低通用采集完整性；现有模块 worker 尚未具备绑定 Chrome 文档的连接，因此 Chrome 下标为 unsupported，不执行模块。目标或文档身份变化后不自动重连，保留已采集制品并关闭本次连接。截图、复现和本地制品仍需隐私审阅，不自动上传。
+显式请求当前 Chrome host 不支持的采集项会记录 unsupported；有成功的非 Integration 制品时为 partial，没有成功采集时为 failed。已审查的可选 Integration 可在 worker 中复用原 Chrome 文档绑定；主连接前后检查与worker探针都拒绝失效身份，失败不降低通用采集完整性。具体模块仍须实际 detect，不能由入口支持推导某个Mod已支持。目标或文档身份变化后不自动重连，保留已采集制品并关闭本次连接。详见 [Integration 文档绑定](INTEGRATIONS.md#chrome-原文档绑定)。截图、复现和本地制品仍需隐私审阅，不自动上传。
 
 离线 Compare、Known Good 和 environment-diff 支持现有 Chrome Environment 格式，复用 runtime 合同，同时保留 Chrome browser 元数据，不构造 Android 字段。只有同 host 环境可比较；跨 Chrome/Android 的 Evidence 比较为 unknown，environment-diff 直接拒绝。Mods 未报告、截断或存在未读取项时，环境比较为 unknown，不能用于 Known Good；完整参考中 Mod 名称仍经过哈希。其他离线消费者对 Chrome 输入的覆盖尚未全面验证。

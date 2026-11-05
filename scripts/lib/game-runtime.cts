@@ -1,0 +1,357 @@
+import type targetAPI from './runtime-target.cjs';
+import type {SQLInputValue} from 'node:sqlite';
+type View=Record<string,unknown>;
+type Phase='observing'|'waitingDecision'|'ready'|'reconciling'|'paused'|'halted'|'completed';
+type Event='STOP'|'PAUSE'|'PENDING'|'OBSERVED'|'GOAL'|'PROPOSED'|'OBSERVE'|'DISPATCH'|'SETTLED'|'RESUME';
+interface Trace {key:string;progress:string;description:string;distances?:number[]}
+interface Budget {timeoutMs:number;maxActions:number;maxObservations:number;maxReplans:number;maxSpend:number|null}
+interface Config {goal:View & {description:string;scope?:{intents:unknown[]}};mode:'gameplay'|'development';budget:Budget;scope?:{intents:unknown[]};requiredCheckpoints?:string[]}
+interface Belief extends View {claim:unknown;sourceEpoch:number}
+interface CognitionEntry extends View {id:string;description:string;sourceEpoch:number;status?:unknown;returnTo?:unknown}
+interface Cognition {subgoals:CognitionEntry[];events:CognitionEntry[]}
+interface Descriptor extends View {ref:string;kind:string;cost:number;risk:unknown;label?:string;destination?:unknown;selected?:unknown}
+interface Scene extends View {revision:unknown;choices:Descriptor[]}
+interface Decision extends View {scene:Scene}
+interface Effect extends View {id:string;targetKey:string;sessionId:string;status:string;action:Descriptor;resourceGeneration?:unknown;reservedSpend:number;generation:number;epoch:number;trace?:Trace;ack?:View;result?:View;executionBinding?:View}
+// These are local access models for historical documents, not JSON schema proofs.
+// Public records remain unknown; the existing checks still decide admissibility.
+interface Session extends View {id:string;targetKey:string;target:targetAPI.Android|(targetAPI.Chrome & {document:targetAPI.Document;profilePath:string});config:Config;revision:number;actions:number;observations:number;replans:number;spent:number;reserved:number;deadline:number;bindingGeneration:number;epoch:number;planRevision:number;memoryRevision:number;machine:{value:Phase};checkpoints:(View & {name:unknown;passed:unknown})[];beliefs:Belief[];cognition:Cognition;routes?:(View & {from:unknown;progress:unknown;actionKey:unknown;progressed:unknown})[];scene:Scene;decision:Decision|null;proposal:{action:Descriptor;sceneRevision:unknown;reason:unknown}|null;plan:unknown;reconciliationReads?:number}
+interface Resource extends View {status?:unknown;id?:unknown;generation:number;attempt?:unknown}
+interface Provider {validateGoal:(goal:unknown)=>unknown;scene:(scene:unknown,goal:unknown)=>unknown;satisfied:(scene:unknown,goal:unknown,context:unknown)=>unknown;trace?:(scene:unknown,goal:unknown)=>unknown;validateReceipt?:(receipt:unknown,effect:unknown)=>unknown;canPrepare?:(action:unknown,goal:unknown,context:unknown)=>unknown;pageReceiptProviders?:unknown;[key:string]:unknown}
+interface ProposalView extends View {plan:unknown[];beliefs:Belief[];cognition?:unknown}
+interface Options {clock?:()=>number;leaseMs?:number;provider?:Provider}
+'use strict';
+const fs:typeof import('node:fs')=require('node:fs'), path:typeof import('node:path')=require('node:path');
+const {randomUUID,createHash}:typeof import('node:crypto')=require('node:crypto');
+const {DatabaseSync}:typeof import('node:sqlite')=require('node:sqlite');
+const {createMachine,createActor}:typeof import('xstate')=require('xstate');
+const {validLimit,withinSpend,combinedLimit}:typeof import('./game-spend.cjs')=require('./game-spend.cjs');
+const machine=createMachine({id:'session',initial:'observing',on:{STOP:'.halted',PAUSE:'.paused',PENDING:'.reconciling'},states:{
+  observing:{on:{OBSERVED:'waitingDecision',GOAL:'completed'}},
+  waitingDecision:{on:{PROPOSED:'ready',OBSERVE:'observing',GOAL:'completed'}},
+  ready:{on:{DISPATCH:'reconciling',OBSERVE:'observing',GOAL:'completed'}},
+  reconciling:{on:{SETTLED:'observing'}},paused:{on:{RESUME:'observing'}},halted:{},completed:{}
+}});
+const text=(v:unknown,max=512):v is string=>typeof v==='string'&&v.length>0&&v.length<=max&&!/[\u0000-\u001f]/.test(v);
+const integer=(v:unknown):v is number=>Number.isSafeInteger(v)&&(v as number)>=0;
+const strict=(v:unknown,keys:readonly string[]):v is View=>(v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).every(k=>keys.includes(k))) as boolean;
+const json=(v:unknown)=>{const raw=JSON.stringify(v);if(!raw||Buffer.byteLength(raw)>262144)throw Error('Oversized record');return raw};
+const copy=(v:unknown):unknown=>JSON.parse(json(v));
+const digest=(v:unknown)=>createHash('sha256').update(json(v)).digest('hex');
+const routeAction=(a:Descriptor)=>digest([a.kind,a.label??null,a.destination??null,a.selected??a.ref]);
+function checkedTrace(raw:unknown):Trace{const v=raw as View;
+  if(!strict(v,['key','progress','description','distances'])||!text(v.description,128)||![v.key,v.progress].every(k=>/^[a-f0-9]{64}$/.test(k as string))||
+    v.distances!==undefined&&(!Array.isArray(v.distances)||v.distances.length<1||v.distances.length>9||!Array.from(v.distances).every(d=>Number.isFinite(d)&&d>=0)))throw Error('Invalid reviewed progress trace');
+  return copy(v) as Trace;
+}
+function trace(provider:Provider,scene:unknown,goal:unknown){return provider.trace?checkedTrace(provider.trace(scene,goal)):null}
+function progressed(before:Trace,after:Trace){
+  checkedTrace(before);checkedTrace(after);
+  if(before.distances===undefined&&after.distances===undefined)return before.progress!==after.progress;
+  return !!before.distances&&!!after.distances&&before.distances.length===after.distances.length&&
+    after.distances.every((d,i)=>d<=before.distances![i])&&after.distances.some((d,i)=>d<before.distances![i]);
+}
+const {key,target:canonicalTarget}:typeof import('./runtime-target.cjs')=require('./runtime-target.cjs');
+const emptyCognition=():Cognition=>({subgoals:[],events:[]});
+function cognition(raw:unknown,previous:Cognition|null,epoch:number,{stored=false}={}):Cognition{const value=raw as View;
+  if(!strict(value,['subgoals','events'])||Object.keys(value).length!==2)throw Error('Invalid event memory');
+  const fields={subgoals:['id','description','status','sourceEpoch'],events:['id','description','sourceEpoch','returnTo']},limits={subgoals:8,events:4},result={} as Cognition;
+  for(const kind of ['subgoals','events'] as const){
+    const list=value[kind];if(!Array.isArray(list)||list.length>limits[kind])throw Error('Invalid event memory');const seen=new Set();
+    result[kind]=list.map(raw=>{const entry=raw as CognitionEntry;
+      if(!strict(entry,[...fields[kind],...(stored?[]:['needsReview'])])||!text(entry.id,64)||!/^[A-Za-z0-9._-]{1,64}$/.test(entry.id)||seen.has(entry.id)||!text(entry.description,256)||!integer(entry.sourceEpoch)||entry.sourceEpoch>epoch||
+        kind==='subgoals'&&!['active','blocked','satisfied'].includes(entry.status as string)||kind==='events'&&entry.returnTo!==null&&(!text(entry.returnTo,64)||!/^[A-Za-z0-9._-]{1,64}$/.test(entry.returnTo)))throw Error('Invalid event memory');
+      seen.add(entry.id);const old=previous?.[kind]?.find(v=>v.id===entry.id);
+      if(!stored&&entry.sourceEpoch!==epoch&&(!old||fields[kind].some(k=>entry[k]!==old[k])))throw Error('Old event interpretation must be retained unchanged or reviewed in the current epoch');
+      // Freshness is derived by the core; a host cannot make an old source current with a flag.
+      if(entry.needsReview!==undefined&&entry.needsReview!==(entry.sourceEpoch!==epoch))throw Error('Invalid event freshness');
+      return Object.fromEntries(fields[kind].map(k=>[k,entry[k]])) as CognitionEntry;
+    });
+  }
+  const ids=new Set(result.subgoals.map(v=>v.id));if(result.events.some(v=>v.returnTo!==null&&!ids.has(v.returnTo as string)))throw Error('Dangling event return target');
+  return result;
+}
+function memoryView(raw:unknown){const s=raw as Session;
+  // An older document has no freshness flag: require review rather than silently
+  // treating a pre-dispatch interpretation as confirmed current state.
+  const fresh=(v:Belief|CognitionEntry)=>({...v,needsReview:s.memoryNeedsReview!==false||v.sourceEpoch!==s.epoch});
+  return {beliefs:s.beliefs.map(fresh),cognition:{subgoals:s.cognition.subgoals.map(fresh),events:s.cognition.events.map(fresh)}};
+}
+function move(raw:unknown,event?:Event){const s=raw as Session;
+  const actor=createActor(machine,s.machine?{snapshot:s.machine as unknown as NonNullable<Parameters<typeof createActor<typeof machine>>[1]>['snapshot']}:{}).start();
+  try{if(event){if(!actor.getSnapshot().can({type:event}))throw Error('Invalid lifecycle transition');actor.send({type:event})}s.machine=copy(actor.getPersistedSnapshot()) as Session['machine'];return (s.machine.value as Phase)}
+  finally{actor.stop()}
+}
+function target(t:unknown){const value=canonicalTarget(t);if(value.host==='chrome'&&(!value.document||!value.profilePath))throw Error('Original owned Chrome document required');return value}
+function checkConfig(raw:unknown,validateGoal:Provider['validateGoal']):void{const c=raw as Config;
+  if(!strict(c,['goal','mode','budget','requiredCheckpoints','scope'])||!text(c.goal?.description)||!validateGoal(c.goal)||!['gameplay','development'].includes(c.mode))throw Error('Invalid Goal configuration');
+  if(c.requiredCheckpoints!==undefined&&(!Array.isArray(c.requiredCheckpoints)||c.mode!=='development'||c.requiredCheckpoints.length>8||!c.requiredCheckpoints.every(v=>text(v,128))||new Set(c.requiredCheckpoints).size!==c.requiredCheckpoints.length))throw Error('Invalid required checkpoints');
+  const fields=['timeoutMs','maxActions','maxObservations','maxReplans'],b=c.budget;if(!strict(b,[...fields,'maxSpend'])||!fields.every(k=>integer(b[k]))||b.timeoutMs<1000||b.timeoutMs>3600000||b.maxActions<1||b.maxActions>64||b.maxObservations<1||b.maxObservations>192||b.maxReplans<1||b.maxReplans>192||b.maxSpend!==undefined&&!validLimit(b.maxSpend))throw Error('Invalid budget');
+  if(c.scope!==undefined&&!(require('./game-scope.cjs') as typeof import('./game-scope.cjs')).validate(c.scope))throw Error('Invalid Session authorization scope');
+}
+function config(raw:unknown,validateGoal:Provider['validateGoal'],{stored=false}={}):Config{
+  if(!strict(raw,['goal','mode','budget','requiredCheckpoints','scope']))throw Error('Invalid Goal configuration');
+  const c=raw as unknown as Config;
+  // Validate what is actually persisted. Custom projections must not enlarge
+  // a checked budget, replace a Goal or drop/expand the authorization scope.
+  const plain=structuredClone({goal:c.goal,mode:c.mode,budget:c.budget,scope:c.scope,requiredCheckpoints:c.requiredCheckpoints});
+  checkConfig(plain,validateGoal);
+  const result=copy(c) as Config;
+  checkConfig(result,validateGoal);
+  if(!(require('node:util') as typeof import('node:util')).isDeepStrictEqual(result,copy(plain)))throw Error('Invalid Goal configuration projection');
+  const b=result.budget;
+  // Old documents with no field retain the conservative zero budget. New
+  // sessions persist null explicitly. Reading does not rewrite old records.
+  result.budget.maxSpend=stored?(b.maxSpend===undefined?0:b.maxSpend):combinedLimit(b.maxSpend,result.goal.maxSpend);
+  return result;
+}
+// One shared control/ledger core. Reviewed providers own facts and business predicates; no dispatch in XState actions/invocations.
+class Runtime{
+  private provider:Provider;private clock:()=>number;private leaseMs:number;private db:InstanceType<typeof DatabaseSync>;
+  constructor(file:string,{clock=Date.now,leaseMs=30000,provider}:Options={}){
+    if(!path.isAbsolute(file)||!integer(leaseMs)||leaseMs<1)throw Error('Explicit Store required');
+    if(!provider||!['validateGoal','scene','satisfied'].every(k=>typeof provider[k]==='function')||['validateReceipt','canPrepare'].some(k=>provider[k]!==undefined&&typeof provider[k]!=='function'))throw Error('Reviewed semantic provider required');this.provider=provider;this.clock=clock;this.leaseMs=leaseMs;fs.mkdirSync(path.dirname(file),{recursive:true});this.db=new DatabaseSync(file);
+    try{
+      const readVersion=()=>{
+        const version=this.db.prepare('PRAGMA user_version').get()!.user_version;
+        const tables=this.db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+        if(![2,3].includes(version as number)&&(version!==0||tables.length))throw Error('Unsupported Store schema; no automatic migration');
+        return version;
+      };
+      readVersion(); // Refuse unsupported Stores before changing journal mode.
+      this.db.exec('PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA busy_timeout=1000;');
+      this.transaction(()=>{
+        const version=readVersion(); // Only this locked value controls initialization.
+        this.db.exec(`CREATE TABLE IF NOT EXISTS targets(k TEXT PRIMARY KEY,owner TEXT,generation INTEGER NOT NULL,until_ms INTEGER NOT NULL);
+          CREATE TABLE IF NOT EXISTS sessions(id TEXT PRIMARY KEY,doc TEXT NOT NULL);
+          CREATE TABLE IF NOT EXISTS effects(id TEXT PRIMARY KEY,target_key TEXT NOT NULL,session_id TEXT NOT NULL,status TEXT NOT NULL,doc TEXT NOT NULL);
+          CREATE INDEX IF NOT EXISTS open_effects ON effects(target_key,status); PRAGMA user_version=${version===3?3:2};`);
+      });
+    }catch(e){this.db.close();throw e}
+  }
+  resource(k:string):unknown{
+    if(this.db.prepare("PRAGMA user_version").get()!.user_version!==3)return null;
+    const row=this.db.prepare('SELECT doc FROM resources WHERE k=? ORDER BY generation DESC LIMIT 1').get(k);return row?JSON.parse(row.doc as string) as unknown:null;
+  }
+  resourceView(s:Session){return {resource:(this.resource(s.targetKey) as Resource|null),historicalOpenEffects:(this.effects(s.targetKey) as Effect[]).filter(e=>(e.resourceGeneration??null)!==(s.resourceGeneration??null))}}
+  assertResource(s:Session){const r=(this.resource(s.targetKey) as Resource|null);if(r&&(r.status!=='ready'||r.id!==s.resourceGeneration)||!r&&s.resourceGeneration)throw Object.assign(Error('Session belongs to an unavailable or different App data generation'),{code:'RESOURCE_GENERATION_CHANGED'})}
+  activeEffects(s:Session){return (this.effects(s.targetKey) as Effect[]).filter(e=>(e.resourceGeneration??null)===(s.resourceGeneration??null))}
+  beginRebuild(value:unknown){
+    const p=(require('./game-resource.cjs') as typeof import('./game-resource.cjs')).checked(value,'inspection'),k=key(target(p.target));
+    return this.transaction(()=>{
+      this.db.exec('CREATE TABLE IF NOT EXISTS resources(k TEXT NOT NULL,generation INTEGER NOT NULL,doc TEXT NOT NULL,PRIMARY KEY(k,generation)); PRAGMA user_version=3;');
+      // Fence already-open legacy Runtime connections as well as new schema-2 readers.
+      for(const operation of ['INSERT','UPDATE'])this.db.exec(`CREATE TRIGGER IF NOT EXISTS resource_lease_${operation.toLowerCase()} BEFORE ${operation} ON targets
+        WHEN NEW.owner IS NOT NULL AND EXISTS(SELECT 1 FROM resources WHERE k=NEW.k)
+        AND NOT EXISTS(SELECT 1 FROM resources r JOIN sessions s ON s.id=NEW.owner
+          WHERE r.k=NEW.k AND r.generation=(SELECT MAX(generation) FROM resources WHERE k=NEW.k)
+          AND json_extract(r.doc,'$.status')='ready' AND json_extract(r.doc,'$.id')=json_extract(s.doc,'$.resourceGeneration'))
+        BEGIN SELECT RAISE(ABORT,'Native resource lease fence'); END;`);
+      const previous=(this.resource(k) as Resource|null),generation=(previous?.generation??0)+1,attempt=randomUUID();
+      this.db.prepare('INSERT INTO resources VALUES(?,?,?)').run(k,generation,json({status:'rebuilding',generation,attempt,before:p}));
+      this.db.prepare('UPDATE targets SET owner=NULL,generation=generation+1,until_ms=0 WHERE k=?').run(k);return attempt;
+    });
+  }
+  completeRebuild(value:unknown){
+    const p=(require('./game-resource.cjs') as typeof import('./game-resource.cjs')).checked(value,'rebuilt'),k=key(p.target);
+    return this.transaction(()=>{const r=(this.resource(k) as Resource|null);if(!r||r.status!=='rebuilding'||r.attempt!==p.attempt)throw Error('Stale native rebuild proof');
+      this.db.prepare('UPDATE resources SET doc=? WHERE k=? AND generation=?').run(json({...r,status:'ready',id:p.id,proof:p}),k,r.generation);return p.id;
+    });
+  }
+  close(){this.db.close()}
+  transaction<T>(fn:()=>T){this.db.exec('BEGIN IMMEDIATE');try{const value=fn();this.db.exec('COMMIT');return value}catch(e){this.db.exec('ROLLBACK');throw e}}
+  load(id:string):unknown{const row=this.db.prepare('SELECT doc FROM sessions WHERE id=?').get(id);if(!row)throw Error('Session not found');const s=JSON.parse(row.doc as string) as Session;if(s.resourceGeneration!==undefined&&!/^[a-f0-9]{64}$/.test(s.resourceGeneration as string)||s.nativeIdentity!==undefined&&!/^[a-f0-9]{64}$/.test(s.nativeIdentity as string))throw Error('Invalid Session resource generation');if(s.version!==2||s.id!==id||key(s.target)!==s.targetKey||!integer(s.revision)||!integer(s.actions)||!integer(s.observations)||!integer(s.replans)||!integer(s.spent)||!integer(s.reserved)||!integer(s.deadline)||!integer(s.bindingGeneration)||!integer(s.epoch)||!integer(s.planRevision)||!integer(s.memoryRevision)||!machine.states[s.machine?.value]||!Array.isArray(s.checkpoints)||s.checkpoints.length>32||s.observationAttempt!==undefined&&!/^[a-f0-9-]{36}$/.test(s.observationAttempt as string))throw Error('Invalid Session');target(s.target);s.config=config(s.config,this.provider.validateGoal,{stored:true});s.cognition=cognition(s.cognition??emptyCognition(),null,s.epoch,{stored:true});if(s.memoryNeedsReview!==undefined&&typeof s.memoryNeedsReview!=='boolean')throw Error('Invalid memory freshness');s.reconciliationReads??=0;if(!integer(s.reconciliationReads)||s.reconciliationReads>8||s.reconciliationAttempt!==undefined&&!/^[a-f0-9-]{36}$/.test(s.reconciliationAttempt as string))throw Error('Invalid reconciliation state');return s}
+  save(s:Session){this.db.prepare('INSERT INTO sessions(id,doc) VALUES(?,?) ON CONFLICT(id) DO UPDATE SET doc=excluded.doc').run(s.id,json(s))}
+  effects(k:string):unknown{return this.db.prepare("SELECT doc FROM effects WHERE target_key=? AND status!='settled'").all(k).map(row=>JSON.parse(row.doc as string) as unknown)}
+  effect(id:string):unknown{const row=this.db.prepare('SELECT doc FROM effects WHERE id=?').get(id);if(!row)throw Error('Effect not found');return JSON.parse(row.doc as string) as unknown}
+  receiptRetirements(id:string):unknown{
+    const s=(this.load(id) as Session);
+    const providers=this.provider.pageReceiptProviders;
+    if(!Array.isArray(providers)||providers.length===0)return [];
+    if(providers.length>16||new Set(providers).size!==providers.length||!providers.every(p=>typeof p==='string'&&/^[a-zA-Z0-9._-]{1,64}$/.test(p)))throw Error('Invalid page receipt owners');
+    // Filter by namespace ownership before LIMIT: unrelated provider history
+    // must not consume the whole bounded maintenance batch.
+    const chrome=s.target.host==='chrome';
+    // Other tabs retain their own live namespaces. Do not mark their records
+    // retired merely because they are absent from this page, or starve its batch.
+    const context=chrome?" AND session_id IN (SELECT id FROM sessions WHERE json_extract(doc,'$.target.browserId')=? AND json_extract(doc,'$.target.targetId')=? AND json_extract(doc,'$.target.document.uniqueContextId')=?)":"";
+    return this.db.prepare("SELECT doc FROM effects WHERE target_key=? AND status='settled' AND json_extract(doc,'$.result.outcome')='occurred' AND json_extract(doc,'$.executionBinding.provider') IN ("+providers.map(()=>'?').join(',')+") AND COALESCE(json_extract(doc,'$.pageReceiptRetired'),0)=0 AND json_extract(doc,'$.resourceGeneration') IS ?"+context+" LIMIT 64").all(s.targetKey,...(providers as string[]),(s.resourceGeneration??null) as SQLInputValue,...(chrome?[(s.target as targetAPI.Chrome).browserId,(s.target as targetAPI.Chrome).targetId,(s.target as targetAPI.Chrome & {document:targetAPI.Document}).document.uniqueContextId]:[])).map(row=>JSON.parse(row.doc as string) as unknown);
+  }
+  confirmReceiptRetirements(id:string,ids:unknown){
+    return this.transaction(()=>{
+      const s=(this.load(id) as Session);
+      if(!Array.isArray(ids)||ids.length>64||new Set(ids).size!==ids.length)throw Error('Invalid receipt retirement batch');
+      for(const effectId of ids){
+        const e=(this.effect(effectId) as Effect);
+        if(e.targetKey!==s.targetKey||(e.resourceGeneration??null)!==(s.resourceGeneration??null)||e.status!=='settled'||e.result?.outcome!=='occurred'||!e.executionBinding)throw Error('Receipt still requires recovery');
+        e.pageReceiptRetired=true;
+        this.saveEffect(e);
+      }
+    });
+  }
+  outcomeContext(s:Session){
+    const rows=this.db.prepare('SELECT doc FROM effects WHERE session_id=? LIMIT 65').all(s.id);
+    if(rows.length>64)throw Error('Session effect bound exceeded');
+    return {effects:rows.map(row=>{const e=JSON.parse(row.doc as string) as Effect;return copy({id:e.id,status:e.status,action:e.action,result:e.result,executionBinding:e.executionBinding}) as Effect}),spent:s.spent,reserved:s.reserved,budget:copy(s.config.budget)};
+  }
+  allowedAction(s:Session,action:Descriptor,context?:unknown){
+    const scope=s.config.scope??s.config.goal.scope;if(scope&&!scope.intents.includes(action.kind))return false;
+    if(!withinSpend(action.cost+s.spent+s.reserved,s.config.budget.maxSpend))return false;
+    if(!this.provider.canPrepare)return true;
+    const allowed=this.provider.canPrepare(copy(action),copy(s.config.goal),copy(context??this.outcomeContext(s)));
+    if(typeof allowed!=='boolean')throw Error('Synchronous reviewed action constraint required');
+    return allowed;
+  }
+  saveEffect(e:Effect){this.db.prepare('INSERT INTO effects VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET status=excluded.status,doc=excluded.doc').run(e.id,e.targetKey,e.sessionId,e.status,json(e))}
+  own(s:Session){this.assertResource(s);const lease=this.db.prepare('SELECT * FROM targets WHERE k=?').get(s.targetKey);if(!lease||lease.owner!==s.id||lease.generation!==s.bindingGeneration||(lease.until_ms as number)<=this.clock())throw Error('Target lease lost');this.db.prepare('UPDATE targets SET until_ms=? WHERE k=?').run(this.clock()+this.leaseMs,s.targetKey);return lease}
+  claim(s:Session,force=false){
+    this.assertResource(s);
+    const old=this.db.prepare('SELECT * FROM targets WHERE k=?').get(s.targetKey),now=this.clock();
+    if(old&&old.owner!==s.id&&(old.until_ms as number)>now)throw Error('Target owned by another Session');
+    const generation=old?(old.owner===s.id&&(old.until_ms as number)>now&&!force?old.generation as number:(old.generation as number)+1):1;
+    this.db.prepare('INSERT INTO targets VALUES(?,?,?,?) ON CONFLICT(k) DO UPDATE SET owner=excluded.owner,generation=excluded.generation,until_ms=excluded.until_ms').run(s.targetKey,s.id,generation,now+this.leaseMs);
+    s.bindingGeneration=generation;
+  }
+  exhausted(s:Session,{planning=true}={}){const b=s.config.budget;return this.clock()>=s.deadline||s.actions>=b.maxActions||s.observations>=b.maxObservations||(planning&&s.replans>=b.maxReplans)||!withinSpend(s.spent,b.maxSpend)}
+  halt(s:Session,reason:unknown){this.invalidateMemory(s);s.stopReason=reason;s.decision=null;s.proposal=null;delete s.observationAttempt;delete s.reconciliationAttempt;move(s,'STOP');this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id)}
+  invalidateMemory(s:Session){if(!s.memoryNeedsReview&&(s.beliefs.length||s.cognition.subgoals.length||s.cognition.events.length))s.memoryRevision++;s.memoryNeedsReview=true}
+  start(t:unknown,c:unknown,{resourceProof,nativeIdentityProof}:{resourceProof?:unknown;nativeIdentityProof?:unknown}={}):unknown{return this.transaction(()=>{const s={version:2,id:randomUUID(),target:target(t),config:config(c,this.provider.validateGoal),revision:0,epoch:0,planRevision:0,memoryRevision:0,actions:0,observations:0,replans:0,spent:0,reserved:0,plan:[],beliefs:[],cognition:emptyCognition(),memoryNeedsReview:false,decision:null,proposal:null,stopReason:null,goalSatisfied:false,checkpoints:[]} as unknown as Session;s.targetKey=key(s.target);const scope=s.config.scope??s.config.goal.scope;if(scope)(require('./game-scope.cjs') as typeof import('./game-scope.cjs')).assertSessionTarget(scope,s.target);if(s.target.host==='chrome'&&(resourceProof!==undefined||nativeIdentityProof!==undefined))throw Error('Android resource proof cannot bind Chrome');const resource=(this.resource(s.targetKey) as Resource|null);if(resource){const p=(require('./game-resource.cjs') as typeof import('./game-resource.cjs')).checked(resourceProof,'current');if(resource.status!=='ready'||p.id!==resource.id||key(p.target)!==s.targetKey)throw Error('Current native resource proof required');s.resourceGeneration=p.id}else if(nativeIdentityProof!==undefined){const p=(require('./game-resource.cjs') as typeof import('./game-resource.cjs')).checked(nativeIdentityProof,'identity');if(key(p.target)!==s.targetKey)throw Error('Native identity target mismatch');s.nativeIdentity=p.id}s.deadline=this.clock()+s.config.budget.timeoutMs;move(s);this.save(s);this.claim(s);this.save(s);return s})}
+  resume(id:string):unknown{return this.transaction(()=>{const s=(this.load(id) as Session);if((s.machine.value as Phase)==='completed')throw Error('Closed Session; start a new Goal');this.claim(s,true);this.invalidateMemory(s);s.revision++;s.epoch++;s.decision=null;s.proposal=null;delete s.observationAttempt;delete s.reconciliationAttempt;delete s.pauseReason;if(!s.stopReason){if(this.activeEffects(s).length)move(s,'PENDING');else{if((s.machine.value as Phase)==='paused')move(s,'RESUME');else if((s.machine.value as Phase)==='reconciling')move(s,'SETTLED');else if((s.machine.value as Phase)!=='observing')move(s,'OBSERVE')}}this.save(s);return s})}
+  reserveObservation(id:string){return this.transaction(()=>{
+    const s=(this.load(id) as Session);this.own(s);if((s.machine.value as Phase)==='completed'||s.stopReason)return null;
+    if(s.observations>=s.config.budget.maxObservations||this.clock()>=s.deadline){this.halt(s,'observation-budget-exhausted');s.revision++;this.save(s);return null}
+    this.invalidateMemory(s);s.observations++;s.revision++;s.decision=null;s.proposal=null;s.observationAttempt=randomUUID();
+    if(['ready','waitingDecision'].includes((s.machine.value as Phase)))move(s,'OBSERVE');this.save(s);return s.observationAttempt;
+  })}
+  failObservation(id:string,reservation:unknown,reason:unknown):unknown{return this.transaction(()=>{
+    const s=(this.load(id) as Session);this.own(s);if(s.observationAttempt!==reservation)throw Error('Stale observation attempt');delete s.observationAttempt;
+    s.revision++;s.decision=null;s.proposal=null;
+    if(s.observations>=s.config.budget.maxObservations||this.clock()>=s.deadline)this.halt(s,'observation-budget-exhausted');
+    else{if(!text(reason,128))throw Error('Observation failure reason required');s.pauseReason=reason;move(s,'PAUSE')}
+    this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)};
+  })}
+  pause(id:string,reason:unknown):unknown{return this.transaction(()=>{const s=(this.load(id) as Session);if((s.machine.value as Phase)==='completed'||s.stopReason)throw Error('Closed Session');this.own(s);if(!text(reason,128))throw Error('Pause reason required');this.invalidateMemory(s);s.pauseReason=reason;s.decision=null;s.proposal=null;delete s.observationAttempt;s.revision++;move(s,'PAUSE');this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)}})}
+  checkpointsPassed(s:Session){return(s.config.requiredCheckpoints||[]).every(name=>s.checkpoints.some(c=>c.name===name&&c.passed))}
+  stagnantRoute(s:Session,a:Descriptor){const current=trace(this.provider,s.scene,s.config.goal);return !!current&&(s.routes||[]).filter(r=>r.from===current.key&&r.progress===current.progress&&r.actionKey===routeAction(a)&&!r.progressed).length>=3}
+  checkpoint(id:string,raw:unknown,{revision}:{revision?:unknown}={}):unknown{const c=raw as View;return this.transaction(()=>{const s=(this.load(id) as Session);this.own(s);if(revision!==undefined&&revision!==s.revision)throw Error('Stale checkpoint observation');if(s.stopReason||(s.machine.value as Phase)==='completed'||s.config.mode!=='development'||!strict(c,['name','attemptId','passed','source'])||!text(c.name,128)||typeof c.passed!=='boolean'||!text(c.source,256)||s.checkpoints.length>=32)throw Error('Invalid development checkpoint');if(c.attemptId&&(this.effect(c.attemptId as string) as Effect).sessionId!==s.id)throw Error('Checkpoint attempt mismatch');s.checkpoints.push({...(copy(c) as View),epoch:s.epoch,revision:s.revision} as unknown as Session['checkpoints'][number]);s.revision++;s.decision=null;s.proposal=null;if(['ready','waitingDecision'].includes((s.machine.value as Phase)))move(s,'OBSERVE');if(!c.passed)this.halt(s,'checkpoint-failed');else if(s.goalSatisfied&&this.checkpointsPassed(s)&&!this.activeEffects(s).length){if((s.machine.value as Phase)==='paused')move(s,'RESUME');move(s,'GOAL');s.decision=null;s.proposal=null;this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id)}this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)}})}
+  stop(id:string,reason='cancelled'):unknown{return this.transaction(()=>{const s=(this.load(id) as Session);if((s.machine.value as Phase)==='completed')throw Error('Closed Session');this.own(s);this.halt(s,reason);s.revision++;this.save(s);this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id);return s})}
+  status(id:string):unknown{const s=(this.load(id) as Session);return {...s,...memoryView(s),...this.resourceView(s),openEffects:this.activeEffects(s)}}
+  reserveReconciliation(id:string){return this.transaction(()=>{
+    const s=(this.load(id) as Session);
+    if((s.machine.value as Phase)==='completed'||!s.stopReason&&this.clock()<s.deadline&&s.observations<s.config.budget.maxObservations||!this.activeEffects(s).some(e=>e.sessionId===s.id))throw Error('Cleanup requires an exhausted or stopped Session with its own pending effects');
+    if((s.reconciliationReads??0)>=8)throw Error('Reconciliation read budget exhausted');
+    this.claim(s,true);this.invalidateMemory(s);s.reconciliationReads=(s.reconciliationReads??0)+1;s.epoch++;s.revision++;s.decision=null;s.proposal=null;
+    delete s.observationAttempt;delete s.pauseReason;s.stopReason??=this.clock()>=s.deadline?'deadline-exhausted':'observation-budget-exhausted';
+    move(s,'STOP');s.reconciliationAttempt=randomUUID();this.save(s);return s.reconciliationAttempt;
+  })}
+  reconcile(id:string,resolutions:unknown,{reservation}:{reservation?:unknown}={}):unknown{return this.transaction(()=>{
+    const s=(this.load(id) as Session);this.own(s);if(!reservation||s.reconciliationAttempt!==reservation||!s.stopReason||(s.machine.value as Phase)!=='halted')throw Error('Stale reconciliation attempt');
+    this.settleResults(s,resolutions,undefined,{ownerOnly:true});delete s.reconciliationAttempt;delete s.reconciliationError;s.revision++;
+    this.halt(s,s.stopReason);this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)};
+  })}
+  failReconciliation(id:string,reservation:unknown,reason:unknown):unknown{return this.transaction(()=>{
+    const s=(this.load(id) as Session);this.own(s);if(!reservation||s.reconciliationAttempt!==reservation||!text(reason,128))throw Error('Stale or invalid reconciliation failure');
+    delete s.reconciliationAttempt;s.reconciliationError=reason;s.revision++;this.halt(s,s.stopReason);this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)};
+  })}
+  settleResults(s:Session,resolutions:unknown,afterTrace?:Trace|null,{ownerOnly=false}={}){
+    if(!Array.isArray(resolutions)||resolutions.length>64)throw Error('Invalid resolution batch');
+    let entries=resolutions as unknown[];
+    // Closing prepared reservations holds the same write transaction as dispatch claiming.
+    for(const e of this.activeEffects(s))if(e.status==='prepared'&&(!ownerOnly||e.sessionId===s.id))entries=[...entries,{attemptId:e.id,outcome:'not-occurred',remoteClosed:true,spent:0,source:'coordinator: reservation never crossed dispatch boundary'}];
+    for(const raw of entries){const r=raw as View;
+      if(!strict(r,['attemptId','outcome','remoteClosed','spent','source','evidence'])||!text(r.attemptId,64)||!['occurred','not-occurred','unknown'].includes(r.outcome as string)||typeof r.remoteClosed!=='boolean'||!integer(r.spent)||!text(r.source,128)||r.evidence!==undefined&&(!r.evidence||typeof r.evidence!=='object'||Array.isArray(r.evidence)||Buffer.byteLength(JSON.stringify(r.evidence))>4096||!this.provider.validateReceipt))throw Error('Invalid result receipt');
+      const e=(this.effect(r.attemptId) as Effect);if(e.targetKey!==s.targetKey||(e.resourceGeneration??null)!==(s.resourceGeneration??null)||ownerOnly&&e.sessionId!==s.id)throw Error('Result target/owner mismatch');
+      if(this.provider.validateReceipt&&this.provider.validateReceipt(copy(r),copy(e))!==true)throw Error('Unverified result evidence');
+      if(e.status==='settled'){
+        if(r.outcome!=='unknown'&&(r.outcome!==e.result!.outcome||r.spent!==e.result!.spent||r.remoteClosed!==e.result!.remoteClosed||JSON.stringify(r.evidence??null)!==JSON.stringify(e.result!.evidence??null)))throw Error('Conflicting settled result');
+        continue;
+      }
+      if(r.outcome==='unknown'||r.remoteClosed!==true)continue;
+      if(e.status==='prepared'&&r.outcome!=='not-occurred')throw Error('Prepared reservation cannot have occurred');
+      if(r.outcome==='not-occurred'&&r.spent!==0)throw Error('Impossible no-effect receipt');
+      const owner=e.sessionId===s.id?s:(this.load(e.sessionId) as Session);if(!integer(owner.reserved-e.reservedSpend)||!integer(owner.spent+r.spent))throw Error('Invalid settlement accounting');owner.reserved-=e.reservedSpend;owner.spent+=r.spent;
+      e.status='settled';e.result=copy(r) as View;this.saveEffect(e);owner.revision++;if(owner!==s)this.save(owner);
+      if(owner===s&&e.trace&&afterTrace){
+        s.routes=[...(s.routes||[]),{attemptId:e.id,epoch:s.epoch+1,from:e.trace.key,to:afterTrace.key,progress:e.trace.progress,progressed:progressed(e.trace,afterTrace),description:e.trace.description+' → '+afterTrace.description,actionKey:routeAction(e.action),action:(e.action.label||e.action.kind).slice(0,160),outcome:r.outcome,reason:((e.ack?.reason||r.source) as string).slice(0,128)}].slice(-16);s.memoryRevision++;
+      }
+    }
+  }
+  // Only a reviewed original-state reader supplies scene and per-attempt terminal receipts.
+  observe(id:string,observed:unknown,resolutions:unknown=[],{reservation}:{reservation?:unknown}={}):unknown{return this.transaction(()=>{
+    const s=(this.load(id) as Session);if((s.machine.value as Phase)==='completed')throw Error('Closed Session; start a new Goal');this.own(s);if(reservation!==undefined&&s.observationAttempt!==reservation)throw Error('Stale observation attempt');observed=this.provider.scene(observed,s.config.goal);const afterTrace=trace(this.provider,observed,s.config.goal);
+    this.settleResults(s,resolutions,afterTrace);
+    if(reservation===undefined&&s.observations>=s.config.budget.maxObservations){this.halt(s,'observation-budget-exhausted');s.revision++;this.save(s);return {...s,...this.resourceView(s),openEffects:this.activeEffects(s)}}
+    this.invalidateMemory(s);s.epoch++;s.memoryNeedsReview=false;s.revision++;if(reservation===undefined)s.observations++;delete s.observationAttempt;delete s.pauseReason;s.scene=observed as Scene;
+    const satisfied=this.provider.satisfied(copy(observed),copy(s.config.goal),this.outcomeContext(s));
+    if(typeof satisfied!=='boolean')throw Error('Synchronous reviewed Goal result required');
+    s.goalSatisfied=satisfied;s.decision=null;s.proposal=null;
+    const pending=this.activeEffects(s);
+    if(s.stopReason){move(s,'STOP')}
+    else if(pending.length){move(s,'PENDING')}
+    else if(!withinSpend(s.spent,s.config.budget.maxSpend)){this.halt(s,'actual-spend-exceeded')}
+    else{
+      if((s.machine.value as Phase)==='reconciling')move(s,'SETTLED');else if((s.machine.value as Phase)==='paused')move(s,'RESUME');else if((s.machine.value as Phase)!=='observing'&&(s.machine.value as Phase)!=='completed')move(s,'OBSERVE');
+      if(s.goalSatisfied&&this.checkpointsPassed(s)&&(s.machine.value as Phase)!=='completed')move(s,'GOAL');
+      else if(!s.goalSatisfied&&(s.machine.value as Phase)!=='completed'&&this.exhausted(s)){this.halt(s,'budget-exhausted')}
+      else if((s.machine.value as Phase)!=='completed'){
+        const context=this.outcomeContext(s);
+        move(s,'OBSERVED');s.decision={protocol:1,requestId:randomUUID(),sessionId:s.id,bindingGeneration:s.bindingGeneration,epoch:s.epoch,revision:s.revision,planRevision:s.planRevision,memoryRevision:s.memoryRevision,goal:s.config.goal,scene:{...s.scene,choices:s.scene.choices.filter(a=>this.allowedAction(s,a,context))},plan:s.plan,...memoryView(s),routes:s.routes||[],routeHints:s.scene.choices.filter(a=>this.stagnantRoute(s,a)).map(a=>({actionRef:a.ref,reason:'Repeated settled route has no observed Goal progress; consider a different experiment or replan'})),outcomes:context.effects.filter(e=>e.status==='settled').map(e=>({attemptId:e.id,kind:e.action.kind,descriptor:e.action,...e.result})),requiredCheckpoints:s.config.requiredCheckpoints||[],checkpoints:s.checkpoints,budget:{...s.config.budget,deadline:s.deadline,actions:s.actions,observations:s.observations,replans:s.replans,spent:s.spent,reserved:s.reserved}};
+      }
+    }
+    this.save(s);if((s.machine.value as Phase)==='completed'||s.stopReason)this.db.prepare('UPDATE targets SET until_ms=0 WHERE k=? AND owner=?').run(s.targetKey,s.id);return {...s,...this.resourceView(s),openEffects:pending};
+  })}
+  propose(id:string,raw:unknown):unknown{const p=raw as ProposalView;return this.transaction(()=>{
+    const s=(this.load(id) as Session);this.own(s);const d=s.decision;
+    if(!strict(p,['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision','actionRef','reason','plan','beliefs','cognition'])||!d||s.stopReason||(s.machine.value as Phase)!=='waitingDecision'||this.exhausted(s))throw Error('No current decision');
+    for(const field of ['protocol','requestId','sessionId','bindingGeneration','epoch','revision','planRevision','memoryRevision'])if(p[field]!==d[field])throw Error('Stale decision envelope');
+    if(!text(p.reason)||!Array.isArray(p.plan)||p.plan.length>8||!p.plan.every(v=>text(v,256))||!Array.isArray(p.beliefs)||p.beliefs.length>16||!p.beliefs.every(v=>strict(v,['claim','sourceEpoch','needsReview'])&&text(v.claim,256)&&integer(v.sourceEpoch)&&v.sourceEpoch<=s.epoch&&(v.sourceEpoch===s.epoch||s.beliefs.some(old=>old.claim===v.claim&&old.sourceEpoch===v.sourceEpoch))&&(v.needsReview===undefined||v.needsReview===(v.sourceEpoch!==s.epoch))))throw Error('Invalid cognitive update');
+    const nextCognition=p.cognition===undefined?s.cognition:cognition(p.cognition,s.cognition,s.epoch);
+    const selected=s.scene.choices.find(a=>a.ref===p.actionRef);if(!selected||selected.risk!=='normal'||!withinSpend(selected.cost+s.spent+s.reserved,s.config.budget.maxSpend))throw Error('Action unavailable or outside budget');
+    if(!d.scene.choices.some(a=>a.ref===selected.ref))throw Error('Action not offered in the current decision');
+    if(this.activeEffects(s).length)throw Error('Target has unresolved effect');
+    s.plan=copy(p.plan);s.beliefs=p.beliefs.map(({claim,sourceEpoch})=>({claim,sourceEpoch}));s.cognition=copy(nextCognition) as Cognition;s.memoryNeedsReview=false;s.planRevision++;s.memoryRevision++;s.replans++;s.revision++;s.proposal={action:copy(selected) as Descriptor,sceneRevision:s.scene.revision,reason:p.reason};s.decision=null;move(s,'PROPOSED');this.save(s);return s;
+  })}
+  prepare(id:string,{expected}:{expected?:unknown}={}):unknown{return this.transaction(()=>{
+    const s=(this.load(id) as Session);
+    // Reuse the existing transaction and revision contract: an approved
+    // coordinator snapshot must still identify exactly the reserved action.
+    const identity=(v:unknown)=>json(['id','revision','bindingGeneration','epoch','planRevision','memoryRevision','target','config','scene','proposal','machine'].map(k=>(v as View)[k]));
+    if(expected!==undefined&&identity(expected)!==identity(s))throw Object.assign(Error('Stale dispatch identity'),{code:'STALE_DISPATCH_IDENTITY'});
+    this.own(s);if(s.stopReason||(s.machine.value as Phase)!=='ready'||!s.proposal||this.activeEffects(s).length)throw Error('Dispatch not ready');
+    if(this.exhausted(s,{planning:false})){this.halt(s,'budget-exhausted');this.save(s);return null}
+    if(!this.allowedAction(s,s.proposal.action))throw Error('Action conflicts with verified Session outcomes');
+    const e={version:2,id:randomUUID(),...(s.resourceGeneration?{resourceGeneration:s.resourceGeneration}:{}),targetKey:s.targetKey,sessionId:s.id,generation:s.bindingGeneration,epoch:s.epoch,status:'prepared',action:s.proposal.action,sceneRevision:s.proposal.sceneRevision,reservedSpend:s.proposal.action.cost} as Effect;
+    const beforeTrace=trace(this.provider,s.scene,s.config.goal);if(beforeTrace)e.trace=beforeTrace;
+    if(!withinSpend(s.spent+s.reserved+e.reservedSpend,s.config.budget.maxSpend))throw Error('Spend budget exhausted');
+    this.invalidateMemory(s);s.actions++;s.reserved+=e.reservedSpend;s.revision++;move(s,'DISPATCH');this.saveEffect(e);this.save(s);return e;
+  })}
+  bindExecution(attemptId:string,raw:unknown):unknown{const binding=raw as View;return this.transaction(()=>{
+    const e=(this.effect(attemptId) as Effect),s=(this.load(e.sessionId) as Session);this.own(s);
+    if(e.status!=='prepared'||s.stopReason||(s.machine.value as Phase)!=='reconciling'||e.generation!==s.bindingGeneration||e.epoch!==s.epoch||this.clock()>=s.deadline)throw Error('Attempt no longer bindable');
+    if(!strict(binding,['provider','contract','contextNonce','requestDigest'])||Object.keys(binding).length!==4||!text(binding.provider,64)||!text(binding.contract,64)||!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(binding.contextNonce as string)||!/^[a-f0-9]{64}$/.test(binding.requestDigest as string))throw Error('Invalid execution binding');
+    if(e.executionBinding){
+      if(Object.keys(binding).some(k=>e.executionBinding![k]!==binding[k]))throw Error('Conflicting execution binding');
+      return e;
+    }
+    e.executionBinding=copy(binding) as View;this.saveEffect(e);return e;
+  })}
+  claimDispatch(attemptId:string):unknown{return this.transaction(()=>{
+    const e=(this.effect(attemptId) as Effect),s=(this.load(e.sessionId) as Session);this.own(s);
+    if(e.status!=='prepared'||s.stopReason||(s.machine.value as Phase)!=='reconciling'||e.generation!==s.bindingGeneration||e.epoch!==s.epoch||this.clock()>=s.deadline)throw Error('Attempt no longer dispatchable');
+    e.status='dispatching';delete e.ack;this.saveEffect(e);return e;
+  })}
+  async dispatch(attemptId:string,executor:(effect:unknown,claim:()=>unknown)=>unknown|Promise<unknown>,{fault=()=>{},deferred=false}:{fault?:(phase:string)=>void;deferred?:boolean}={}):Promise<unknown>{
+    let marked=false;
+    const claim=()=>{if(marked)throw Error('Attempt already claimed');const e=this.claimDispatch(attemptId);marked=true;fault('after-mark');return e};
+    const e=deferred?this.transaction(()=>{const e=(this.effect(attemptId) as Effect),s=(this.load(e.sessionId) as Session);this.own(s);if(e.status!=='prepared')throw Error('Attempt no longer dispatchable');return e}):claim();
+    let result:View;try{result=await executor(copy(e),claim) as View;fault('after-remote')}catch(error){result={dispatch:marked?'unknown':'not-dispatched',reason:'executor-error'}}
+    return this.transaction(()=>{
+      const current=(this.effect(attemptId) as Effect);if(current.status==='settled')return current;
+      if(!marked&&current.status!=='prepared')return current; // Another caller crossed the boundary; its uncertainty cannot be downgraded.
+      if(!['acknowledged','unknown','not-dispatched'].includes(result?.dispatch as string)||(!marked&&result.dispatch!=='not-dispatched'))throw Error('Invalid dispatch acknowledgement');
+      current.status=marked?(result.dispatch==='acknowledged'?'acknowledged':'dispatching'):'prepared';current.ack=copy(result) as View;this.saveEffect(current);return current;
+    });
+  }
+}
+const runtime={Runtime,machine,move,memoryView};
+export = runtime;

@@ -1,0 +1,20 @@
+{
+  "codeCommit": "3ffcd81b772bd36a920ea1afdb5bd9b4cbaed38e",
+  "strictNodeModules": 23,
+  "strictBrowserModules": 3,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 98,
+  "artifacts": 30,
+  "rootTests": {
+    "total": 542,
+    "passed": 541,
+    "failed": 0,
+    "skipped": 1
+  },
+  "sourceTargetedTests": 32,
+  "floorPackageTargetedTests": 32,
+  "buildProtectionTests": 5,
+  "typeNegatives": 40,
+  "android": "synthetic ADB command substitutes only",
+  "media": "synthetic container/frame bytes and injected tool runner only"
+}

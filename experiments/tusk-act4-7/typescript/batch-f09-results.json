@@ -1,0 +1,38 @@
+{
+  "codeCommit": "9481ad0e954fbcabb07d22f32e90ce537b71fae9",
+  "strictNodeModules": 55,
+  "strictBrowserModules": 8,
+  "frozenBrowserAbiAssets": 5,
+  "frozenUntypedFunctions": 10,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 108,
+  "artifacts": 72,
+  "rootTests": {
+    "total": 579,
+    "passed": 578,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 48,
+  "floorPackageTargetedTests": 48,
+  "buildProtectionTests": 5,
+  "typeNegatives": 94,
+  "independentReviewerTests": 17,
+  "oldComparisons": {
+    "requestInputs": 15,
+    "receiptCases": 11,
+    "wardrobeAttestationFrames": 6,
+    "shopPreparationFrames": 9
+  },
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "newRealChromeRun": false,
+  "notValidated": [
+    "Windows",
+    "Android WebView/device",
+    "real DoL",
+    "actual native shop or wardrobe execution in Chrome"
+  ]
+}

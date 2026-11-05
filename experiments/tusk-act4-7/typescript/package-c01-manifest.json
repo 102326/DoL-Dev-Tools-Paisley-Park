@@ -1,0 +1,1292 @@
+{
+  "commit": "eb8e13ad4e5ac2d1b6b10f03714a94041b339b49",
+  "zipSha256": "9f063b6285ad782cdf0e2e3c16324602b63e9b60ef32c57d945121032f800bea",
+  "files": [
+    {
+      "file": ".agents/skills/dol-dev-tools-paisley-park/SKILL.md",
+      "sha256": "9f988d56dc28654b1eece63434da05795316591e5b815ce0f41b869d1c7a5f6e"
+    },
+    {
+      "file": ".agents/skills/dol-dev-tools-paisley-park/agents/openai.yaml",
+      "sha256": "121a7a30b34bfd2f9419b0e983c1812b44e9e91e372d13d713fb8a299396c2fe"
+    },
+    {
+      "file": ".agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs",
+      "sha256": "fb41f706febc1897f97898b6652550de1240b9dd343d7e245ac70e915b8a1354"
+    },
+    {
+      "file": ".gitattributes",
+      "sha256": "a29f91a9c1fa343d7e0d936824d8527da0bea60ebe1e2cf514c70661fe3759c2"
+    },
+    {
+      "file": ".gitignore",
+      "sha256": "77d8e5c8b91fe267f2808b6b3edaac1350e71d37341a1064e856dc94850ab66d"
+    },
+    {
+      "file": "AGENTS.md",
+      "sha256": "45f006458c679454ce7333bb6dbcf1d9b44672c6a322e6b61783871ab030c869"
+    },
+    {
+      "file": "DoL-Dev.cmd",
+      "sha256": "2eb504cc4cf7afeee441d5baac4cff4d8385eed507366f062e5800bec96b58e2"
+    },
+    {
+      "file": "Inspect-Android.cmd",
+      "sha256": "7f4ad306500aa21d93d4eb846422979540a80257d888363e6bd9069cb5966613"
+    },
+    {
+      "file": "LICENSE",
+      "sha256": "ca30b127dccc1c569e70a87f3ba22003aa5e9f7c219bdecad526a1ac7f96d885"
+    },
+    {
+      "file": "Paisley-Park.cmd",
+      "sha256": "2eb504cc4cf7afeee441d5baac4cff4d8385eed507366f062e5800bec96b58e2"
+    },
+    {
+      "file": "README.md",
+      "sha256": "ba7f16301856c735ae5b31c4b498116f773f16a23b4fdc1c260fa15c6b3c34cc"
+    },
+    {
+      "file": "docs/ACTIONS.md",
+      "sha256": "f9feab1a11f9d2f8d3af66a03ae104d0562f75d87af3554a6747169894cf6678"
+    },
+    {
+      "file": "docs/ANIMATION.md",
+      "sha256": "aabec687a12fb2750ba35379b872cb833dd124c7ec0677be40561af1b4d708b6"
+    },
+    {
+      "file": "docs/APP_LIFECYCLE.md",
+      "sha256": "78a17f31365510592cf0bdadf3b1b9740567d86babe294509358ca8ff3b81173"
+    },
+    {
+      "file": "docs/ARCHITECTURE.md",
+      "sha256": "506e6250f67e50117d9e0ec73816b3f6f1340d9a5fb515b443e51a1533d45ab7"
+    },
+    {
+      "file": "docs/AUXILIARY_SKILLS.md",
+      "sha256": "dd12d25a319368a845cbea62b77003b9956b4ff4edcc48eaa25cdb2ce3a66540"
+    },
+    {
+      "file": "docs/BUSINESS_MOD_UPDATE.md",
+      "sha256": "4b6a8edcb18e8dc89e8a19bf7f3e9f6be73d584417da0ef68db08a8cb2f1b98e"
+    },
+    {
+      "file": "docs/CLOSEOUT_3_0_3.md",
+      "sha256": "dec7e17b6023a82d3efd26935f4f2f2caed909757e781524210096b400d20ed0"
+    },
+    {
+      "file": "docs/CLOSEOUT_4_0.md",
+      "sha256": "6978ce1fcabdcb6904845f96a21b24bca82d111afd3bb195dfa8a509ac5291f9"
+    },
+    {
+      "file": "docs/CLOSEOUT_5_0.md",
+      "sha256": "7aba6124d0cf8407e6b384de14a504dc24dcd2af6ab9ced4b80d27be7f7cb65a"
+    },
+    {
+      "file": "docs/CLOSEOUT_5_0_RC1.md",
+      "sha256": "e6a3f43d9019783a012dbffa354ebff317541a9fb0a1ebc8cadcbe4858c9e084"
+    },
+    {
+      "file": "docs/CLOSEOUT_5_0_RC2.md",
+      "sha256": "6a78cbad44cb1e8de178cc825d90c71bc00f37d9d7cbd7dae8fc9a52c361fbdf"
+    },
+    {
+      "file": "docs/CLOSEOUT_6_0.md",
+      "sha256": "972e6238113bcc2107dc7182e7189f7ad773214db84086a722d541581cf42a51"
+    },
+    {
+      "file": "docs/CLOSEOUT_6_1.md",
+      "sha256": "217208d4262270c818837fefa01a1c92f7980ca1a27978ebfb7541a1b3414a16"
+    },
+    {
+      "file": "docs/DEVELOPMENT_FLOW.md",
+      "sha256": "e01099f68f7ce8810532c5cdccb185b1e5bdbd94d2ae36a15b3aba23f43160aa"
+    },
+    {
+      "file": "docs/DIAGNOSTICS.md",
+      "sha256": "d3777a959d19c6414ade41958a2cf24b362570fd0fb95dfb0215eab1de59fb72"
+    },
+    {
+      "file": "docs/EVIDENCE_TOOLS.md",
+      "sha256": "85a6c311f86e39cd99ff7aec78d670015368878fe93403942ab31f5cbd89fabd"
+    },
+    {
+      "file": "docs/F1_F5_CLOSEOUT_4_0.md",
+      "sha256": "13e0f06056b3f44ac20b96f58e33b8a5ca25f682d5554a4386fe416e4f42a14f"
+    },
+    {
+      "file": "docs/FORMATS.md",
+      "sha256": "5a6642f3f4e543d95c0924b1750a36634cc72f770da81e8856fa3d6909ced2a4"
+    },
+    {
+      "file": "docs/GAMEPLAY.md",
+      "sha256": "81a608b6e1793bd08d8d54cb28897b62e17ce5b5400e361975c87f22b62df6b5"
+    },
+    {
+      "file": "docs/GAME_SOURCE.md",
+      "sha256": "e27aeef6c6bd26c369e22dbdf7fc0befaa5726daff4180c40879c23dec21f6e1"
+    },
+    {
+      "file": "docs/HISTORY.md",
+      "sha256": "54f7072694bd6248da6bfc048bc1a73a27a2bef280e31b17871fb7a393f57517"
+    },
+    {
+      "file": "docs/INSPECTORS.md",
+      "sha256": "c072cf2ebf7e214e1fb281ce215d27c70589b5c11c9ef1dc953a6bc6a5789040"
+    },
+    {
+      "file": "docs/INTEGRATIONS.md",
+      "sha256": "fc7d234d1de84fd28472bd5c75c14cddd9ea41f0ac3ac726f243fce41996ebb2"
+    },
+    {
+      "file": "docs/MAINTENANCE_5_1.md",
+      "sha256": "80c61f23ddd13aa61d0dd67bdad1bbcd9ef376bad229b57633fe490e47416b47"
+    },
+    {
+      "file": "docs/MAPLEBIRCH.md",
+      "sha256": "911eb5ad2c4fc8ed680a0c975c80b924f754799d8076407ec1516ccdfdc0702f"
+    },
+    {
+      "file": "docs/MODHUB.md",
+      "sha256": "8505f9f6266623f7abd186097d19f7d73f088d1c59cfba3365c0e4c549bcb3dc"
+    },
+    {
+      "file": "docs/MOD_KNOWLEDGE.md",
+      "sha256": "ed4de040d4b2edf6922632420f7a5fc2b7f57692e3ae896ed6f9e654984534a3"
+    },
+    {
+      "file": "docs/NATIVE_LAYOUT.md",
+      "sha256": "7c6918ecf48449285fd48eec8d9662e49a1a8a6faa00f0b504d5be97f153351e"
+    },
+    {
+      "file": "docs/NATIVE_RECREATE.md",
+      "sha256": "a9cdb5f88949f2ce671223ada37849c2aa6bb99aea7fb8f78b7f5fa87ee00464"
+    },
+    {
+      "file": "docs/NETWORK.md",
+      "sha256": "1d5e8cdc01b295029dff14a95c6860448c07fe1aa0315f2dd636526425a24125"
+    },
+    {
+      "file": "docs/PAISLEY_PARK_5_0.md",
+      "sha256": "4c5d9b1b0d7dd0c405b9f9e35230ef867f96657ba3a10aada9208679689320c5"
+    },
+    {
+      "file": "docs/PAISLEY_PARK_5_0_C_FOLLOWUP.md",
+      "sha256": "df6ee7cbe54aa812b2e2bc874d942dd429f3e45d09e83e2d4d31db47f1b3238b"
+    },
+    {
+      "file": "docs/PAISLEY_PARK_5_0_C_REVIEW.md",
+      "sha256": "b851856f3e562d77e5035e6295ba7a7e192616a214338c50afcdd31aceffb1c6"
+    },
+    {
+      "file": "docs/PAISLEY_PARK_5_0_MAC.md",
+      "sha256": "981fb4031dcd51d016a848a00858dea4587c6a8debf77bae034f5e40c26ed680"
+    },
+    {
+      "file": "docs/PAISLEY_PARK_5_0_PROGRESS.md",
+      "sha256": "ff4d5e20597ecc796b4adc2f6912fb3bb9988afafd883a2dd89962afd08230cb"
+    },
+    {
+      "file": "docs/PAISLEY_PARK_5_0_WINDOWS_AB.md",
+      "sha256": "f5e2686f72d2c144f89b5a7db181f7220c1f367c178cf50c50e726d78f6ef971"
+    },
+    {
+      "file": "docs/PC_RUNTIME.md",
+      "sha256": "f5797947411aa2c5585381b655657e58e6be0f8005496006dbe6ac411987a385"
+    },
+    {
+      "file": "docs/PERFORMANCE.md",
+      "sha256": "ebe2e132128cb882cfe240db22ba162d7de581d2423d8b2f6d005badecdf2bd4"
+    },
+    {
+      "file": "docs/PROCESS_MEMORY.md",
+      "sha256": "0a46ff52f99d375ecd39b58b75cbad050f120cb75e1947ef1a87b924f42f5746"
+    },
+    {
+      "file": "docs/PROJECT_EXPERIMENTS.md",
+      "sha256": "b3e4367cf2304e503273ea3ac1ad94df4906bd8614c11e79fa12a4432343c361"
+    },
+    {
+      "file": "docs/RELEASE_4.0.1.md",
+      "sha256": "07ea3da1682b470af37e9688ec609350838158cff57fa55ee99bae3e846812ac"
+    },
+    {
+      "file": "docs/RELEASE_5.0.0-rc.1.md",
+      "sha256": "a3f3d27f978062c7962748cc1398affdb9402b19d01d8c3528f4b106b51aaac6"
+    },
+    {
+      "file": "docs/RELEASE_5.0.0-rc.2.md",
+      "sha256": "55a1a92482d558d7cd242727c5d956ec4aceceb5b9b2c59bc3b5f6b2d4800e19"
+    },
+    {
+      "file": "docs/RELEASE_5.0.0.md",
+      "sha256": "a62ced2bfa572a318d69f68d2d647d1ceb3900f1801c685c4722aaa80518fde0"
+    },
+    {
+      "file": "docs/RELEASE_5.1.0.md",
+      "sha256": "41b81b27a2c81c12fd704c4025b32b7867d8fe39d269f63be1d902082dda7257"
+    },
+    {
+      "file": "docs/RELEASE_6.0.0.md",
+      "sha256": "ef3edcf3830b4d839923d82179d113040f330177f40651f15acd4fa3b5d2e159"
+    },
+    {
+      "file": "docs/RELEASE_6.1.0.md",
+      "sha256": "7c4bc3743df7c6fdf6d7b3151c200af49d56795b7011f934b528cf040fac0990"
+    },
+    {
+      "file": "docs/RELEASE_PACKAGE.md",
+      "sha256": "cd833eec68ed1b33d0ed9bdab6b3500ecde5ced7124d521155281ccfaa5d91e7"
+    },
+    {
+      "file": "docs/RESOURCE_GENERATIONS.md",
+      "sha256": "9e8ada67ae778161d0d70e76e6bf03d0383ee74eb2dac5fd9003c90ef229bd51"
+    },
+    {
+      "file": "docs/SKILL_INSTALL.md",
+      "sha256": "bdd101b905d4a804a5aace8bcd7eb15c6ff1823141728482cda39f3c17860fb7"
+    },
+    {
+      "file": "docs/SKILL_ROUTING_5_1.md",
+      "sha256": "4680c47ba2e46c1dc70109b5565474e8f5554dfaab45212399a829be69ad33ad"
+    },
+    {
+      "file": "docs/VIEWPORT.md",
+      "sha256": "b2f537619287a33d211b65fac59e622ff01f1cf642cf18f6fa70c5d5dc635045"
+    },
+    {
+      "file": "docs/WINDOWS_5_1.md",
+      "sha256": "65091fbdf1e7b27dabcaee3979add29cd477d65ea1d24aea56b6265f8d63b655"
+    },
+    {
+      "file": "docs/WINDOWS_6_1.md",
+      "sha256": "c4ad6093affce23385e25bc4e8f9117e86bf07cc4e77b49d25feb45f10c3f882"
+    },
+    {
+      "file": "docs/WORKSHOP.md",
+      "sha256": "a1d14cb3caeb0c5667e0ced7322a3ae1cb0d5eb771c434f75994891ad0c502a5"
+    },
+    {
+      "file": "docs/journey.example.json",
+      "sha256": "f89423db98ffed2f83ce071dec68bfd2bb93bb8c1c1591a393f6cf6cab7300ed"
+    },
+    {
+      "file": "docs/knowledge/build-byte-drift.md",
+      "sha256": "e9f3c95286534fbbed721486b26e2646e8e6f07d8f264cf7560fa88e84b77bd7"
+    },
+    {
+      "file": "docs/knowledge/cheat-optional-framework.md",
+      "sha256": "dcf9ce9918f912cc7c8f5bcbdbad4b4ae13722736a59371c29dc591dc8969cc0"
+    },
+    {
+      "file": "docs/knowledge/latest-mod-sources.md",
+      "sha256": "3c9d4175759e7a032ab26c769a62c696188672a2e93bcc419608c1b83ceddc64"
+    },
+    {
+      "file": "docs/knowledge/maplebirch-mouth.md",
+      "sha256": "b068d7ac2c4a70ba7325b1a2512e301bbcf6246a103af54078c1dfd281bb1e96"
+    },
+    {
+      "file": "docs/knowledge/patch-capture-boundary.md",
+      "sha256": "bc5c8e76c8d7c4734909c9faa2a84dd8e330d46daef0067034f75fd28785fbe7"
+    },
+    {
+      "file": "docs/knowledge/reoverfits-model.md",
+      "sha256": "380be1aee2ebee09cc684af9508cf88fc15885382b04d44cc5a48a159409e57f"
+    },
+    {
+      "file": "docs/knowledge/shared-caption-coexistence.md",
+      "sha256": "cc58ea05c7591a923ccb2498603e38aa118979ff445304996d21348caaad9d80"
+    },
+    {
+      "file": "docs/recipes/dol-save-state.cjs",
+      "sha256": "7de40dc61a32a7fdd5db27c66f8095fb76aa2ebacfa82242ec06d6fe19aff52c"
+    },
+    {
+      "file": "docs/recipes/project-state.cjs",
+      "sha256": "482c7e3c02b80dbaeea64608fc4f5120dfcad91e039bc2744560967c088163d3"
+    },
+    {
+      "file": "docs/repro.example.json",
+      "sha256": "1d67d65993f9ee6dbd231767d8e8bc4eecc366a9df139bd168488e434a584574"
+    },
+    {
+      "file": "examples/android-native/ProbeActivity.java",
+      "sha256": "4d9ea06b29bba498d6ceb07685a48cbabab30df758a66083b77dd496cdeeb393"
+    },
+    {
+      "file": "examples/android-native/build.py",
+      "sha256": "da75006cd95313be7bb97170c9d4626d3e1d1347c1d6fe4d0ee04029236d4573"
+    },
+    {
+      "file": "examples/android-native/verify-business-mod.cjs",
+      "sha256": "ce151f85110cac352b72f6ab35e992f6ca3c0756b1875cf8f3ed639b258f10aa"
+    },
+    {
+      "file": "examples/android-native/verify-webview.cjs",
+      "sha256": "21429246732377566c5b3b843e26dfb93bd6130d0051497e18caf4797a8329c0"
+    },
+    {
+      "file": "examples/android-native/verify.cjs",
+      "sha256": "cea73e112ce8a79aa6376d09ba35281b87288ebf34838da9a661cac796456c1e"
+    },
+    {
+      "file": "examples/behavior-preservation/README.md",
+      "sha256": "76a7fcc20bc70fe0f7c8d9009c4bf4b1331d3d775ef94f910b2ce865016579c2"
+    },
+    {
+      "file": "examples/behavior-preservation/deep-proxy.cjs",
+      "sha256": "27e5ab38211966cf51b517d0b928f9d2783d9b7b53a8a3c8c18e293aead3ac75"
+    },
+    {
+      "file": "examples/cheat-extended-optional-probe/README.md",
+      "sha256": "56384ad0a8aeca501938df767d1745d730cbe73a075a0e0a15dcfbb2c48d36cc"
+    },
+    {
+      "file": "examples/cheat-extended-optional-probe/patch.py",
+      "sha256": "e792ee197e9fd1e6588c1e59c5dbe14ddc0b78332f8e87ac8b3930a9618ab113"
+    },
+    {
+      "file": "examples/cheat-extended-optional-probe/verify.cjs",
+      "sha256": "ac3deb106f0f354ce8fba073f6634e72294234992c8ac852f8f2495b382f63c5"
+    },
+    {
+      "file": "examples/cheat-extended-optional-probe/verify.py",
+      "sha256": "a827468eb5369e0949991382dee5d07a4185f595fe650523e1922a51d4af8e4a"
+    },
+    {
+      "file": "examples/maplebirch-character/README.md",
+      "sha256": "6fd13289f292cf0aea0af282540cebcee1b89fa87d04e34d0791d480722c9361"
+    },
+    {
+      "file": "examples/maplebirch-character/verify.cjs",
+      "sha256": "6f86918cdfe18aada6da616341da919a322437e4df2388615f41a380f726f09c"
+    },
+    {
+      "file": "examples/patch-provenance/README.md",
+      "sha256": "dd10fd6fb00c52b1f17d74f97232009a10ea4c51a102828e3b02bfa729aeea67"
+    },
+    {
+      "file": "examples/patch-provenance/observe.cjs",
+      "sha256": "a36e6012d32d3badb243f742c26c80c8bff8318351b791038f62bae23c72bcb7"
+    },
+    {
+      "file": "examples/patch-provenance/publication-browser.cjs",
+      "sha256": "411085d2fc893135072795d7fe3bd76f52b9182b657dc5ecab283100576239dc"
+    },
+    {
+      "file": "examples/patch-provenance/startup.cjs",
+      "sha256": "b2ef66ab3289499b80b4b04da9cd7e4c1b90b96289c6b6ebf42431f099ac9d7d"
+    },
+    {
+      "file": "examples/patch-provenance/verify.cjs",
+      "sha256": "dd4e4b1cb3f84f5ebaa91192c43a89b47fa61c9a3dbc7da578f34ccddcc36663"
+    },
+    {
+      "file": "examples/workshop/build.cjs",
+      "sha256": "7b4008a437860e05a78e5264b779f4586cb4d4698c6ec0a21ac01f3d75259986"
+    },
+    {
+      "file": "examples/workshop/deploy.cjs",
+      "sha256": "0e4b522c8cc0fc423afdc80418fbdf22b7f3b9fdb56c32d66a3fcceb639a850b"
+    },
+    {
+      "file": "examples/workshop/index.html",
+      "sha256": "20a55a4a5a487a82ab870909af33081817daede36acb550068b8a0eabf099321"
+    },
+    {
+      "file": "examples/workshop/mod-fixture.js",
+      "sha256": "3620b95b7c8e2be59882446a20594aab4c790aa1583d5113b8079bc188b0faea"
+    },
+    {
+      "file": "examples/workshop/verify-android-mod.cjs",
+      "sha256": "07afe190a7d4696a63de1b5d935fe063c7870ae8b0967fe63f500c64f45cc0c9"
+    },
+    {
+      "file": "examples/workshop/verify-mod.cjs",
+      "sha256": "e898527f190b9db4e0b8526b2224043ebf7a915586d98d1bda88c107e06a6ea5"
+    },
+    {
+      "file": "examples/workshop/verify-webview.cjs",
+      "sha256": "30b15475d91158c70cb233584f649d004fc11fc986f683543ea4e88c427c6a50"
+    },
+    {
+      "file": "examples/workshop/verify.cjs",
+      "sha256": "2e38a17d01c4578fe949bd7734e18093daa04cf43d96e4f4e3ea7504a048853a"
+    },
+    {
+      "file": "examples/workshop/webview-fixture.js",
+      "sha256": "280c2520cb6a846e79a5bb06096c29c16c192b733d7fad5c961743c0e5ffa712"
+    },
+    {
+      "file": "experiments/gold-runtime/cli.cjs",
+      "sha256": "322f93f30d70bbc9cc0e420e92ee552b0e8c11ff6bd3e34b7e75df37f49ed0cf"
+    },
+    {
+      "file": "experiments/gold-runtime/fixture.cjs",
+      "sha256": "8879955d93d770df438ff815102026cb7304bde52ee6f4dd6250e8613802214e"
+    },
+    {
+      "file": "experiments/gold-runtime/runtime.cjs",
+      "sha256": "ed2c6fdedd0fb917d8993e019e45198c9ca4c5875031c7e79a159eb37780474d"
+    },
+    {
+      "file": "experiments/gold-runtime/test/runtime.test.cjs",
+      "sha256": "83b16716f0148b051e603839864d97484c6d1a573913fd4a3dead1853c951c7d"
+    },
+    {
+      "file": "integrations/examples/dom-summary.cjs",
+      "sha256": "e5d4c211bd5ac0f7e1319eb1ec8e9fc1ff5a481b1ebcdf78dd90882faf0928c0"
+    },
+    {
+      "file": "integrations/examples/native-lifecycle.cjs",
+      "sha256": "faa77cf2893186c726909dcaab2beb0b1431ee40c50d9db92e51ef672192809f"
+    },
+    {
+      "file": "integrations/examples/patch-observation.cjs",
+      "sha256": "62257dd775b881152c18891b2f732fd454b3d170d3f42880440ba92953210042"
+    },
+    {
+      "file": "integrations/soft-and-wet/gameplay.cjs",
+      "sha256": "7ae087dc738d80826c0b45a651196bebf16e9e3faf6796b471e7d43948f6cb9c"
+    },
+    {
+      "file": "integrations/soft-and-wet/index.cjs",
+      "sha256": "871781bd4963e19ca6ef1640191169ee54d8634ecb5e6d1caa271243f94b8027"
+    },
+    {
+      "file": "integrations/soft-and-wet/native-head-profile.json",
+      "sha256": "054200bf10103133a912859e8544b5695c6207a4f08708874c0b8ef81462a4b3"
+    },
+    {
+      "file": "integrations/soft-and-wet/native-head.cjs",
+      "sha256": "d05e864d539215ba207abd609003f90431f8c1b95d04dc7d9637365fdd477f27"
+    },
+    {
+      "file": "integrations/soft-and-wet/source-link.cjs",
+      "sha256": "e087f260598bfc6166fe703115c5e3a6846eb5af41918cad2012f9eb4d5e7dff"
+    },
+    {
+      "file": "package-lock.json",
+      "sha256": "0010fe98fd62ca7a3d74ac7d0e59f0b706b7d82b9c39ea2681d1b534e442e9a1"
+    },
+    {
+      "file": "package.json",
+      "sha256": "ea3655418297baab7a6c2577be309103d26d61cf6b86f64fab9aac49864f9d9b"
+    },
+    {
+      "file": "probes/loader.js",
+      "sha256": "8a2dc1bab1ca699843202d8dfc01d11b0c75cd042c1e8c89f390e39930089616"
+    },
+    {
+      "file": "probes/shop.js",
+      "sha256": "34811c97f49bd351972d94417c850cedd9020a6878356dd19ef6a45103e390d2"
+    },
+    {
+      "file": "probes/status.js",
+      "sha256": "3f8f4622554908de8da141020b42e0e0fc7c8e1ae38494a7df48f1232400f058"
+    },
+    {
+      "file": "probes/wardrobe.js",
+      "sha256": "c4385463a2db718d6a396fa30ac811d98232c1d4249a37c2af60f88f57991ecf"
+    },
+    {
+      "file": "schemas/diagnostics-v1.schema.json",
+      "sha256": "191c5a5e37217e18868d840bad42ed43081f3b0f9f8a6a1fdaf57393041781f4"
+    },
+    {
+      "file": "schemas/source-find-query-v1.schema.json",
+      "sha256": "25ae0ad3fd7fd9b3853cc7aab233caea0669013d519cb68305288051534bbe9a"
+    },
+    {
+      "file": "scripts/adb-backup-app-data.py",
+      "sha256": "03a6aa9a7959ee1fd00e487e921794885d567fbef2d552acf7fceefe9a30bdc9"
+    },
+    {
+      "file": "scripts/adb-evaluate.cjs",
+      "sha256": "938438063b40f5e76e51c1e4f86c7c8769fed3d3d5b242e186f2d61a0218fa85"
+    },
+    {
+      "file": "scripts/android-inspect.cjs",
+      "sha256": "dd949843ae482beb393ad49cba7bee0a24766f5fd089f0550341f29ddcf968f3"
+    },
+    {
+      "file": "scripts/dol-dev.cjs",
+      "sha256": "aa63f14c2838adaf36b27a0080fde763b6e144477b9e2c8e45bd012c7236d94b"
+    },
+    {
+      "file": "scripts/lib/action.cjs",
+      "sha256": "d7871d7d705276902a22d19d588fa65fb4e8ec4ab9c34a1a0ba3c28b9e8ca41a"
+    },
+    {
+      "file": "scripts/lib/animation.cjs",
+      "sha256": "196d9750faf80bdfb5be531615b0b2f8fe2700e62b3da80f45920c5330cc5463"
+    },
+    {
+      "file": "scripts/lib/app-lifecycle.cjs",
+      "sha256": "af3ebeb985eb302488aa16c7aeb80c450ec4aea349677010e34f8418b7b3a387"
+    },
+    {
+      "file": "scripts/lib/cdp.cjs",
+      "sha256": "c20e1655c0703e37754168bcd4e8aa97a1a81212495c4ee6d91fc3cacd2b2632"
+    },
+    {
+      "file": "scripts/lib/chrome-evidence.cjs",
+      "sha256": "d597030319c058996178f65532c9cf92d734a6c24f4f7d57c1f1e07958f74fe0"
+    },
+    {
+      "file": "scripts/lib/chrome-host.cjs",
+      "sha256": "83bf0b909f5791aa01832067b9c1345f6cde6fdcbc83c14df6d29dd6e3e31be1"
+    },
+    {
+      "file": "scripts/lib/chrome-launch.cjs",
+      "sha256": "dc1a5e208f2c8854fcf77d34b37c67778f47472b6cd185997ea51c58f7fa3e94"
+    },
+    {
+      "file": "scripts/lib/collectors.cjs",
+      "sha256": "7e5aef1ffa206f94acba7a630ba2b6b20835b4faba1cf8a0a28abc3177803995"
+    },
+    {
+      "file": "scripts/lib/css.cjs",
+      "sha256": "0b3411c543fb6aff6a6e65cfbba38caf90ac1a199380998355bf0abf680bcd87"
+    },
+    {
+      "file": "scripts/lib/deep.cjs",
+      "sha256": "e1d5768aacdbdf78d0f743377f4f96dcbf5abc23323af454988ef260c0f729af"
+    },
+    {
+      "file": "scripts/lib/diagnostics.cjs",
+      "sha256": "9dd820d8d260794b400523ca1c1681f5be07be37351e54c8beccc9a869a78406"
+    },
+    {
+      "file": "scripts/lib/doctor.cjs",
+      "sha256": "65ad3410b2dc4e0e6289c8ffe1c96aebef739fb3ab78d41a48583bc402918700"
+    },
+    {
+      "file": "scripts/lib/dom.cjs",
+      "sha256": "1436f7665981458d9d93f6629e4e5069d4372a5bdeeb550ed53b986dd87a27b5"
+    },
+    {
+      "file": "scripts/lib/environment.cjs",
+      "sha256": "282c93f73a9611f6d9668d1bf9da89e4349f8cc6a74bf64f46285709ccf14f41"
+    },
+    {
+      "file": "scripts/lib/evidence-tools.cjs",
+      "sha256": "3c93ce26993cca42b7344b66651078d591b0d0a3f1edbec51c4c4ac7ef44084b"
+    },
+    {
+      "file": "scripts/lib/evidence.cjs",
+      "sha256": "f260010b6926359052c0847027c475522e0258e869932f663a82fc890d55fd62"
+    },
+    {
+      "file": "scripts/lib/execution-context.cjs",
+      "sha256": "58f5ba480bab304cacc424a780ee761cdbf5ad44f2e978af1d011bbe35ec7e76"
+    },
+    {
+      "file": "scripts/lib/game-capabilities.cjs",
+      "sha256": "19e37e9b280e65e5e0a9a9093f9cf145b7f96a638c5bf09b1d7dab92bb43f341"
+    },
+    {
+      "file": "scripts/lib/game-clothing-provider.cjs",
+      "sha256": "03e876d0975c5e54fecdbc683b173ac7c00e4f102fd6d580e8321be48712bfa6"
+    },
+    {
+      "file": "scripts/lib/game-contract.cjs",
+      "sha256": "88492423877e72f06699834082a42c628df857ab9db648003d89997efeb95ca9"
+    },
+    {
+      "file": "scripts/lib/game-dol-provider.cjs",
+      "sha256": "2459fd83082d764fcfdf7c599bce40703781e2fe2256e23b48bf516ef91b885d"
+    },
+    {
+      "file": "scripts/lib/game-goal-reader.cjs",
+      "sha256": "77c0a1f75d2e68a514e760d8cc35852e950e11a11f8cb1f814b8f1d00db750a5"
+    },
+    {
+      "file": "scripts/lib/game-goal.cjs",
+      "sha256": "a7de9e112466fd963674755de263f57f7a12ff3614134f895c0db098d2af75a2"
+    },
+    {
+      "file": "scripts/lib/game-native-bedroom-profile.json",
+      "sha256": "fccf9dbc9367085775fe73ffeede14cdfebc079fa27ca7c7fa29530f6e2652dd"
+    },
+    {
+      "file": "scripts/lib/game-native-business-bindings.cjs",
+      "sha256": "3930ad06d2873e293ddb6f8d03a1791c589779ea83131d94c57225407ca0ca62"
+    },
+    {
+      "file": "scripts/lib/game-native-control.cjs",
+      "sha256": "545445f57fe60d64a19773c4a1e15a7ade12fcacfad4646168e159e25b162f4b"
+    },
+    {
+      "file": "scripts/lib/game-native-daily-profile.json",
+      "sha256": "5c7161c294ce3b024a36f467c6276837d8b09286dd8eacb4713618d75895d5e2"
+    },
+    {
+      "file": "scripts/lib/game-native-daily-state.cjs",
+      "sha256": "a496ca665680751a409c80d7fd436d24a046f3f93451da0778081f6778e99046"
+    },
+    {
+      "file": "scripts/lib/game-native-environment.cjs",
+      "sha256": "fa773bcb821d45898074f58ca415d44a310770ce76fa1ac63abdacc1a3bace60"
+    },
+    {
+      "file": "scripts/lib/game-native-garden-profile.json",
+      "sha256": "1a40cb93958cc1d5e6e4c6afdaa7b2e1c5fca50bfdad8ec60322a60bd2ad667f"
+    },
+    {
+      "file": "scripts/lib/game-native-garden-state.cjs",
+      "sha256": "f3258572c748d7ba8016e3f0c1803fdc62d7c76f9f5ac7953ec9be0d0153343d"
+    },
+    {
+      "file": "scripts/lib/game-native-generic-landing.cjs",
+      "sha256": "41ec132622eef4926171341481e7f659f517147a911d5789f1145ca41b27ffa1"
+    },
+    {
+      "file": "scripts/lib/game-native-hall-profile.json",
+      "sha256": "49ba57addff819ed7903c2fefb081c9f65f2274006edf59db76913f0e3769d27"
+    },
+    {
+      "file": "scripts/lib/game-native-hall-state.cjs",
+      "sha256": "77ecb3b9591aa582e4d7844f317a4645a4012425c9be9a3ba85f304635a81c41"
+    },
+    {
+      "file": "scripts/lib/game-native-history.cjs",
+      "sha256": "3d7eeb6c6c1d6832a7dbdfed6e89d538c1024b57dbc469494c0f3e47ecf318d8"
+    },
+    {
+      "file": "scripts/lib/game-native-hour-profile.json",
+      "sha256": "72710ff7e34667e0f0f15079aca3e5c7f212669e3602cf2b9f14de8f8ba16680"
+    },
+    {
+      "file": "scripts/lib/game-native-hour-state.cjs",
+      "sha256": "71c250eb0ccac851f903e30d904f2a46e685b577b1d7ad771cc7c934d0efd171"
+    },
+    {
+      "file": "scripts/lib/game-native-intro-profile.json",
+      "sha256": "3c954a9634e23d60c38c7cc84390fbba7de99e184346f0cc876dc7edd43a180b"
+    },
+    {
+      "file": "scripts/lib/game-native-invocation.cjs",
+      "sha256": "b0a7ee194a568c8569e96fac5705f5acada91423c8177a7c51d9b77dc63353cc"
+    },
+    {
+      "file": "scripts/lib/game-native-kitchen-profile.json",
+      "sha256": "a16e113e93c77b74ac97bbb357eee4a9d900fe05e811fb6e784ae89cbcccfdc9"
+    },
+    {
+      "file": "scripts/lib/game-native-navigation.cjs",
+      "sha256": "7b756544b403a44295eb5dd307ede0b20cd608bafcabcca89e28681b16301653"
+    },
+    {
+      "file": "scripts/lib/game-native-profile.cjs",
+      "sha256": "f44d5c80e77ad4d386839b84e03438139899e8ca5177fc52f4cc51c479e9fb23"
+    },
+    {
+      "file": "scripts/lib/game-native-profile.json",
+      "sha256": "5b7d9e7532bdf0a6fe569028a7bff1017565f7e464350166a2bc4bad332fe37d"
+    },
+    {
+      "file": "scripts/lib/game-native-provider.cjs",
+      "sha256": "c96e98dd727b6c33bdc678973f4867fe13b4ed229cda45980004724c5d1ab24f"
+    },
+    {
+      "file": "scripts/lib/game-native-radio.cjs",
+      "sha256": "8f2315d618ac3c4358c439b4046b9cb8713334c2c05ca2152d4762907905e613"
+    },
+    {
+      "file": "scripts/lib/game-native-render-tasks.cjs",
+      "sha256": "75b52f9b63c1f80c8d89a21a4e9a22223e5f4834b1f2c0a3d46b39f1d5db2fe1"
+    },
+    {
+      "file": "scripts/lib/game-native-save-profile.json",
+      "sha256": "769dcc5978ae89d2b387ee01df96bcb838eb8cb4dd41904b4b3ec98ea77a6eca"
+    },
+    {
+      "file": "scripts/lib/game-native-save.cjs",
+      "sha256": "536b93c424165300bceefeb9d74fdad4b1dee10eba60aa33b35ef779697e626d"
+    },
+    {
+      "file": "scripts/lib/game-native-street-profile.json",
+      "sha256": "b47b3fd2b79f57177a946fa4396b5ed419fc1cb47ff4586f3d2f9d9c58641fbc"
+    },
+    {
+      "file": "scripts/lib/game-native-street-recovery.cjs",
+      "sha256": "c525557262c216f64e5ef0f2b93c5570910d4920a3027eed5d9f3a953600db76"
+    },
+    {
+      "file": "scripts/lib/game-native-street-state.cjs",
+      "sha256": "bba3241132dc9be9c5f62db87c19d174ee98ef117667dd2468b4562fa2d70df2"
+    },
+    {
+      "file": "scripts/lib/game-native-time-profile.json",
+      "sha256": "5b022875f641727ead50bcc4d40c765567f069f6e315914dd3ca515b4fe42610"
+    },
+    {
+      "file": "scripts/lib/game-native-time.cjs",
+      "sha256": "98257a485d86c24f99848b2adb6ed825c4524970a01ee706195dde4e3c56512a"
+    },
+    {
+      "file": "scripts/lib/game-navigation-operation.cjs",
+      "sha256": "f2e64ac9d4646e5d3cc6f987613fc52ae7bd3a4c3014ea6ef62772c366c45f44"
+    },
+    {
+      "file": "scripts/lib/game-project-provider.cjs",
+      "sha256": "7698c53824c3076c1de426e06a78c2087560d2d0a64e9955e4d61c513efe90a6"
+    },
+    {
+      "file": "scripts/lib/game-receipts.cjs",
+      "sha256": "a6428423f9716b3e3277ac2005d3b8d5c454b5eeedadb0bbb6a190138afc3132"
+    },
+    {
+      "file": "scripts/lib/game-resource.cjs",
+      "sha256": "c17953a02d935925d9187f885937942502ba01b0e0fd645d13d713470e5385f9"
+    },
+    {
+      "file": "scripts/lib/game-runtime.cjs",
+      "sha256": "ef7b2ee840882bd5bf85153265352e97ee1142d74369cdde151cee1db90b63f3"
+    },
+    {
+      "file": "scripts/lib/game-scope.cjs",
+      "sha256": "7acd1f64075a0bc9bbfbfb15f73037ec998f83f470d3cc5c842c07e64b484c5d"
+    },
+    {
+      "file": "scripts/lib/game-semantic.cjs",
+      "sha256": "a8db6078bc313851e3793ccea15d63d8c7e0e9f9f96fb7fe6d97758776119061"
+    },
+    {
+      "file": "scripts/lib/game-shop-menu-native.cjs",
+      "sha256": "da682735d722b34e301f3ee1c770565a8b6e5c1d21e6b88f15116392edf0e158"
+    },
+    {
+      "file": "scripts/lib/game-shop-menu-operation.cjs",
+      "sha256": "ed183cd53fa96b6265695acf9ea18713e124506d38fe77bef3299e2390b123b1"
+    },
+    {
+      "file": "scripts/lib/game-shop-menu-profile.json",
+      "sha256": "2d3d0a699399885bf58d9916da6f2c9581e565acf7f3c98cf128a3af00abff9c"
+    },
+    {
+      "file": "scripts/lib/game-shop-native.cjs",
+      "sha256": "3790190c0a10419ea80ea1a55e980a1f2c4ddf45834f79f783c4bfb37d3e69ed"
+    },
+    {
+      "file": "scripts/lib/game-shop-operation.cjs",
+      "sha256": "49c9a14b44e80e97a4b3645909fb231d435d607911a0f19de030d3a2581d95fd"
+    },
+    {
+      "file": "scripts/lib/game-shop-profile.json",
+      "sha256": "95789ef475c63da6c9b3b66fbd8a4d2c023ad841bdba211bea11652c457ba8d0"
+    },
+    {
+      "file": "scripts/lib/game-shop.cjs",
+      "sha256": "9d7946e3ca68dee939de54b970ebc0526a56a08efa2387467b2902594bcbadc3"
+    },
+    {
+      "file": "scripts/lib/game-spend.cjs",
+      "sha256": "be39f2f29cb0c319590a509bc15c25b173b6e5402ef8d185b97fe6a748ffef41"
+    },
+    {
+      "file": "scripts/lib/game-wardrobe-native.cjs",
+      "sha256": "2b8341169bffe9565bb019af1961487dd3820682b1c36d4546e76e0995ad9a3f"
+    },
+    {
+      "file": "scripts/lib/game-wardrobe-operation.cjs",
+      "sha256": "feb465bd62ee025e85055073655f575e7ec846b6f6c848bbe109d5f8841980f5"
+    },
+    {
+      "file": "scripts/lib/game-wardrobe-profile.json",
+      "sha256": "4fcc6b35476f77108443db4dc4a81d26508a16ec1e665793fa14402486e3987f"
+    },
+    {
+      "file": "scripts/lib/game-wardrobe.cjs",
+      "sha256": "d9a3d7eda32f71e348de85e2ebf529c4ac93181be08277c1aca19767d08ce56a"
+    },
+    {
+      "file": "scripts/lib/hitbox-overlay.cjs",
+      "sha256": "e665e2b6bdd7ddff92cab6ebd943d33b338b268321b4a89c1832978ea37943ea"
+    },
+    {
+      "file": "scripts/lib/host-options.cjs",
+      "sha256": "67af35c08277b13afd7cb3cc0bea17cee449d33b627dd39dd5c6bf85afba516c"
+    },
+    {
+      "file": "scripts/lib/inspectors.cjs",
+      "sha256": "48f26d9137e4f17c41c910b911f50a7c04be951d7f0c8ed25e5083b00022faf7"
+    },
+    {
+      "file": "scripts/lib/install-skill.cjs",
+      "sha256": "5e602848965c5facd666d738b38a7da5b2636271374f22f4fe1ac7491c4e8447"
+    },
+    {
+      "file": "scripts/lib/integration-worker.cjs",
+      "sha256": "89277dcf0d993ccb0d2f6a955c85616fae63a8ffb6a448abbeb3d66348fc213f"
+    },
+    {
+      "file": "scripts/lib/integration.cjs",
+      "sha256": "3e7f702b073684d6dc88a8fb6ec71e6a58582d64f46ec7a28acf137a8277f69d"
+    },
+    {
+      "file": "scripts/lib/journey.cjs",
+      "sha256": "b4ab278c29896be7edaca97dfaa4c0b0fece48364e82466190ad6ff7492157da"
+    },
+    {
+      "file": "scripts/lib/logcat.cjs",
+      "sha256": "a4d0412363eecea25642a6c4ac6eab990fe25d16593dc8dddce77b5c862a5759"
+    },
+    {
+      "file": "scripts/lib/matrix.cjs",
+      "sha256": "3f55314ee1dd37b5d6e63ba0de40ff627751da15e198e10317cb403e5ea275e7"
+    },
+    {
+      "file": "scripts/lib/native-layout.cjs",
+      "sha256": "47be9a5df3eae8ef7629fa9d8d03f7f623f23a4833d8cb8d537a14bfa2051cce"
+    },
+    {
+      "file": "scripts/lib/network-lab.cjs",
+      "sha256": "950100e0a7550e6c3bd41f755f5674bcfdca7675ce31a4809ecefd4807ba56d1"
+    },
+    {
+      "file": "scripts/lib/owned-files.cjs",
+      "sha256": "e60018c7c6843286af4badfaad0dacb7706a33b5528548dacec8eeaf6ed1923d"
+    },
+    {
+      "file": "scripts/lib/pc-http.cjs",
+      "sha256": "7380418b00b0645dc26a6e56b1cf73d13a2e7d94ab8dd7dddb454eee670ec903"
+    },
+    {
+      "file": "scripts/lib/pc-session.cjs",
+      "sha256": "4d5d3e9efa950f150cfa47efaf59ecde6512cb11e37379ee270ee27a8fac5772"
+    },
+    {
+      "file": "scripts/lib/performance-series.cjs",
+      "sha256": "1291633ec44c3c0c898e27be1f2f3801f5d9bb24dcbd3167ebc4230cd12ae42c"
+    },
+    {
+      "file": "scripts/lib/performance.cjs",
+      "sha256": "abe8228a17a822a38903763ce19559f37da05d5d68c29f51805a330d3b8defb1"
+    },
+    {
+      "file": "scripts/lib/privacy.cjs",
+      "sha256": "be30398fa8ba1f1fa0bf9aa3471a9abac90687253ea88df8097b746fa0927d0a"
+    },
+    {
+      "file": "scripts/lib/process-memory.cjs",
+      "sha256": "3b8dbf6d92988712f39fa88d27a2f566d9630bb582ecc822bae6049e1fae5ab4"
+    },
+    {
+      "file": "scripts/lib/record.cjs",
+      "sha256": "7eb25726c1ae632ba3e96db46c96f04e1b522274c3c192f292f743bb710f0992"
+    },
+    {
+      "file": "scripts/lib/recorder.cjs",
+      "sha256": "937b149f051d860671606fddb2fb1eb42df07ad3681d932c29d9cccae7f0ab50"
+    },
+    {
+      "file": "scripts/lib/runtime-target.cjs",
+      "sha256": "0e8500425e4f8e3d2479e5dd4cd5f9d6e35d07251a3b204d6c276c798505faa6"
+    },
+    {
+      "file": "scripts/lib/source-find-cli.cjs",
+      "sha256": "74e6ce75c4f2cb97afaa816c9d0346edcd2d476ae9de59131c29914d429760b9"
+    },
+    {
+      "file": "scripts/lib/source-find.cjs",
+      "sha256": "efe805aa51a87f5183881c447c4e4c336ad4744ec612fd583b1979e357c433bd"
+    },
+    {
+      "file": "scripts/lib/support.cjs",
+      "sha256": "6b9c9ae2aa19933e704b29fcc87ada70de86cfd0517287e884d27763b38263b5"
+    },
+    {
+      "file": "scripts/lib/timeline.cjs",
+      "sha256": "671fb6447a5bbe6a829c0159c2af4cddf7526d2e99dc25fac589649aaa268fd1"
+    },
+    {
+      "file": "scripts/lib/viewport.cjs",
+      "sha256": "bcf018e70b04ca8cf78ade9a8f23c8f4eb4424a03d67157079c045c4c6361f2f"
+    },
+    {
+      "file": "scripts/visual-diff.py",
+      "sha256": "598475aafa7a2208db75cb984aacbfe096b7ce58d6a14af91767fe7acd11abb3"
+    },
+    {
+      "file": "tests/action.test.cjs",
+      "sha256": "ff9bdf5b58f4b3882a2f7c92985bb49ec81baf040a44c84f0f3c31d113ff520b"
+    },
+    {
+      "file": "tests/android-inspect.test.cjs",
+      "sha256": "2edb7cd5210f081e6571a96ae55fd911a3ea0a83a631c2da7db1674f0d055a24"
+    },
+    {
+      "file": "tests/animation.test.cjs",
+      "sha256": "7698d2aea616268d433b978da22b0d71c653ba3352fc52912bc13cdd33d292ea"
+    },
+    {
+      "file": "tests/app-lifecycle.test.cjs",
+      "sha256": "a2fcfe207d6d6f0285a19401066206af17f10b146e1091cb2a460f6ab8e145ed"
+    },
+    {
+      "file": "tests/cdp-protocol.test.cjs",
+      "sha256": "804bb66f24d9069f99f13581f88783d1a40443c86ccbb341480df36e46a3aeaa"
+    },
+    {
+      "file": "tests/cdp.test.cjs",
+      "sha256": "ecb24259ceb39d3dd54e8822612e3682f8f0a94a0430c288e680295fac942c15"
+    },
+    {
+      "file": "tests/chrome-gameplay.test.cjs",
+      "sha256": "a2536585c2a7610d62ce20f75007410029d8ec4c3a15bb9cbd9381b49050b07c"
+    },
+    {
+      "file": "tests/chrome-host.test.cjs",
+      "sha256": "66ce634f1addcef98108ed4fd82cc452c18480b140456ac232e33c786c34ef5c"
+    },
+    {
+      "file": "tests/cli-errors.test.cjs",
+      "sha256": "b68025d06e3e64bb0d0e9a785f4c38aa233f0e06c77c9123a0c990467afb4261"
+    },
+    {
+      "file": "tests/css.test.cjs",
+      "sha256": "5e440ec07b7eb6e1d7a2d689ff548947e67ef5716093c2de33341a35eb5cfd95"
+    },
+    {
+      "file": "tests/deep.test.cjs",
+      "sha256": "1f07f606be439d91474ff85e4c6c5b42a773b6ba7765b9647a38fb8f77d50a58"
+    },
+    {
+      "file": "tests/diagnostics.browser.cjs",
+      "sha256": "4dcca12bd0fe488377e0d7db82d8a574fab885daa409deb81c6a5fc801b463fe"
+    },
+    {
+      "file": "tests/diagnostics.test.cjs",
+      "sha256": "529ea9cc56cc27bcc94fb398a830eb8a008341cefc35a519816591144b9f32ca"
+    },
+    {
+      "file": "tests/environment.test.cjs",
+      "sha256": "e86295a94768f8433163d03033d4dcd0c38784c59a82ac4448ad334333a0fdb2"
+    },
+    {
+      "file": "tests/evaluate.test.cjs",
+      "sha256": "4cf1a189dd92206669d23278233ae423e630f4b6dc11d2b1eebd6f56748a25ff"
+    },
+    {
+      "file": "tests/evidence-tools.test.cjs",
+      "sha256": "e1777928e9126b52b6697cc416fed4b8078bceb7adbc9d8d69d13b4db552f5c6"
+    },
+    {
+      "file": "tests/evidence.test.cjs",
+      "sha256": "5184dc6ad1350a4f4a4ddc6330182953e84e2ad22f7b2ac494571d722e55e68a"
+    },
+    {
+      "file": "tests/execution-context.test.cjs",
+      "sha256": "4c5d7446ecad4d0e4c8234570d9232932a83a28af0cc1f7a42f5b37706345b54"
+    },
+    {
+      "file": "tests/fixtures/document-client.cjs",
+      "sha256": "ace32273ceb51861723b5a3be38e8562f587b27498d0e85ef965bd4b745fd1e9"
+    },
+    {
+      "file": "tests/fixtures/source-find-queries.json",
+      "sha256": "b83fc99b32dee875af36ea508bbb08026752c5a423badfe68bb000aa7af9ecbf"
+    },
+    {
+      "file": "tests/game-capabilities.test.cjs",
+      "sha256": "0bbf703617366a5076d5c9079f17351088c824e9dc79fdb2948caf9c5717709d"
+    },
+    {
+      "file": "tests/game-clothing-provider.test.cjs",
+      "sha256": "7835f8cf4829107a8b6431ee6d57ee156307a2ba38c2263104d99b3c56e88baf"
+    },
+    {
+      "file": "tests/game-contract.test.cjs",
+      "sha256": "cb1db15e768782bfc21903d06e45c4d666fdb8bcce8ede443f5430627f602617"
+    },
+    {
+      "file": "tests/game-execution-window.test.cjs",
+      "sha256": "8dc0a19332a7c14c3591a7770539e39fb3448f205542f18de3a28db5a2c769d0"
+    },
+    {
+      "file": "tests/game-goal.test.cjs",
+      "sha256": "1a28f83dcaaa490094ea2a84d87e7a4a14abc1d51ad968bf4d483f8c0266324e"
+    },
+    {
+      "file": "tests/game-native-control.test.cjs",
+      "sha256": "e6babfafa9d0739716b7c03208a833d5908fad1a79a0c1717ce9f053159f3a98"
+    },
+    {
+      "file": "tests/game-native-daily-state.test.cjs",
+      "sha256": "f2776ef7c2f2439eea72ce6b3435e920d98b9aa8dff720edd49d9ba230ee01ea"
+    },
+    {
+      "file": "tests/game-native-environment.test.cjs",
+      "sha256": "0f9dd80486526da75c0ca327563131cbb9f3311e4141e1c9369fb2fea5bb9b33"
+    },
+    {
+      "file": "tests/game-native-garden-state.test.cjs",
+      "sha256": "3787cdd76e807a91ed9996f4f729f273d80c7bf29cf73955c665da715b82c519"
+    },
+    {
+      "file": "tests/game-native-generic-landing.test.cjs",
+      "sha256": "2857aa46c73f0868fc1952c9d5e7615ace9e1984198fdde5ae45e656b32a1472"
+    },
+    {
+      "file": "tests/game-native-goal.test.cjs",
+      "sha256": "52959c4bc2889df37d029d1ae1e9e8c1c201755d304586f35239001b01b578b0"
+    },
+    {
+      "file": "tests/game-native-hall-state.test.cjs",
+      "sha256": "166374fd7cf86f757a926de46c215a10843a65e82516408e5d0d1a31a2d1087f"
+    },
+    {
+      "file": "tests/game-native-hour-state.test.cjs",
+      "sha256": "e8076bc92fde95514bd5369ac606157d096dd4a0c87185c3d14b23a85e09c45e"
+    },
+    {
+      "file": "tests/game-native-invocation.test.cjs",
+      "sha256": "869bf3c5de8c96e7bdf8e9799f1e4fc7f465147dc07ce5e908591c3c30a5b759"
+    },
+    {
+      "file": "tests/game-native-navigation.test.cjs",
+      "sha256": "d086852a65875d50da4a33bc27c0f720ccfbedccdf07ee7f559826c13e9d2a44"
+    },
+    {
+      "file": "tests/game-native-profile.test.cjs",
+      "sha256": "ba3420c0493054b30e5a218b68ba756e08d41cc387a00141782a51de5dbbf06a"
+    },
+    {
+      "file": "tests/game-native-radio.test.cjs",
+      "sha256": "14308f4dbbdcc472568699e9ad8f0885186d740a62fe290e1ef453737d3b4c10"
+    },
+    {
+      "file": "tests/game-native-render-tasks.test.cjs",
+      "sha256": "ecf44f52c545602578c7a4566a715f41573e6e800747c1a8bbe428af2ccc5207"
+    },
+    {
+      "file": "tests/game-native-save.test.cjs",
+      "sha256": "f7f0380854c2e469fea36ec0c1af62257dec6c9121e65ba032fab93fa04dcc16"
+    },
+    {
+      "file": "tests/game-native-shop-binding.test.cjs",
+      "sha256": "6d0b02cc7d1fbe87451d16c40c54c45cd28087b1e2585f92366adf8760de6ebf"
+    },
+    {
+      "file": "tests/game-native-shop-operation.test.cjs",
+      "sha256": "2c25260a6a2d5f3b45e3716349c00b20c5044d66cde82d01640be108aa3c691c"
+    },
+    {
+      "file": "tests/game-native-street-recovery.test.cjs",
+      "sha256": "3ea0837ea9df9d72d797385ab4ef27daffa3b65bde6e0ef774d195238348bf21"
+    },
+    {
+      "file": "tests/game-native-street.test.cjs",
+      "sha256": "9f2f09951da17b1c8026455f311886aaf94448a79d876c5c50918e1cebf7c24d"
+    },
+    {
+      "file": "tests/game-native-time.test.cjs",
+      "sha256": "1b11ab2d8c21ed2a7a7532df441f587d24f1128400de88062f601bd6707a29f5"
+    },
+    {
+      "file": "tests/game-native-wardrobe-binding.test.cjs",
+      "sha256": "edcbbf06ea5f5d278d1536929c526ac1f53d67bff795bfbdd3f6296bc5681236"
+    },
+    {
+      "file": "tests/game-native-wardrobe-operation.test.cjs",
+      "sha256": "4788382f3c846fa18029fee8f538f3ed8a589d259b1f18988150cf1ae4439b30"
+    },
+    {
+      "file": "tests/game-native-wardrobe.test.cjs",
+      "sha256": "fb109f9f843979adeac9a3a38d88d6a35f3254ebb85c47574a8b3ed9bb0dc61e"
+    },
+    {
+      "file": "tests/game-navigation-operation.test.cjs",
+      "sha256": "32634c62e7735510ffbe6949e7a24138b604609865cd74f022036a7dfecbcdb9"
+    },
+    {
+      "file": "tests/game-project.test.cjs",
+      "sha256": "73f0ec757348e374ccc1cb028bec0d911ce8f5422a334f42fb1ba71b959049ee"
+    },
+    {
+      "file": "tests/game-purchase.test.cjs",
+      "sha256": "40b22a6dd611f589add7133582ed9ef79f358c65c720628f42f0159da9c6b67d"
+    },
+    {
+      "file": "tests/game-receipts.test.cjs",
+      "sha256": "1c0189a3af419fb56de445d45ada8ccbdfb440d936caf4e5c39be8633a7169a5"
+    },
+    {
+      "file": "tests/game-resource.test.cjs",
+      "sha256": "b4cf41eaa07982c80a99dd7b8a40c93deae82ceb84bebe1bad297570f9f51f6a"
+    },
+    {
+      "file": "tests/game-save-recipe.test.cjs",
+      "sha256": "53d8ef67d351b8316a9b556da1c312f0ed52b640f8ae965bafacc800084394a7"
+    },
+    {
+      "file": "tests/game-semantic.test.cjs",
+      "sha256": "f57dabe549946aad24f6c7af72eaed22ad33646c2fc14a944e6dbcb65d3f53f0"
+    },
+    {
+      "file": "tests/game-shop-menu.test.cjs",
+      "sha256": "3473d84e01e8b1366ce8434b5c65b00b9f1e071aba28a16aeaa413af05de8a24"
+    },
+    {
+      "file": "tests/game-shop.test.cjs",
+      "sha256": "6c76eb63fbe93bc696cc5fe6becf705c1adf40267dfaf9a09b5b2c8e0131b463"
+    },
+    {
+      "file": "tests/game-spend.test.cjs",
+      "sha256": "5be014c9a00fabe2b091319cd1cb2abe816eb9e8932f9c7a1885e238f6948cf9"
+    },
+    {
+      "file": "tests/game-wardrobe.test.cjs",
+      "sha256": "878b4c1870f19018b2d93fc3b20a86bb4200dd47002586170d7724d22e943829"
+    },
+    {
+      "file": "tests/hitbox-overlay.test.cjs",
+      "sha256": "c9d421d8eeb8d753311cc3bc80a2167686111c525bdea1257d43950eb0b5d843"
+    },
+    {
+      "file": "tests/inspectors.test.cjs",
+      "sha256": "db7b18f0cdb39e083a8ae12dbefcdb42f8305065e34fdef8d653ba06e90c3c8e"
+    },
+    {
+      "file": "tests/install-skill-failures.test.cjs",
+      "sha256": "4d4f0e9d5d9110da7cec16a758beb2186c3254e67c3523459f8091b6a117dc36"
+    },
+    {
+      "file": "tests/install-skill.test.cjs",
+      "sha256": "688ac6f1d22660fdc3dc54caebf50be06e3b14cb41ba03c53d7a38e45914423a"
+    },
+    {
+      "file": "tests/integration-document.browser.cjs",
+      "sha256": "856c3c4c88c1bd13155726d1715779a2c327e154b35ccb3b6f843d56215035a0"
+    },
+    {
+      "file": "tests/integration.test.cjs",
+      "sha256": "5ea389c7a7ab8fe063bdb7dd2b21be475b49bae675256246a1bdf209f878bd50"
+    },
+    {
+      "file": "tests/journey.test.cjs",
+      "sha256": "3ba21181722e7033faaf4f18bb64648ffaffb81f6fe990210a51b58255f77194"
+    },
+    {
+      "file": "tests/logcat.test.cjs",
+      "sha256": "c07eb7a49fc480b6c94ad21894112723236126dfa1f1fb3364bdb6afb98e70fd"
+    },
+    {
+      "file": "tests/matrix.test.cjs",
+      "sha256": "eb34383a939ca4b2c5bf06686790895439237cda40646153c11432c6683cb13b"
+    },
+    {
+      "file": "tests/native-business-recipe.test.cjs",
+      "sha256": "e318e70cadd3e50ff1370c168cdafa7b6c60d2b3530bb05c98bb19acbb080649"
+    },
+    {
+      "file": "tests/native-head.test.cjs",
+      "sha256": "cd80a801ee80e54f8dc8ff27934ba27d5d394e0b330f0dc2428a03155b086d49"
+    },
+    {
+      "file": "tests/native-layout.test.cjs",
+      "sha256": "ef07ce1747285069f8eaee89a6ad66aed9dd38297467f3d23b7c48ab1772ce93"
+    },
+    {
+      "file": "tests/native-lifecycle.test.cjs",
+      "sha256": "bd21d9c73603a5203d36b7dfff5dd318aa969b265f989e4428e22c918dec6948"
+    },
+    {
+      "file": "tests/native-webview-recipe.test.cjs",
+      "sha256": "c831111110f954149a9ec3af7f10427151f14fcd92cc537b081daefeedce95fb"
+    },
+    {
+      "file": "tests/network-lab.test.cjs",
+      "sha256": "0393c813ffc80b6dbd02292f0adb62524ae2c5ff0db2a0033c6a79e4da18897a"
+    },
+    {
+      "file": "tests/owned-files.test.cjs",
+      "sha256": "66654ada8eba27418eb9f02597e548fe1414f945a601c3b8d352bd6e0b996f10"
+    },
+    {
+      "file": "tests/patch-observation-integration.test.cjs",
+      "sha256": "7b8e8343d52ee4cfa75a0cd0d41a4348eddd0a7cabe8c717065e362c4934c283"
+    },
+    {
+      "file": "tests/patch-observe.test.cjs",
+      "sha256": "497d5362b2a5b0b2763d2ba04b28de9610caa3e4a215a1d7b231b7cbc087a840"
+    },
+    {
+      "file": "tests/patch-startup.test.cjs",
+      "sha256": "ade5d9122940a610a49f6883d113fe00b3504e6c013b3a61c7b26d6cc3d74ee8"
+    },
+    {
+      "file": "tests/pc-http.test.cjs",
+      "sha256": "544ce3bd4b1775a538ffab06960758e199f4837d11bdbe8b0ffed596cbd9acf8"
+    },
+    {
+      "file": "tests/performance-series.test.cjs",
+      "sha256": "6f85fb4183967fb34d3c5900c860c32bc13b670789b9c09408bc609af7334589"
+    },
+    {
+      "file": "tests/process-memory.test.cjs",
+      "sha256": "8bd8b3e36250836b33c00a1091e6cf95f0b7cb44c5e6854c15ee30acde3e702d"
+    },
+    {
+      "file": "tests/receipt-retirement-mixed.test.cjs",
+      "sha256": "5e99f286543f8bcf4ef67d607053df894706f4bb59eff505925517366ae85470"
+    },
+    {
+      "file": "tests/recorder.test.cjs",
+      "sha256": "2cac1adad5e7136b3cc0917945007b11f252a15e0591c1e7365469fb42d0973f"
+    },
+    {
+      "file": "tests/skill-resolver.test.cjs",
+      "sha256": "90ce4fd40f804be7d050f01e82f5f1204e57c51ab816407ef37fcbf37fc1c4fc"
+    },
+    {
+      "file": "tests/source-find-cli.test.cjs",
+      "sha256": "05701338024033a095ecc6704abc7e5b2a8d139d8c53bf961ea8d779fb5aaee7"
+    },
+    {
+      "file": "tests/source-find.test.cjs",
+      "sha256": "674b8f29215451732f3a066013e55fa1ed3cbea704f8fe0f64f5fc0535cb721b"
+    },
+    {
+      "file": "tests/test_backup.py",
+      "sha256": "bd54f188e0e31e9ffe651044dfab8f0de2b7ab7a8deee92fec78eb542bbe3ca9"
+    },
+    {
+      "file": "tests/test_cheat_optional.py",
+      "sha256": "6f01cc9e09ab29409fe7281a0397bcf9acb1a7bcc1535db8283a526d46e2242a"
+    },
+    {
+      "file": "tests/test_formats.py",
+      "sha256": "a4e3e20230c0ec971fee547e2b329676d406c7c25a28922b401114b5fda44968"
+    },
+    {
+      "file": "tests/test_visual.py",
+      "sha256": "96934db79c3e8540e6a85d45d073200520f61fd10d54f6093c8ca69ec40e2d60"
+    },
+    {
+      "file": "tests/timeline.test.cjs",
+      "sha256": "ab6183c0b376debd62effb4180d4b3551785af57fdbb726b1facc3eb20249931"
+    },
+    {
+      "file": "tests/typed-target.test.cjs",
+      "sha256": "f302c0b319048af10c7d74334dc83e18f14d5688ec0af806a442c6d6d656fd3c"
+    },
+    {
+      "file": "tests/ui-source-link.test.cjs",
+      "sha256": "a15a5d82df6fc14d1f112829deab3d5e26cbcd876f04b54a0ec1223444bde390"
+    },
+    {
+      "file": "tests/viewport.test.cjs",
+      "sha256": "49b11b917983f6d609c156926594f9d7edcf72e5d73f4a7653bbe3fc4016f7f8"
+    },
+    {
+      "file": "tests/workshop-origin.test.cjs",
+      "sha256": "42e4166a0bb18667cb3a5954903f7a95f48f5487af25b1a6a4e0b7a1717785bd"
+    }
+  ],
+  "bytesMatchGit": true,
+  "exactExportSet": true
+}

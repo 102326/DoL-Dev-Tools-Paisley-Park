@@ -11,6 +11,32 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装成功只证明文件已写入；宿主何时重新扫描取决于实际 Agent 环境。按宿主支持的方法刷新或开启新会话，确认其可发现 Skill 并调用正确版本。当前回合显式读取或 resolver 成功不能冒充宿主自动发现验收。
 
+## 当前研发分支：resolver 诊断与维护
+
+`experiment/tusk-act4-7` 的 resolver 成功 JSON 字段保持不变。失败退出1，stderr提供固定代码、阶段及处理建议，不回显输入路径或原始异常：
+
+| 代码 | 阶段 | 处理方向 |
+| --- | --- | --- |
+| RESOLVER_INSTALLATION_INVALID | resolve.installation | 核对四个安装文件和清单；保留原目录，向新的未使用目标完整安装。 |
+| RESOLVER_LOCATION_INVALID | resolve.location | 核对位置记录，或显式指定已检查的绝对Tools根；不会扫描其它目录。 |
+| RESOLVER_ROOT_INVALID | resolve.root | 改用明确的绝对路径。 |
+| RESOLVER_ROOT_UNAVAILABLE | resolve.root | 核对所选目录、基础文档与读取权限；未自动回退或下载。 |
+| RESOLVER_METADATA_INVALID | resolve.metadata | 核对package.json身份、显示名和非空版本。 |
+| RESOLVER_ENTRY_INVALID | resolve.entry | 核对根内真实CLI普通文件，不能重定向到其它位置。 |
+
+无法准确识别的异常仍报告原因未知，不猜测根因。显式环境覆盖优先于位置记录，但不会绕过其它安装文件的完整性检查；成功路径按原合同返回工具根目录。
+
+维护者在源码仓库编辑 `scripts/resolve.cts`（Skill目录下），使用隔离开发包生成 `resolve.cjs`；权威TS与开发工具不随运行包分发；使用者和已安装Skill只运行预生成CJS，不需要TS编译器或loader。源码工作区的检查命令：
+
+```sh
+npm ci --prefix tools/typescript --ignore-scripts --no-audit --no-fund
+node tools/typescript/build.cjs --check
+# 修改权威TS后才生成，并审查对应CJS差异
+node tools/typescript/build.cjs --write-production
+```
+
+开发检查使用锁定TypeScript6.0.2；`--check`不改写resolver或清理目录。完整Program检查四个Node模块，CJS入口及导出保持兼容。生成使用协作构建锁、权限保留与多文件失败回滚；外部编辑不受原子CAS保护，不在生成时手改产物。生成失败保留现场，不把部分输出当成成功安装。旧实验命令仍转接正式构建。完整实验与跨平台边界见[Windows接续任务书](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/experiment/tusk-act4-7/docs/HANDOFF_TUSK_ACT4_7_WINDOWS.md)。这不是已发布6.1.0包的行为追认。
+
 ## 运行前提
 
 当前维护源码最低 Node.js 26.0.0，建议使用Node26 LTS；已发布6.1.0工具包保持原Node22.12.0要求，不能用新分支要求改写旧包验收。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2。Node26提供内置SQLite；直接运行Gameplay CLI的现有示例仍使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，两个Windows launcher也保留该参数，不需修改系统配置。最低版本声明不是新的设备授权、Store迁移或自动环境安装。

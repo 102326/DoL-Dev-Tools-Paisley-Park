@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [],
+    "strict": true,
+    "noEmit": true,
+    "noEmitOnError": true,
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "lf"
+  },
+  "files": [
+    "../../probes/typescript/dom.cts",
+    "../../probes/typescript/css.cts",
+    "../../probes/typescript/inspectors.cts",
+    "../../probes/typescript/journey-wait.cts",
+    "../../probes/typescript/environment.cts",
+    "../../probes/typescript/widget-source.cts",
+    "../../probes/typescript/goal-reader.cts",
+    "../../probes/typescript/receipts.cts",
+    "../../probes/typescript/recorder.cts",
+    "../../probes/typescript/timeline.cts",
+    "../../probes/typescript/integration-patch-observation.cts",
+    "../../probes/typescript/integration-soft-wet.cts",
+    "../../probes/typescript/integration-soft-wet-gameplay.cts",
+    "../../probes/typescript/integration-native-head-state.cts",
+    "../../probes/typescript/integration-native-head-recovery.cts",
+    "../../probes/typescript/native-goal.cts",
+    "../../probes/typescript/game-dol-provider.cts"
+  ]
+}

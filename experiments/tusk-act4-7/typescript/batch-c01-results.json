@@ -1,0 +1,39 @@
+{
+  "codeCommit": "eb8e13ad4e5ac2d1b6b10f03714a94041b339b49",
+  "strictCoreModules": 7,
+  "baselineCoreModules": 95,
+  "rootTests": {
+    "total": 532,
+    "passed": 531,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTransportWorkerTests": 33,
+  "legacyCDPProtocolCases": 4,
+  "typeNegatives": {
+    "total": 22,
+    "TS2322": 20,
+    "TS18046": 1,
+    "TS2339": 1
+  },
+  "chrome": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Synthetic Chrome Integration document binding only",
+    "checks": [
+      "formal Evidence CLI uses reviewed worker on the original Chrome document",
+      "same-URL peer never substitutes for the selected target",
+      "parent remembers a URL roundtrip before the worker binds, even when current identity fields match",
+      "hash between detect and collect rejects mixed data while retaining Generic Evidence",
+      "reload between detect and collect rejects mixed data while retaining Generic Evidence",
+      "explicit new-document binding permits a new collection",
+      "document change during redact cannot publish a stale successful Integration",
+      "missing local module remains optional and does not erase Generic artifacts",
+      "unresolved remote read returns a bounded optional failure with exactly one module attempt",
+      "closed original target fails without adopting the surviving same-URL peer"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  }
+}

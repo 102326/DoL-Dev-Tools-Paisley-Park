@@ -209,3 +209,31 @@ test('native navigation rejects changed source before expanding closures and pre
     assert.equal(calls.at(-1).params.objectGroup,calls[0].params.objectGroup);
   }
 });
+test('typed attestation preserves fixed original outcomes ownership and cleanup',async()=>{
+ const original=require('./fixtures/typed-contract-baseline/game-contract.cjs'),current=require('../scripts/lib/game-contract.cjs');
+ assert.deepEqual(Object.keys(current),Object.keys(original));
+ async function run(api,options){
+  const f=fixture(options);let result,error;
+  try{result=await api.attestWidget(f.client,name,sha256(body),{retain:options.retain===true,wrapperChain:f.wrapperChain})}
+  catch(e){error={name:e.name,message:e.message,code:e.code,errors:e.errors?.map(v=>v.message)}}
+  const groups=f.calls.map(c=>c.params.objectGroup).filter(Boolean);assert.equal(new Set(groups).size,1);
+  if(result?.objectGroup)assert.equal(result.objectGroup,groups[0]);
+  // The read-only Story probe is deliberately reprinted; execute it in fixture()
+  // and compare its attested outcome, while keeping the other protocol frames.
+  const calls=f.calls.map(({method,params})=>({method,params:{...params,...(params.expression?.includes('getAllWidget')?{expression:'executed widget-source probe'}:{})}}));
+  return JSON.parse(JSON.stringify({result,error,calls},(key,value)=>key==='objectGroup'?'owned-group':value));
+ }
+ for(const options of [{},{retain:true},{wrapped:true},{wrapped:true,retain:true},{storyBody:'changed'},{duplicate:true},{scopes:false},{cleanupFails:true},{storyBody:'changed',cleanupFails:true}])assert.deepEqual(await run(current,options),await run(original,options));
+});
+for(const method of ['attestWidget','attestFunctionMacro'])test(method+' propagates falsy protocol failures and preserves cleanup ownership',async()=>{
+ const api=require('../scripts/lib/game-contract.cjs');
+ for(const reason of [undefined,null,false,0,''])for(const retain of [false,true])for(const cleanupFails of [false,true]){
+  const cleanupError=Error('synthetic owned cleanup'),calls=[];
+  const client={async send(command){calls.push(command);if(command==='Runtime.releaseObjectGroup'){if(cleanupFails)throw cleanupError;return{}}throw reason}};
+  let caught=false,error;
+  await api[method](client,name,sha256(body),{retain}).then(()=>{},value=>{caught=true;error=value});
+  assert.equal(caught,true,'a rejected protocol request must not become resolved attestation');
+  assert.deepEqual(calls,['Runtime.evaluate','Runtime.releaseObjectGroup']);
+  if(cleanupFails){assert(error instanceof AggregateError);assert.equal(error.code,'NATIVE_BINDING_CLEANUP_FAILED');assert.deepEqual(error.errors,[reason,cleanupError])}else assert.equal(error,reason);
+ }
+});

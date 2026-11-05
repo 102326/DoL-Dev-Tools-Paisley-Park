@@ -1,0 +1,33 @@
+{
+  "game-native-daily-state.cjs": {
+    "checkDaily": "d4649d02da90866f9cd723e4baecbd50fde0c61dd829abd6fe5d03955bcf6200"
+  },
+  "game-native-garden-state.cjs": {
+    "checkGarden": "0a5591d2d01e933887d3621049ce5cb2e7a922fe7e9939b085ae28985c463952",
+    "collectSeedRequirements": "92ef1a7f0ad7c6e58b8759013d1b7c33667c811a45b1228f24d7436ef5bd4980",
+    "sameSeedRequirements": "2013e0064d6ddf75497b837488119a43cc429be0355e343dc5f50b800dd1873f"
+  },
+  "game-native-hall-state.cjs": {
+    "checkHall": "622510df298fef3e3df9d30ea1bea1bbb26291bfd3a964d34d9e79ebaff4052d"
+  },
+  "game-native-hour-state.cjs": {
+    "checkHour": "9ede4a701394b729ccc2c62a98e500bb00f4e03774c70920a2cba8577493f8cf"
+  },
+  "game-native-street-state.cjs": {
+    "checkStreet": "493de76b11331f54b2ba70191d6bb65f62967ee6585a301afd462dbcf5a169a4"
+  },
+  "game-navigation-operation.cjs": {
+    "operation": "d71068855aa57c2f0ca6f946d34765fd3188d39fec155d130d6c94a8e4c1c1b2",
+    "preflight": "d4fa0649825ef6b2b1e6f217ce2cb7773f31e6601a952527d1c3a5a55d821eb6"
+  },
+  "game-shop-menu-operation.cjs": {
+    "preflight": "df201a2b8029c948f536f7fc40e5c04a806c9373309a3ad8f0a1340e791ab712",
+    "operation": "102b94144c9176ae59a5b3fc53b3d2326b21525802f093606809dd058b66d081"
+  },
+  "game-shop-operation.cjs": {
+    "operation": "f0b3e229a9e1a68c03e5ca6e3f80066e4c3c40e1d9967c8ecbf3cab148ee7d2c"
+  },
+  "game-wardrobe-operation.cjs": {
+    "operation": "83c722159126c96630864fd4b39b3e442b90a8d6b8e21e382c6d407556396997"
+  }
+}

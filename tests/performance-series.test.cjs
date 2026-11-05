@@ -37,3 +37,10 @@ test('native repeated samples stop on changed process and retain successful samp
   }};
   const data=await collect(ctx);assert.equal(data.samples[0].status,'complete');assert.equal(data.samples[1].status,'complete');assert.equal(data.samples[2].status,'partial');assert.equal(data.collectorStatus,'failed');assert.equal(data.truncated,true);
 });
+test('probe failure classification rejects inherited and coercible error codes',async()=>{
+  for(const code of ['toString','constructor','__proto__',['ETIMEDOUT'],{toString:()=> 'CDP_CONNECTION_CLOSED'}]){
+    const data=await web({send:async method=>{if(method==='DOM.getDetachedDomNodes'||method==='DOM.disable')throw Object.assign(Error('synthetic'),{code});return{}}},{detached:true});
+    assert.equal(data.detachedNodes.failureReason,'unknown');
+    assert.deepEqual(data.cleanupFailures,[{stage:'DOM.disable',reason:'unknown'}]);
+  }
+});

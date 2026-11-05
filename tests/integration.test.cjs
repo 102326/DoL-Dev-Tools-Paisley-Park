@@ -13,6 +13,38 @@ function fixture(t) {
   return { root, module(name, source) { const filename = path.join(root, `${name}.cjs`); fs.writeFileSync(filename, source); return filename; } };
 }
 const entry = overrides => `module.exports={contractVersion:1,describe:()=>({name:'example-mod',version:'1.2.3'}),detect:()=> 'available',collect:()=>({status:'available'}),redact:value=>value,${overrides}};`;
+test('worker protocol metadata is validated as strings without array coercion',async t=>{
+ const f=fixture(t);
+ for(const [name,metadata]of [['hash',{moduleSha256:['a'.repeat(64)]}],['reason',{reason:['integration-load-failed']}],...[false,0,'',null].map((description,index)=>['description-'+index,{description}])]){
+  const packet={status:'available',data:{status:'available'},...metadata};
+  const source=`require('node:worker_threads').parentPort.postMessage(${JSON.stringify(JSON.stringify(packet))});`+entry('');
+  const result=await collect({},f.module('forged-'+name,source));assert.equal(result.status,'failed');assert.equal(result.reason,'integration-output-invalid');
+ }
+});
+test('Chrome integrations require an original document even when hooks never evaluate', async t => {
+  const f = fixture(t), marker=path.join(f.root,'unexpected-collect');
+  const file=f.module('requires-document',entry(`collect:()=>{require('node:fs').writeFileSync(${JSON.stringify(marker)},'unexpected');return {status:'available'}}`));
+  const result=await collect({options:{host:'chrome',chromeRecord:{target:{host:'chrome'}}},ensureWebview:async()=>({})},file);
+  assert.equal(result.status,'failed');
+  assert.equal(result.reason,'integration-document-failed');
+  assert.equal(fs.existsSync(marker),false,'invalid document must not reach collect');
+});
+test('an already invalid parent binding refuses before importing a Chrome module', async t => {
+  const f=fixture(t),marker=path.join(f.root,'unexpected-import');
+  const file=f.module('invalid-parent',`require('node:fs').writeFileSync(${JSON.stringify(marker)},'unexpected');`+entry(''));
+  const result=await collect({options:{host:'chrome'},ensureWebview:async()=>{throw Error('known invalid')}},file);
+  assert.equal(result.reason,'integration-document-failed');assert.equal(fs.existsSync(marker),false);
+});
+test('one deadline includes parent checks and cannot start a worker after a late check', async t => {
+  const f=fixture(t),marker=path.join(f.root,'late-import');let release;
+  const file=f.module('late-parent',`require('node:fs').writeFileSync(${JSON.stringify(marker)},'unexpected');`+entry(''));
+  const result=await collect({options:{host:'chrome'},ensureWebview:()=>new Promise(resolve=>{release=resolve})},file,100);
+  assert.equal(result.reason,'integration-timeout');release();
+  await new Promise(resolve=>setImmediate(resolve));assert.equal(fs.existsSync(marker),false);
+  let calls=0;
+  const post=await collect({options:{host:'chrome'},ensureWebview:async()=>{if(++calls===2)await new Promise(()=>{})}},f.module('post-check',entry('contractVersion:9')),1000);
+  assert.equal(calls,2);assert.equal(post.reason,'integration-timeout','worker exit cannot bypass the pending final parent check');
+});
 test('public modules report absence/unknown contract and validate hooks and post-redaction status', async t => {
   const f = fixture(t), ctx = {};
   const cases = [

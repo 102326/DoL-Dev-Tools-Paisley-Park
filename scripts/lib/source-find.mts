@@ -1,3 +1,4 @@
+// Generated native comparison view from source-find.cts; edit the CTS source.
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { constants } from 'node:fs';
