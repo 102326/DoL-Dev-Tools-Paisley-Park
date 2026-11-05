@@ -65,6 +65,8 @@
     "../../scripts/lib/game-native-invocation.cts",
     "../../scripts/lib/game-native-render-tasks.cts",
     "../../scripts/lib/game-contract.cts",
-    "../../scripts/lib/game-goal-reader.cts"
+    "../../scripts/lib/game-goal-reader.cts",
+    "../../scripts/lib/game-scope.cts",
+    "../../scripts/lib/game-resource.cts"
   ]
 }
