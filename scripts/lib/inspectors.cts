@@ -13,7 +13,7 @@ const ownership = (scope:string|undefined) => inspect('ownership', scope);
 const hitboxes = (scope:string|undefined) => inspect('hitboxes', scope);
 
 const modes = { 'selector-health': selectorHealth, accessibility, overlays, scroll, ownership, hitboxes, storage };
-const domModes = Object.keys(modes).filter(mode => mode !== 'storage');
+const domModes = Object.keys(modes).filter(mode => mode !== 'storage') as browserInspectors.Mode[];
 function expression(mode:string, scope?:string) {
   if (!Object.prototype.hasOwnProperty.call(modes, mode)) throw new Error('Invalid inspector');
   if (mode === 'storage') return `(${storage.toString()})()`;

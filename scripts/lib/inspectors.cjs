@@ -1,4 +1,4 @@
-// Generated from inspectors.cts by TypeScript 6.0.2; source-lf-sha256=307bc7d0e335e6378e3ffebe257a9a3657cd461706803550a22f2229bda0f28d
+// Generated from inspectors.cts by TypeScript 6.0.2; source-lf-sha256=0a50ed105be84897f67b36ac46a3a9cdf49fab70d9f0ff8ff1929e59100e39e7
 "use strict";
 const { inspect, storage } = require('./browser/inspectors.cjs');
 const selectorHealth = (scope) => inspect('selector-health', scope);

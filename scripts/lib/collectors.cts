@@ -4,7 +4,7 @@ declare namespace collectors {
  interface CommandSettings extends ExecFileOptions {[key:string]:unknown}
  interface Adb {(...args:string[]):Promise<Buffer>;execute?:(args:string[],settings?:CommandSettings)=>Promise<Buffer>}
  interface Options {serial?:string;package?:string;webviewSocket?:unknown;targetId?:unknown;scope?:string;timelineMs?:number;windowMs?:number;[key:string]:unknown}
- interface Context {options:Options;adb:Adb;appPid?:string|null;deviceReady?:boolean;forwardPort?:string;forwardRemote?:string;endpoint?:string;cleanupAdb?:(...args:string[])=>Promise<Buffer>;client?:Pick<cdpTypes.Client,'send'|'evaluate'>&{isOpen?:()=>boolean};connect?:typeof cdpTypes.connect;channels?:Record<string,'available'|'unsupported'>;capture?:Capture;cdpWindow?:{captureStart:string;captureEnd:string};[key:string]:unknown}
+ interface Context {options:Options;adb:Adb;appPid?:string|null;deviceReady?:boolean;forwardPort?:string;forwardRemote?:string;endpoint?:string;cleanupAdb?:(...args:string[])=>Promise<Buffer>;client?:Pick<cdpTypes.Client,'send'|'evaluate'>&{isOpen?:()=>boolean};connect?:typeof cdpTypes.connect;channels?:Record<string,'available'|'unsupported'>;capture?:Capture;cdpWindow?:{captureStart?:string;captureEnd?:string};[key:string]:unknown}
  interface ConsoleEvent {kind:'console'|'exception';[key:string]:unknown}
  interface NetworkEvent {scheme:string;path:string;hostHash?:string;method:string;resourceType:string;timestampSeconds:number|null;startedMonotonicSeconds:number|null;status:number|null;durationMs:number|null;failed:boolean}
  interface Snapshot {console:ConsoleEvent[];network:NetworkEvent[];omittedConsole:number;omittedNetwork:number;contentPolicy:string;history:string}
