@@ -1,0 +1,27 @@
+'use strict';
+// Self-authored V8 closures and event table; no original game source or business invocation.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(process.env.PAISLEY_TOOL_ROOT||path.join(__dirname,'../../..'));
+const pc=require(root+'/scripts/lib/pc-session.cjs'),{ChromeHost}=require(root+'/scripts/lib/chrome-host.cjs'),navigation=require(root+'/scripts/lib/game-native-navigation.cjs'),control=require(root+'/scripts/lib/game-native-control.cjs'),contracts=require(root+'/scripts/lib/game-contract.cjs');
+const [chrome,outArg]=process.argv.slice(2),out=path.resolve(outArg||'');let instance,client,group;
+const report={schemaVersion:1,node:process.version,platform:process.platform,scope:'Real Chrome synthetic V8 lexical ownership and event reader; no native game profile attestation or Gameplay acceptance',checks:[]};
+async function main(){
+ if(!chrome||!outArg)throw Error('Usage: control-verify.cjs ABS_CHROME NEW_OUTPUT');fs.mkdirSync(out,{mode:0o700});
+ const resources=path.join(out,'resources.json');fs.writeFileSync(resources,JSON.stringify({schemaVersion:1,resources:[{urlPath:'/fixture.js',file:path.join(__dirname,'fixture.js')}]}),{flag:'wx'});
+ instance=await pc.start({file:path.join(__dirname,'fixture.html'),resources,chrome,port:'18781',mode:'headless',out:path.join(out,'instance')});client=await new ChromeHost(instance.record.target).open();
+ const deadline=Date.now()+8000;while(!await client.evaluate('Boolean(window.syntheticMoment&&window.SugarCube?.State)')){if(Date.now()>=deadline)throw Error('Fixture readiness unavailable');await new Promise(r=>setTimeout(r,25));}
+ group='owned-control-fixture';const get=async expression=>{const r=await client.send('Runtime.evaluate',{expression,objectGroup:group,returnByValue:false});assert.equal(r.exceptionDetails,undefined);assert.ok(r.result.objectId);return r.result.objectId};
+ const moment=await get('window.syntheticMoment'),state=await get('window.SugarCube.State'),lexicalState=await navigation.lexical(client,moment,'State');assert.equal(lexicalState.type,'object');assert.equal(await contracts.sameObject(client,lexicalState.objectId,state),true);report.checks.push('actual V8 State closure resolves to the exact original fixture State');
+ const closure=await get('(()=>{const syntheticCount=42;return function syntheticClosure(){return syntheticCount}})()'),count=await navigation.lexical(client,closure,'syntheticCount');assert.equal(count.type,'number');assert.equal(count.value,42);report.checks.push('primitive lexical values remain actual remote metadata rather than assumed object IDs');
+ await assert.rejects(navigation.lexical(client,closure,'missingSyntheticBinding'),/destination binding missing/);report.checks.push('an absent lexical name refuses without selecting a different object');
+ await client.evaluate('void (()=>{const node=document.createElement("button");node.textContent="Synthetic control";document.body.append(node);function handler(){window.syntheticCalls++}const events=[{handler,namespace:"aria-clickable.macros"}];window.controlFixture={node,handler,addForeign(){events.push({handler:function foreignHandler(){window.syntheticCalls++}})}};window.jQuery={_data(n){return n===node?{click:events}:undefined}}})()');
+ const node=await get('window.controlFixture.node'),handler=await get('window.controlFixture.handler'),read=async()=>client.send('Runtime.callFunctionOn',{objectId:node,objectGroup:group,returnByValue:false,functionDeclaration:'function(){return ('+control.clickReader.toString()+')(this)}'});
+ const readHandler=await read();assert.equal(readHandler.exceptionDetails,undefined);assert.equal(readHandler.result.type,'function');assert.equal(await contracts.sameObject(client,readHandler.result.objectId,handler),true);report.checks.push('the original event reader retains the actual single original synthetic handler');
+ await client.evaluate('void window.controlFixture.addForeign()');const refused=await read();assert.equal(refused.result.subtype,'null');assert.equal(await client.evaluate('window.syntheticCalls'),0);report.checks.push('an additional business handler refuses and no synthetic handler has run');
+ await client.send('Runtime.releaseObjectGroup',{objectGroup:group});group=undefined;await assert.rejects(navigation.lexical(client,closure,'syntheticCount'),{message:'Bound Chrome object required'});assert.equal(await client.evaluate('window.syntheticCalls'),0);report.checks.push('caller-owned group release rejects the old closure by its exact ownership error while the same bound session remains live');report.status='passed';
+}
+main().catch(error=>{report.status='failed';report.failure=typeof error?.code==='string'&&/^[A-Z_]{1,64}$/.test(error.code)?error.code:'CONTROL_FIXTURE_FAILED';if(fs.existsSync(out))fs.writeFileSync(path.join(out,'failure-local.log'),String(error?.stack||error),{flag:'wx',mode:0o600});process.exitCode=1}).finally(async()=>{
+ let clean=true;try{if(client&&group)await client.send('Runtime.releaseObjectGroup',{objectGroup:group})}catch{clean=false;process.exitCode=1}finally{client?.close()}
+ if(instance){try{await instance.stop();report.cleanup=clean?'confirmed':'unconfirmed'}catch{report.cleanup='unconfirmed';process.exitCode=1}}else report.cleanup='not-observed';
+ if(outArg&&fs.existsSync(out))fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(report));
+});

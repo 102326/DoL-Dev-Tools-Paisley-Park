@@ -1,21 +1,21 @@
 import type cdp from './cdp.cjs';
+import type nativeControl from './game-native-control.cjs';
 declare namespace wardrobe {
  type Client=Pick<cdp.Client,'send'|'evaluate'>;
  type Request={type:'dol-wardrobe';slot:'head'}&({operation:'unequip'}|{operation:'equip';variable:'hairpin'|'beanie';colour:string;accessoryColour:string|null|0;modder?:string|null});
  interface Interpretation {status:'available';selector:string;index:unknown;before:Record<string,unknown>;[key:string]:unknown}
- interface Held {status:'attested';actions:false;terminalReviewed:false;before:Record<string,unknown>;payload:unknown;payloadSha256:string;shadowKeys:unknown;objects:{node:unknown;click:unknown;shadow:unknown;callback:unknown;context:unknown;shadowStore:unknown;wikifier:unknown;state:unknown;jq:unknown};objectGroup:string;release:()=>Promise<void>}
+ type Held=nativeControl.Held;
  interface Attested extends Held {interpretation:Interpretation;requestDigest:string}
  type SourceFunction=(...args:unknown[])=>unknown;
 }
 type View=Record<string,unknown>;
-interface Control {attest:(client:wardrobe.Client,descriptor:{kind:'menu';selected:{type:'web-click';selector:unknown}})=>Promise<wardrobe.Held>}
 interface ReceiptView {outcome?:unknown;remoteClosed?:unknown;spent?:unknown;evidence?:View}
 interface EffectView {action?:{selected?:View};executionBinding?:{provider?:unknown;contract?:unknown}}
 interface RemoteView {exceptionDetails?:unknown;result?:{value?:unknown}}
 const {reader,branchGuard}:{reader:wardrobe.SourceFunction;branchGuard:wardrobe.SourceFunction}=require('./browser-abi/wardrobe-mapping.cjs');
 // Clothing-domain mapping of original DoL controls. No UI Runtime required.
 const {createHash}:typeof import('node:crypto')=require('node:crypto');
-const control:Control=require('./game-native-control.cjs');
+const control:typeof import('./game-native-control.cjs')=require('./game-native-control.cjs');
 const payloadSha256='d542a29ae81a97ba006ce4189f68eff13d27250e77f3c749c11442bdeb6027fc';
 const text=(v:unknown):v is string=>typeof v==='string'&&v.length>0&&v.length<=128&&!/[\u0000-\u001f]/.test(v);
 function validate(raw:unknown):wardrobe.Request{

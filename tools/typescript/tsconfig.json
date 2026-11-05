@@ -73,6 +73,8 @@
     "../../scripts/lib/game-wardrobe-native.cts",
     "../../scripts/lib/game-shop-native.cts",
     "../../scripts/lib/game-wardrobe.cts",
-    "../../scripts/lib/game-shop.cts"
+    "../../scripts/lib/game-shop.cts",
+    "../../scripts/lib/game-native-control.cts",
+    "../../scripts/lib/game-native-navigation.cts"
   ]
 }

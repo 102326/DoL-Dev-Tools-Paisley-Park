@@ -4,6 +4,7 @@ import type predicates from './game-goal-reader.cjs';
 import type receiptsAPI from './game-receipts.cjs';
 import type business from './game-native-business-bindings.cjs';
 import type mapping from './game-shop.cjs';
+import type nativeControl from './game-native-control.cjs';
 declare namespace nativeShop {
  type Client=Pick<cdp.Client,'send'|'evaluate'>;
  type Request=mapping.Request;
@@ -14,14 +15,13 @@ declare namespace nativeShop {
 }
 // Bounded ports to existing JS producers. Opaque IDs and page snapshots stay unknown.
 type Mapped=mapping.Prepared;
-interface Held {objectGroup:string;objects:{state:unknown;node:unknown;click:unknown;context:unknown};release:()=>Promise<void>;payloadSha256:string;shadowKeys:unknown;payload:unknown}
-interface Control {attest:(client:nativeShop.Client,descriptor:{kind:'menu';selected:{type:'web-click';selector:string}},options:{allowShopPropagationStops:true})=>Promise<Held>;clickReader:nativeShop.SourceFunction}
+type Held=nativeControl.Held;
 interface SaveWatch {objectId:unknown;digest:string}
 interface Save {bind:(client:nativeShop.Client,scope:unknown,group:string)=>Promise<SaveWatch|null>;execution:(source:string,index:number)=>string}
 interface Environment {bind:(client:nativeShop.Client,held:{objectGroup:string},profile:unknown,flagsMatch:undefined,allowSave:boolean)=>Promise<{guard:string;arguments:{objectId:unknown}[]}>}
 interface RemoteView {exceptionDetails?:unknown;result?:{type?:unknown;objectId?:unknown;value?:unknown}}
 const {branch,readCurrent,dateGetterOf,sourceCheck}:{branch:nativeShop.SourceFunction;readCurrent:nativeShop.SourceFunction;dateGetterOf:nativeShop.SourceFunction;sourceCheck:nativeShop.SourceFunction}=require('./browser-abi/native-shop.cjs');
-const {createHash}:typeof import('node:crypto')=require('node:crypto'),shop:typeof import('./game-shop.cjs')=require('./game-shop.cjs'),control:Control=require('./game-native-control.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
+const {createHash}:typeof import('node:crypto')=require('node:crypto'),shop:typeof import('./game-shop.cjs')=require('./game-shop.cjs'),control:typeof import('./game-native-control.cjs')=require('./game-native-control.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const {bind,checkBindings}:typeof import('./game-native-business-bindings.cjs')=require('./game-native-business-bindings.cjs'),environment:Environment=require('./game-native-environment.cjs'),receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
 const {operation}:{operation:(...args:unknown[])=>unknown}=require('./game-shop-operation.cjs'),profile:business.Profile&{id:string;payloadSha256:string;shadowKeys:unknown}=require('./game-shop-profile.json');
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
