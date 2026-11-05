@@ -14,6 +14,8 @@
 
 同日后续：[真实 Windows 文件占用与生成器回滚](WINDOWS_FILE_LOCK_20261106.md)通过，G 套件扩为 Windows 6/6，Program 与 125 类型负例通过。没有修改生成器产品逻辑；此前清单中的真实句柄占用项现已关闭，最低 Windows Node 26.0.0 仍单列未验证。
 
+同日后续：[系统 Node 更新与轻量兼容](WINDOWS_NODE_UPDATE_20261106.md)完成，当前默认 Node 26.13.0 LTS，68 项定向检查及 Program 通过；此前各批仍保留其原运行时版本。旧 MSI 子流程的 Restart Manager 关闭/重启记录和 UI 提前退出报告均保留，具体进程关联待核对；没有宣称并发零影响。最低 Windows 26.0.0 未因此通过。
+
 ## 来源与范围
 
 最初接续 `01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd`，形成 Windows 修复 `ff72553ba4ffa933abade391abd1b9b9c39f74d7` 和截图诊断/夹具补充 `f15f92199b7a9af0773a92af6b7dec435a1454c5`。随后获取远端 TS / 启动诊断基线 `8670318c3947ffd0496582c28c0dfc7ebc3e0074`，保留两条历史并安全合并。

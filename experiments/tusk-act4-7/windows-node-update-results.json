@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "sourceCommit": "d57032987fdb0241faaaf33028d399a03052f91b",
+  "result": "runtime updated and scoped compatibility passed; concurrent-task impact retained",
+  "userDecision": "update existing Node; do not install older portable runtime",
+  "installation": {
+    "from": "26.12.1",
+    "to": "26.13.0",
+    "lts": "Lithium",
+    "architecture": "x64",
+    "method": "existing per-machine MSI",
+    "directory": "%ProgramFiles%/nodejs",
+    "officialSource": "https://nodejs.org/en/blog/release/v26.13.0",
+    "installer": "node-v26.13.0-x64.msi",
+    "installerSha256": "0e5ee99c7cbf922887f04af268e3665990748945336a44956f47cc0df695b6df",
+    "authenticode": "Valid",
+    "signer": "OpenJS Foundation",
+    "installedExeSha256": "14319838b3f355e0398c13569a90270bce4fc68f25189f58c59b03dadae0e6d5",
+    "actualInstallerInvocations": 1,
+    "exitCode": 0,
+    "standardWindowsUacRequired": true,
+    "userConfirmedInSystem": true,
+    "chatCredentialsRequested": false,
+    "alternateAccountSpecifiedByAgent": false,
+    "securityPolicyChanged": false,
+    "systemRebootRequested": false,
+    "featuresPreserved": 6,
+    "installerAndConsentClientsGone": true
+  },
+  "configuration": {
+    "defaultNode": "%ProgramFiles%/nodejs/node.exe",
+    "defaultNpm": "%ProgramFiles%/nodejs/npm.cmd",
+    "npmVersion": "11.20.0",
+    "persistentPathFreshChildResolutionVerified": true,
+    "otherRecordedNodeCopiesChecked": 2,
+    "otherRecordedNodeHashesUnchanged": true,
+    "npmPrefixUnchanged": true,
+    "npmConfigsUnchanged": true,
+    "persistentPathTextUnchanged": false,
+    "otherNonemptyPathEntriesAndOrderUnchanged": true,
+    "machinePathEntries": [
+      22,
+      22
+    ],
+    "userPathEntries": [
+      24,
+      23
+    ],
+    "userEmptyEntries": [
+      2,
+      1
+    ],
+    "existingNodeAndNpmEntriesMovedToEnd": true,
+    "manualPathWrites": false
+  },
+  "concurrentEffect": {
+    "topLevelRestartManagerDisableRequested": true,
+    "wholeUpgradeChainDisableEffective": false,
+    "oldVersionUninstallInvokedRestartManager": true,
+    "shutdownAndRestartOperationsReportedSuccess": true,
+    "localTimeline": {
+      "clientStart": "2026-11-06T02:20:30+08:00",
+      "uacPrompt": "2026-11-06T02:20:40+08:00",
+      "oldUninstallStart": "2026-11-06T02:21:49+08:00",
+      "shutdown": "2026-11-06T02:21:50+08:00/2026-11-06T02:21:51+08:00",
+      "installationAndRestart": "2026-11-06T02:22:04+08:00"
+    },
+    "uiPrematureExitReported": true,
+    "specificUiPidAndCauseConfirmed": false,
+    "listedNodePids": 41,
+    "stillAliveAtReadonlyCheck": 40,
+    "notCurrentlyFoundAtCheck": 1,
+    "remainingAliveAreCodexEmbeddedNode": true,
+    "applicationEventWindowMatchedRecords": false,
+    "agentDirectKillOrRestart": false,
+    "lesson": "coordinate all related dynamic tasks before system updates; target-image snapshots and a top-level MSI switch do not fence nested uninstall behavior"
+  },
+  "validation": {
+    "actualWindowsNode": "26.13.0",
+    "typeStrippingDisabled": true,
+    "packageSourceCommit": "cd28b0aba280f986145378d2d5c86b4ee853b5a7",
+    "packageZipSha256": "62b95509df39b010602235922a275d32109000b53a1423bc1b34a599bf39a8da",
+    "packageCliVersion": "6.1.0",
+    "packageCjsVersionAndResolverPassed": true,
+    "xstateVersion": "5.33.2",
+    "xstateInsidePackage": true,
+    "xstateActorPassed": true,
+    "freshNeutralSqliteTransactionReopenIntegrityPassed": true,
+    "program": {
+      "node": 98,
+      "dom": 17,
+      "artifacts": 133,
+      "passed": true
+    },
+    "targetedTests": {
+      "files": [
+        "game-goal.test.cjs",
+        "runtime-clone-boundary.test.cjs",
+        "cli-errors.test.cjs"
+      ],
+      "passed": 68,
+      "failed": 0,
+      "skipped": 0,
+      "concurrency": 1,
+      "existingIsolatedMocksAndOutcomeHooks": true,
+      "realGameAcceptance": false
+    },
+    "fullNodePythonChromeOrG6Rerun": false,
+    "androidAccess": false,
+    "oldStoresUnknownOrUserProfilesTouched": false
+  },
+  "limits": [
+    "Windows Node 26.0.0 minimum still not validated",
+    "installer application shutdown/restart is a real recorded side effect; specific UI process causation unconfirmed",
+    "historical F07 and background screenshot physical causes remain Unknown"
+  ],
+  "remaining": [
+    "minimum-version runtime input remains separate",
+    "Android window remains coordinated with UI priority",
+    "historical original receipts need their original inputs/contracts"
+  ],
+  "delivery": {
+    "toolkitCodeOrVersionChanged": false,
+    "mainTagReleaseChanged": false,
+    "rawInstallerLogsAndInstallerRemainLocalOnly": true
+  }
+}

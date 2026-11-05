@@ -12,6 +12,8 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 
 同日新增：[真实 Windows 文件占用与生成器回滚](../experiments/tusk-act4-7/WINDOWS_FILE_LOCK_20261106.md)已通过。新增真实 FileShare.None / Read 用例，完整 G 套件 Windows 6/6；生成器产品逻辑未改。历史 G5 的注入/协作锁证据保留，新结果单列，不改写旧通过范围。最低 Windows Node 26.0.0 仍待新运行时输入；本轮没有下载或切换 Node，也未操作 Android。
 
+同日后续：[系统 Node 更新与兼容记录](../experiments/tusk-act4-7/WINDOWS_NODE_UPDATE_20261106.md)。用户随后选择更新现有 Node：当前默认 26.13.0 LTS / npm 11.20.0，68 项定向检查和 Program 通过，最低 26.0.0 仍未验证。旧 MSI 嵌套卸载实际调用 Restart Manager，具体 UI 提前退出的 PID/时间关联仍待核实；后续更新须协调所有相关动态任务停稳。未改开发包版本或操作 Android。
+
 完整Node核心TS迁移已完成本机Scoped Done；开发包P2，UI4.2优先级P1。95个原入口全部strict（含9源码载体），另17DOM-only源、21冻结JS输入共46函数体未类型化，运行清单133项。G另3个开发入口，Node Program98项/总133生成产物。详见[完整Mac收口](../experiments/tusk-act4-7/typescript/CLOSEOUT_MAC.md)。尚未完成Windows/Android/真实游戏验收，不能称整体7.0可发布。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序
