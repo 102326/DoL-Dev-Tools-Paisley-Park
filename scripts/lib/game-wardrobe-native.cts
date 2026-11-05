@@ -13,12 +13,9 @@ declare namespace nativeWardrobe {
 }
 // Bounded ports to existing JS producers, not validation of raw CDP facts.
 type Held=wardrobe.Attested;
-interface SaveWatch {objectId:unknown;digest:string}
-interface Save {bind:(client:nativeWardrobe.Client,scope:unknown,group:string)=>Promise<SaveWatch|null>;execution:(source:string,index:number)=>string}
-interface Environment {bind:(client:nativeWardrobe.Client,held:{objectGroup:string},profile:unknown,flagsMatch:undefined,allowSave:boolean)=>Promise<{guard:string;arguments:{objectId:unknown}[]}>}
 interface RemoteView {exceptionDetails?:unknown;result?:{type?:unknown;objectId?:unknown;value?:unknown}}
 const {createHash}:typeof import('node:crypto')=require('node:crypto'),mapping:typeof import('./game-wardrobe.cjs')=require('./game-wardrobe.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
-const {functionSource}=contracts,environment:Environment=require('./game-native-environment.cjs'),receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
+const {functionSource}=contracts,environment:typeof import('./game-native-environment.cjs')=require('./game-native-environment.cjs'),receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
 const {operation}:{operation:(...args:unknown[])=>unknown}=require('./game-wardrobe-operation.cjs'),profile:business.Profile&{id:string;terminalReviewed:boolean}=require('./game-wardrobe-profile.json');
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 const {bind:bindBusiness,checkBindings}:typeof import('./game-native-business-bindings.cjs')=require('./game-native-business-bindings.cjs');
@@ -34,7 +31,7 @@ async function prepare(client:nativeWardrobe.Client,raw:unknown,attemptId:unknow
     const errors=results.filter(r=>r.status==='rejected').map(r=>r.reason);if(errors.length)throw Object.assign(new AggregateError(errors,'Native wardrobe binding cleanup failed'),{code:'NATIVE_BINDING_CLEANUP_FAILED'})};
   try{
     held=await mapping.attest(client,request);
-    const saveWatch=await (require('./game-native-save.cjs') as Save).bind(client,scope,held.objectGroup);
+    const saveWatch=await (require('./game-native-save.cjs') as typeof import('./game-native-save.cjs')).bind(client,scope,held.objectGroup);
     if(await client.evaluate(`(${mapping.branchGuard.toString()})('before',${JSON.stringify(request)},${saveWatch!==null})`)!==undefined)throw Error('Native clothing branch unavailable');
     const env=await environment.bind(client,held,require('./game-native-intro-profile.json'),undefined,saveWatch!==null);
     const business=await bindBusiness(client,held,profile,groups);
@@ -60,7 +57,7 @@ async function prepare(client:nativeWardrobe.Client,raw:unknown,attemptId:unknow
       try{if(observedInputs[4]('before',observedInputs.slice(5))!==undefined)return {ok:false,guardRejected:true};}catch{return {ok:false,guardRejected:true};}`;
     const config={namespace:receipts.namespace,binding,attemptId,request,before:held.interpretation.before};
     let operationSource=`return (${operation.toString()})(node,${JSON.stringify(config)},${mapping.reader.toString()},function(phase){return observedInputs[4](phase,observedInputs.slice(5))},markOperationDispatch,invokeBoundClick${saveWatch?`,observedInputs[${saveIndex}]`:''});`;
-    if(saveWatch)operationSource=(require('./game-native-save.cjs') as Save).execution(operationSource,saveIndex!);
+    if(saveWatch)operationSource=(require('./game-native-save.cjs') as typeof import('./game-native-save.cjs')).execution(operationSource,saveIndex!);
     if(Buffer.byteLength(operationSource)>32768)throw Error('Native wardrobe operation source exceeds limit');
     return {clickReceiverObjectId:o.node,action:{type:'web-click',selector:held.interpretation.selector},arguments:argumentsList,objectGroups:[held.objectGroup,...groups],source:sourceGuard,executionBinding:binding,
       interpretation:{...held.interpretation,provider:'dol-wardrobe-native',execution:'native-operation',contract:binding.contract},operation:(require('./action.cjs') as typeof import('./action.cjs')).reviewedOperation('native-head-'+request.operation,operationSource)};

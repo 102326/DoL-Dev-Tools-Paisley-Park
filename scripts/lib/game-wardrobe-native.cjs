@@ -1,4 +1,4 @@
-// Generated from game-wardrobe-native.cts by TypeScript 6.0.2; source-lf-sha256=3d4177fb938ffba6397b85b82c23b69979c52566a72cfb943c83cd2aee1c28b6
+// Generated from game-wardrobe-native.cts by TypeScript 6.0.2; source-lf-sha256=cd8acaa71a7ac25a0d30930e4c875ad40e31b57e0e1ad62f916b9c1201ccc727
 "use strict";
 const { createHash } = require('node:crypto'), mapping = require('./game-wardrobe.cjs'), contracts = require('./game-contract.cjs');
 const { functionSource } = contracts, environment = require('./game-native-environment.cjs'), receipts = require('./game-receipts.cjs');

@@ -69,7 +69,7 @@ function quoteFromShop(raw:unknown,g:browserGoal.Goal):predicates.Quote|null{
   return validateQuote(q,g)?q:null;
 }
 function validatePurchaseReceipt(r:unknown,e:unknown):boolean{
-  const verified=require('./game-native-save.cjs').receipt(r,e) as {r:ReceiptView;e:EffectView}|null;if(!verified)return false;const receipt=verified.r,effect=verified.e;
+  const verified=(require('./game-native-save.cjs') as typeof import('./game-native-save.cjs')).receipt(r,e) as {r:ReceiptView;e:EffectView}|null;if(!verified)return false;const receipt=verified.r,effect=verified.e;
   const q=effect.action?.quote;
   if(!q||effect.action.kind!=='buy')return receipt.evidence===undefined;
   if(receipt.outcome!=='occurred'||!receipt.remoteClosed)return receipt.evidence===undefined;

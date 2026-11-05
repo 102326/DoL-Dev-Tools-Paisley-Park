@@ -65,3 +65,4 @@ tests/fixtures/typed-business-bindings-baseline/*.cjs text eol=lf
 tests/fixtures/typed-native-preparation-baseline/*.cjs text eol=lf
 tests/fixtures/typed-clothing-mapping-baseline/*.cjs text eol=lf
 tests/fixtures/typed-native-control-baseline/*.cjs text eol=lf
+tests/fixtures/typed-native-witness-baseline/*.cjs text eol=lf

@@ -1,4 +1,4 @@
-// Generated from game-wardrobe.cts by TypeScript 6.0.2; source-lf-sha256=92ba322b5bc3064782df2882f1e28517e9549755f177e5a29ed9d5371cf3589c
+// Generated from game-wardrobe.cts by TypeScript 6.0.2; source-lf-sha256=20d298fccc83103e8fb250b42f5a0c9302be27d4574a0069507a19ae2605b710
 "use strict";
 const { reader, branchGuard } = require('./browser-abi/wardrobe-mapping.cjs');
 // Clothing-domain mapping of original DoL controls. No UI Runtime required.

@@ -50,7 +50,7 @@ async function attest(client:wardrobe.Client,raw:unknown):Promise<wardrobe.Attes
 }
 function validateReceipt(rawReceipt:unknown,rawEffect:unknown):boolean{
   let r=rawReceipt as ReceiptView,e=rawEffect as EffectView;
-  const verified=(require('./game-native-save.cjs') as {receipt:(r:unknown,e:unknown)=>{r:ReceiptView;e:EffectView}|null}).receipt(r,e);if(!verified)return false;({r,e}=verified);
+  const verified=(require('./game-native-save.cjs') as typeof import('./game-native-save.cjs')).receipt(r,e);if(!verified)return false;({r,e}=verified as {r:ReceiptView;e:EffectView});
   const request=e.action?.selected,binding=e.executionBinding,p=r.evidence;
   if(request?.type!=='dol-wardrobe'||binding?.provider!=='dol-wardrobe-native'||
      !new RegExp('^native-head-'+request.operation+'-[a-f0-9]{12}$').test(binding.contract as string))return false;

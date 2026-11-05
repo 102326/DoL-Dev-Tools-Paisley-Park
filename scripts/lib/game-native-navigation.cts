@@ -14,16 +14,13 @@ interface DescriptorView {selected?:{type?:unknown;selector?:unknown};kind?:unkn
 interface RemoteView {exceptionDetails?:unknown;result?:navigation.Remote}
 interface Properties {result?:{name?:unknown;value?:navigation.Remote}[];internalProperties?:{name?:unknown;value?:navigation.Remote}[]}
 interface EnvironmentView {terminalReviewed?:unknown;id?:unknown;guard?:unknown;sceneEpochSha256?:unknown;arguments?:unknown;monitorIndex?:unknown;monitorDigest?:unknown;objects?:Record<string,unknown>}
-interface History {bind:(client:navigation.Client,state:unknown,play:unknown,group:string)=>Promise<unknown>;checkHistory:(...args:unknown[])=>unknown;sources:Record<string,string>}
-interface SaveWatch {objectId:unknown;digest:string}
-interface Save {bind:(client:navigation.Client,scope:unknown,group:string)=>Promise<SaveWatch|null>;execution:(source:string,index:number)=>string}
 // Native DoL link provenance. Destination and payload come from the actual
 // control closure, never a wardrobe adapter or a planned Journey path.
 const {createHash,randomUUID}:typeof import('node:crypto')=require('node:crypto');
 const {functionSource,captured,member,sameObject}:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
 const {operation,preflight}:{operation:(...args:unknown[])=>unknown;preflight:(...args:unknown[])=>unknown}=require('./game-navigation-operation.cjs');
-const historyContract:History=require('./game-native-history.cjs');
+const historyContract:typeof import('./game-native-history.cjs')=require('./game-native-history.cjs');
 const digest=(value:string)=>createHash('sha256').update(value).digest('hex');
 const sources={
   click:'1fe31b22406ad38960860a394c640f8ecc9c491836d1db89e05873a3280eb7ad',
@@ -118,7 +115,7 @@ async function prepare(client:navigation.ExecutionClient,raw:unknown,goal:unknow
   let held:navigation.Held|undefined;
   try{
     held=await attest(client,descriptor);
-    const saveWatch=await (require('./game-native-save.cjs') as Save).bind(client,scope,held.objectGroup);
+    const saveWatch=await (require('./game-native-save.cjs') as typeof import('./game-native-save.cjs')).bind(client,scope,held.objectGroup);
     const environment=await (reviewEnvironment as navigation.ReviewEnvironment)(client,held,saveWatch!==null) as EnvironmentView;
     if(environment?.terminalReviewed!==true||typeof environment.id!=='string'||!/^[a-zA-Z0-9._-]{1,64}$/.test(environment.id)||
        typeof environment.guard!=='string'||!environment.guard.trim()||Buffer.byteLength(environment.guard)>65536||
@@ -175,7 +172,7 @@ async function prepare(client:navigation.ExecutionClient,raw:unknown,goal:unknow
       if((${preflight.toString()})(${operationArguments},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument})!==null)return {ok:false,guardRejected:true};
     `;
     let operationSource=`return (${operation.toString()})(${operationArguments},${preflight.toString()},${environmentCheck},${historyContract.checkHistory.toString()},${monitorArgument},${taskArgument},markOperationDispatch,invokeBoundClick${saveWatch?`,observedInputs[${saveIndex}]`:''});`;
-    if(saveWatch)operationSource=(require('./game-native-save.cjs') as Save).execution(operationSource,saveIndex!);
+    if(saveWatch)operationSource=(require('./game-native-save.cjs') as typeof import('./game-native-save.cjs')).execution(operationSource,saveIndex!);
     if(Buffer.byteLength(operationSource)>32768)throw Error('Native navigation operation source exceeds limit');
     return {action:descriptor.selected,clickReceiverObjectId:held.objects.node,arguments:argumentsList,objectGroups:[held.objectGroup],source,executionBinding:binding,
       interpretation:{provider:'native-dol',execution:'native-operation',contract:binding.contract,environment:environment.id,destination:held.destination},

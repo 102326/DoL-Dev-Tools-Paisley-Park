@@ -1,4 +1,4 @@
-// Generated from game-goal-reader.cts by TypeScript 6.0.2; source-lf-sha256=84ac7bce802f93569e32cf16664db7ab9e85b94d17faa40ff726c012f4add25d
+// Generated from game-goal-reader.cts by TypeScript 6.0.2; source-lf-sha256=df302d01970089f7cb52602d5bf50b1a37a8f79e07a2bd524b7bb42590229948
 "use strict";
 const { goalReader } = require('./browser/goal-reader.cjs');
 // Reviewed original-state predicates shared by Runtime and direct probes.

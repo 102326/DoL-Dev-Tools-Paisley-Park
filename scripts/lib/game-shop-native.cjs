@@ -1,4 +1,4 @@
-// Generated from game-shop-native.cts by TypeScript 6.0.2; source-lf-sha256=1027d56e6233243b2d839fe4b822ba2f13d51264cba1f6ededfb3d622bb04019
+// Generated from game-shop-native.cts by TypeScript 6.0.2; source-lf-sha256=6491b6786880da063e6d3004aa4b76e7b19c9beae24d0ba862e8481a0c9de884
 "use strict";
 const { branch, readCurrent, dateGetterOf, sourceCheck } = require('./browser-abi/native-shop.cjs');
 const { createHash } = require('node:crypto'), shop = require('./game-shop.cjs'), control = require('./game-native-control.cjs'), contracts = require('./game-contract.cjs');
