@@ -1,0 +1,64 @@
+{
+  "codeCommit": "1f966b6089184a6adfc6c2c7642e900b4f985778",
+  "strictNodeModules": 46,
+  "strictBrowserModules": 6,
+  "frozenBrowserAbiAssets": 1,
+  "frozenUntypedFunctions": 2,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 102,
+  "artifacts": 59,
+  "rootTests": {
+    "total": 557,
+    "passed": 556,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 61,
+  "floorPackageTargetedTests": 61,
+  "oldAttestationCases": 9,
+  "falsyFailureCombinations": 40,
+  "buildProtectionTests": 5,
+  "typeNegatives": 71,
+  "independentReviewerTests": {
+    "initial": 16,
+    "fix": 13
+  },
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "withoutNodeModules": true
+  },
+  "sourceChromeContracts": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Real Chrome CDP with synthetic widget and function closures; no game",
+    "checks": [
+      "real widget closure code definition payload and unique Story body agree",
+      "retained original widget objects work until their owned group is released",
+      "real function macro attests its innermost captured business function",
+      "duplicate Story body refuses attestation",
+      "changed Story body refuses attestation",
+      "changed captured function refuses the reviewed source hash",
+      "attestation never invokes the widget or business function"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  },
+  "floorPackageChromeContracts": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Real Chrome CDP with synthetic widget and function closures; no game",
+    "checks": [
+      "real widget closure code definition payload and unique Story body agree",
+      "retained original widget objects work until their owned group is released",
+      "real function macro attests its innermost captured business function",
+      "duplicate Story body refuses attestation",
+      "changed Story body refuses attestation",
+      "changed captured function refuses the reviewed source hash",
+      "attestation never invokes the widget or business function"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  }
+}
