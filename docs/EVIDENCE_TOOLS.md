@@ -12,6 +12,8 @@ node scripts/dol-dev.cjs evidence-compare --before artifacts/reference --after a
 
 比较目录中的结构化结果是`compare.json`；Issue Report目录保存`report.json`与`report.md`。
 
+Evidence的顶层manifest由采集核心维护。版本观察只投影`gameVersion`、`gameVersionSources`与`loaderVersion`，不能替换incidentId、schemaVersion、steps或privacy等字段。完整脱敏版本观察仍保留在原`versions.json`制品中；自定义collector的其它版本元数据应从该制品读取，不能依赖旧的任意顶层合并。版本观察和采集状态都不代表游戏功能验收。Optional Integration描述仅投影标准`name`、`version`、`supportedApiVersion`与`capabilities`；索引和状态由核心维护，自定义解释内容应放入经脱敏的data制品。
+
 Compare 输出步骤状态、制品 SHA 变化，以及有效完整 DOM/CSS/Environment/Storage 的描述性变化；不完整来源为 unknown。Android 性能只比较已知非负数值。时间/incidentId变化也改变 JSON 文件 SHA，不能把文件变化当作业务变化。Journey 比较步骤结构和制品哈希；Integration 只比较状态，不解释私有正文。conditionsVerified=false、automaticTestVerdict=not-inferred，不自动判断兼容回归、性能提升或根因。
 
 `app-lifecycle` 在普通Evidence中另有语义比较，复用[生命周期Diff](APP_LIFECYCLE.md)：输出目标可比性、PID是否变化、新增报告的退出摘要和不再报告的数量，不复制PID/UID、本地时间、原进程名或任意扩展。不同目标/boot、缺失、无效或不完整输入形成unknown/partial。Journey的同序号checkpoint也只对双方显式声明的生命周期类型比较，按固定文件名配对，capture顺序变化不会误配。序号和完整状态不证明两次业务条件相同。生命周期不加入Known Good。

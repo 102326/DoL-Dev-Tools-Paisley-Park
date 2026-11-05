@@ -51,6 +51,7 @@
     "../../scripts/android-inspect.cts",
     "../../scripts/lib/action.cts",
     "../../scripts/lib/journey.cts",
-    "../../scripts/lib/chrome-evidence.cts"
+    "../../scripts/lib/chrome-evidence.cts",
+    "../../scripts/lib/evidence.cts"
   ]
 }
