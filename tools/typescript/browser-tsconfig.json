@@ -31,6 +31,8 @@
     "../../probes/typescript/integration-soft-wet.cts",
     "../../probes/typescript/integration-soft-wet-gameplay.cts",
     "../../probes/typescript/integration-native-head-state.cts",
-    "../../probes/typescript/integration-native-head-recovery.cts"
+    "../../probes/typescript/integration-native-head-recovery.cts",
+    "../../probes/typescript/native-goal.cts",
+    "../../probes/typescript/game-dol-provider.cts"
   ]
 }

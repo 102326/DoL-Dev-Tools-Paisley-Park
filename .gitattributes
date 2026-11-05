@@ -71,3 +71,9 @@ tests/fixtures/typed-source-carrier-baseline/*.cjs text eol=lf
 # Integration source remains development-only; persisted browser ABI stays exact LF.
 integrations/**/*.cts export-ignore
 integrations/soft-and-wet/browser-abi/*.cjs text eol=lf
+tests/fixtures/typed-native-coordinator-baseline/*.cjs text eol=lf
+tests/fixtures/typed-native-f13-baseline/*.cjs text eol=lf
+tests/fixtures/typed-native-profile-baseline/*.cjs text eol=lf
+tests/fixtures/typed-native-street-baseline/*.cjs text eol=lf
+tests/fixtures/typed-domain-provider-baseline/*.cjs text eol=lf
+tests/fixtures/typed-native-goal-baseline/*.cjs text eol=lf

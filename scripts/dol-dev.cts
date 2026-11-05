@@ -1,9 +1,5 @@
-// Temporary local ports for lazy Goal/Provider modules; they do not validate results.
-interface GoalPort {session(goal:string,operation:unknown,options:Options):Promise<unknown>;status(goal:string):unknown;view(value:unknown):unknown;start(options:Options,input:unknown):Promise<unknown>;advance(goal:string,options:Options):Promise<unknown>}
-interface SitePort {observe(options:Options,extra:unknown):Promise<unknown>;openWardrobe(options:Options,extra:unknown):Promise<unknown>}
-interface ClothingPort {observe(client:unknown,options:{kind:string}):Promise<unknown>}
+// CLI projections remain separate from the lazily loaded production owners.
 interface StatusView {status:string}
-interface EvidenceToolsPort {compare(before:string,after:string,out:string):StatusView;report(from:string,out:string):StatusView;timelineReport(from:string,out:string):StatusView;knownGood(from:string,out:string,options:unknown):StatusView}
 interface TargetView {type?:unknown;id?:unknown;title?:unknown;webSocketDebuggerUrl?:unknown}
 interface Options { [key:string]:unknown; 'target-id'?:string;'webview-socket'?:string;'integration-file'?:string;'authorization-file'?:string;'host-file'?:string; out?:string;file?:string;golden?:string;current?:string;scope?:string;endpoint?:string;from?:string;before?:string;after?:string;goal?:string;operation?:string;host?:string;integration?:string;serial?:string;package?:string;input?:string;label?:string;snapshots?:string;mode?:string;region?:string;tolerance?:string;milliseconds?:string;seconds?:string;resume?:string|boolean;deep?:boolean;full?:boolean;plan?:boolean;sensitive?:string|boolean;inspectors?:string|string[];targetId?:string;webviewSocket?:string;testEnvironment?:boolean;exclusiveMetrics?:boolean;exclusiveNetwork?:boolean;webPerformance?:boolean;windowMs?:number;profile?:string;samples?:number;intervalMs?:number;seriesWebview?:boolean;allowHelper?:boolean;timelineMs?:number;observerInstrumentation?:boolean;deepSeconds?:number;bugreport?:boolean;logcatSeconds?:number;recordSeconds?:number;authorization?:unknown }
 const fs:typeof import('node:fs') = require('node:fs');
@@ -181,10 +177,10 @@ async function main(args:string[] = process.argv.slice(2)) {
     const options=parse(args,['--goal','--operation','--file','--test-environment']);
     if(!options.goal||!['request','propose','dispatch','resume','reconcile','checkpoint','cancel','status'].includes(options.operation as string)||options['test-environment']!==undefined&&options['test-environment']!=='yes'||['propose','checkpoint'].includes(options.operation as string)&&!options.file||!['propose','checkpoint'].includes(options.operation as string)&&options.file)throw Error('Invalid Session operation/options');
     options.testEnvironment=options['test-environment']==='yes';let result;
-    try{result=await (require('./lib/game-goal.cjs') as GoalPort).session(options.goal,options.operation,options)}catch(error){if(error&&typeof error==='object')(error as {cliOperation?:unknown}).cliOperation=options.operation;throw error}
+    try{result=await (require('./lib/game-goal.cjs') as typeof import('./lib/game-goal.cjs')).session(options.goal!,options.operation!,options as Parameters<typeof import('./lib/game-goal.cjs').session>[2])}catch(error){if(error&&typeof error==='object')(error as {cliOperation?:unknown}).cliOperation=options.operation;throw error}
     console.log(JSON.stringify(result,null,2));if(['paused','exhausted','failed'].includes((result as StatusView).status))process.exitCode=1;
   } else if (['game-goal-start','game-goal-step','game-goal-status'].includes(command)) {
-    const goal = require('./lib/game-goal.cjs') as GoalPort; let result;
+    const goal = require('./lib/game-goal.cjs') as typeof import('./lib/game-goal.cjs'); let result;
     if (command === 'game-goal-status') {
       const options = parse(args, ['--goal']); if (!options.goal) throw Error('Provide Goal directory'); result = goal.view(goal.status(options.goal));
     } else {
@@ -195,7 +191,7 @@ async function main(args:string[] = process.argv.slice(2)) {
         if (!options.file || fs.statSync(options.file).size > 65536) throw Error('Provide bounded Goal request');
         options.targetId = options['target-id']; options.webviewSocket = options['webview-socket'];
         result = await goal.start(options, JSON.parse(fs.readFileSync(options.file, 'utf8')));
-      } else { if (!options.goal) throw Error('Provide Goal directory'); if(options.resume!==undefined&&options.resume!=='yes')throw Error('Invalid resume option'); options.resume=options.resume==='yes';result = await goal.advance(options.goal, options); }
+      } else { if (!options.goal) throw Error('Provide Goal directory'); if(options.resume!==undefined&&options.resume!=='yes')throw Error('Invalid resume option'); options.resume=options.resume==='yes';result = await goal.advance(options.goal, options as Parameters<typeof goal.advance>[1]); }
     }
     console.log(JSON.stringify(result, null, 2));
     if (['paused','exhausted','failed'].includes((result as StatusView).status)) process.exitCode = 1;
@@ -208,8 +204,8 @@ async function main(args:string[] = process.argv.slice(2)) {
     options.gameplay = options.gameplay === 'yes';
     if(options.shop!==undefined && options.shop!=='yes')throw Error('Invalid shop view');
     options.shop=options.shop==='yes';
-    const site = require('./lib/game-dol-provider.cjs') as SitePort;
-    const report = await site[command === 'game-observe' ? 'observe' : 'openWardrobe'](options,options.shop?{probeCapabilities:(client:import('./lib/cdp.cjs').Client)=>(require('./lib/game-clothing-provider.cjs') as ClothingPort).observe(client,{kind:'purchase-one'})}:{}) as {status:string;shop?:unknown;capabilities?:{shop?:unknown}};
+    const site = require('./lib/game-dol-provider.cjs') as typeof import('./lib/game-dol-provider.cjs');
+    const report = await site[command === 'game-observe' ? 'observe' : 'openWardrobe'](options as Parameters<typeof site.observe>[0],options.shop?{probeCapabilities:(client:import('./lib/execution-context.cjs').BoundClient)=>(require('./lib/game-clothing-provider.cjs') as typeof import('./lib/game-clothing-provider.cjs')).observe(client,{kind:'purchase-one'})}:{}) as {status:string;shop?:unknown;capabilities?:{shop?:unknown}};
     // Preserve the explicit domain CLI view while the shared collector uses a
     // generic provider hook instead of importing shop semantics itself.
     if(options.shop){report.shop=report.capabilities?.shop;fs.writeFileSync(path.join(options.out!,'semantic.json'),JSON.stringify(report,null,2))}
@@ -337,7 +333,7 @@ async function main(args:string[] = process.argv.slice(2)) {
   } else if (['evidence-compare','issue-report','known-good','evidence-timeline'].includes(command)) {
     const options=parse(args,command==='evidence-compare'?['--before','--after','--out']:['--from','--out',...(command==='known-good'?['--label','--snapshots']:[])]);
     if(!options.out||command==='evidence-compare'&&(!options.before||!options.after)||command!=='evidence-compare'&&!options.from)throw Error('Provide source and new output');
-    const helpers=require('./lib/evidence-tools.cjs') as EvidenceToolsPort;
+    const helpers=require('./lib/evidence-tools.cjs') as typeof import('./lib/evidence-tools.cjs');
     const result=command==='evidence-compare'?helpers.compare(options.before!,options.after!,options.out):command==='issue-report'?helpers.report(options.from!,options.out):command==='evidence-timeline'?helpers.timelineReport(options.from!,options.out):helpers.knownGood(options.from!,options.out,{...(options.label?{label:options.label}:{}),...(options.snapshots!==undefined?{snapshots:options.snapshots.split(',')}:{})});
     console.log(`Local ${command} ${result.status}; no upload or automatic compatibility verdict.`);if(result.status!=='complete')process.exitCode=1;
   } else if (command === 'visual-diff') {

@@ -99,6 +99,23 @@
     "../../integrations/soft-and-wet/gameplay.cts",
     "../../integrations/soft-and-wet/native-head.cts",
     "../../integrations/soft-and-wet/source-link.cts",
-    "../../scripts/dol-dev.cts"
+    "../../scripts/dol-dev.cts",
+    "../../scripts/lib/game-native-generic-landing.cts",
+    "../../scripts/lib/game-native-time.cts",
+    "../../scripts/lib/game-native-street-recovery.cts",
+    "../../scripts/lib/game-native-profile.cts",
+    "../../scripts/lib/game-native-radio.cts",
+    "../../scripts/lib/game-shop-menu-native.cts",
+    "../../scripts/lib/game-native-provider.cts",
+    "../../scripts/lib/game-runtime.cts",
+    "../../scripts/lib/game-dol-provider.cts",
+    "../../scripts/lib/evidence-tools.cts",
+    "../../scripts/lib/game-capabilities.cts",
+    "../../scripts/lib/game-clothing-provider.cts",
+    "../../scripts/lib/game-project-provider.cts",
+    "../../scripts/lib/game-goal.cts",
+    "./build.cts",
+    "./check-types.cts",
+    "./test/build.test.cts"
   ]
 }

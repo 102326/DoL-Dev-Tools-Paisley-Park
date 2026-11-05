@@ -1,4 +1,4 @@
-// Generated from dol-dev.cts by TypeScript 6.0.2; source-lf-sha256=fd1e24de12ebace31dee3515c6b1452af0d979df502ad74204d65e1bce4a0883
+// Generated from dol-dev.cts by TypeScript 6.0.2; source-lf-sha256=39a91843c606eb55a2afcb7d4dbed6042975f68777dc4382f321213d361cf0f0
 "use strict";
 const fs = require('node:fs');
 const path = require('node:path');
