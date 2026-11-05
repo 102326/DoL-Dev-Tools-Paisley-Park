@@ -1,11 +1,11 @@
-// Generated from build.test.cts by TypeScript 6.0.2; source-lf-sha256=aba2cb2a3120331f229272467cbc91eebb89b2a3673233ac765a65a71230de08
+// Generated from build.test.cts by TypeScript 6.0.2; source-lf-sha256=d6191445788db396efe16cd37433384e513057994d74099c51e374cb8e6d9527
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const { test } = require('node:test'), assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), os = require('node:os'), { spawnSync } = require('node:child_process');
+const { test } = require('node:test'), assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), os = require('node:os'), { spawnSync, spawn } = require('node:child_process'), { createHash } = require('node:crypto');
 const actual = path.resolve(__dirname, '../../..'), compiler = process.env.PAISLEY_TSC || require.resolve('typescript/bin/tsc'), typeRoots = process.env.PAISLEY_TYPE_ROOTS || path.resolve(__dirname, '../node_modules/@types');
 function fixture(t) {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'paisley-build-'));
-    t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+    t.after(() => { assert.equal(path.dirname(root), path.resolve(os.tmpdir())); assert.ok(path.basename(root).startsWith('paisley-build-')); fs.rmSync(root, { recursive: true, force: true }); });
     const home = path.join(root, 'tools/typescript');
     fs.mkdirSync(home, { recursive: true });
     // The isolated Program resolves the same installed compiler declarations without installing dependencies.
@@ -30,6 +30,118 @@ function fixture(t) {
     const run = (args = [], preload) => spawnSync(process.execPath, [...(preload ? ['-r', preload] : []), path.join(home, 'build.cjs'), ...args], { encoding: 'utf8', env: { ...process.env, PAISLEY_TSC: compiler, PAISLEY_TYPE_ROOTS: typeRoots } });
     return { root, home, files, browserFiles, nodeFiles, outputs, run };
 }
+async function windowsReadHandle(file, sharing) {
+    const shell = path.join(process.env.ProgramFiles || 'C:\\Program Files', 'PowerShell/7/pwsh.exe');
+    assert.ok(fs.existsSync(shell), 'PowerShell 7 is required for the Windows file-sharing regression');
+    const script = `$ErrorActionPreference='Stop'
+$share=[Enum]::Parse([IO.FileShare],$env:PAISLEY_TEST_FILE_SHARE)
+$stream=[IO.File]::Open($env:PAISLEY_TEST_LOCK_FILE,[IO.FileMode]::Open,[IO.FileAccess]::Read,$share)
+try {
+ $hash=[Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($stream)).ToLowerInvariant()
+ $stream.Position=0
+ [Console]::Out.WriteLine((@{pid=$PID;sharing=$env:PAISLEY_TEST_FILE_SHARE;sha256=$hash;length=$stream.Length}|ConvertTo-Json -Compress))
+ [Console]::Out.Flush()
+ [Console]::In.ReadLine()|Out-Null
+} finally {$stream.Dispose()}`;
+    const child = spawn(shell, ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', script], { windowsHide: true, env: { ...process.env, PAISLEY_TEST_LOCK_FILE: file, PAISLEY_TEST_FILE_SHARE: sharing } });
+    let stdout = '', stderr = '', resolveReady = () => { }, rejectReady = () => { };
+    const ready = new Promise((resolve, reject) => { resolveReady = resolve; rejectReady = reject; });
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
+    child.stdout.on('data', (text) => { stdout += text; if (stdout.includes('\n'))
+        resolveReady(stdout.split('\n')[0]); });
+    child.stderr.on('data', (text) => { stderr += text; });
+    child.stdin.on('error', error => rejectReady(error));
+    child.on('error', error => rejectReady(error));
+    const closed = new Promise(resolve => child.once('close', (code, signal) => { rejectReady(Error('File holder exited before ready: ' + stderr)); resolve({ code, signal }); }));
+    const release = async () => {
+        child.stdin.end();
+        let timeout;
+        try {
+            const result = await Promise.race([closed, new Promise((_, reject) => { timeout = setTimeout(() => reject(Error('Owned file holder did not exit')), 10000); })]);
+            assert.equal(result.code, 0, stderr);
+            assert.equal(result.signal, null);
+        }
+        catch (error) {
+            child.kill('SIGKILL');
+            await closed;
+            throw error;
+        }
+        finally {
+            clearTimeout(timeout);
+        }
+    };
+    const timer = setTimeout(() => rejectReady(Error('No confirmed Windows file handle: ' + stderr)), 10000);
+    try {
+        const metadata = JSON.parse(await ready);
+        assert.equal(metadata.sharing, sharing);
+        assert.ok(Number.isInteger(metadata.pid) && metadata.pid > 0);
+        return { metadata, release };
+    }
+    catch (error) {
+        try {
+            await release();
+        }
+        catch (cleanup) {
+            throw new AggregateError([error, cleanup], 'File holder setup and cleanup failed');
+        }
+        throw error;
+    }
+    finally {
+        clearTimeout(timer);
+    }
+}
+test('real Windows sharing locks refuse reads or publication and roll back earlier CJS before recovery', { skip: process.platform !== 'win32' }, async (t) => {
+    const f = fixture(t), first = f.outputs[0], second = f.outputs[2], hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
+    const clean = new Map(f.outputs.map(file => [file, fs.readFileSync(file)]));
+    for (const file of [first, second])
+        fs.appendFileSync(file, '\n// deliberate generated drift for native file-sharing test\n');
+    const before = new Map(f.outputs.map(file => [file, fs.readFileSync(file)])), peer = path.join(f.home, 'dist/peer.txt');
+    fs.mkdirSync(path.dirname(peer));
+    fs.writeFileSync(peer, 'peer data');
+    const intact = () => { for (const [file, bytes] of before)
+        assert.deepEqual(fs.readFileSync(file), bytes, file); assert.equal(fs.readFileSync(peer, 'utf8'), 'peer data'); assert.equal(fs.existsSync(path.join(f.root, '.paisley-ts-build-lock')), false); };
+    const none = await windowsReadHandle(first, 'None');
+    let denied;
+    try {
+        assert.equal(none.metadata.sha256, hash(before.get(first)));
+        denied = f.run(['--write-production']);
+        assert.equal(denied.status, 1);
+        assert.match(denied.stderr, /EACCES|EPERM|EBUSY/);
+    }
+    finally {
+        await none.release();
+    }
+    intact();
+    t.diagnostic(JSON.stringify({ phase: 'native-read-refusal', holder: none.metadata, exit: denied.status, stderr: denied.stderr.trim(), allPreviousBytesIntact: true, holderClosed: true }));
+    const inodeBefore = fs.statSync(first, { bigint: true }).ino.toString();
+    const read = await windowsReadHandle(second, 'Read');
+    let rename;
+    try {
+        assert.equal(read.metadata.sha256, hash(before.get(second)));
+        assert.deepEqual(fs.readFileSync(second), before.get(second));
+        rename = f.run(['--write-production']);
+        assert.equal(rename.status, 1);
+        assert.match(rename.stderr, /(?:EACCES|EPERM|EBUSY).*rename/);
+        assert.doesNotMatch(rename.stderr, /TS_ROLLBACK_INCOMPLETE/);
+        intact();
+    }
+    finally {
+        await read.release();
+    }
+    intact();
+    const inodeAfter = fs.statSync(first, { bigint: true }).ino.toString();
+    assert.notEqual(inodeAfter, inodeBefore, 'earlier CJS was actually replaced and rolled back, not merely rejected before publication');
+    t.diagnostic(JSON.stringify({ phase: 'native-rename-refusal', holder: read.metadata, exit: rename.status, stderr: rename.stderr.trim(), earlierCjsInodeBefore: inodeBefore, earlierCjsInodeAfter: inodeAfter, allPreviousBytesIntact: true, holderClosed: true }));
+    const recovered = f.run(['--write-production']);
+    assert.equal(recovered.status, 0, recovered.stderr);
+    assert.equal(f.run().status, 0);
+    // Successful publication emits LF; failures above must preserve the exact old bytes.
+    for (const [file, bytes] of clean)
+        assert.equal(fs.readFileSync(file, 'utf8').replaceAll('\r\n', '\n'), bytes.toString('utf8').replaceAll('\r\n', '\n'));
+    assert.equal(fs.readFileSync(peer, 'utf8'), 'peer data');
+    t.diagnostic(JSON.stringify({ kind: 'real-windows-file-sharing', outputsChecked: before.size, none: { pid: none.metadata.pid, error: denied.stderr.trim(), oldOutputsIntact: true }, read: { pid: read.metadata.pid, error: rename.stderr.trim(), readPermitted: true, earlierCjsInodeBefore: inodeBefore, earlierCjsInodeAfter: inodeAfter, rollbackBytesMatch: true }, recoveryExit: recovered.status, finalCheckExit: 0, peerPreserved: true, holdersClosed: true }));
+});
 test('complete Program check is read-only, accepts CRLF, and rejects code/type/compiled-view drift', t => {
     const f = fixture(t), peer = path.join(f.home, 'dist');
     fs.mkdirSync(peer);
