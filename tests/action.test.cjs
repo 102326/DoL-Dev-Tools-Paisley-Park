@@ -377,3 +377,10 @@ test('screen lifecycle confirms power state and never dismisses a secure or unkn
  await execute(clear.ctx,{type:'unlock'});
  assert.equal(clear.calls.some(a=>a.includes('dismiss-keyguard')),false);
 });
+
+test('Action identity must be an actual string before selecting its field contract',()=>{
+ for(const type of [new String('web-click'),{toString:()=> 'back',startsWith:()=>false}]){
+  assert.throws(()=>validate(type instanceof String?{type,selector:'#fixture'}:{type}),{code:'ACTION_INVALID',actionField:'action'});
+ }
+ assert.equal(validate({type:'web-click',selector:'#fixture'}).type,'web-click');
+});

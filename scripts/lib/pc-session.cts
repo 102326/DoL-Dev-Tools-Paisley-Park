@@ -47,12 +47,12 @@ async function capture(options:pcSession.Options,act=false){
  const r=record(options['host-file']);
  const scope=options.scope||'body';if(typeof scope!=='string'||!scope.trim()||scope.length>256||!options.out)throw invalid();
  let action:unknown,probe:string|undefined;
- if(act){if(options['test-environment']!=='yes')throw invalid();action=json(options.file,65536);require('./action.cjs').validate(action);if(!(action as {type:string}).type.startsWith('web-'))throw invalid()}
+ if(act){if(options['test-environment']!=='yes')throw invalid();action=json(options.file,65536);(require('./action.cjs') as typeof import('./action.cjs')).validate(action);if(!(action as {type:string}).type.startsWith('web-'))throw invalid()}
  if(options.probe){if(!path.isAbsolute(options.probe)||fs.statSync(options.probe).size>32768)throw invalid();probe=fs.readFileSync(options.probe,'utf8');if(!probe.trim())throw invalid()}
  const output=path.resolve(options.out);fs.mkdirSync(output,{mode:0o700});
  const report:pcSession.CaptureReport={schemaVersion:1,incidentId:randomUUID(),capturedAt:new Date().toISOString(),status:'not-dispatched',
   identity:{profileId:r.target.profileId,browserId:r.target.browserId,targetId:r.target.targetId,document:r.target.document},
-  action:act?require('./action.cjs').summary(action):undefined,businessOutcome:'not-inferred',automaticReplay:false,remoteCancellationGuaranteed:false,
+  action:act?(require('./action.cjs') as typeof import('./action.cjs')).summary(action):undefined,businessOutcome:'not-inferred',automaticReplay:false,remoteCancellationGuaranteed:false,
   probeSha256:probe?createHash('sha256').update(probe).digest('hex'):undefined,artifacts:[],privacy:'Local; review screenshots, probe results and document URLs before sharing'};
  const checkpoint=()=>{save(path.join(output,'manifest.pending'),report);fs.renameSync(path.join(output,'manifest.pending'),path.join(output,'manifest.json'))};
  const artifact=(name:string,value:unknown,binary=false)=>{const bytes=binary?value as Buffer:Buffer.from(JSON.stringify(value,null,2));fs.writeFileSync(path.join(output,name),bytes,{flag:'wx',mode:0o600});report.artifacts.push({file:name,sha256:createHash('sha256').update(bytes).digest('hex')})};
@@ -63,7 +63,7 @@ async function capture(options:pcSession.Options,act=false){
   if(act){
    // Durable intent precedes dispatch. Process death here keeps uncertainty, never an instruction to retry.
    report.status='dispatching-unknown';checkpoint();
-   await require('./action.cjs').executeWeb({assertForeground:()=>host!.assertBound(),ensureWebview:async()=>host,client:host},action);
+   await (require('./action.cjs') as typeof import('./action.cjs')).executeWeb({assertForeground:()=>host!.assertBound(),ensureWebview:async()=>host,client:host},action);
    report.status='dispatch-acknowledged';checkpoint();
   }
   artifact('dom.json',await host.evaluate((require('./dom.cjs') as typeof import('./dom.cjs')).expression(scope)));

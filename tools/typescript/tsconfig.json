@@ -48,6 +48,7 @@
     "../../scripts/lib/support.cts",
     "../../scripts/lib/hitbox-overlay.cts",
     "../../scripts/adb-evaluate.cts",
-    "../../scripts/android-inspect.cts"
+    "../../scripts/android-inspect.cts",
+    "../../scripts/lib/action.cts"
   ]
 }

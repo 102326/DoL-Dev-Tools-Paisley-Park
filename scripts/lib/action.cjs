@@ -1,57 +1,74 @@
+// Generated from action.cts by TypeScript 6.0.2; source-lf-sha256=7746b56bfc2a817303b55ab2c9de0c287598554122bfc4ebe2b2ae5fe17439dc
+"use strict";
 const { createHash } = require('node:crypto');
 const { android } = require('./collectors.cjs');
 const diagnostics = require('./diagnostics.cjs');
-
 const fields = {
-  'web-click': ['selector'], 'web-focus': ['selector'], 'web-input': ['selector', 'value'],
-  tap: ['x', 'y'], input: ['value'], back: [], home: [], launch: [], restart: [], 'data-reset': [], wake: [], lock: [], unlock: [], rotate: ['degrees'],
+    'web-click': ['selector'], 'web-focus': ['selector'], 'web-input': ['selector', 'value'],
+    tap: ['x', 'y'], input: ['value'], back: [], home: [], launch: [], restart: [], 'data-reset': [], wake: [], lock: [], unlock: [], rotate: ['degrees'],
 };
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
-function sanitized(error, message) {
-  const result = new Error(message);
-  if (typeof error?.code === 'string' && /^[A-Z0-9_]{1,32}$/.test(error.code)) result.code = error.code;
-  else if (Number.isInteger(error?.code)) result.code = error.code;
-  if (error?.killed === true) result.killed = true;
-  const detail = diagnostics.describe(error);
-  if (detail?.code === 'ETIMEDOUT') {
-    result.cdpStage = detail.stage;
-    if (detail.method) result.cdpMethod = detail.method;
-  }
-  return result;
+function sanitized(raw, message) {
+    const error = raw;
+    const result = new Error(message);
+    if (typeof error?.code === 'string' && /^[A-Z0-9_]{1,32}$/.test(error.code))
+        result.code = error.code;
+    else if (Number.isInteger(error?.code))
+        result.code = error.code;
+    if (error?.killed === true)
+        result.killed = true;
+    const detail = diagnostics.describe(error);
+    if (detail?.code === 'ETIMEDOUT') {
+        result.cdpStage = detail.stage;
+        if (detail.method)
+            result.cdpMethod = detail.method;
+    }
+    return result;
 }
-
-function validate(action) {
-  const invalid = (message,code,actionField) => Object.assign(new Error(message),{code,actionField});
-  if (!action || typeof action !== 'object' || Array.isArray(action) || !own(action, 'type') || !own(fields, action.type) ||
-      Object.keys(action).some(key => key !== 'type' && !fields[action.type].includes(key))) throw invalid('Invalid action','ACTION_INVALID','action');
-  const missing = fields[action.type].find(key => !own(action,key));
-  if (missing) throw invalid('Invalid action','ACTION_FIELD_MISSING',missing);
-  if (action.type.startsWith('web-') && (typeof action.selector !== 'string' || !action.selector || action.selector.length > 256)) throw invalid('Invalid selector',typeof action.selector==='string'&&action.selector.length>256?'ACTION_LENGTH_EXCEEDED':'ACTION_FIELD_INVALID','selector');
-  if (action.type === 'web-input' && (typeof action.value !== 'string' || action.value.length > 1024)) throw invalid('Invalid web input',typeof action.value==='string'?'ACTION_LENGTH_EXCEEDED':'ACTION_FIELD_INVALID','value');
-  if (action.type === 'input' && (typeof action.value !== 'string' || !action.value || action.value.length > 256 || !/^[A-Za-z0-9 .,_@:+-]+$/.test(action.value))) throw invalid('Invalid native input',typeof action.value!=='string'||!action.value?'ACTION_FIELD_INVALID':action.value.length>256?'ACTION_LENGTH_EXCEEDED':'ACTION_INPUT_UNSUPPORTED','value');
-  if (action.type === 'tap' && (!Number.isSafeInteger(action.x) || action.x < 0 || !Number.isSafeInteger(action.y) || action.y < 0)) throw invalid('Invalid tap','ACTION_FIELD_INVALID',!Number.isSafeInteger(action.x)||action.x<0?'x':'y');
-  if (action.type === 'rotate' && ![0, 90, 180, 270].includes(action.degrees)) throw invalid('Invalid rotation','ACTION_FIELD_INVALID','degrees');
-  return action;
+function validate(raw) {
+    const action = raw;
+    const invalid = (message, code, actionField) => Object.assign(new Error(message), { code, actionField });
+    if (!action || typeof action !== 'object' || Array.isArray(action) || !own(action, 'type') || typeof action.type !== 'string' || !own(fields, action.type) ||
+        Object.keys(action).some(key => key !== 'type' && !fields[action.type].includes(key)))
+        throw invalid('Invalid action', 'ACTION_INVALID', 'action');
+    const missing = fields[action.type].find(key => !own(action, key));
+    if (missing)
+        throw invalid('Invalid action', 'ACTION_FIELD_MISSING', missing);
+    if (action.type.startsWith('web-') && (typeof action.selector !== 'string' || !action.selector || action.selector.length > 256))
+        throw invalid('Invalid selector', typeof action.selector === 'string' && action.selector.length > 256 ? 'ACTION_LENGTH_EXCEEDED' : 'ACTION_FIELD_INVALID', 'selector');
+    if (action.type === 'web-input' && (typeof action.value !== 'string' || action.value.length > 1024))
+        throw invalid('Invalid web input', typeof action.value === 'string' ? 'ACTION_LENGTH_EXCEEDED' : 'ACTION_FIELD_INVALID', 'value');
+    if (action.type === 'input' && (typeof action.value !== 'string' || !action.value || action.value.length > 256 || !/^[A-Za-z0-9 .,_@:+-]+$/.test(action.value)))
+        throw invalid('Invalid native input', typeof action.value !== 'string' || !action.value ? 'ACTION_FIELD_INVALID' : action.value.length > 256 ? 'ACTION_LENGTH_EXCEEDED' : 'ACTION_INPUT_UNSUPPORTED', 'value');
+    if (action.type === 'tap' && (!Number.isSafeInteger(action.x) || action.x < 0 || !Number.isSafeInteger(action.y) || action.y < 0))
+        throw invalid('Invalid tap', 'ACTION_FIELD_INVALID', !Number.isSafeInteger(action.x) || action.x < 0 ? 'x' : 'y');
+    if (action.type === 'rotate' && ![0, 90, 180, 270].includes(action.degrees))
+        throw invalid('Invalid rotation', 'ACTION_FIELD_INVALID', 'degrees');
+    return action;
 }
-
-function summary(action) {
-  validate(action);
-  const result = { type: action.type };
-  if (action.selector !== undefined) result.selectorHash = createHash('sha256').update(action.selector).digest('hex');
-  if (action.value !== undefined) result.inputLength = action.value.length;
-  if (action.type === 'tap') { result.x = action.x; result.y = action.y; }
-  if (action.type === 'rotate') result.degrees = action.degrees;
-  return result;
+function summary(raw) {
+    const action = validate(raw);
+    const result = { type: action.type };
+    if (action.selector !== undefined)
+        result.selectorHash = createHash('sha256').update(action.selector).digest('hex');
+    if (action.value !== undefined)
+        result.inputLength = action.value.length;
+    if (action.type === 'tap') {
+        result.x = action.x;
+        result.y = action.y;
+    }
+    if (action.type === 'rotate')
+        result.degrees = action.degrees;
+    return result;
 }
-
 // Private in-process provenance. A page result or Action JSON cannot opt into
 // authoritative zero-dispatch semantics. Local producers remain reviewed code.
-const reviewedOperations=new WeakSet();
-function reviewedOperation(name,source){const value=Object.freeze({name,source});reviewedOperations.add(value);return value}
-function webExpression(action, guard = '', operation, hasGuard = false, invocation=false) {
-  const rejected = hasGuard ? '{ok:false,guardRejected:true}' : '{ok:false}';
-  const reject = reason => hasGuard ? rejected : `{ok:false,reason:${JSON.stringify(reason)}}`;
-  return `(() => {
+const reviewedOperations = new WeakSet();
+function reviewedOperation(name, source) { const value = Object.freeze({ name, source }); reviewedOperations.add(value); return value; }
+function webExpression(action, guard = '', operation, hasGuard = false, invocation = false) {
+    const rejected = hasGuard ? '{ok:false,guardRejected:true}' : '{ok:false}';
+    const reject = (reason) => hasGuard ? rejected : `{ok:false,reason:${JSON.stringify(reason)}}`;
+    return `(() => {
     const nodes = document.querySelectorAll(${JSON.stringify(action.selector)});
     if (nodes.length !== 1) return ${hasGuard ? rejected : "{ok:false,reason:nodes.length===0?'missing':'ambiguous'}"};
     const node = nodes[0];
@@ -59,9 +76,9 @@ function webExpression(action, guard = '', operation, hasGuard = false, invocati
         !node.getClientRects().length) return ${reject('unavailable')};
     const style = getComputedStyle(node);
     if (style.display === 'none' || style.visibility !== 'visible' || style.opacity === '0') return ${reject('unavailable')};
-    ${invocation?`const currentClick=()=>{for(let p=boundReceiver,i=0;p&&i<16;p=Object.getPrototypeOf(p),i++){const d=Object.getOwnPropertyDescriptor(p,'click');if(d)return Object.hasOwn(d,'value')?d.value:null}return null};
+    ${invocation ? `const currentClick=()=>{for(let p=boundReceiver,i=0;p&&i<16;p=Object.getPrototypeOf(p),i++){const d=Object.getOwnPropertyDescriptor(p,'click');if(d)return Object.hasOwn(d,'value')?d.value:null}return null};
     if(!(boundReceiver instanceof HTMLElement)||!boundReceiver.isConnected||typeof boundCallable!=='function'||currentClick()!==boundCallable)return ${rejected};
-    const invokeBoundClick=receiver=>{if(receiver!==boundReceiver||currentClick()!==boundCallable)throw Error('Native invocation identity changed');return Reflect.apply(boundCallable,boundReceiver,[])};`:''}
+    const invokeBoundClick=receiver=>{if(receiver!==boundReceiver||currentClick()!==boundCallable)throw Error('Native invocation identity changed');return Reflect.apply(boundCallable,boundReceiver,[])};` : ''}
     ${guard}
     ${operation ? `let operationDispatched=false;
     const markOperationDispatch=()=>{operationDispatched=true;};
@@ -76,219 +93,282 @@ function webExpression(action, guard = '', operation, hasGuard = false, invocati
       setter.call(node, ${JSON.stringify(action.value || '')});
       node.dispatchEvent(new Event('input', {bubbles:true}));
       node.dispatchEvent(new Event('change', {bubbles:true}));
-    } else if (${JSON.stringify(action.type)} === 'web-click') ${invocation?'invokeBoundClick(node)':'node.click()'};
+    } else if (${JSON.stringify(action.type)} === 'web-click') ${invocation ? 'invokeBoundClick(node)' : 'node.click()'};
     else { node.focus(); if (document.activeElement !== node) return ${hasGuard ? '{ok:false}' : reject('focus-unconfirmed')}; }
     return {ok:true};
   })()`;
 }
-
-async function executeWeb(ctx, action, assertForeground = ctx.assertForeground) {
-  validate(action);
-  if (!action.type.startsWith('web-') || typeof assertForeground !== 'function') throw Error('Explicit Web host required');
+async function executeWeb(ctx, raw, assertForeground = ctx.assertForeground) {
+    const action = validate(raw);
+    if (!action.type.startsWith('web-') || typeof assertForeground !== 'function')
+        throw Error('Explicit Web host required');
     await assertForeground();
     let client;
-    try { client = await ctx.ensureWebview(); } catch (error) { throw sanitized(error, 'WebView unavailable'); }
+    try {
+        client = await ctx.ensureWebview();
+    }
+    catch (error) {
+        throw sanitized(error, 'WebView unavailable');
+    }
     client ||= ctx.client;
-    if (!client || typeof client.evaluate !== 'function') throw new Error('WebView unavailable');
+    if (!client || typeof client.evaluate !== 'function')
+        throw new Error('WebView unavailable');
     await assertForeground();
     let result;
     // Internal reviewed semantic callers may bind a CDP object and a synchronous guard.
     // This is deliberately not an Action JSON field or an arbitrary-JS CLI option.
-    if(ctx.webGuard && (!['web-click','web-input'].includes(action.type) || typeof ctx.webGuard.objectId !== 'string' || typeof ctx.webGuard.source !== 'string'))
-      throw Object.assign(Error('Invalid internal guard'),{notDispatched:true});
-    const operation=ctx.webGuard?.operation;
-    const invocation=ctx.webGuard?.invocation;
-    if(invocation!==undefined&&(action.type!=='web-click'||!invocation||typeof invocation.receiverId!=='string'||!invocation.receiverId||typeof invocation.callableId!=='string'||!invocation.callableId))throw Object.assign(Error('Invalid internal invocation'),{notDispatched:true});
-    if(operation!==undefined && (action.type!=='web-click'||!ctx.webGuard||!operation||typeof operation!=='object'||Array.isArray(operation)||Object.keys(operation).length!==2||!Object.hasOwn(operation,'name')||!Object.hasOwn(operation,'source')||typeof operation.name!=='string'||!/^[a-z][a-z0-9-]{0,63}$/.test(operation.name)||typeof operation.source!=='string'||!operation.source.trim()||Buffer.byteLength(operation.source,'utf8')>32768))
-      throw Object.assign(Error('Invalid internal operation'),{notDispatched:true});
+    if (ctx.webGuard && (!['web-click', 'web-input'].includes(action.type) || typeof ctx.webGuard.objectId !== 'string' || typeof ctx.webGuard.source !== 'string'))
+        throw Object.assign(Error('Invalid internal guard'), { notDispatched: true });
+    const operation = ctx.webGuard?.operation;
+    const invocation = ctx.webGuard?.invocation;
+    if (invocation !== undefined && (action.type !== 'web-click' || !invocation || typeof invocation.receiverId !== 'string' || !invocation.receiverId || typeof invocation.callableId !== 'string' || !invocation.callableId))
+        throw Object.assign(Error('Invalid internal invocation'), { notDispatched: true });
+    if (operation !== undefined && (action.type !== 'web-click' || !ctx.webGuard || !operation || typeof operation !== 'object' || Array.isArray(operation) || Object.keys(operation).length !== 2 || !Object.hasOwn(operation, 'name') || !Object.hasOwn(operation, 'source') || typeof operation.name !== 'string' || !/^[a-z][a-z0-9-]{0,63}$/.test(operation.name) || typeof operation.source !== 'string' || !operation.source.trim() || Buffer.byteLength(operation.source, 'utf8') > 32768))
+        throw Object.assign(Error('Invalid internal operation'), { notDispatched: true });
     try {
-      ctx.markSideEffect?.();
-      if (ctx.webGuard) {
-        const response = await client.send('Runtime.callFunctionOn', {
-          objectId: ctx.webGuard.objectId,
-          functionDeclaration: `function(...allInputs) { const observedInputs=${invocation?'allInputs.slice(0,-2)':'allInputs'}; ${invocation?'const [boundReceiver,boundCallable]=allInputs.slice(-2);':''} const observedRoot = this; return ${webExpression(action, ctx.webGuard.source, operation, true,!!invocation)}; }`,
-          arguments: [...(ctx.webGuard.arguments || []),...(invocation?[{objectId:invocation.receiverId},{objectId:invocation.callableId}]:[])],
-          returnByValue: true, awaitPromise: true,
-        });
-        if (response?.exceptionDetails) throw Error('Guarded evaluation failed');
-        result = response?.result?.value;
-      } else result = await client.evaluate(webExpression(action));
-    } catch (error) { throw sanitized(error, 'Web action failed'); }
-    if (ctx.webGuard && result?.ok === false && result.guardRejected === true) throw Object.assign(new Error('Semantic guard rejected'), { code: 'WEB_GUARD_REJECTED', notDispatched: true });
+        ctx.markSideEffect?.();
+        if (ctx.webGuard) {
+            const response = await client.send('Runtime.callFunctionOn', {
+                objectId: ctx.webGuard.objectId,
+                functionDeclaration: `function(...allInputs) { const observedInputs=${invocation ? 'allInputs.slice(0,-2)' : 'allInputs'}; ${invocation ? 'const [boundReceiver,boundCallable]=allInputs.slice(-2);' : ''} const observedRoot = this; return ${webExpression(action, ctx.webGuard.source, operation, true, !!invocation)}; }`,
+                arguments: [...(ctx.webGuard.arguments || []), ...(invocation ? [{ objectId: invocation.receiverId }, { objectId: invocation.callableId }] : [])],
+                returnByValue: true, awaitPromise: true,
+            });
+            if (response?.exceptionDetails)
+                throw Error('Guarded evaluation failed');
+            result = response?.result?.value;
+        }
+        else
+            result = await client.evaluate(webExpression(action));
+    }
+    catch (error) {
+        throw sanitized(error, 'Web action failed');
+    }
+    if (ctx.webGuard && result?.ok === false && result.guardRejected === true)
+        throw Object.assign(new Error('Semantic guard rejected'), { code: 'WEB_GUARD_REJECTED', notDispatched: true });
     if (result?.ok !== true) {
-      const error=new Error('Web target unavailable');
-      if (!ctx.webGuard) {
-        error.code = 'WEB_ACTION_REJECTED';
-        if (['missing','ambiguous','unavailable','unsupported-type','focus-unconfirmed'].includes(result?.reason)) error.actionReason = result.reason;
-      }
-      // Only internal fixed categories reach the private Gameplay report; never
-      // forward a page-supplied message or arbitrary JS result as diagnostics.
-      if(operation?.name==='native-passage')error.operationReason=[
-        'navigation-phase-incomplete','navigation-final-state-unavailable','passage-phase-order','passage-identity',
-        'passage-content','passage-phase-threw','footer-save-intent','footer-threw','addon-phase-order',
-        'addon-phase-threw','addon-promise-unavailable','addon-promise-observer-unavailable','addon-phase-rejected',
-        'addon-phase-timeout','observer-ownership-conflict','original-navigation-threw','unreviewed-save-intent',
-        'native-lifecycle-tasks-changed','native-environment-changed','native-environment-unavailable','native-history-changed',
-        'native-time-witness-unavailable','native-time-unavailable'
-      ].includes(result?.reason)?result.reason:'native-operation-failed';
-      throw error;
+        const error = new Error('Web target unavailable');
+        if (!ctx.webGuard) {
+            error.code = 'WEB_ACTION_REJECTED';
+            if (['missing', 'ambiguous', 'unavailable', 'unsupported-type', 'focus-unconfirmed'].includes(result?.reason))
+                error.actionReason = result.reason;
+        }
+        // Only internal fixed categories reach the private Gameplay report; never
+        // forward a page-supplied message or arbitrary JS result as diagnostics.
+        if (operation?.name === 'native-passage')
+            error.operationReason = [
+                'navigation-phase-incomplete', 'navigation-final-state-unavailable', 'passage-phase-order', 'passage-identity',
+                'passage-content', 'passage-phase-threw', 'footer-save-intent', 'footer-threw', 'addon-phase-order',
+                'addon-phase-threw', 'addon-promise-unavailable', 'addon-promise-observer-unavailable', 'addon-phase-rejected',
+                'addon-phase-timeout', 'observer-ownership-conflict', 'original-navigation-threw', 'unreviewed-save-intent',
+                'native-lifecycle-tasks-changed', 'native-environment-changed', 'native-environment-unavailable', 'native-history-changed',
+                'native-time-witness-unavailable', 'native-time-unavailable'
+            ].includes(result?.reason) ? result.reason : 'native-operation-failed';
+        throw error;
     }
-    if (operation) return { status:'completed', ...summary(action), execution:'native-operation', operation:operation.name, receipt:result.receipt??null };
-
-  return { status:'completed', ...summary(action) };
+    if (operation)
+        return { status: 'completed', ...summary(action), execution: 'native-operation', operation: operation.name, receipt: result.receipt ?? null };
+    return { status: 'completed', ...summary(action) };
 }
-
-async function execute(ctx, action) {
-  validate(action);
-  const options = ctx?.options;
-  if (options?.host === 'chrome') {
-    if (!action.type.startsWith('web-')) throw Object.assign(Error('Unsupported Chrome action'),{code:'PC_ACTION_UNSUPPORTED',notDispatched:true});
-    return executeWeb(ctx, action);
-  }
-  if (!options || typeof options.serial !== 'string' || !options.serial ||
-      typeof options.package !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+$/.test(options.package)) throw new Error('Target unavailable');
-  const rawAdb = ctx.adb || android(options);
-  const adb = async (...args) => { try { return await rawAdb(...args); } catch (error) { throw sanitized(error, 'ADB command failed'); } };
-  if ((await adb('get-state')).toString().trim() !== 'device') throw new Error('Device unavailable');
-  const userId = (await adb('shell', 'am', 'get-current-user')).toString().trim();
-  if (!/^\d+$/.test(userId)) throw new Error('Android user unavailable');
-  if (options.expectedUserId !== undefined && options.expectedUserId !== userId) throw Object.assign(new Error('Android user changed'), { code: 'TARGET_USER_CHANGED' });
-  const packageInfo = (await adb('shell', 'dumpsys', 'package', options.package)).toString();
-  const authorization=options.authorization??options.projectGoal?.scope;
-  if(authorization)require('./game-scope.cjs').assertTarget({...options,projectIntent:action.type==='data-reset'?'data-reset':options.projectIntent??'debug'},{scope:authorization},userId,packageInfo);
-  const packageBlock = packageInfo.split(`Package [${options.package}]`)[1]?.split(/\n\s*Package \[/)[0];
-  if (!packageBlock ||
-      !(/\bversionCode=\d+\b/.test(packageBlock) || /\bversionName=[0-9A-Za-z._()+-]{1,64}\b/.test(packageBlock)) ||
-      !(new RegExp(`^\\s*User ${userId}:[^\\r\\n]*\\binstalled=true\\b`, 'm')).test(packageBlock)) throw new Error('Package unavailable');
-
-  if(authorization&&options.store&&action.type!=='data-reset'){
-    const r=require('./game-goal.cjs').open(options.store);
-    try{const t={serial:options.serial,package:options.package,userId},k=createHash('sha256').update(JSON.stringify([t.serial,t.package,t.userId])).digest('hex'),record=r.resource(k);
-      if(record){const current=await require('./game-resource.cjs').snapshot(rawAdb,t,authorization,record);if(record.status!=='ready'||ctx.resourceGeneration&&ctx.resourceGeneration!==current.id)throw Error('Debug context data generation changed');ctx.resourceGeneration=current.id}
-    }finally{r.close()}
-  }
-
-  const foreground = async () => {
-    const activity = (await adb('shell', 'dumpsys', 'activity', 'activities')).toString();
-    const window = (await adb('shell', 'dumpsys', 'window', 'displays')).toString();
-    const resumed = activity.match(/(?:mResumedActivity|topResumedActivity)[^\n]*/)?.[0];
-    const focused = window.match(/^\s*mCurrentFocus\s*=[^\n]*/m)?.[0];
-    const component = line => line?.match(/\bu(\d+)\s+([A-Za-z_][A-Za-z0-9_.]*)\//);
-    const active = component(resumed), focus = component(focused);
-    if (!active || !focus || active[1] !== userId || focus[1] !== userId ||
-        active[2] !== options.package || focus[2] !== options.package) throw new Error('Target app is not foreground');
-  };
-  const launcher = async () => {
-    const output = (await adb('shell', 'cmd', 'package', 'resolve-activity', '--user', userId, '--brief', '-a', 'android.intent.action.MAIN', '-c', 'android.intent.category.LAUNCHER', options.package)).toString().trim();
-    const component = output.split(/\r?\n/).at(-1);
-    const [pkg, activity, extra] = component.split('/');
-    const segment = '[A-Za-z_$][A-Za-z0-9_$]*';
-    const className = new RegExp(`^(?:\\.${segment}(?:\\.${segment})*|${segment}(?:\\.${segment})+)$`);
-    if (extra !== undefined || pkg !== options.package || !className.test(activity || '')) throw new Error('Launcher unavailable');
-    return component;
-  };
-  const start = async component => {
-    ctx.markSideEffect?.();
-    const output = (await adb('shell', 'am', 'start', '--user', userId, '-W', '-n', component)).toString();
-    if (!/^Status:\s*ok\s*$/mi.test(output)) throw new Error('Launch failed');
-  };
-  const launch = async () => start(await launcher());
-  const keyguard = async () => {
-    const output = (await adb('shell', 'dumpsys', 'window', 'policy')).toString();
-    const block = output.split(/\bKeyguardServiceDelegate\s*\r?\n/)[1]?.split(/\n\s*Looper state:/)[0];
-    const showing = block?.match(/^\s*showing=(true|false)\s*$/m)?.[1];
-    const user = block?.match(/^\s*userId=(\d+)\s*$/m)?.[1];
-    const secure = block?.match(/^\s*secure=(true|false)\s*$/m)?.[1];
-    if (!showing || user !== userId) throw Error('Keyguard state unavailable');
-    return { showing: showing === 'true', secure: secure === undefined ? null : secure === 'true' };
-  };
-
-  if (action.type.startsWith('web-')) {
-    return executeWeb(ctx, action, foreground);
-  } else if (action.type === 'wake') {
-    ctx.markSideEffect?.();
-    await adb('shell','input','keyevent','KEYCODE_WAKEUP');
-  } else if (action.type === 'lock') {
-    await foreground();
-    ctx.markSideEffect?.();
-    await adb('shell', 'input', 'keyevent', 'KEYCODE_SLEEP');
-    // Screen-off is a lifecycle action, not a guarantee that credential locking has occurred.
-    const power = (await adb('shell', 'dumpsys', 'power')).toString();
-    if (!/^\s*mWakefulness=(Asleep|Dozing|DozingSuspend)\s*$/m.test(power)) throw Error('Screen-off unconfirmed');
-    return { status: 'completed', type: 'lock', screenOff: true, credentialLock: 'not inferred', restoration: 'explicit unlock or manual authentication' };
-  } else if (action.type === 'unlock') {
-    let state = await keyguard();
-    if (state.showing && state.secure !== false) throw Error('Manual device authentication required or keyguard security unknown');
-    ctx.markSideEffect?.();
-    await adb('shell', 'input', 'keyevent', 'KEYCODE_WAKEUP');
-    state = await keyguard();
-    if (state.showing) {
-      if (state.secure !== false) throw Error('Manual device authentication required or keyguard security unknown');
-      ctx.markSideEffect?.();
-      await adb('shell', 'wm', 'dismiss-keyguard');
+async function execute(ctx, raw) {
+    const action = validate(raw);
+    const options = ctx?.options;
+    if (options?.host === 'chrome') {
+        if (!action.type.startsWith('web-'))
+            throw Object.assign(Error('Unsupported Chrome action'), { code: 'PC_ACTION_UNSUPPORTED', notDispatched: true });
+        return executeWeb(ctx, action);
     }
-    if ((await keyguard()).showing) throw Error('Keyguard dismissal unconfirmed');
-    if (!/^\s*mWakefulness=Awake\s*$/m.test((await adb('shell', 'dumpsys', 'power')).toString())) throw Error('Wake unconfirmed');
-    return { status: 'completed', type: 'unlock', awake: true, keyguardShowing: false, appForeground: 'not inferred' };
-  } else if(action.type==='data-reset'){
-    if(!authorization||!options.store)throw Error('Data reset requires a host-granted scope and the original shared Store');
-    const r=require('./game-goal.cjs').open(options.store);
-    try{const proof=await require('./game-resource.cjs').rebuild(r,rawAdb,{serial:options.serial,package:options.package,userId},authorization,{record:value=>{ctx.resourceEvidence??=[];ctx.resourceEvidence.push(value);ctx.recordResource?.(value);ctx.markSideEffect?.()}});
-      return {status:'completed',type:action.type,resourceGeneration:proof.id,nativeEvidence:ctx.resourceEvidence};
-    }finally{r.close()}
-  } else if (action.type === 'launch') await launch();
-  else if (action.type === 'restart') {
-    const component = await launcher();
-    ctx.markSideEffect?.();
-    await adb('shell', 'am', 'force-stop', '--user', userId, options.package);
-    await start(component);
-  } else if (action.type === 'rotate') {
-    await foreground();
-    if (!Array.isArray(ctx.cleanup)) throw new Error('Cleanup unavailable');
-    const keys = ['accelerometer_rotation', 'user_rotation'];
-    const originals = [];
-    for (const key of keys) {
-      const raw = (await adb('shell', 'settings', '--user', userId, 'get', 'system', key)).toString().trim();
-      if (raw !== 'null' && !(key === 'accelerometer_rotation' ? /^[01]$/ : /^[0-3]$/).test(raw)) throw new Error('Rotation state unavailable');
-      originals.push(raw === 'null' ? null : raw);
+    if (!options || typeof options.serial !== 'string' || !options.serial ||
+        typeof options.package !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+$/.test(options.package))
+        throw new Error('Target unavailable');
+    const rawAdb = ctx.adb || android(options);
+    const adb = async (...args) => { try {
+        return await rawAdb(...args);
     }
-    await foreground();
-    const restoreAdb = ctx.cleanupAdb || rawAdb;
-    const applied = ['0', String(action.degrees / 90)];
-    ctx.cleanup.push(async () => {
-      const results = await Promise.allSettled(keys.map(async (key, i) => {
-        const raw = (await restoreAdb('shell', 'settings', '--user', userId, 'get', 'system', key)).toString().trim();
-        const current = raw === 'null' ? null : raw;
-        if (current === originals[i]) return;
-        if (current !== applied[i]) throw new Error('Rotation restore conflict');
-        await restoreAdb('shell', 'settings', '--user', userId,
-          originals[i] === null ? 'delete' : 'put', 'system', key, ...(originals[i] === null ? [] : [originals[i]]));
-      }));
-      if (results.some(result => result.status === 'rejected')) throw new Error('Rotation restore failed');
-    });
-    ctx.markSideEffect?.();
-    await adb('shell', 'settings', '--user', userId, 'put', 'system', 'accelerometer_rotation', applied[0]);
-    ctx.markSideEffect?.();
-    await adb('shell', 'settings', '--user', userId, 'put', 'system', 'user_rotation', applied[1]);
-  } else {
-    await foreground();
-    if (action.type === 'tap') {
-      const png = await adb('exec-out', 'screencap', '-p');
-      if (png.length < 24 || !png.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) throw new Error('Screen bounds unavailable');
-      const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
-      if (!width || !height || action.x >= width || action.y >= height) throw new Error('Tap outside screen');
-      await foreground();
-      ctx.markSideEffect?.();
-      await adb('shell', 'input', 'tap', String(action.x), String(action.y));
-    } else if (action.type === 'input') {
-      ctx.markSideEffect?.();
-      await adb('shell', 'input', 'text', action.value.replace(/ /g, '%s'));
-    } else {
-      ctx.markSideEffect?.();
-      await adb('shell', 'input', 'keyevent', action.type === 'back' ? 'KEYCODE_BACK' : 'KEYCODE_HOME');
+    catch (error) {
+        throw sanitized(error, 'ADB command failed');
+    } };
+    if ((await adb('get-state')).toString().trim() !== 'device')
+        throw new Error('Device unavailable');
+    const userId = (await adb('shell', 'am', 'get-current-user')).toString().trim();
+    if (!/^\d+$/.test(userId))
+        throw new Error('Android user unavailable');
+    if (options.expectedUserId !== undefined && options.expectedUserId !== userId)
+        throw Object.assign(new Error('Android user changed'), { code: 'TARGET_USER_CHANGED' });
+    const packageInfo = (await adb('shell', 'dumpsys', 'package', options.package)).toString();
+    const authorization = options.authorization ?? options.projectGoal?.scope;
+    if (authorization)
+        require('./game-scope.cjs').assertTarget({ ...options, projectIntent: action.type === 'data-reset' ? 'data-reset' : options.projectIntent ?? 'debug' }, { scope: authorization }, userId, packageInfo);
+    const packageBlock = packageInfo.split(`Package [${options.package}]`)[1]?.split(/\n\s*Package \[/)[0];
+    if (!packageBlock ||
+        !(/\bversionCode=\d+\b/.test(packageBlock) || /\bversionName=[0-9A-Za-z._()+-]{1,64}\b/.test(packageBlock)) ||
+        !(new RegExp(`^\\s*User ${userId}:[^\\r\\n]*\\binstalled=true\\b`, 'm')).test(packageBlock))
+        throw new Error('Package unavailable');
+    if (authorization && options.store && action.type !== 'data-reset') {
+        const r = require('./game-goal.cjs').open(options.store);
+        try {
+            const t = { serial: options.serial, package: options.package, userId }, k = createHash('sha256').update(JSON.stringify([t.serial, t.package, t.userId])).digest('hex'), record = r.resource(k);
+            if (record) {
+                const current = await require('./game-resource.cjs').snapshot(rawAdb, t, authorization, record);
+                if (record.status !== 'ready' || ctx.resourceGeneration && ctx.resourceGeneration !== current.id)
+                    throw Error('Debug context data generation changed');
+                ctx.resourceGeneration = current.id;
+            }
+        }
+        finally {
+            r.close();
+        }
     }
-  }
-  return { status: 'completed', ...summary(action) };
+    const foreground = async () => {
+        const activity = (await adb('shell', 'dumpsys', 'activity', 'activities')).toString();
+        const window = (await adb('shell', 'dumpsys', 'window', 'displays')).toString();
+        const resumed = activity.match(/(?:mResumedActivity|topResumedActivity)[^\n]*/)?.[0];
+        const focused = window.match(/^\s*mCurrentFocus\s*=[^\n]*/m)?.[0];
+        const component = (line) => line?.match(/\bu(\d+)\s+([A-Za-z_][A-Za-z0-9_.]*)\//);
+        const active = component(resumed), focus = component(focused);
+        if (!active || !focus || active[1] !== userId || focus[1] !== userId ||
+            active[2] !== options.package || focus[2] !== options.package)
+            throw new Error('Target app is not foreground');
+    };
+    const launcher = async () => {
+        const output = (await adb('shell', 'cmd', 'package', 'resolve-activity', '--user', userId, '--brief', '-a', 'android.intent.action.MAIN', '-c', 'android.intent.category.LAUNCHER', options.package)).toString().trim();
+        const component = output.split(/\r?\n/).at(-1);
+        const [pkg, activity, extra] = component.split('/');
+        const segment = '[A-Za-z_$][A-Za-z0-9_$]*';
+        const className = new RegExp(`^(?:\\.${segment}(?:\\.${segment})*|${segment}(?:\\.${segment})+)$`);
+        if (extra !== undefined || pkg !== options.package || !className.test(activity || ''))
+            throw new Error('Launcher unavailable');
+        return component;
+    };
+    const start = async (component) => {
+        ctx.markSideEffect?.();
+        const output = (await adb('shell', 'am', 'start', '--user', userId, '-W', '-n', component)).toString();
+        if (!/^Status:\s*ok\s*$/mi.test(output))
+            throw new Error('Launch failed');
+    };
+    const launch = async () => start(await launcher());
+    const keyguard = async () => {
+        const output = (await adb('shell', 'dumpsys', 'window', 'policy')).toString();
+        const block = output.split(/\bKeyguardServiceDelegate\s*\r?\n/)[1]?.split(/\n\s*Looper state:/)[0];
+        const showing = block?.match(/^\s*showing=(true|false)\s*$/m)?.[1];
+        const user = block?.match(/^\s*userId=(\d+)\s*$/m)?.[1];
+        const secure = block?.match(/^\s*secure=(true|false)\s*$/m)?.[1];
+        if (!showing || user !== userId)
+            throw Error('Keyguard state unavailable');
+        return { showing: showing === 'true', secure: secure === undefined ? null : secure === 'true' };
+    };
+    if (action.type.startsWith('web-')) {
+        return executeWeb(ctx, action, foreground);
+    }
+    else if (action.type === 'wake') {
+        ctx.markSideEffect?.();
+        await adb('shell', 'input', 'keyevent', 'KEYCODE_WAKEUP');
+    }
+    else if (action.type === 'lock') {
+        await foreground();
+        ctx.markSideEffect?.();
+        await adb('shell', 'input', 'keyevent', 'KEYCODE_SLEEP');
+        // Screen-off is a lifecycle action, not a guarantee that credential locking has occurred.
+        const power = (await adb('shell', 'dumpsys', 'power')).toString();
+        if (!/^\s*mWakefulness=(Asleep|Dozing|DozingSuspend)\s*$/m.test(power))
+            throw Error('Screen-off unconfirmed');
+        return { status: 'completed', type: 'lock', screenOff: true, credentialLock: 'not inferred', restoration: 'explicit unlock or manual authentication' };
+    }
+    else if (action.type === 'unlock') {
+        let state = await keyguard();
+        if (state.showing && state.secure !== false)
+            throw Error('Manual device authentication required or keyguard security unknown');
+        ctx.markSideEffect?.();
+        await adb('shell', 'input', 'keyevent', 'KEYCODE_WAKEUP');
+        state = await keyguard();
+        if (state.showing) {
+            if (state.secure !== false)
+                throw Error('Manual device authentication required or keyguard security unknown');
+            ctx.markSideEffect?.();
+            await adb('shell', 'wm', 'dismiss-keyguard');
+        }
+        if ((await keyguard()).showing)
+            throw Error('Keyguard dismissal unconfirmed');
+        if (!/^\s*mWakefulness=Awake\s*$/m.test((await adb('shell', 'dumpsys', 'power')).toString()))
+            throw Error('Wake unconfirmed');
+        return { status: 'completed', type: 'unlock', awake: true, keyguardShowing: false, appForeground: 'not inferred' };
+    }
+    else if (action.type === 'data-reset') {
+        if (!authorization || !options.store)
+            throw Error('Data reset requires a host-granted scope and the original shared Store');
+        const r = require('./game-goal.cjs').open(options.store);
+        try {
+            const proof = await require('./game-resource.cjs').rebuild(r, rawAdb, { serial: options.serial, package: options.package, userId }, authorization, { record: (value) => { ctx.resourceEvidence ??= []; ctx.resourceEvidence.push(value); ctx.recordResource?.(value); ctx.markSideEffect?.(); } });
+            return { status: 'completed', type: action.type, resourceGeneration: proof.id, nativeEvidence: ctx.resourceEvidence };
+        }
+        finally {
+            r.close();
+        }
+    }
+    else if (action.type === 'launch')
+        await launch();
+    else if (action.type === 'restart') {
+        const component = await launcher();
+        ctx.markSideEffect?.();
+        await adb('shell', 'am', 'force-stop', '--user', userId, options.package);
+        await start(component);
+    }
+    else if (action.type === 'rotate') {
+        await foreground();
+        if (!Array.isArray(ctx.cleanup))
+            throw new Error('Cleanup unavailable');
+        const keys = ['accelerometer_rotation', 'user_rotation'];
+        const originals = [];
+        for (const key of keys) {
+            const raw = (await adb('shell', 'settings', '--user', userId, 'get', 'system', key)).toString().trim();
+            if (raw !== 'null' && !(key === 'accelerometer_rotation' ? /^[01]$/ : /^[0-3]$/).test(raw))
+                throw new Error('Rotation state unavailable');
+            originals.push(raw === 'null' ? null : raw);
+        }
+        await foreground();
+        const restoreAdb = ctx.cleanupAdb || rawAdb;
+        const applied = ['0', String(action.degrees / 90)];
+        ctx.cleanup.push(async () => {
+            const results = await Promise.allSettled(keys.map(async (key, i) => {
+                const raw = (await restoreAdb('shell', 'settings', '--user', userId, 'get', 'system', key)).toString().trim();
+                const current = raw === 'null' ? null : raw;
+                if (current === originals[i])
+                    return;
+                if (current !== applied[i])
+                    throw new Error('Rotation restore conflict');
+                await restoreAdb('shell', 'settings', '--user', userId, originals[i] === null ? 'delete' : 'put', 'system', key, ...(originals[i] === null ? [] : [originals[i]]));
+            }));
+            if (results.some(result => result.status === 'rejected'))
+                throw new Error('Rotation restore failed');
+        });
+        ctx.markSideEffect?.();
+        await adb('shell', 'settings', '--user', userId, 'put', 'system', 'accelerometer_rotation', applied[0]);
+        ctx.markSideEffect?.();
+        await adb('shell', 'settings', '--user', userId, 'put', 'system', 'user_rotation', applied[1]);
+    }
+    else {
+        await foreground();
+        if (action.type === 'tap') {
+            const png = await adb('exec-out', 'screencap', '-p');
+            if (png.length < 24 || !png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
+                throw new Error('Screen bounds unavailable');
+            const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
+            if (!width || !height || action.x >= width || action.y >= height)
+                throw new Error('Tap outside screen');
+            await foreground();
+            ctx.markSideEffect?.();
+            await adb('shell', 'input', 'tap', String(action.x), String(action.y));
+        }
+        else if (action.type === 'input') {
+            ctx.markSideEffect?.();
+            await adb('shell', 'input', 'text', action.value.replace(/ /g, '%s'));
+        }
+        else {
+            ctx.markSideEffect?.();
+            await adb('shell', 'input', 'keyevent', action.type === 'back' ? 'KEYCODE_BACK' : 'KEYCODE_HOME');
+        }
+    }
+    return { status: 'completed', ...summary(action) };
 }
-
-module.exports = { validate, summary, execute, executeWeb, reviewedOperation };
+const actionAPI = { validate, summary, execute, executeWeb, reviewedOperation };
+module.exports = actionAPI;
