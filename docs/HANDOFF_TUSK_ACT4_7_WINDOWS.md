@@ -4,7 +4,7 @@
 
 **任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。本任务书不是正式发布指令。**
 
-用户现已将完整Node核心TS迁移列为7.0发布门槛；开发包P2，UI4.2优先级P1。Mac仍继续分批迁移。原95个Node入口已有49个strict；另新增7个DOM-only资产，运行清单103项、strict源56项；另1个冻结JS协议资产（2函数体未类型化）（A+B、C01–C06、D01–D02、E01–E09、F01–F05），不能把旧接线报告当成整体7.0已完成。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
+用户现已将完整Node核心TS迁移列为7.0发布门槛；开发包P2，UI4.2优先级P1。Mac仍继续分批迁移。原95个Node入口已有50个strict；另新增8个DOM-only资产，运行清单104项、strict源58项；另1个冻结JS协议资产（2函数体未类型化）（A+B、C01–C06、D01–D02、E01–E09、F01–F06），不能把旧接线报告当成整体7.0已完成。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序
 
@@ -12,7 +12,7 @@
 | --- | --- |
 | 仓库 | [102326/DoL-Dev-Tools-Paisley-Park](https://github.com/102326/DoL-Dev-Tools-Paisley-Park) |
 | 研发分支 | [experiment/tusk-act4-7](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/experiment/tusk-act4-7) |
-| **本次固定代码基线，含TS F05、目标规范化C06及启动等待C05；完整迁移仍继续** | **`bbe2b0475afc8a5d775477db1c3820027e818bdd`** |
+| **本次固定代码基线，含TS F06、目标规范化C06及启动等待C05；完整迁移仍继续** | **`b7cecdc43ebd3ff6dc5f7d6ef99fad4cb88f9875`** |
 | TS A+B代码及对应独立包 | `0196e86989facae13e765dc3bff58046b53502a7` |
 | Chrome optional Integration固定代码 | `bd3f1b61798552953c27ec0066280169c3f61da3` |
 | typed Skill resolver 固定代码及对应包 | `10082eff5715e26f086d19310f815c22872b9dfe` |
@@ -24,7 +24,7 @@
 | 上一轮 PC / Journey 接续基线 | `241c77262b560481447dff75903d679bb2fedc2e` |
 | 正式 main，本次交接核对值 | `cfd76a75e6c28efbbdcf447b25679cd9f257ef54` |
 
-固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/bbe2b0475afc8a5d775477db1c3820027e818bdd)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
+固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/b7cecdc43ebd3ff6dc5f7d6ef99fad4cb88f9875)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
 
 本任务书在上述基线之后提交；它不可能位于其自身所指的旧提交中。Windows 先核对最新远端与基线的差异，记录**实际运行的完整 SHA**，不要把本页中的 SHA 当成永远不变的远端 HEAD。若远端仅增加交接文档，可从确认后的最新研发分支接续；存在新代码时先检查改动及其验证记录。
 
@@ -45,7 +45,8 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 
 | Mac 证据 | 实际范围 |
 | --- | --- |
-| 最新 Node 全套，bbe2b04 | 566项：565通过、0失败、1项Windows专属句柄行为跳过 |
+| 最新 Node 全套，b7cecdc | 569项：568通过、0失败、1项Windows专属句柄行为跳过 |
+| TS F06 | 50Node+8DOM/67产物、80类型负例、5构建；13定向/最低Node26包、独立7项，源码/最低Node26包真实回执维护各8与GER各13，全套568过/1Windows跳过；见[F06报告](../experiments/tusk-act4-7/typescript/BATCH_F06.md) |
 | TS F05 | 49Node+7DOM/64产物，77类型负例、5构建；66定向/最低Node26包、独立Scope/资源12项、源码/最低Node26包Chrome GER各13/13，全套565过/1Windows跳过；见[F05报告](../experiments/tusk-act4-7/typescript/BATCH_F05.md) |
 | TS C06 | 目标实际克隆身份与键一致，正常固定哈希保持；16定向/最低Node26包通过、源码PC12+GER13、最低Node26包GER13；全套561过/1Windows跳过，见[C06报告](../experiments/tusk-act4-7/typescript/BATCH_C06.md) |
 | TS F04 | 47Node+7DOM/62产物，74类型负例、5构建；77定向/最低Node26包通过，克隆后验证回归；源码/最低Node26包真实Chrome状态条件各8/8，全套559过/1Windows跳过；见[F04报告](../experiments/tusk-act4-7/typescript/BATCH_F04.md) |
@@ -173,6 +174,7 @@ try {
 - 检查browser-abi协议资产及固定oracle确为LF；运行原摘要断言，不能让新旧一起转成CRLF而掩盖不同合同。历史CRLF checkout回执保留原身份，用原兼容基线恢复或记录拒绝，不能重算摘要后结清旧pending。
 - 合成源码证明可运行 `node experiments/tusk-act4-7/contracts/verify.cjs ABS_CHROME NEW_OUTPUT`（实验脚本，Windows尚待实际执行）；确认真实V8闭包与group释放，falsy故障使用合同测试复现，不把合成Widget当真实DoL。
 - 合成Goal条件可运行 `node experiments/tusk-act4-7/contracts/goal-proof-verify.cjs ABS_CHROME NEW_OUTPUT`（Windows尚待实跑）；它只验证自写State/DOM stand-in，实际游戏必须另做原回执/库存/支出佐证。
+- 合成回执容量维护可运行 `node experiments/tusk-act4-7/contracts/receipt-verify.cjs ABS_CHROME NEW_OUTPUT`（Windows尚待实跑）；它构造自写页面终态，不能替代真实业务的提交/Outcome证据。
 - GER13场景尤其SIGKILL后的真实Windows终止语义、SQLite/WAL与句柄、报价拒绝pending=false、原terminal恢复一次、停止后reconcile不续期/不完成Goal、旧文档拒绝与跨Session围栏。
 - Evidence manifest、目标身份、DOM/CSS/事件/存储/环境/截图/性能，以及缺元数据unknown、Known Good双向比较与不支持项。
 - Integration固定原Profile/browser/target/document；连接前hash往返、detect→collect刷新、redact导航、原页关闭均不能混代成功。迟到前检查不启动worker，后检查仍受同一总时限；模块缺失/失败不丢Generic，挂起不重复调用。源码单元包含这类deadline断言，不把worker终止理解成远端取消。
@@ -222,7 +224,7 @@ try {
 
 来源和源码夹具分开：发布ZIP按 `.gitattributes` 排除实验，所以Windows同时保留源码工作区供复现，`PAISLEY_TOOL_ROOT` 指向独立解压工具包供实际运行。解压目录不能复用源码node_modules。
 
-本次最新固定Mac包来自`bbe2b0475afc8a5d775477db1c3820027e818bdd`，347文件，ZIP摘要`9cfe25ab0764980c0aa1de81a00422da6d11db3112f892000a3d917426069c03`，[清单](../experiments/tusk-act4-7/typescript/package-f05-manifest.json)。以后以最新批次固定提交/manifest为准，不挪用此包摘要。历史C01包来自固定`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`，321文件，ZIP摘要`9f063b6285ad782cdf0e2e3c16324602b63e9b60ef32c57d945121032f800bea`，[清单](../experiments/tusk-act4-7/typescript/package-c01-manifest.json)。A+B原包记录保留。原bd3f1b6 Integration包的321文件和摘要仍在其原报告中保留。原10082ef包及eff14d6包在各自报告中保留原身份。它们都不是GitHub Release资产，不要求跨机复制。**从后续文档提交重建ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
+本次最新固定Mac包来自`b7cecdc43ebd3ff6dc5f7d6ef99fad4cb88f9875`，350文件，ZIP摘要`038703df49f302302d6ad4d8053e90096758276cae59dc81cd8e7800125cd7b2`，[清单](../experiments/tusk-act4-7/typescript/package-f06-manifest.json)。以后以最新批次固定提交/manifest为准，不挪用此包摘要。历史C01包来自固定`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`，321文件，ZIP摘要`9f063b6285ad782cdf0e2e3c16324602b63e9b60ef32c57d945121032f800bea`，[清单](../experiments/tusk-act4-7/typescript/package-c01-manifest.json)。A+B原包记录保留。原bd3f1b6 Integration包的321文件和摘要仍在其原报告中保留。原10082ef包及eff14d6包在各自报告中保留原身份。它们都不是GitHub Release资产，不要求跨机复制。**从后续文档提交重建ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
 
 用实际选定的完整SHA、新输出名重新归档，避免Windows换行转换：
 

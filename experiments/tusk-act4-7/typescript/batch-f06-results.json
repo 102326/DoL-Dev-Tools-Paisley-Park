@@ -1,0 +1,106 @@
+{
+  "codeCommit": "b7cecdc43ebd3ff6dc5f7d6ef99fad4cb88f9875",
+  "strictNodeModules": 50,
+  "strictBrowserModules": 8,
+  "frozenBrowserAbiAssets": 1,
+  "frozenUntypedFunctions": 2,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 104,
+  "artifacts": 67,
+  "rootTests": {
+    "total": 569,
+    "passed": 568,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 13,
+  "floorPackageTargetedTests": 13,
+  "oldReceiptCases": 5,
+  "buildProtectionTests": 5,
+  "typeNegatives": 80,
+  "independentReviewerTests": 7,
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "sourceChromeReceiptMaintenance": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Real Chrome synthetic page receipt protocol; no game operation or real Ledger acceptance",
+    "checks": [
+      "recovery on an absent namespace does not create instrumentation",
+      "explicit context creates one frozen namespace with its original nonce",
+      "all selected original terminals recover at the 64-record boundary including a toJSON DTO",
+      "pending records refuse retirement before any page query",
+      "committed terminal cleanup removes its actual records while preserving the pending slot",
+      "repeating already committed retirement is bounded and leaves the pending record",
+      "lost cleanup ACK can reconcile the same committed terminal without deleting pending evidence",
+      "receipt maintenance never invokes fixture business functions"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  },
+  "sourceChromeGER": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  },
+  "floorPackageChromeReceiptMaintenance": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Real Chrome synthetic page receipt protocol; no game operation or real Ledger acceptance",
+    "checks": [
+      "recovery on an absent namespace does not create instrumentation",
+      "explicit context creates one frozen namespace with its original nonce",
+      "all selected original terminals recover at the 64-record boundary including a toJSON DTO",
+      "pending records refuse retirement before any page query",
+      "committed terminal cleanup removes its actual records while preserving the pending slot",
+      "repeating already committed retirement is bounded and leaves the pending record",
+      "lost cleanup ACK can reconcile the same committed terminal without deleting pending evidence",
+      "receipt maintenance never invokes fixture business functions"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  },
+  "floorPackageChromeGER": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  }
+}
