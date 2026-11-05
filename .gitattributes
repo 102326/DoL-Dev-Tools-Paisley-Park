@@ -55,3 +55,5 @@ tools/typescript export-ignore
 scripts/**/*.cts export-ignore
 scripts/lib/source-find.mts export-ignore
 .agents/skills/dol-dev-tools-paisley-park/scripts/*.cts export-ignore
+probes/typescript export-ignore
+scripts/lib/browser/*.d.cts export-ignore

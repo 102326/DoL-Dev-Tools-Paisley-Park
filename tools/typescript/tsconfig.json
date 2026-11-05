@@ -34,6 +34,8 @@
     "../../scripts/lib/host-options.cts",
     "../../scripts/lib/collectors.cts",
     "../../scripts/lib/privacy.cts",
-    "../../scripts/lib/owned-files.cts"
+    "../../scripts/lib/owned-files.cts",
+    "../../scripts/lib/dom.cts",
+    "../../scripts/lib/css.cts"
   ]
 }

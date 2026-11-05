@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": [],
+    "strict": true,
+    "noEmit": true,
+    "noEmitOnError": true,
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "lf"
+  },
+  "files": ["../../probes/typescript/dom.cts", "../../probes/typescript/css.cts"]
+}

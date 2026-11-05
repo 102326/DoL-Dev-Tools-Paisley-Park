@@ -4,15 +4,16 @@ const actual=path.resolve(__dirname,'../../..'),compiler=process.env.PAISLEY_TSC
 function fixture(t){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-build-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const home=path.join(root,'tools/typescript');fs.mkdirSync(home,{recursive:true});
- for(const file of ['build.cjs','tsconfig.json'])fs.copyFileSync(path.join(actual,'tools/typescript',file),path.join(home,file));
+ for(const file of ['build.cjs','tsconfig.json','browser-tsconfig.json'])fs.copyFileSync(path.join(actual,'tools/typescript',file),path.join(home,file));
  const config=JSON.parse(fs.readFileSync(path.join(home,'tsconfig.json')));
- const files=config.files.map(file=>path.resolve(home,file));
- for(const file of [...files,...files.map(f=>f.slice(0,-4)+'.cjs'),path.join(root,'scripts/lib/source-find.mts'),path.join(root,'scripts/lib/owned-files.cjs')]){
+ const nodeFiles=config.files.map(file=>path.resolve(home,file)),browserFiles=JSON.parse(fs.readFileSync(path.join(home,'browser-tsconfig.json'))).files.map(file=>path.resolve(home,file));
+ const files=[...nodeFiles,...browserFiles],browserOutputs=browserFiles.flatMap(file=>['.cjs','.d.cts'].map(ext=>path.join(root,'scripts/lib/browser',path.basename(file,'.cts')+ext)));
+ const outputs=[...browserOutputs,...nodeFiles.map(f=>f.slice(0,-4)+'.cjs'),path.join(root,'scripts/lib/source-find.mts')];
+ for(const file of [...files,...outputs,path.join(root,'scripts/lib/owned-files.cjs')]){
   fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(path.join(actual,path.relative(root,file)),file);
  }
- const outputs=[...files.map(f=>f.slice(0,-4)+'.cjs'),path.join(root,'scripts/lib/source-find.mts')];
  const run=(args=[],preload)=>spawnSync(process.execPath,[...(preload?['-r',preload]:[]),path.join(home,'build.cjs'),...args],{encoding:'utf8',env:{...process.env,PAISLEY_TSC:compiler,PAISLEY_TYPE_ROOTS:typeRoots}});
- return {root,home,files,outputs,run};
+ return {root,home,files,browserFiles,nodeFiles,outputs,run};
 }
 test('complete Program check is read-only, accepts CRLF, and rejects code/type/compiled-view drift',t=>{
  const f=fixture(t),peer=path.join(f.home,'dist');fs.mkdirSync(peer);fs.writeFileSync(path.join(peer,'unknown.txt'),'peer');
@@ -49,4 +50,14 @@ test('a cooperating builder lock is exclusive and never swept by check or write'
  const f=fixture(t),lock=path.join(f.root,'.paisley-ts-build-lock');fs.mkdirSync(lock);fs.writeFileSync(path.join(lock,'owner.json'),'peer lock');
  assert.equal(f.run().status,0);const result=f.run(['--write-production']);assert.equal(result.status,1);assert.match(result.stderr,/TS_BUILD_BUSY/);
  assert.equal(fs.readFileSync(path.join(lock,'owner.json'),'utf8'),'peer lock');
+});
+
+test('browser and Node Programs reject accidental cross-host globals before publication',t=>{
+ const f=fixture(t),before=new Map(f.outputs.map(file=>[file,fs.readFileSync(file)]));
+ const browser=f.browserFiles[0],body=fs.readFileSync(browser,'utf8');
+ fs.appendFileSync(browser,'\nconst leaked=process.pid;const buffer=Buffer.alloc(1);require("node:fs");\n');
+ const rejected=f.run(['--write-production']);assert.equal(rejected.status,1);assert.match(rejected.stderr,/Cannot find name '(?:process|Buffer|require)'/);
+ fs.writeFileSync(browser,body);fs.appendFileSync(f.nodeFiles[0],'\nconst leaked=document.title;\n');
+ const wrongRealm=f.run(['--write-production']);assert.equal(wrongRealm.status,1);assert.match(wrongRealm.stderr,/Cannot find name 'document'/);
+ for(const [file,bytes]of before)assert.deepEqual(fs.readFileSync(file),bytes);
 });

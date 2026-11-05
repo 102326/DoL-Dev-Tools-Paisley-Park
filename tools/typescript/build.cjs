@@ -61,33 +61,46 @@ function build(args=process.argv.slice(2)){
  const compilerRoot=path.resolve(path.dirname(compiler),'..');
  if(require(path.join(compilerRoot,'package.json')).version!=='6.0.2')throw Error('TS_COMPILER_VERSION: expected TypeScript 6.0.2');
  const ts=require(path.join(compilerRoot,'lib/typescript.js'));
- const configFile=path.join(__dirname,'tsconfig.json');
- const config=ts.readConfigFile(configFile,file=>lf(fs.readFileSync(file,'utf8')));
- if(config.error)throw Error('TS_CONFIG_INVALID');
- const parsed=ts.parseJsonConfigFileContent(config.config,ts.sys,__dirname);
- if(parsed.errors.length||!parsed.options.strict||!parsed.options.noEmitOnError)throw Error('TS_CONFIG_INVALID');
- const sources=new Map();
- for(const file of parsed.fileNames){
-  const relative=path.relative(root,file);
-  if(relative.startsWith('..')||path.isAbsolute(relative)||!file.endsWith('.cts')||!fs.lstatSync(file).isFile())throw Error('TS_INPUT_INVALID');
-  sources.set(path.resolve(file),lf(fs.readFileSync(file,'utf8')));
+ const sources=new Map(),generated=new Map();
+ const projects=[];
+ for(const [name,browser]of [['browser-tsconfig.json',true],['tsconfig.json',false]]){
+  const config=ts.readConfigFile(path.join(__dirname,name),file=>lf(fs.readFileSync(file,'utf8')));
+  if(config.error)throw Error('TS_CONFIG_INVALID');
+  const parsed=ts.parseJsonConfigFileContent(config.config,ts.sys,__dirname);
+  if(parsed.errors.length||!parsed.options.strict||!parsed.options.noEmitOnError)throw Error('TS_CONFIG_INVALID');
+  if(browser&&(parsed.options.types?.length!==0||!parsed.options.declaration))throw Error('TS_BROWSER_CONFIG_INVALID');
+  const files=parsed.fileNames.map(file=>path.resolve(file));
+  for(const file of files){
+   const relative=path.relative(root,file);
+   if(relative.startsWith('..')||path.isAbsolute(relative)||!file.endsWith('.cts')||!fs.lstatSync(file).isFile()||sources.has(file))throw Error('TS_INPUT_INVALID');
+   if(browser&&path.dirname(file)!==path.join(root,'probes/typescript'))throw Error('TS_BROWSER_INPUT_INVALID');
+   sources.set(file,lf(fs.readFileSync(file,'utf8')));
+  }
+  projects.push({browser,parsed,files});
  }
  if(!sources.size)throw Error('TS_INPUT_INVALID');
- const options={...parsed.options,noEmit:false,rootDir:root,outDir:path.join(__dirname,'.virtual-output'),
-  ...(process.env.PAISLEY_TYPE_ROOTS?{typeRoots:[process.env.PAISLEY_TYPE_ROOTS]}:{})};
- const host=ts.createCompilerHost(options),read=host.readFile;
- host.readFile=file=>sources.get(path.resolve(file))??read(file);
- const program=ts.createProgram([...sources.keys()],options,host);
- const diagnostics=ts.getPreEmitDiagnostics(program);
- if(diagnostics.length){console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics,{getCurrentDirectory:()=>root,getCanonicalFileName:f=>f,getNewLine:()=> '\n'}));return false}
- const generated=new Map();
- const emission=program.emit(undefined,(_file,text,_bom,_error,inputs)=>{
-  if(inputs?.length!==1||!sources.has(path.resolve(inputs[0].fileName))||!_file.endsWith('.cjs'))throw Error('TS_OUTPUT_UNEXPECTED');
-  const source=path.resolve(inputs[0].fileName),file=source.slice(0,-4)+'.cjs';
-  const header=`// Generated from ${path.basename(source)} by TypeScript 6.0.2; source-lf-sha256=${createHash('sha256').update(sources.get(source)).digest('hex')}\n`;
-  generated.set(file,Buffer.from(header+lf(text)));
- });
- if(emission.emitSkipped||emission.diagnostics.length||generated.size!==sources.size)throw Error('TS_EMIT_INCOMPLETE');
+ // Browser functions use DOM-only globals. Node consumes their emitted declarations,
+ // never the browser source Program or DOM ambient globals.
+ for(const {browser,parsed,files}of projects){
+  const options={...parsed.options,noEmit:false,rootDir:root,outDir:path.join(__dirname,'.virtual-output'),
+   ...(!browser&&process.env.PAISLEY_TYPE_ROOTS?{typeRoots:[process.env.PAISLEY_TYPE_ROOTS]}:{})};
+  const host=ts.createCompilerHost(options),read=host.readFile,exists=host.fileExists;
+  host.readFile=file=>sources.get(path.resolve(file))??generated.get(path.resolve(file))?.toString('utf8')??read(file);
+  host.fileExists=file=>generated.has(path.resolve(file))||exists(file);
+  const program=ts.createProgram(files,options,host);
+  const diagnostics=ts.getPreEmitDiagnostics(program);
+  if(diagnostics.length){console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics,{getCurrentDirectory:()=>root,getCanonicalFileName:f=>f,getNewLine:()=> '\n'}));return false}
+  const before=generated.size;
+  const emission=program.emit(undefined,(_file,text,_bom,_error,inputs)=>{
+   const declaration=_file.endsWith('.d.cts');
+   if(inputs?.length!==1||!files.includes(path.resolve(inputs[0].fileName))||!(declaration&&browser||_file.endsWith('.cjs')))throw Error('TS_OUTPUT_UNEXPECTED');
+   const source=path.resolve(inputs[0].fileName),stem=browser?path.join(root,'scripts/lib/browser',path.basename(source,'.cts')):source.slice(0,-4),file=stem+(declaration?'.d.cts':'.cjs');
+   if(generated.has(file))throw Error('TS_OUTPUT_DUPLICATE');
+   const header=`// Generated from ${path.basename(source)} by TypeScript 6.0.2; source-lf-sha256=${createHash('sha256').update(sources.get(source)).digest('hex')}\n`;
+   generated.set(file,Buffer.from(header+lf(text)));
+  });
+  if(emission.emitSkipped||emission.diagnostics.length||generated.size-before!==files.length*(browser?2:1))throw Error('TS_EMIT_INCOMPLETE');
+ }
  // Keep the opt-in native-TS comparison input, never a second authoritative source.
  const finder=path.join(root,'scripts/lib/source-find.cts');
  if(sources.has(finder))generated.set(finder.slice(0,-4)+'.mts',Buffer.from('// Generated native comparison view from source-find.cts; edit the CTS source.\n'+sources.get(finder)));
@@ -98,7 +111,7 @@ function build(args=process.argv.slice(2)){
   const changed=[...generated].filter(([file,bytes])=>{const old=snapshot(file);return !old||lf(old.bytes.toString('utf8'))!==bytes.toString('utf8')});
   if(changed.length){console.error('SOURCE_BUILD_DRIFT: '+changed.map(([file])=>path.relative(root,file)).join(', ')+'; run tools/typescript/build.cjs --write-production. Runtime files were not changed.');return false}
  }
- console.log(`PASS: ${sources.size} strict Node modules and their ${generated.size} artifacts match the complete Program emission.`);return true;
+ console.log(`PASS: ${projects[1].files.length} strict Node modules, ${projects[0].files.length} DOM-only browser modules and their ${generated.size} artifacts match the complete Program emission.`);return true;
 }
 if(require.main===module){try{if(!build())process.exitCode=1}catch(error){console.error(error.message);process.exitCode=1}}
 module.exports={build};

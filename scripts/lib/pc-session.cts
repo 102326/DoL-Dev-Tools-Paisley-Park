@@ -66,8 +66,8 @@ async function capture(options:pcSession.Options,act=false){
    await require('./action.cjs').executeWeb({assertForeground:()=>host!.assertBound(),ensureWebview:async()=>host,client:host},action);
    report.status='dispatch-acknowledged';checkpoint();
   }
-  artifact('dom.json',await host.evaluate(require('./dom.cjs').expression(scope)));
-  artifact('css.json',await host.evaluate(require('./css.cjs').expression(scope)));
+  artifact('dom.json',await host.evaluate((require('./dom.cjs') as typeof import('./dom.cjs')).expression(scope)));
+  artifact('css.json',await host.evaluate((require('./css.cjs') as typeof import('./css.cjs')).expression(scope)));
   if(probe)artifact('state-after.json',await host.evaluate(probe));
   const shot=await host.send('Page.captureScreenshot',{format:'png'}) as {data:string};artifact('screenshot.png',Buffer.from(shot.data,'base64'),true);
   artifact('events.json',host.capture.snapshot());

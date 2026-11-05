@@ -1,4 +1,4 @@
-// Generated from collectors.cts by TypeScript 6.0.2; source-lf-sha256=8b2b0e58d4f5039345e9ed7e27514cf2c8e5f7d10768ead7e1be6faec5de02bf
+// Generated from collectors.cts by TypeScript 6.0.2; source-lf-sha256=b1b90b2113f519858b3bcda2bc8f5898d09157e55422db1a3427d6474b6b9523
 "use strict";
 const { promisify } = require('node:util');
 const { execFile } = require('node:child_process');

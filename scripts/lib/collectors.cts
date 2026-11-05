@@ -17,7 +17,7 @@ const { promisify }:typeof import('node:util') = require('node:util');
 const { execFile }:typeof import('node:child_process') = require('node:child_process');
 const { createHash }:typeof import('node:crypto') = require('node:crypto');
 const {connect}:typeof import('./cdp.cjs')=require('./cdp.cjs');
-const { expression } = require('./dom.cjs');
+const {expression}:typeof import('./dom.cjs')=require('./dom.cjs');
 const {networkAddress}:typeof import('./privacy.cjs')=require('./privacy.cjs');
 const { memory, frames } = require('./performance.cjs');
 const exec = promisify(execFile);
@@ -182,7 +182,7 @@ async function dom(ctx:collectors.Context) {
   return { ...await ctx.client.evaluate(expression(ctx.options.scope)) as object|null|undefined, scopeHash: createHash('sha256').update(ctx.options.scope!).digest('hex') };
 }
 async function css(ctx:collectors.Context) {
-  return { ...await ctx.client!.evaluate(require('./css.cjs').expression(ctx.options.scope)) as object|null|undefined,
+  return { ...await ctx.client!.evaluate((require('./css.cjs') as typeof import('./css.cjs')).expression(ctx.options.scope)) as object|null|undefined,
     scopeHash: createHash('sha256').update(ctx.options.scope!).digest('hex') };
 }
 async function versions(ctx:collectors.Context) {
