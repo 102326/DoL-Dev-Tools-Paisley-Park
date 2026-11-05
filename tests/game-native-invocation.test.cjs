@@ -13,3 +13,8 @@ test('binding reads data descriptors without evaluating a click getter',async()=
  const client={async send(method,p){assert.equal(method,'Runtime.callFunctionOn');const value=vm.runInNewContext(`(${p.functionDeclaration})`,{HTMLElement:Element}).call(node);return {result:{value}}}};
  await assert.rejects(bind(client,'receiver'));assert.equal(getters,0);
 });
+test('unreviewed callable retains original and cleanup failures together',async()=>{
+ const original=Error('synthetic cleanup');
+ const client={async send(method,p){if(method==='Runtime.releaseObject')throw original;return p.returnByValue?{result:{value:'function changed() {}'}}:{result:{objectId:'owned-callable'}}}};
+ await assert.rejects(bind(client,'receiver'),error=>error instanceof AggregateError&&error.code==='NATIVE_INVOCATION_CLEANUP_FAILED'&&error.errors.length===2&&error.errors[1]===original);
+});

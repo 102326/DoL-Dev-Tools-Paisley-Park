@@ -59,6 +59,9 @@
     "../../scripts/lib/network-lab.cts",
     "../../scripts/lib/viewport.cts",
     "../../scripts/lib/matrix.cts",
-    "../../scripts/lib/environment.cts"
+    "../../scripts/lib/environment.cts",
+    "../../scripts/lib/game-semantic.cts",
+    "../../scripts/lib/game-spend.cts",
+    "../../scripts/lib/game-native-invocation.cts"
   ]
 }
