@@ -1,0 +1,111 @@
+{
+  "codeCommit": "54187d78602dff7d23c91a521be512ee361ac786",
+  "baselineNodeModules": 95,
+  "originalNodeEntriesMigrated": 95,
+  "sourceCarrierNodeEntries": 9,
+  "developerNodeEntries": 3,
+  "strictNodeEntries": 98,
+  "strictBrowserModules": 17,
+  "frozenBrowserAbiAssets": 21,
+  "frozenUntypedFunctions": 46,
+  "runtimeEntries": 133,
+  "generatedArtifacts": 133,
+  "typeNegatives": {
+    "existing": 117,
+    "new": 8,
+    "total": 125
+  },
+  "buildTests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "rootTests": {
+    "total": 621,
+    "passed": 620,
+    "failed": 0,
+    "skipped": 1
+  },
+  "floorIndependentPackageTests": {
+    "node": "26.0.0",
+    "stripTypes": false,
+    "total": 621,
+    "passed": 620,
+    "failed": 0,
+    "skipped": 1
+  },
+  "python": {
+    "version": "3.9.6",
+    "system": {
+      "total": 10,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 3
+    },
+    "existingSchemaEnvironment": {
+      "total": 10,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 1,
+      "skip": "optional Pillow unavailable"
+    }
+  },
+  "chrome": {
+    "version": "156.0.8078.73",
+    "sourceGer": 13,
+    "sourceIntegration": 10,
+    "floorGer": 13,
+    "floorIntegration": 10
+  },
+  "runtimeCloneBoundary": {
+    "baselineRed": 5,
+    "baselineNormalControlPassed": 1,
+    "intermediateGetterRed": 1,
+    "finalPassed": 7,
+    "scope": "direct local JS API synthetic config and real temporary file SQLite; ordinary JSON CLI is not a demonstrated exploit path"
+  },
+  "nativeCleanup": {
+    "primaryValues": [
+      "undefined",
+      "null",
+      "false",
+      "0",
+      "empty string"
+    ],
+    "streetAndProfileFixed": true,
+    "unknownReplayChanged": false
+  },
+  "independentReviews": {
+    "nativeCoordinators": 18,
+    "evidenceTools": 12,
+    "nativeGoal": 6,
+    "nativeReaderDifferentialScenes": 7,
+    "runtimeAndResourceAndRetirement": 48,
+    "domainAndSite": 32,
+    "capabilities": 4,
+    "developerTools": "static review; reviewer duplicate test run interrupted without a result; primary final 5/5 and worker isolated 5/5"
+  },
+  "package": {
+    "files": 430,
+    "zipSha256": "da74c3e0bcaf264db1983ef30db9a7134c3d2845b61f6b7d5f6c4ccb1a225f78",
+    "bytesMatchGit": true,
+    "exactExportSet": true,
+    "ownOfflineXState": true,
+    "outsideSourceAncestors": true,
+    "typescriptOrToolsFiles": 0
+  },
+  "notValidated": [
+    "Windows file locking/rename and Chrome",
+    "Android device/WebView/SDK/APK",
+    "real DoL and real game source",
+    "historical real-device pending receipts",
+    "optional Pillow visual tests"
+  ],
+  "knownLimitations": [
+    "F07 initial blank-document PC_DOCUMENT_CHANGED unresolved",
+    "46 frozen protocol function bodies intentionally not typechecked",
+    "no public Node declaration SDK",
+    "multi-file publication is not a power-loss transaction"
+  ],
+  "macScopedDone": true,
+  "formalReleaseReady": false
+}
