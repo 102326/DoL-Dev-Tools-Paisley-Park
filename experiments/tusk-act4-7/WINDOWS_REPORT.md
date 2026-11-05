@@ -4,6 +4,8 @@
 
 后续补充：随后获得独占窗口，已完成[新 TS 基线的 Android 只读复验](ANDROID_TS_READONLY_20261105.md)并释放平板。本报告下方的测试与未覆盖列表仍按原批次记录，不把后续只读结果扩展为文档重建或 Gameplay 通过。
 
+2026-11-06 补充：[七组 contracts 的 Windows 源码/独立包动态探针](WINDOWS_CONTRACTS_20261106.md)已完成；该批没有占用平板，也没有重新运行本报告的完整套件和基础 PC/GER。
+
 ## 来源与范围
 
 最初接续 `01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd`，形成 Windows 修复 `ff72553ba4ffa933abade391abd1b9b9c39f74d7` 和截图诊断/夹具补充 `f15f92199b7a9af0773a92af6b7dec435a1454c5`。随后获取远端 TS / 启动诊断基线 `8670318c3947ffd0496582c28c0dfc7ebc3e0074`，保留两条历史并安全合并。

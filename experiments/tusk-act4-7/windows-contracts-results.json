@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-06",
+  "sourceRef": "34ae5ca3dd9cd547554f1d4baf5d65a3da9542d8",
+  "codeCommit": "cd28b0aba280f986145378d2d5c86b4ee853b5a7",
+  "scope": "Self-authored neutral Windows headless Chrome contracts; no Android, real game, player data or real Ledger acceptance",
+  "environment": {
+    "node": "v26.12.1",
+    "browser": "Chrome/156.0.8078.80",
+    "platform": "win32"
+  },
+  "package": {
+    "commit": "cd28b0aba280f986145378d2d5c86b4ee853b5a7",
+    "zipSha256": "62b95509df39b010602235922a275d32109000b53a1423bc1b34a599bf39a8da",
+    "originalFilesChecked": 431,
+    "allOriginalBytesMatch": true
+  },
+  "results": [
+    {
+      "phase": "source",
+      "script": "verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 7,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "source",
+      "script": "goal-proof-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 8,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "source",
+      "script": "receipt-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 8,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "source",
+      "script": "business-bindings-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 6,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "source",
+      "script": "control-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 6,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "source",
+      "script": "save-observer-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 5,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "source",
+      "script": "probes-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 5,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "package",
+      "script": "verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 7,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "package",
+      "script": "goal-proof-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 8,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "package",
+      "script": "receipt-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 8,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "package",
+      "script": "business-bindings-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 6,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "package",
+      "script": "control-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 6,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "package",
+      "script": "save-observer-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 5,
+      "cleanup": "confirmed"
+    },
+    {
+      "phase": "package",
+      "script": "probes-verify.cjs",
+      "exitCode": 0,
+      "status": "passed",
+      "checks": 5,
+      "cleanup": "confirmed"
+    }
+  ],
+  "resources": {
+    "recordedBrowsers": 14,
+    "recordedPidsAlive": 0,
+    "fixturePortsListening": 0
+  },
+  "notValidated": [
+    "Windows Node 26.0.0 floor",
+    "Real DoL GER on current TypeScript build",
+    "Real historical CRLF receipts or old Unknown reconciliation",
+    "Optional save-observer --fault-restore mode",
+    "Android or visible desktop interaction",
+    "Physical causes of F07 and background screenshot timeouts"
+  ]
+}
