@@ -32,7 +32,7 @@ name/version 描述的是桥接模块；目标 Runtime/Mod 的实际版本可以
 ## 时限与结果
 
 - 入口文件最多 64 KiB，按真实路径验证 `.cjs` 普通文件；仅记录其 SHA，不导出私有路径。SHA 不覆盖依赖模块，也不是来源签名。
-- 整个 Worker（文件检查/导入/describe/detect/collect/redact/序列化）最多 10 秒；单集成最多 16 次 evaluate，每个表达式最多 32 KiB。连接使用同一已验证 ADB 转发，另建临时 CDP 会话，不创建另一条转发。
+- 整个采集最多 10 秒，包含 Worker（文件检查/导入/describe/detect/collect/redact/序列化）及Chrome主连接前后检查；单集成最多 16 次 evaluate，每个表达式最多 32 KiB。Android连接使用同一已验证 ADB 转发，另建临时 CDP 会话，不创建另一条转发。Chrome复用下述不可变文档合同。
 - 模块与核心脱敏后的结果包最多 64 KiB UTF-8；超限/类型错误/状态不一致记 failed。stdout/stderr 丢弃，原始异常正文不导出。
 - `unavailable` → skipped，`unsupported` → unsupported，`failed` → failed，`available` → completed。它们均为 optional，不计入 Generic 完整性失败。
 - 每个结果只能保存为 `integration-N.json`，外层 schema 1 / incidentId / source / capturedAt；即便模块诊断里有 `file`、`binary`、`extension` 字段，也只是 JSON，不触发文件读取或二进制保存。
@@ -43,7 +43,7 @@ Worker 用于故障隔离，**不是安全沙箱**。模块依然拥有 Node 文
 
 ## 顺序观察与文档归属
 
-Contract 1 的普通 evaluate 不自动继承 `execution-context.cjs` 的 Android PID/frame/loader/uniqueContext 强执行绑定。targetId 指定连接的页面，不把该页面后续刷新固定为同一份文档。detect 与 collect 是顺序钩子；中间导航或同 URL reload 后，后一次 evaluate 可以属于新文档。不同 Generic 与 Integration 采样也不构成原子快照。
+Android及未指定Chrome owned host的历史Contract 1普通evaluate，不自动继承 `execution-context.cjs` 的 Android PID/frame/loader/uniqueContext 强执行绑定。targetId 指定连接的页面，不把该页面后续刷新固定为同一份文档。detect 与 collect 是顺序钩子；中间导航或同 URL reload 后，后一次 evaluate 可以属于新文档。不同 Generic 与 Integration 采样也不构成原子快照。
 
 manifest 的 observationsAreSequential、步骤时段与 incidentId 关联本次采集文件；它们不能证明跨钩子文档连续。模块 describe 版本是桥版本；Support 的 compatibility 是来源状态摘要，不能据此断言 Mod 在同一文档内始终存在或因果关系已经成立。旧结果没有文档身份时就是未知，不反推同一文档。
 
@@ -54,6 +54,18 @@ DOL_TEST_CHROME=/ABS/INSTALLED_CHROME node tests/integration-document.browser.cj
 ```
 
 只读模块需要一致的关联字段时，尽量在一次已审查的同步探针中共同读取，并在自己的结果中保留实际适用范围；不要把 detect 的旧事实拼成当前 collect 的成功证明。需要生产操作连续性时按任务使用已有强绑定，不给普通观察增加 GER Goal。导航后读取失败保持可选失败，不抹掉已成功 Generic，不自动重试或悄悄换页。
+
+## Chrome 原文档绑定
+
+当前研发分支的标准Evidence入口支持 `--host chrome --host-file OWNED_RECORD --integration-file REVIEWED_LOCAL.cjs`，内置`--integration`选项也走同一入口。模块接口仍为Contract 1；只接受用户已经审查的本地代码，不自动安装或注入其它项目。
+
+Chrome worker用同一份owned record创建临时`ChromeHost`连接，固定原Profile、browser、target、frame、loader、完整URL和uniqueContext。每次evaluate受现有绑定检查约束，detect结束及redact完成后再次核对。主Evidence连接在worker前后也检查其原绑定，保留其已记录的失效事件；即使hash/history往返后当前URL恢复，也不能靠新连接复活失效合同。结果归属manifest.target中的原文档身份；这仍是顺序采样，不是跨探针原子快照。
+
+已知原绑定检查失败为`integration-document-failed`，只保存失败摘要，不保存混合文档的成功正文。若导航与CDP错误竞争，也可能按实际失败钩子记录`integration-detect-failed`/`integration-collect-failed`；这些失败均不发布成功数据，不能仅从错误类别推断根因。新文档需显式`pc-bind`后发起新采集，不自动换页、重连或重试。
+
+10秒总时限包含主连接检查；超时返回可选失败。迟到的前检查不会再启动worker，后检查未完成不能先发布成功。终止worker不保证取消已提交页面求值，也不回滚副作用；本接口只用于已审查的只读诊断，不能代替受保护GER派发。
+
+Chrome成功入口不表示所有第三方模块或其私有API已验收。模块缺失、unknown API、unavailable/unsupported/failed保持原有可选状态，不否定已成功的Generic采集。Android的原连接与顺序观察语义保持，不因Chrome接线宣称Android实机已验证。
 
 ## 作者的隐私责任
 

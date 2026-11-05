@@ -73,7 +73,7 @@ Chrome 的 Profile 路径摘要和资源摘要不是数据世代证明；不填�
 
 受审项目 Recipe 可使用 Chrome scope：`host:"chrome"`、绝对 `workspace`、选定 `profileId`、完整 `origin`、明确 `intents`、`dataDomain:"chrome-origin-storage"`。这记录宿主已授予的数据/任务范围，不自行授予权限，不接受 Android 占位 serial/package/signer 或 data-reset。详见 [项目 Recipe](PROJECT_EXPERIMENTS.md)。原生 DoL Provider 保留源码/函数指纹及终态要求；未匹配的游戏版本不会退回普通点击。
 
-标准 Evidence 保存 incident、原 target 的去路径身份摘要、通用采集和每步完整性；Android 专属请求标 unsupported，可选 Integration 当前不在 Chrome 上执行，不能因此伪造支持或使已完成的通用采集失效。Chrome 环境仅含 browser/runtime，不补造 Android 元数据；Compare/Known Good 的完整性要求见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
+标准 Evidence 保存 incident、原 target 的去路径身份摘要、通用采集和每步完整性；Android 专属请求标 unsupported。已审查的可选 Integration 可通过原 `--integration` / `--integration-file` 入口在 Chrome worker 中执行，固定原 target/document；导航或模块失败不使已完成的通用采集失效，详见 [Integration 文档绑定](INTEGRATIONS.md#chrome-原文档绑定)。Chrome 环境仅含 browser/runtime，不补造 Android 元数据；Compare/Known Good 的完整性要求见 [EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
 
 ## 验证范围
 

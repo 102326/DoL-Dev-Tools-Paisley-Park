@@ -8,6 +8,10 @@ const statuses = ['available','unavailable','unsupported','failed'];
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 async function main() {
   let phase = 'load', client, connection, description, moduleSha256;
+  const chrome = workerData.host === 'chrome';
+  async function assertDocument() {
+    if (chrome) { phase = 'document'; await client.assertBound(); }
+  }
   try {
     const filename = fs.realpathSync(workerData.modulePath);
     const stat = fs.statSync(filename);
@@ -31,15 +35,27 @@ async function main() {
       description.supportedApiVersion = raw.supportedApiVersion;
     }
     let calls = 0;
+    if (chrome) {
+      phase = 'document';
+      // A second connection is allowed, a second document contract is not.
+      // Never discover/adopt a current document when the owned record is absent.
+      const target = workerData.chromeTarget;
+      if (target?.host !== 'chrome' || !target.document || !target.profilePath) throw Error('Original Chrome document required');
+      client = new (require('./chrome-host.cjs').ChromeHost)(target, { timeoutMs: 3000 });
+      await client.open();
+    }
     const ctx = { client: { async evaluate(expression) {
       if (++calls > 16 || typeof expression !== 'string' || Buffer.byteLength(expression) > 32768) throw new Error('Probe limit');
-      connection ||= connect(workerData.endpoint, 3000, undefined, workerData.targetId || null);
-      client = await connection;
+      if (!chrome) {
+        connection ||= connect(workerData.endpoint, 3000, undefined, workerData.targetId || null);
+        client = await connection;
+      }
       return client.evaluate(expression);
     } } };
     phase = 'detect';
     const detected = await integration.detect(ctx);
     if (!statuses.includes(detected)) throw new Error('Invalid detection status');
+    await assertDocument();
     if (detected !== 'available') return { status: detected, description, moduleSha256, data: { status: detected } };
     phase = 'collect';
     const collected = await integration.collect(ctx);
@@ -50,8 +66,10 @@ async function main() {
     if (!object(projected) || projected.status !== status) throw new Error('Redaction changed status');
     const data = redact(projected);
     if (data.status !== status) throw new Error('Redaction changed status');
+    await assertDocument();
     return { status, description, moduleSha256, data };
-  } catch {
+  } catch (error) {
+    if (chrome && error?.code === 'PC_DOCUMENT_CHANGED') phase = 'document';
     const reason = `integration-${phase}-failed`;
     return { status: 'failed', description, moduleSha256, reason, data: { status: 'failed', reason } };
   } finally { client?.close(); }

@@ -6,7 +6,8 @@ const failed = reason => ({ status: 'failed', data: { status: 'failed', reason }
 function collect(ctx, modulePath, timeoutMs = 10000) {
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 10000) throw new Error('Invalid integration deadline');
   return new Promise(resolve => {
-    let worker, settled = false;
+    let worker, settled = false, received = false;
+    const chrome = ctx.options?.host === 'chrome';
     const finish = result => {
       if (settled) return;
       settled = true; clearTimeout(timer);
@@ -14,13 +15,27 @@ function collect(ctx, modulePath, timeoutMs = 10000) {
       resolve(result);
     };
     const timer = setTimeout(() => finish(failed('integration-timeout')), timeoutMs);
+    async function checkDocument() {
+      if (chrome) {
+        try { await ctx.ensureWebview(); }
+        catch { finish(failed('integration-document-failed')); return false; }
+      }
+      return !settled;
+    }
+    async function start() {
+    // The original connection remembers invalidation events a fresh worker
+    // cannot see (for example, a hash navigation that returned to the old URL).
+    if (!await checkDocument()) return;
     try {
       worker = new Worker(path.join(__dirname, 'integration-worker.cjs'), {
-        workerData: { modulePath: path.resolve(modulePath), endpoint: ctx.endpoint, targetId: ctx.options?.targetId || null },
+        workerData: { modulePath: path.resolve(modulePath), endpoint: ctx.endpoint, targetId: ctx.options?.targetId || null,
+          ...(ctx.options?.host === 'chrome' ? { host: 'chrome', chromeTarget: ctx.options.chromeRecord?.target } : {}) },
         stdout: true, stderr: true, resourceLimits: { maxOldGenerationSizeMb: 32 },
       });
       worker.stdout.resume(); worker.stderr.resume();
-      worker.on('message', json => {
+      worker.on('message', async json => {
+        if (settled || received) return;
+        received = true;
         try {
           if (typeof json !== 'string' || Buffer.byteLength(json) > 65536) throw new Error('Invalid worker output');
           const result = JSON.parse(json);
@@ -36,13 +51,15 @@ function collect(ctx, modulePath, timeoutMs = 10000) {
             }
           }
           if (result.moduleSha256 !== undefined && !/^[0-9a-f]{64}$/.test(result.moduleSha256)) throw new Error('Invalid module hash');
-          if (result.reason !== undefined && !/^integration-(?:load|contract|describe|detect|collect|redact)-failed$|^integration-output-invalid$/.test(result.reason)) throw new Error('Invalid failure reason');
-          finish(result);
+          if (result.reason !== undefined && !/^integration-(?:load|contract|describe|document|detect|collect|redact)-failed$|^integration-output-invalid$/.test(result.reason)) throw new Error('Invalid failure reason');
+          if (await checkDocument()) finish(result);
         } catch { finish(failed('integration-output-invalid')); }
       });
       worker.on('error', () => finish(failed('integration-worker-failed')));
-      worker.on('exit', () => finish(failed('integration-worker-exited')));
+      worker.on('exit', () => { if (!received) finish(failed('integration-worker-exited')); });
     } catch { finish(failed('integration-worker-failed')); }
+    }
+    start().catch(() => finish(failed('integration-worker-failed')));
   });
 }
 module.exports = { collect };

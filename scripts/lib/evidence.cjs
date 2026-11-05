@@ -193,10 +193,7 @@ async function evidence(options, overrides = {}) {
     for (const [index, integration] of (overrides.integrations || []).entries()) {
       const info = { index, name: null, status: 'unavailable' };
       manifest.integrations.push(info);
-      if (integration.modulePath && chrome) {
-        info.status = 'unsupported';
-        await runStep(`integration-${index}`, 'Optional Integration interpretation', async () => ({ collectorStatus:'unsupported', reason:'not-supported-on-chrome' }), false);
-      } else if (integration.modulePath) {
+      if (integration.modulePath) {
         await runStep(`integration-${index}`, 'Optional Integration interpretation', async () => {
           const result = await methods.integration(ctx, integration.modulePath);
           Object.assign(info, result.description, { status: result.status });

@@ -247,7 +247,8 @@ test('Chrome standard evidence collects bound capabilities and retains optional 
  const m=await evidence({...f.options(out),css:true,environment:true,storage:true,webPerformance:true},{chromeHostFactory:()=>f.host,adb:()=>{throw Error('unexpected Android')},integrations:[broken,{modulePath:'/private/module'}]});
  assert.equal(m.status,'complete');
  for(const name of ['screenshot','dom-contract','css-contract','console','network','storage','environment','web-performance'])assert.equal(m.steps.find(s=>s.name===name).status,'completed',name);
- assert.equal(m.steps.find(s=>s.name==='integration-0').status,'failed');assert.equal(m.steps.find(s=>s.name==='integration-1').status,'unsupported');
+ assert.equal(m.steps.find(s=>s.name==='integration-0').status,'failed');assert.equal(m.steps.find(s=>s.name==='integration-1').status,'failed');
+ assert.equal(m.integrations[1].reason,'integration-load-failed');
  assert.equal(f.closed,1);assert.ok(fs.existsSync(path.join(out,'screenshot.png')));assert.doesNotMatch(fs.readFileSync(path.join(out,'manifest.json'),'utf8'),/private\/module|index.html/);
 });
 test('Chrome unsupported Android selections yield partial or failed without accessing Android',async t=>{
