@@ -36,6 +36,7 @@
     "../../scripts/lib/privacy.cts",
     "../../scripts/lib/owned-files.cts",
     "../../scripts/lib/dom.cts",
-    "../../scripts/lib/css.cts"
+    "../../scripts/lib/css.cts",
+    "../../scripts/lib/inspectors.cts"
   ]
 }

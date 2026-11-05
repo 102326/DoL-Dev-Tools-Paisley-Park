@@ -27,3 +27,14 @@ test('Node facades retain original CommonJS exports and CSS default property ide
  assert.equal(Object.isFrozen(current.css.properties),true);
  assert.equal(current.dom.snapshot,require('../scripts/lib/browser/dom.cjs').snapshot);
 });
+test('all six Inspector modes and private storage metadata match their frozen pre-TS implementation',async()=>{
+ const old=require('./fixtures/typed-probe-baseline/inspectors.cjs'),now=require('../scripts/lib/inspectors.cjs');
+ const child=element(),root=element([child]);child.parentElement=root;root.parentElement=null;
+ for(const item of [root,child])Object.assign(item,{hidden:false,disabled:false,tabIndex:0,scrollWidth:40,scrollHeight:40,clientWidth:20,clientHeight:20,scrollTop:0,scrollLeft:0,getAttribute:()=>null,closest:()=>null,contains:other=>other===child});
+ const context={document:{querySelectorAll:()=>[root],elementFromPoint:()=>child},getComputedStyle:()=>({display:'block',visibility:'visible',position:'relative',zIndex:'1',opacity:'1',transform:'none',filter:'none',overflowX:'auto',overflowY:'auto',color:'rgb(0, 0, 0)',backgroundColor:'rgb(255, 255, 255)',pointerEvents:'auto'}),innerWidth:800,innerHeight:600};
+ for(const mode of now.domModes)assert.deepEqual(plain(vm.runInNewContext(now.expression(mode,'main'),context)),plain(vm.runInNewContext(old.expression(mode,'main'),context)),mode);
+ function storageContext(){return {crypto:require('node:crypto').webcrypto,TextEncoder,Uint8Array,setTimeout,clearTimeout,indexedDB:{databases:async()=>[]},window:{localStorage:{length:2,key:i=>'synthetic-key-'+i,getItem(){throw Error('private value read')}}}}}
+ const a=await vm.runInNewContext(old.expression('storage'),storageContext()),b=await vm.runInNewContext(now.expression('storage'),storageContext());
+ assert.deepEqual(plain(b),plain(a));assert.deepEqual(plain(now.storageDiff(a,b)),plain(old.storageDiff(a,b)));
+ assert.deepEqual(Reflect.ownKeys(now),Reflect.ownKeys(old));
+});

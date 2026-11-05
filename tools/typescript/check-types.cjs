@@ -13,7 +13,8 @@ try{
   `import type execution = require(${from('scripts/lib/execution-context.cjs')});\nimport type hostModule = require(${from('scripts/lib/chrome-host.cjs')});\n`+
   `import type launcher = require(${from('scripts/lib/chrome-launch.cjs')});\nimport type session = require(${from('scripts/lib/pc-session.cjs')});\nimport type http = require(${from('scripts/lib/pc-http.cjs')});\nimport type hostOptions = require(${from('scripts/lib/host-options.cjs')});\n`+
   `import type collectors = require(${from('scripts/lib/collectors.cjs')});\nimport type files = require(${from('scripts/lib/owned-files.cjs')});\n`+
-  `import dom = require(${from('scripts/lib/dom.cjs')});\nimport css = require(${from('scripts/lib/css.cjs')});\n`;
+  `import dom = require(${from('scripts/lib/dom.cjs')});\nimport css = require(${from('scripts/lib/css.cjs')});\n`+
+  `import type inspector = require(${from('scripts/lib/browser/inspectors.cjs')});\n`;
  const args=['--noEmit','--strict','--target','ES2022','--lib','ES2022','--module','Node16','--moduleResolution','Node16','--types','node','--typeRoots',typeRoots];
  const run=source=>{const file=path.join(tmp,'contracts.mts');fs.writeFileSync(file,imports+source);return spawnSync(process.execPath,[compiler,...args,file],{encoding:'utf8'})};
  const positive=run("const stage: diagnostic.Stage='pc.document'; const code: diagnostic.Code='PC_DOCUMENT_CHANGED';\nconst original: target.Android={serial:'synthetic',package:'com.example.fixture',userId:'0',targetId:123};\nconst host: target.Chrome['host']='chrome'; const kind:Kind='passage';\n");
@@ -25,13 +26,13 @@ try{
   "const transportCode:transport.ErrorCode='RAW_EXCEPTION'; const open:ReturnType<transport.Client['isOpen']>='open'; const event:transport.OnEvent=(method:number)=>{};\n"+
   "async function unvalidated(client:transport.Client){const data=await client.evaluate('1');return data.value}\n"+
   "const packet:integration.Result={status:'available',data:{status:'available'},moduleSha256:['not-a-string']}; const reason:integration.FailureReason=['integration-load-failed']; const status:integration.Status='complete';\n"+
-  "declare const probe:integration.ProbeClient;probe.close();\ndeclare const bound:execution.BoundClient;bound.close(); const cleanup:execution.CleanupResult['status']='deleted'; const context:execution.Context={};\nasync function rawHost(host:InstanceType<typeof hostModule.ChromeHost>){const data=await host.evaluate('1');return data.value}\nconst mode:launcher.Options['mode']='android'; const digest:session.OwnedRecord['resourceDigest']=['a']; const bytes:http.Resource['bytes']='text'; declare const owned:hostOptions.Record;owned.executable;\nconst networkStatus:collectors.NetworkEvent['status']='200';const cleanupResult:ReturnType<ReturnType<typeof files.owned>['cleanup']>='yes';\ndom.expression(42);const nodeId:ReturnType<typeof dom.snapshot>['nodes'][number]['id']=42;const contractLimits=css.contract({}).limits;const display:string=css.contract({}).nodes[0].style.display;\n");
+  "declare const probe:integration.ProbeClient;probe.close();\ndeclare const bound:execution.BoundClient;bound.close(); const cleanup:execution.CleanupResult['status']='deleted'; const context:execution.Context={};\nasync function rawHost(host:InstanceType<typeof hostModule.ChromeHost>){const data=await host.evaluate('1');return data.value}\nconst mode:launcher.Options['mode']='android'; const digest:session.OwnedRecord['resourceDigest']=['a']; const bytes:http.Resource['bytes']='text'; declare const owned:hostOptions.Record;owned.executable;\nconst networkStatus:collectors.NetworkEvent['status']='200';const cleanupResult:ReturnType<ReturnType<typeof files.owned>['cleanup']>='yes';\ndom.expression(42);const nodeId:ReturnType<typeof dom.snapshot>['nodes'][number]['id']=42;const contractLimits=css.contract({}).limits;const display:string=css.contract({}).nodes[0].style.display;\nconst inspectMode:inspector.Mode='storage';\n");
  assert.equal(negative.status,2,'negative controls must fail compilation');
- assert.equal((negative.stdout.match(/error TS2322:/g)||[]).length,28,negative.stdout+negative.stderr);
+ assert.equal((negative.stdout.match(/error TS2322:/g)||[]).length,29,negative.stdout+negative.stderr);
  assert.equal((negative.stdout.match(/error TS18046:/g)||[]).length,2,'raw remote values require narrowing');
  assert.equal((negative.stdout.match(/error TS2339:/g)||[]).length,4,'probe interface does not own connection cleanup');
  assert.equal((negative.stdout.match(/error TS2345:/g)||[]).length,1,'selector must be a string');
  assert.equal((negative.stdout.match(/error TS2740:/g)||[]).length,1,'contexts require lifecycle ownership');
- assert.equal((negative.stdout.match(/error TS\d+:/g)||[]).length,36,'only the intended contract errors');
- console.log('PASS: CJS paths resolve authoritative types; thirty-six contract/unknown-boundary errors rejected.');
+ assert.equal((negative.stdout.match(/error TS\d+:/g)||[]).length,37,'only the intended contract errors');
+ console.log('PASS: CJS paths resolve authoritative types; thirty-seven contract/unknown-boundary errors rejected.');
 }finally{fs.rmSync(tmp,{recursive:true,force:true})}
