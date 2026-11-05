@@ -311,5 +311,58 @@
         "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
       }
     ]
+  },
+  "offlineFollowup": {
+    "sourceCommit": "582d5c4c87b714e905575488dd3da7f1b2835582",
+    "productionChanged": false,
+    "identityAlgorithmChanged": false,
+    "deviceAccess": false,
+    "independentReview": "read-only source review; no tests or device access by reviewer",
+    "decision": "preserve current identity guard; continuity not established; no automatic adoption",
+    "targeted": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "resourceAndGoal": {
+      "tests": 61,
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0
+    },
+    "controlledCases": [
+      "device-only drift with unchanged marker/inode",
+      "inode-only drift with unchanged marker/device",
+      "device and inode drift with unchanged marker",
+      "original registered snapshot remains valid when original facts are restored"
+    ],
+    "generalReference": "https://docs.kernel.org/admin-guide/devices.html",
+    "physicalCause": "Unknown",
+    "privateEvidence": [
+      {
+        "path": "targeted.log",
+        "bytes": 233,
+        "sha256": "28e3cd42e0685161ee5f8cfd180a6fb26f280ee834845bd39aec583fe68a16b4"
+      },
+      {
+        "path": "resource-goal-tests.log",
+        "bytes": 15162,
+        "sha256": "72abf8ccf16ca9f35e4ae723d2370cadc7c99705c2e1ec6d49b6792583618440"
+      },
+      {
+        "path": "kernel-device-numbering.txt",
+        "bytes": 158742,
+        "sha256": "17afef4b59f4185e0feceb79244264e8de7e1045d71971be2aadc8a86eb408c8"
+      },
+      {
+        "path": "targeted-final.log",
+        "bytes": 222,
+        "sha256": "8aa2d6c5c550fe6dcc4cf1994daecdd2194da9174baac8e64005b80a3250a143"
+      }
+    ],
+    "testAdded": true,
+    "historicalReconciliation": "original bound terminal may settle a stopped Session without treating current Android identity as its original one; never resumes or completes the Goal",
+    "reviewLimits": "source-only review; no device/test execution by reviewer; not an audit of every Provider witness"
   }
 }

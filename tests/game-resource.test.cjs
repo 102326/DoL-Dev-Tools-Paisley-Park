@@ -51,6 +51,22 @@ test('wrong scope refuses writes; surviving secondary writers and failed clear l
  assert.throws(()=>f.open().resume(s.id),/different App data/);
  const g=fixture(t),old=g.r.start(target,config);g.clearFailure();await assert.rejects(resource.rebuild(g.r,g.adb,target,g.authorization),/did not confirm/);assert.equal(g.r.resource(old.targetKey).status,'rebuilding');assert.ok(!g.commands.some(c=>c.includes('printf %s')));
 });
+test('device and inode drift with an unchanged marker cannot adopt a registered generation',async t=>{
+ const f=fixture(t),{s,e}=unresolved(f.r),effect=JSON.stringify(f.r.effect(e.id));
+ await resource.rebuild(f.r,f.adb,target,f.authorization);
+ const registered=JSON.stringify(f.r.resource(s.targetKey)),current=await resource.snapshot(f.adb,target,f.authorization,f.r.resource(s.targetKey));
+ const identity=await resource.identity(f.adb,target,f.authorization),[device,inode]=current.inode.split(':');
+ for(const changed of [`${Number(device)+1}:${inode}`,`${device}:${Number(inode)+1}`,`${Number(device)+1}:${Number(inode)+1}`]){
+  // Keep the original marker and all other facts; neither a mount explanation nor a copied token proves continuity.
+  const adb=async(...args)=>args.join(' ').endsWith('stat -c %d:%i .')?changed:f.adb(...args);
+  assert.notEqual((await resource.identity(adb,target,f.authorization)).id,identity.id);
+  await assert.rejects(resource.snapshot(adb,target,f.authorization,f.r.resource(s.targetKey)),/generation changed/);
+  assert.equal(JSON.stringify(f.r.resource(s.targetKey)),registered);
+  assert.equal(JSON.stringify(f.r.effect(e.id)),effect);
+ }
+ assert.equal((await resource.snapshot(f.adb,target,f.authorization,f.r.resource(s.targetKey))).id,current.id);
+ assert.equal(f.clears,1);
+});
 test('native verification interruption cannot be promoted by a JSON proof; retry performs a new clear and retains reset history',async t=>{
  const f=fixture(t),old=f.r.start(target,config);let stopped=false;
  await assert.rejects(resource.rebuild(f.r,f.adb,target,f.authorization,{record:r=>{if(r.phase==='clear-returned'){stopped=true;throw Error('Host interruption')}}}),/Host interruption/);

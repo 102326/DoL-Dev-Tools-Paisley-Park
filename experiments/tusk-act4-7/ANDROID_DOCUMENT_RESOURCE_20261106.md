@@ -67,3 +67,17 @@
 本次启动就绪超时仍是保留的真实失败。后续若复现，应围绕该加载阶段采证；没有证据把它与历史 F07、某个 Mod 或 TS 迁移判为同一根因。
 
 原始命令、驱动、context 事件、截图、存档元数据与设备/账本标识仅在本地 `artifacts/android-ts-device-20261106-025112/`。公开摘要只记录结果及文件摘要，不上传这些私人内容。需要复审原始输入时可从该目录手动提供；不能从公开报告反向补造原始证据。
+
+## 后续离线核对：身份差异不自动迁移
+
+后续以 `582d5c4c87b714e905575488dd3da7f1b2835582` 为输入审查生产调用。`game-resource` 将完整 device/inode 纳入摘要；`game-goal` 的新建快照、继续观察前后和派发前核验，以及带原 Store 的 scoped Debug 均复用该核验。`resume` 可先更新 Runtime 状态，继续观察之前才进行原生核验，不能概括为所有恢复都在写 Runtime 前查原生身份。独立只读复核得出相同判断：当前拒绝符合现有合同，是已观察到的可用性限制；现有证据不足以安全地自动接纳当前目录。复核方没有运行测试或访问设备。
+
+另确认了刻意保留的历史恢复边界：已停止/过期 Session 的 Android `reconcile` 按原 attempt、context nonce、provider、contract、request digest 和终态证据结清原动作，受 Runtime 的 owner/generation/预约围栏约束；它不以当前数据证明原实例，不重新执行动作或判 Goal 完成。不能为了统一检查给这条路径追加当前 native snapshot，导致有效的历史回执也无法恢复。本轮现场原回执缺失，仍然没有正向恢复结果；不把此源码复核冒充实机通过。
+
+Linux 官方资料确认存在[动态设备编号](https://docs.kernel.org/admin-guide/devices.html)。这仅支持“编号变化可能有其它原因”，不能证明本次发生了重启/重挂载，也不能从相同 marker 和 inode 追认代次连续。历史记录没有足够的底层卷身份证据，事后采当前挂载信息也无法补造当时的基线。因此本轮不修改代次算法、新旧摘要、旧登记、marker 或 Runtime。
+
+补充的中性回归通过真实生产 `identity`、`snapshot` 和临时 SQLite Runtime 验证三种替身变化：只改设备号、只改 inode、两者都改，marker 及其它事实保持。三者均拒绝，登记和原未决 Effect 不变；恢复原事实后 snapshot 仍可正常读取。它是受控替身验证，不是实机重挂载或真实文件系统克隆实验。
+
+实际 Windows 定向检查：新增用例 **1/1**；随后 `node --no-strip-types --test tests/game-resource.test.cjs tests/game-goal.test.cjs` **61/61**，失败/跳过均为 0。未重跑未受影响的完整本地套件；没有再次连接平板。命令、原始结果与官方资料快照留在本地 `artifacts/native-identity-offline-20261106/`。
+
+下一次正向 Android 验收需要有效的数据边界：能证明独立的获准目标，或走已有、获准且完成必要数据保全的原生重建合同，继续使用原 Store 保留历史。当前 App 操作授权不构成旧数据连续性的证据，设备窗口仍须协调。不会为了本轮测试自行清数据或新增宿主。
