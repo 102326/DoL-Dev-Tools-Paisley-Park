@@ -1,0 +1,58 @@
+{
+  "codeCommit": "d4c09ba089492d36d54445326ef2e6cd21497223",
+  "rootTests": {
+    "total": 539,
+    "passed": 538,
+    "failed": 0,
+    "skipped": 1
+  },
+  "deterministicStartupTests": {
+    "total": 3,
+    "passed": 3,
+    "baselineFailed": 2
+  },
+  "sourceChrome": {
+    "schemaVersion": 1,
+    "mode": "headless",
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "checks": [
+      "CLI launch, external JS/CSS and private observation",
+      "shared Web Action dispatch and independent fixture state/DOM verify one effect",
+      "shared Journey executes Web Action, waits and captures eight bound Chrome checkpoints",
+      "explicit reconnect retains the same document; disconnected operation refuses dispatch",
+      "same-URL reload rejects old document before dispatch",
+      "explicit target selects one of duplicate URLs without changing the decoy",
+      "hash change invalidates old binding and can be explicitly rebound",
+      "same-context URL change between preflight and evaluation cannot click",
+      "closed target does not adopt duplicate page",
+      "retained profile resumes only the original origin and resource snapshot; saved fixture state survives",
+      "effect before lost ACK remains uncertain; reconnect observes once without re-dispatch",
+      "reviewed source update keeps profile and origin; unreviewed resource change refuses; actual new marker verified"
+    ],
+    "browser": "Chrome/156.0.8078.73",
+    "status": "passed"
+  },
+  "floorPackageChrome": {
+    "schemaVersion": 1,
+    "mode": "headless",
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "checks": [
+      "CLI launch, external JS/CSS and private observation",
+      "shared Web Action dispatch and independent fixture state/DOM verify one effect",
+      "shared Journey executes Web Action, waits and captures eight bound Chrome checkpoints",
+      "explicit reconnect retains the same document; disconnected operation refuses dispatch",
+      "same-URL reload rejects old document before dispatch",
+      "explicit target selects one of duplicate URLs without changing the decoy",
+      "hash change invalidates old binding and can be explicitly rebound",
+      "same-context URL change between preflight and evaluation cannot click",
+      "closed target does not adopt duplicate page",
+      "retained profile resumes only the original origin and resource snapshot; saved fixture state survives",
+      "effect before lost ACK remains uncertain; reconnect observes once without re-dispatch",
+      "reviewed source update keeps profile and origin; unreviewed resource change refuses; actual new marker verified"
+    ],
+    "browser": "Chrome/156.0.8078.73",
+    "status": "passed"
+  }
+}
