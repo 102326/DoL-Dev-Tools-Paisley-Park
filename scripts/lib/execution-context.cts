@@ -191,7 +191,7 @@ function create(options:execution.Options, overrides:execution.Overrides = {}, s
     },
   };
   if (options.host === 'chrome') {
-    options={...options,chromeRecord:(require('./host-options.cjs') as {chrome(options:execution.Options,settings:{gameplay:boolean}):{target:targets.Chrome}}).chrome(options,{gameplay:options.gameplay===true})};ctx.options=options;
+    options={...options,chromeRecord:(require('./host-options.cjs') as typeof import('./host-options.cjs')).chrome(options,{gameplay:options.gameplay===true})};ctx.options=options;
     let opened = false;
     ctx.assertForeground = async () => { assertActive(); if (client) await (client as ChromeReader).assertBound(); assertActive(); };
     ctx.ensureWebview = async () => {

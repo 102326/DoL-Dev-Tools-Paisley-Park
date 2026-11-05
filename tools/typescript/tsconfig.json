@@ -27,6 +27,10 @@
     "../../scripts/lib/integration.cts",
     "../../scripts/lib/integration-worker.cts",
     "../../scripts/lib/chrome-host.cts",
-    "../../scripts/lib/execution-context.cts"
+    "../../scripts/lib/execution-context.cts",
+    "../../scripts/lib/pc-http.cts",
+    "../../scripts/lib/pc-session.cts",
+    "../../scripts/lib/chrome-launch.cts",
+    "../../scripts/lib/host-options.cts"
   ]
 }

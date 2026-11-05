@@ -1,4 +1,4 @@
-// Generated from execution-context.cts by TypeScript 6.0.2; source-lf-sha256=f1aea76c24002d2f3b560dfbc80e597184a892d91debb3d7ca5fb7fd95412fdf
+// Generated from execution-context.cts by TypeScript 6.0.2; source-lf-sha256=601a61d41fb53d9b02b57ad594ebeb5e0897d00f726c49a2dfde229db8ffbccb
 "use strict";
 const collectors = require('./collectors.cjs');
 const { connect } = require('./cdp.cjs');
