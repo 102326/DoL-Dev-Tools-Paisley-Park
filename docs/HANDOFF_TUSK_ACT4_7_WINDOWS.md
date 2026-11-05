@@ -45,7 +45,7 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 
 | Mac 证据 | 实际范围 |
 | --- | --- |
-| 最新 Node 全套，cbf1fcd | 546项：545通过、0失败、1项Windows专属句柄行为跳过 |
+| 最新 Node 全套，8c101c5 | 548项：547通过、0失败、1项Windows专属句柄行为跳过 |
 | TS E06 | 34Node+4DOM/43产物，55类型负例、5构建；78定向、548项547通过/1Windows跳过；源码Integration10+GER13、最低Node26独立包78定向及Integration10通过，manifest身份投影回归；见[E06报告](../experiments/tusk-act4-7/typescript/BATCH_E06.md) |
 | TS E05 | Journey/ChromeEvidence，33Node+4DOM/42产物，52类型负例、5构建；70定向/20等待旧对照，源码ChromePC12+GER13、最低Node26无依赖包PC12；见[E05报告](../experiments/tusk-act4-7/typescript/BATCH_E05.md) |
 | TS E04 | Action类型/派发来源合同，31Node+3DOM/38产物，48类型负例、5构建；52定向、五种派发源码旧对照、独立审查15过，源码/最低Node26包GER13/13；见[E04报告](../experiments/tusk-act4-7/typescript/BATCH_E04.md) |
