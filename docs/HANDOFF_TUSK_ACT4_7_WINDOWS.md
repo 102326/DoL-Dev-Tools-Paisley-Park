@@ -1,6 +1,6 @@
 # Paisley Park 7.0 TUSK ACT4 — Windows 接续任务书
 
-日期：2026-11-04。接收方：家用 Windows 开发环境的 Codex。
+更新：2026-11-05。接收方：家用 Windows 开发环境的 Codex。
 
 **任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。Mac 接线已完成，不要重新开发另一套 Runtime；本任务书不是正式发布指令。**
 
@@ -10,13 +10,15 @@
 | --- | --- |
 | 仓库 | [102326/DoL-Dev-Tools-Paisley-Park](https://github.com/102326/DoL-Dev-Tools-Paisley-Park) |
 | 研发分支 | [experiment/tusk-act4-7](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/experiment/tusk-act4-7) |
-| 本次接续基线，含最终13场景脚本与交付报告 | `8863e65d59ad9c1b69a12187dcd642c12d200e4c` |
+| **本次固定代码基线，包含下列全部成果及 typed Skill resolver** | **`10082eff5715e26f086d19310f815c22872b9dfe`** |
+| 上轮 Windows 交接文档 | `01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd` |
+| GER / Evidence 最终13场景脚本与交付报告 | `8863e65d59ad9c1b69a12187dcd642c12d200e4c` |
 | GER / 标准 Evidence 主实现 | `5c132422889d2d3b28877bbf8d6ab19895edaf3c` |
-| 最终生产代码及 Mac 独立包基线 | `eff14d6c8a4344ddbae844b2faf7e92896e38c72` |
+| GER阶段生产代码及对应 Mac 独立包基线 | `eff14d6c8a4344ddbae844b2faf7e92896e38c72` |
 | 上一轮 PC / Journey 接续基线 | `241c77262b560481447dff75903d679bb2fedc2e` |
 | 正式 main，本次交接核对值 | `cfd76a75e6c28efbbdcf447b25679cd9f257ef54` |
 
-固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/8863e65d59ad9c1b69a12187dcd642c12d200e4c)。差异：[上轮接线 → 本次接续基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...8863e65d59ad9c1b69a12187dcd642c12d200e4c)。
+固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/10082eff5715e26f086d19310f815c22872b9dfe)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...10082eff5715e26f086d19310f815c22872b9dfe)、[最近交接 → typed resolver](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd...10082eff5715e26f086d19310f815c22872b9dfe)。
 
 本任务书在上述基线之后提交；它不可能位于其自身所指的旧提交中。Windows 先核对最新远端与基线的差异，记录**实际运行的完整 SHA**，不要把本页中的 SHA 当成永远不变的远端 HEAD。若远端仅增加交接文档，可从确认后的最新研发分支接续；存在新代码时先检查改动及其验证记录。
 
@@ -24,6 +26,7 @@
 
 1. `AGENTS.md`、主 Skill `.agents/skills/dol-dev-tools-paisley-park/SKILL.md`。
 2. [Mac GER / Evidence 报告](../experiments/tusk-act4-7/ger/REPORT.md)、[验证摘要](../experiments/tusk-act4-7/ger/validation-results.json)、[逐文件包清单](../experiments/tusk-act4-7/ger/package-manifest.json)。
+   最新 [typed Skill resolver 验证报告](../experiments/tusk-act4-7/typed-skill/REPORT.md)及[固定10082ef包清单](../experiments/tusk-act4-7/typed-skill/package-manifest.json)；旧GER报告的包身份仍指原eff14d6，不替换历史证据。
 3. [PC_RUNTIME](PC_RUNTIME.md)、[GAMEPLAY](GAMEPLAY.md)、[PROJECT_EXPERIMENTS](PROJECT_EXPERIMENTS.md)、[EVIDENCE_TOOLS](EVIDENCE_TOOLS.md)。
 4. 源码调查读 [GAME_SOURCE](GAME_SOURCE.md)；设备工作读 [DIAGNOSTICS](DIAGNOSTICS.md)、[WORKSHOP](WORKSHOP.md) 与 [Android 探针说明](../experiments/tusk-act4-7/android/README.md)。
 5. 发布包核验读 [RELEASE_PACKAGE](RELEASE_PACKAGE.md)。此前 ACT4 私有历史仓库仅为历史依据，**当前命令和测试不依赖取得该旧仓库**。
@@ -36,18 +39,21 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 
 | Mac 证据 | 实际范围 |
 | --- | --- |
-| Node 全套 | 518项：517通过、0失败、1项Windows专属句柄行为跳过 |
+| 最新 Node 全套，10082ef | 523项：522通过、0失败、1项Windows专属句柄行为跳过 |
+| typed resolver / 安装 / 源码查询定向 | 43项：42通过、1项Windows跳过；构建保护3/3、8个类型负对照全部被拒绝 |
 | Python | 10项：9通过、1项可选Pillow缺失跳过 |
 | 独立包 GER / Evidence | 最低Node26.0.0，真实Chrome，13/13；**自建状态/Recipe/公共元数据** |
 | 独立包原PC流程 | 12/12；覆盖选页、重绑、资源更新与保留进度 |
 | 恢复 | 真正终止派发CLI后，SQLite保留pending，原terminal恢复，购买只一次；停止后reconcile不续期、不完成Goal |
 | 回执容量 | 65条其它标签历史+1条当前记录先RED后GREEN；保留原66 Session回归 |
-| 归档及安装 | eff14d6包319文件逐一对应Git blob；独立安装、resolver、宿主skills/list发现通过 |
-| CI | [eff14d6](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41800367209) 与 [8863e65](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41801537480) 成功；CI是Linux证据 |
+| 最新归档及安装，10082ef | 321文件逐一对应Git blob；最低Node26.0.0且禁用类型剥离，help/version/安装/resolver通过；独立宿主安装前0、forceReload后1、重启后1 |
+| CI | 最新[10082ef](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41962097547)成功；原[eff14d6](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41800367209)与[8863e65](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41801537480)亦成功；CI是Linux证据 |
 
 **Not validated：Windows Chrome、Android SDK/APK/设备/WebView、真实 DoL/Mod/存档与原生业务 profile、真实多区域源码检索质量、当前 Desktop 聊天热重载。** Mac 的合成状态 API 不是游戏源码，Recipe 的通过不证明真实游戏 profile 已支持。
 
 Chrome optional Integration 当前明确不执行：worker 尚不能保持相同文档绑定。通用采集继续可用；这是已说明的能力边界，不因“optional”自动要求本轮全部实现。
+
+最新增量只改Skill位置解析器及开发构建检查：`resolve.cts`是权威源，安装时仍只复制预生成`resolve.cjs`；成功JSON与环境覆盖规则保持，新增有限code/stage/hint，拒绝空版本和畸形JSON。不改GER/Store/Unknown，也不要求普通用户安装TS。普通Debug仍无需安装XState。Mac旧GER/Chrome证据未因这一改动失效；Windows需额外核验下列resolver入口和生成器文件占用/换行行为。
 
 ## 3. 续接权限与不可改变的合同
 
@@ -69,7 +75,7 @@ Chrome optional Integration 当前明确不执行：worker 尚不能保持相同
 ```powershell
 git clone --branch experiment/tusk-act4-7 https://github.com/102326/DoL-Dev-Tools-Paisley-Park.git Paisley-Park-Tusk7
 Set-Location .\Paisley-Park-Tusk7
-$Baseline = '8863e65d59ad9c1b69a12187dcd642c12d200e4c'
+$Baseline = '10082eff5715e26f086d19310f815c22872b9dfe'
 git remote get-url origin
 git fetch origin
 git merge-base --is-ancestor $Baseline HEAD
@@ -106,6 +112,7 @@ node .agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs
 npm test
 npm ci --prefix experiments/weather-report-20261104/source-finder --ignore-scripts --no-audit --no-fund
 node experiments/weather-report-20261104/source-finder/build.cjs --check
+node experiments/weather-report-20261104/source-finder/build-resolver.cjs --check
 node experiments/weather-report-20261104/source-finder/check-types.cjs
 node --test experiments/weather-report-20261104/source-finder/test/build.test.cjs
 
@@ -130,6 +137,7 @@ try {
 重点核验：
 
 - Windows原先跳过的句柄测试实际执行；Node/Python的通过/失败/跳过分别列出，不硬要求Mac相同数量。
+- Skill resolver实际安装后只依赖CJS，使用`node --no-strip-types INSTALLED_RESOLVER`核对六个成功字段和所选工具根；畸形元数据/缺文件/失效覆盖按有限code/stage拒绝，无私人路径回显。生成器的CRLF、类型漂移、部分写入和未知文件保留由3项构建测试验证；Windows的目标文件占用与rename行为尚未实测，失败应保留旧CJS，不放宽完整性或改用运行时TS。
 - 路径空格、Unicode资源、可见/无头、origin/Profile保留、重新绑定与同URL干扰标签、进程退出和端口释放。
 - GER13场景尤其SIGKILL后的真实Windows终止语义、SQLite/WAL与句柄、报价拒绝pending=false、原terminal恢复一次、停止后reconcile不续期/不完成Goal、旧文档拒绝与跨Session围栏。
 - Evidence manifest、目标身份、DOM/CSS/事件/存储/环境/截图/性能，以及缺元数据unknown、Known Good双向比较与不支持项。
@@ -179,7 +187,7 @@ try {
 
 来源和源码夹具分开：发布ZIP按 `.gitattributes` 排除实验，所以Windows同时保留源码工作区供复现，`PAISLEY_TOOL_ROOT` 指向独立解压工具包供实际运行。解压目录不能复用源码node_modules。
 
-Mac eff14d6 ZIP摘要为 `a0b80e12428ab9bb1c60ac1cd3f8fa92088367df59ff6901065c0eea668ea7d1`，它不是GitHub Release资产，也不要求跨机复制。**从8863e65或后续提交重建的ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
+最新Mac包来自固定`10082eff5715e26f086d19310f815c22872b9dfe`，321文件，ZIP摘要`f2704fbdc0b204800ed3b895098f531884aba78bda88d000ec677c4a2f30c38b`，逐文件清单见上方typed-skill记录。原eff14d6包319文件、摘要`a0b80e12428ab9bb1c60ac1cd3f8fa92088367df59ff6901065c0eea668ea7d1`作为旧GER证据保留。它们都不是GitHub Release资产，不要求跨机复制。**从后续文档提交重建ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
 
 用实际选定的完整SHA、新输出名重新归档，避免Windows换行转换：
 
