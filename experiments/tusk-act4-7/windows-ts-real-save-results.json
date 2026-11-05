@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "sourceCommit": "b175c8e0f3bd4f942961554557230b77b947c970",
+  "codePayloadCommit": "cd28b0aba280f986145378d2d5c86b4ee853b5a7",
+  "result": "passed",
+  "scope": "one reviewed native IndexedDB save through production GER in a new blank owned Windows Chrome instance",
+  "environment": {
+    "os": "Windows",
+    "powerShell": "7.6.5",
+    "cliNode": "26.12.1",
+    "chrome": "156.0.8078.80",
+    "mode": "headless",
+    "game": "0.5.12.13",
+    "sugarCube": "2.36.1+34",
+    "gameInputSha256": "0e804505ee6829170936922efce86669387ea17522cd1a3c89c9058edde4e6f8",
+    "recipe": "docs/recipes/dol-save-state.cjs",
+    "recipeSha256": "885d9962e7d9261be54d77ac07bbc065762f7605d8e0485203bdddf9abcef018"
+  },
+  "isolation": {
+    "newBlankProfile": true,
+    "newOrigin": true,
+    "newStore": true,
+    "noCopiedSave": true,
+    "oldStoresTouched": false,
+    "androidUsed": false
+  },
+  "workflow": {
+    "scopeIntents": [
+      "save"
+    ],
+    "candidateCount": 1,
+    "loadOrDeleteCandidate": false,
+    "initialStatus": "active",
+    "initialActions": 0,
+    "requiredCheckpoint": "save-witness",
+    "budget": {
+      "timeoutMs": 600000,
+      "maxActions": 4,
+      "maxObservations": 24,
+      "maxSpend": 0
+    },
+    "productionCoordinator": true,
+    "readOutcomeOverride": false,
+    "debugPreparationActions": 3,
+    "debugUsedForBusinessSave": false,
+    "automaticReplay": false
+  },
+  "resultProof": {
+    "finalStatus": "completed",
+    "actions": 1,
+    "effects": 1,
+    "settledEffects": 1,
+    "pending": false,
+    "spent": 0,
+    "reserved": 0,
+    "originalTerminal": "occurred",
+    "slotInitiallyAbsent": true,
+    "slotRecordsAfter": 1,
+    "independentNativeReadMatches": true,
+    "originalExecutionBindingPreserved": true,
+    "originalDocumentUnchanged": true,
+    "checkpointAfterOperationWitness": true
+  },
+  "commands": {
+    "startExit": 0,
+    "proposeExit": 0,
+    "dispatchExit": 0,
+    "checkpointExit": 0
+  },
+  "evidence": {
+    "preparationCaptures": 3,
+    "finalReadonlyCapture": true,
+    "dom": true,
+    "css": true,
+    "screenshots": true,
+    "connectionWindowEvents": true,
+    "rawLocalOnly": true
+  },
+  "cleanup": {
+    "stopReturned": true,
+    "chromePidGone": true,
+    "httpListenerReleased": true,
+    "cdpListenerReleased": true,
+    "profileRetainedLocally": true,
+    "storeRetainedLocally": true
+  },
+  "harnessErrorsPreserved": [
+    "two unsupported REPL process queries before browser start",
+    "cross-realm object assertion after Goal completion; replaced with field comparisons",
+    "premature cleanup probe before cleanup record; not used as cleanup evidence"
+  ],
+  "notValidated": [
+    "current TS real-game interruption and recovery",
+    "Android in this run",
+    "real-game native save from independent extracted package",
+    "other Gameplay paths and Mod combinations",
+    "Windows Node 26.0.0",
+    "full visual rendering"
+  ],
+  "knownLimitations": [
+    "HTML-only resource service",
+    "historical F07 initial empty-document physical cause Unknown",
+    "historical background screenshot timeout physical cause Unknown"
+  ]
+}

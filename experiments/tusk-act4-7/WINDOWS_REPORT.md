@@ -6,6 +6,8 @@
 
 2026-11-06 补充：[七组 contracts 的 Windows 源码/独立包动态探针](WINDOWS_CONTRACTS_20261106.md)已完成；该批没有占用平板，也没有重新运行本报告的完整套件和基础 PC/GER。
 
+2026-11-06 后续补充：[当前 TS 的真实 DoL 原生保存闭环](WINDOWS_TS_REAL_SAVE_20261106.md)已在新建空白 PC Profile / origin / Store 完成，生产 GER 派发一次、Effect 结清、独立读回一致。没有接触 Android；下方迁移前业务与本次新结果分别保留，不能合并成所有真实游戏路径均通过。
+
 ## 来源与范围
 
 最初接续 `01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd`，形成 Windows 修复 `ff72553ba4ffa933abade391abd1b9b9c39f74d7` 和截图诊断/夹具补充 `f15f92199b7a9af0773a92af6b7dec435a1454c5`。随后获取远端 TS / 启动诊断基线 `8670318c3947ffd0496582c28c0dfc7ebc3e0074`，保留两条历史并安全合并。
@@ -66,7 +68,7 @@ F07 的历史初始空文档原因也仍为 Unknown。当前控制通过只证�
 
 ## Not validated / Known limitations
 
-- 本批合并 TS 后未重新操作 Android、真实 DoL / Mod 或历史 Store。后续须先协调设备独占窗口，UI P1 优先；不得用上面的迁移前证据冒充新基线动态验证。
+- 本报告原批次合并 TS 后未重新操作 Android、真实 DoL / Mod 或历史 Store；后续只读 Android 和新空白 PC 原生保存结果见开头补充。未覆盖的其它设备 / 业务仍需按目标选择，UI P1 优先；不得用迁移前证据冒充新基线动态验证。
 - 后台截图的具体物理触发原因、历史 F07 首败原因仍 Unknown。页面 readyState 或 idb.active 不证明游戏脚本全部就绪；读不到字段时保留 unknown。
 - 尚未在精确 0.5.12.13 源码完成多区域现场对应；本批没有 Shop Buy / Wardrobe Wear、全剧情、全 Mod 组合或完整视觉验收。
 - Kotlin 仅验证自有探针生命周期；设备代理、传输、持久业务提交和同任务性能对照未实现/验证。Bundle 计数不提供这些保证。

@@ -1,10 +1,10 @@
 # Paisley Park 7.0 TUSK ACT4 — Windows 接续任务书
 
-更新：2026-11-05。接收方：家用 Windows 开发环境的 Codex。
+更新：2026-11-06。接收方：家用 Windows 开发环境的 Codex。
 
 **任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。本任务书不是正式发布指令。**
 
-Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记录](../experiments/tusk-act4-7/WINDOWS_REPORT.md)、[新 TS Android 只读复验](../experiments/tusk-act4-7/ANDROID_TS_READONLY_20261105.md)与[七组 contracts 补验](../experiments/tusk-act4-7/WINDOWS_CONTRACTS_20261106.md)。下方“尚待 Windows”的描述保留原 Mac 交接时点；已完成项按对应固定代码和报告去重，不自动重跑。最低 Node26.0.0 的 Windows 运行、真实历史回执及新 TS 真实游戏业务仍有未覆盖范围，不能据中性探针宣布整体7.0可发布。
+Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记录](../experiments/tusk-act4-7/WINDOWS_REPORT.md)、[新 TS Android 只读复验](../experiments/tusk-act4-7/ANDROID_TS_READONLY_20261105.md)、[七组 contracts 补验](../experiments/tusk-act4-7/WINDOWS_CONTRACTS_20261106.md)与[新 TS 真实 DoL 原生保存](../experiments/tusk-act4-7/WINDOWS_TS_REAL_SAVE_20261106.md)。最后一项使用新建空白 PC 环境，生产 GER 保存一次并结清，不触碰 Android 或历史 Store。下方“尚待 Windows”的描述保留原 Mac 交接时点；已完成项按对应固定代码和报告去重，不自动重跑。最低 Node26.0.0 的 Windows 运行、真实历史回执及其它真实游戏业务仍有未覆盖范围，不能据这些代表性结果宣布整体7.0可发布。
 
 完整Node核心TS迁移已完成本机Scoped Done；开发包P2，UI4.2优先级P1。95个原入口全部strict（含9源码载体），另17DOM-only源、21冻结JS输入共46函数体未类型化，运行清单133项。G另3个开发入口，Node Program98项/总133生成产物。详见[完整Mac收口](../experiments/tusk-act4-7/typescript/CLOSEOUT_MAC.md)。尚未完成Windows/Android/真实游戏验收，不能称整体7.0可发布。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
