@@ -1,4 +1,4 @@
-// Generated from chrome-launch.cts by TypeScript 6.0.2; source-lf-sha256=94374ddf27e02c739f401464092ec9e58b46eb4cea64db5af65df6e23f9675d6
+// Generated from chrome-launch.cts by TypeScript 6.0.2; source-lf-sha256=98b366abcec80c7c72ce0a2cece611a10b6eaeaaaa5189f156900697959709b1
 "use strict";
 'use strict';
 // Owned-browser startup adapted from the MIT ACT4 host, fixed history 52a8893.
@@ -80,7 +80,16 @@ async function launch(options) {
             throw fail('PC_LAUNCH_FAILED');
         let pages = [];
         while (Date.now() < deadline && !closed) {
-            pages = (await targets(endpoint, 3000)).filter(p => p.type === 'page' && p.url === url.href);
+            // Only retry a read-only readiness timeout, within the original launch deadline.
+            // No page action, alternate endpoint or existing Session is resumed here.
+            try {
+                pages = (await targets(endpoint, Math.max(1, Math.min(3000, deadline - Date.now())))).filter(p => p.type === 'page' && p.url === url.href);
+            }
+            catch (error) {
+                const e = error;
+                if (e?.code !== 'CDP_DISCOVERY_TIMEOUT' && !(e?.code === 'ETIMEDOUT' && e.cdpStage === 'cdp.discovery') || Date.now() >= deadline)
+                    throw error;
+            }
             if (pages.length === 1)
                 break;
             await pause(50);

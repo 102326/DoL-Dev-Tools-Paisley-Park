@@ -42,7 +42,14 @@ async function launch(options:launcher.Options){
   }
   if(!endpoint||failed||closed)throw fail('PC_LAUNCH_FAILED');
   let pages:Record<string,unknown>[]=[];
-  while(Date.now()<deadline&&!closed){pages=(await targets(endpoint,3000) as Record<string,unknown>[]).filter(p=>p.type==='page'&&p.url===url.href);if(pages.length===1)break;await pause(50)}
+  while(Date.now()<deadline&&!closed){
+   // Only retry a read-only readiness timeout, within the original launch deadline.
+   // No page action, alternate endpoint or existing Session is resumed here.
+   try{pages=(await targets(endpoint,Math.max(1,Math.min(3000,deadline-Date.now()))) as Record<string,unknown>[]).filter(p=>p.type==='page'&&p.url===url.href)}
+   catch(error){const e=error as {code?:unknown;cdpStage?:unknown}|null|undefined;if(e?.code!=='CDP_DISCOVERY_TIMEOUT'&&!(e?.code==='ETIMEDOUT'&&e.cdpStage==='cdp.discovery')||Date.now()>=deadline)throw error}
+   if(pages.length===1)break;
+   await pause(50);
+  }
   if(pages.length!==1||closed)throw fail('PC_TARGET_UNAVAILABLE');
   const target:targetTypes.Chrome={host:'chrome',profileId:createHash('sha256').update(profile).digest('hex'),browserId:socket!.slice('/devtools/browser/'.length),processId:browser.pid!,endpoint,targetId:pages[0].id as string,origin:url.origin,profilePath:profile};
   host=await new ChromeHost(target).open();
