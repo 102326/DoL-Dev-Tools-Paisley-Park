@@ -8,7 +8,7 @@
 
 - A 构建正式化：本机验收完成，代码`0196e86989facae13e765dc3bff58046b53502a7`。隔离开发包、完整Program、5个生成产物、漂移/部分写入/回滚/权限/协作锁检查。
 - B diagnostics/runtime-target：本机验收完成。CJS导出与目标键保留，14类型负对照通过，44定向回归通过；独立包最低Node26和10项Chrome夹具通过；4项构建保护、527项全套中526通过/1Windows跳过。详见[BATCH_AB](BATCH_AB.md)。
-- C CDP/IPC/宿主：进行中。C01的CDP/IPC/worker已通过本机验收，固定代码`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`；532项全套中531通过/1Windows跳过，22类型负例、最低Node26独立包10项Chrome通过。详见[BATCH_C01](BATCH_C01.md)。C02宿主/执行上下文已验收，代码`7d0d91baface643efa43a18cbde9248858905624`；535项中534通过/1Windows跳过，26类型负例、源码Chrome GER13/13、最低Node26包Integration10/10，见[BATCH_C02](BATCH_C02.md)。启动/HTTP/宿主输入继续后续子批。
+- C CDP/IPC/宿主：进行中。C01的CDP/IPC/worker已通过本机验收，固定代码`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`；532项全套中531通过/1Windows跳过，22类型负例、最低Node26独立包10项Chrome通过。详见[BATCH_C01](BATCH_C01.md)。C02宿主/执行上下文已验收，代码`7d0d91baface643efa43a18cbde9248858905624`；535项中534通过/1Windows跳过，26类型负例、源码Chrome GER13/13、最低Node26包Integration10/10，见[BATCH_C02](BATCH_C02.md)。C03启动/HTTP/宿主输入已验收，代码`3e6909fa01a0dfb76868dc4072c3242bd275ff72`；536项中535通过/1Windows跳过，源码与最低Node26独立包PC12/12，见[BATCH_C03](BATCH_C03.md)。Collector等继续下一子批。
 - D 浏览器边界：待实施，原32个静态命中需逐项核对，不凭编译通过勾选。
 - E CLI/Action/Journey/Evidence：待实施。
 - F GER/Session/业务Provider：待实施，源码指纹与旧未决恢复是硬合同。
@@ -16,7 +16,7 @@
 
 ## 核心模块清单
 
-开工运行集合95个CJS。此表记录Node模块迁移；9个权威TS已接入strict构建，整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
+开工运行集合95个CJS。此表记录Node模块迁移；13个权威TS已接入strict构建，整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
 
 | 原运行入口 | Node迁移 | 浏览器边界 |
 | --- | --- | --- |
@@ -37,7 +37,7 @@
 | `scripts/lib/cdp.cjs` | strict构建已接入，C01本机通过 | 未命中该静态模式 |
 | `scripts/lib/chrome-evidence.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/chrome-host.cjs` | strict构建已接入，C02本机通过 | 未命中该静态模式 |
-| `scripts/lib/chrome-launch.cjs` | 待迁移 | 未命中该静态模式 |
+| `scripts/lib/chrome-launch.cjs` | strict构建已接入，C03本机通过 | 未命中该静态模式 |
 | `scripts/lib/collectors.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/css.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/deep.cjs` | 待迁移 | 未命中该静态模式 |
@@ -90,7 +90,7 @@
 | `scripts/lib/game-wardrobe-operation.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/game-wardrobe.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/hitbox-overlay.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/host-options.cjs` | 待迁移 | 未命中该静态模式 |
+| `scripts/lib/host-options.cjs` | strict构建已接入，C03本机通过 | 未命中该静态模式 |
 | `scripts/lib/inspectors.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/install-skill.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/integration-worker.cjs` | strict构建已接入，C01本机通过 | 未命中该静态模式 |
@@ -101,8 +101,8 @@
 | `scripts/lib/native-layout.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/network-lab.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/owned-files.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/pc-http.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/pc-session.cjs` | 待迁移 | 未命中该静态模式 |
+| `scripts/lib/pc-http.cjs` | strict构建已接入，C03本机通过 | 未命中该静态模式 |
+| `scripts/lib/pc-session.cjs` | strict构建已接入，C03本机通过 | 未命中该静态模式 |
 | `scripts/lib/performance-series.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/performance.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/privacy.cjs` | 待迁移 | 未命中该静态模式 |
