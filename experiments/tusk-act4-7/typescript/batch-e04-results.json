@@ -1,0 +1,68 @@
+{
+  "codeCommit": "a443698a30839a8b3dbce8f659d0bf0186e34430",
+  "strictNodeModules": 31,
+  "strictBrowserModules": 3,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 98,
+  "artifacts": 38,
+  "rootTests": {
+    "total": 545,
+    "passed": 544,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 52,
+  "fixedDispatchSourceCases": 5,
+  "independentReviewerTests": 15,
+  "buildProtectionTests": 5,
+  "typeNegatives": 48,
+  "sourceChromeGER": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  },
+  "floorPackageChromeGER": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  },
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownLockedXStateOfflineInstall": true,
+    "xstateResolutionCheckedInsidePackage": true
+  }
+}
