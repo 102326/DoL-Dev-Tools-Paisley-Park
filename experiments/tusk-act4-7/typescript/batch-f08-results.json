@@ -1,0 +1,62 @@
+{
+  "codeCommit": "6a357bfbf8a9400638d269deda4a0d2363740a84",
+  "strictNodeModules": 53,
+  "strictBrowserModules": 8,
+  "frozenBrowserAbiAssets": 3,
+  "frozenUntypedFunctions": 7,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 106,
+  "artifacts": 70,
+  "rootTests": {
+    "total": 574,
+    "passed": 573,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 26,
+  "floorPackageTargetedTests": 26,
+  "buildProtectionTests": 5,
+  "typeNegatives": 89,
+  "independentReviewerTests": 9,
+  "differentialPreparationCases": 20,
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "initialValidationFailures": {
+    "testDouble": "missing Runtime.releaseObject handling; fixed in test only",
+    "restrictedRootTests": {
+      "failed": 2,
+      "cause": "loopback listen EPERM",
+      "authorizedLoopbackRerun": "573 pass, 1 Windows skip"
+    }
+  },
+  "floorPackageChromeGER": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  },
+  "notValidated": [
+    "Windows",
+    "Android WebView/device",
+    "real DoL",
+    "actual native shop or wardrobe execution in Chrome"
+  ]
+}
