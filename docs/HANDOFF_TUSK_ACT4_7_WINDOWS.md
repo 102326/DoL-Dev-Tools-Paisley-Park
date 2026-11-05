@@ -10,6 +10,8 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 
 同日新增：[固定独立包原生导航及保存 Scope](../experiments/tusk-act4-7/WINDOWS_PACKAGE_NATIVE_NAVIGATION_20261106.md)已通过：窄 Scope 零受保护业务调用，另建 navigation/save 请求原生导航一次并结清；本次实际自动保存计数为 0。后续验收按该报告末尾清单区分无设备、实机/历史输入与额外覆盖，不自动扩大全游戏矩阵。
 
+同日新增：[真实 Windows 文件占用与生成器回滚](../experiments/tusk-act4-7/WINDOWS_FILE_LOCK_20261106.md)已通过。新增真实 FileShare.None / Read 用例，完整 G 套件 Windows 6/6；生成器产品逻辑未改。历史 G5 的注入/协作锁证据保留，新结果单列，不改写旧通过范围。最低 Windows Node 26.0.0 仍待新运行时输入；本轮没有下载或切换 Node，也未操作 Android。
+
 完整Node核心TS迁移已完成本机Scoped Done；开发包P2，UI4.2优先级P1。95个原入口全部strict（含9源码载体），另17DOM-only源、21冻结JS输入共46函数体未类型化，运行清单133项。G另3个开发入口，Node Program98项/总133生成产物。详见[完整Mac收口](../experiments/tusk-act4-7/typescript/CLOSEOUT_MAC.md)。尚未完成Windows/Android/真实游戏验收，不能称整体7.0可发布。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序

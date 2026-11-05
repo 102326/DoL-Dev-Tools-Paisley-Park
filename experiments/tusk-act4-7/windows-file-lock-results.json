@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "result": "passed",
+  "baseCommit": "b6833f05b3d9878d6f7aacba40086ed5f29eeb19",
+  "sourceCommit": "f49c343f7b0785f12a38e906fe992767834181b0",
+  "scope": "isolated Windows sharing-lock read/rename refusal and build rollback only",
+  "environment": {
+    "windows": "10.0.26340.0",
+    "powerShell": "7.6.5",
+    "node": "v26.12.1",
+    "typescript": "6.0.2"
+  },
+  "changes": {
+    "authoritativeTest": "tools/typescript/test/build.test.cts",
+    "generatedTest": "tools/typescript/test/build.test.cjs",
+    "testSourceSha256": "cf2455200a2c89d9f45a56a6f0249047ac4769fb7f0accad097d7dcfc0bdabe3",
+    "generatedTestSha256": "4c0d0fef6dc6f08b1c4fb1a0baefce60fd41420954b41d0687d8cc4c91690e56",
+    "generatorImplementationChanged": false,
+    "productionRuntimeChanged": false,
+    "existingFiveChecksPreserved": true,
+    "newWindowsCheckRequiresInstalledPowerShell7": true,
+    "otherPlatformsSkipWindowsCheck": true
+  },
+  "nativeCases": [
+    {
+      "sharing": "None",
+      "fileAccess": "Read",
+      "actualErrorCode": "EBUSY",
+      "syscall": "open",
+      "generatorExit": 1,
+      "old133OutputsExactBytesIntact": true,
+      "holderClosed": true
+    },
+    {
+      "sharing": "Read",
+      "fileAccess": "Read",
+      "existingFileReadable": true,
+      "actualErrorCode": "EPERM",
+      "syscall": "rename",
+      "generatorExit": 1,
+      "earlierCjsFileIdChanged": true,
+      "earlierCjsRollbackBytesExact": true,
+      "old133OutputsExactBytesIntact": true,
+      "rollbackIncomplete": false,
+      "holderClosed": true
+    }
+  ],
+  "recovery": {
+    "afterRealHandleRelease": true,
+    "generateExit": 0,
+    "checkExit": 0,
+    "matchesCleanProgramUnderExistingLfContract": true,
+    "peerPreserved": true
+  },
+  "validation": {
+    "initialFocused": {
+      "pass": 0,
+      "fail": 1,
+      "reason": "final successful-recovery comparison incorrectly required original CRLF bytes"
+    },
+    "correctedFocused": {
+      "pass": 1,
+      "fail": 0
+    },
+    "fixedCommitFullG": {
+      "pass": 6,
+      "fail": 0,
+      "skip": 0
+    },
+    "program": {
+      "nodeModules": 98,
+      "browserModules": 17,
+      "artifacts": 133,
+      "passed": true
+    },
+    "negativeTypeChecks": 125,
+    "negativeTypeChecksPassed": true,
+    "unrelatedLocalNodePythonOrGameSuitesRerun": false
+  },
+  "cleanup": {
+    "allRecordedHoldersClosed": true,
+    "recordedPidsNotAlive": true,
+    "twoVerifiedFixtureRootsRemoved": true,
+    "recursiveCleanupPathChecked": true,
+    "dedicatedWorktreeAndRawEvidenceRetained": true,
+    "originalWorktreeArtifactsUsedAsLockTargets": false,
+    "userFilesTouched": false,
+    "androidAccess": false,
+    "profilesOrStoresOpened": false
+  },
+  "limits": [
+    "individual rename plus known-failure rollback is not a power-loss multi-file transaction",
+    "arbitrary concurrent writers are outside this native-lock experiment",
+    "Windows Node 26.0.0 not installed or tested",
+    "existing F07 and background screenshot physical causes remain Unknown"
+  ],
+  "node26PreparationOnly": {
+    "binaryDownloaded": false,
+    "globalNodeOrPathChanged": false,
+    "officialSource": "https://nodejs.org/en/blog/release/v26.0.0",
+    "archive": "node-v26.0.0-win-x64.zip",
+    "officialArchiveSha256": "d0418640a36096e00bddb57761aa0b1b98f91904ec4ed2b9dd75cbad723becd7",
+    "checksumReadFromOfficialPage": true,
+    "downloadedBytesOrPgpSignatureVerified": false
+  },
+  "remaining": {
+    "necessaryDeviceFreeWithCurrentInputs": [],
+    "newRuntimeInput": [
+      "Windows Node 26.0.0 floor if retained in support declaration"
+    ],
+    "deviceStage": [
+      "current-TS Android document replacement, original receipt and native resource identity seams"
+    ],
+    "historicalInputConditional": [
+      "real CRLF receipts and old Sessions under original contracts"
+    ],
+    "additionalCoverageNotAutomaticallyBlocking": [
+      "more business, device and Mod combinations",
+      "nonzero autosave in real navigation"
+    ]
+  }
+}
