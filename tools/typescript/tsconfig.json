@@ -44,6 +44,10 @@
     "../../scripts/lib/animation.cts",
     "../../scripts/lib/install-skill.cts",
     "../../scripts/lib/doctor.cts",
-    "../../scripts/lib/source-find-cli.cts"
+    "../../scripts/lib/source-find-cli.cts",
+    "../../scripts/lib/support.cts",
+    "../../scripts/lib/hitbox-overlay.cts",
+    "../../scripts/adb-evaluate.cts",
+    "../../scripts/android-inspect.cts"
   ]
 }
