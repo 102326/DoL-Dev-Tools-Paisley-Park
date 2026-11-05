@@ -8,6 +8,8 @@
 
 2026-11-06 后续补充：[当前 TS 的真实 DoL 原生保存闭环](WINDOWS_TS_REAL_SAVE_20261106.md)已在新建空白 PC Profile / origin / Store 完成，生产 GER 派发一次、Effect 结清、独立读回一致。没有接触 Android；下方迁移前业务与本次新结果分别保留，不能合并成所有真实游戏路径均通过。
 
+同日后续：[固定独立包的真实保存与 CLI 中断恢复](WINDOWS_PACKAGE_REAL_SAVE_RECOVERY_20261106.md)在另一新建空白 PC 环境通过。同一原 terminal 在新 CLI 恢复后结清，动作数仍为 1；未使用此前实验的 Profile / Store。
+
 ## 来源与范围
 
 最初接续 `01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd`，形成 Windows 修复 `ff72553ba4ffa933abade391abd1b9b9c39f74d7` 和截图诊断/夹具补充 `f15f92199b7a9af0773a92af6b7dec435a1454c5`。随后获取远端 TS / 启动诊断基线 `8670318c3947ffd0496582c28c0dfc7ebc3e0074`，保留两条历史并安全合并。

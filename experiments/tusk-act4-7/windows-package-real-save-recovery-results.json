@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "result": "passed",
+  "orchestrationSourceCommit": "add12e2e4bb9ed24490c9125d63af052ed7f2bb3",
+  "package": {
+    "sourceCommit": "cd28b0aba280f986145378d2d5c86b4ee853b5a7",
+    "zipSha256": "62b95509df39b010602235922a275d32109000b53a1423bc1b34a599bf39a8da",
+    "manifest": "windows-package-manifest.json",
+    "filesVerifiedBefore": 431,
+    "filesVerifiedAfter": 431,
+    "allFilesUnchanged": true,
+    "externalToSourceTree": true,
+    "noSourceModuleSupplement": true,
+    "cliVersion": "6.1.0",
+    "cliNode": "26.12.1",
+    "typeStrippingDisabled": true,
+    "xstate": "5.33.2",
+    "xstateResolvedInsidePackage": true,
+    "dispatchLoadedPackageModules": 55
+  },
+  "environment": {
+    "os": "Windows",
+    "powerShell": "7.6.5",
+    "chrome": "156.0.8078.80",
+    "mode": "headless",
+    "game": "0.5.12.13",
+    "sugarCube": "2.36.1+34",
+    "htmlSha256": "0e804505ee6829170936922efce86669387ea17522cd1a3c89c9058edde4e6f8",
+    "recipe": "docs/recipes/dol-save-state.cjs",
+    "recipeSha256": "7de40dc61a32a7fdd5db27c66f8095fb76aa2ebacfa82242ec06d6fe19aff52c"
+  },
+  "isolation": {
+    "newBlankProfile": true,
+    "newOrigin": true,
+    "newStore": true,
+    "oldStoresTouched": false,
+    "userDataCopied": false,
+    "androidUsed": false
+  },
+  "workflow": {
+    "scopeIntents": [
+      "save"
+    ],
+    "candidateCount": 1,
+    "budget": {
+      "timeoutMs": 600000,
+      "maxActions": 4,
+      "maxObservations": 24,
+      "maxSpend": 0
+    },
+    "debugPreparationActions": 3,
+    "debugUsedForBusinessSave": false,
+    "productionCoordinator": true,
+    "readOutcomeOverride": false,
+    "initiallyTrueStateDidNotCompleteGoal": true,
+    "requiredCheckpoint": "save-witness"
+  },
+  "interruption": {
+    "boundary": "original occurred terminal received by CDP send; before return to coordinator",
+    "nodeOnlyPreload": true,
+    "pageOrReceiptModifiedByShim": false,
+    "actualProcessExitSignal": "SIGKILL",
+    "originalPageTerminalExactlyMatched": true,
+    "nativeSaveVerifiedBeforeKill": true,
+    "sqlitePendingAfterKill": true,
+    "sqliteEffectStatusAfterKill": "dispatching",
+    "actionsAfterKill": 1
+  },
+  "recovery": {
+    "newCliWithoutFaultPreload": true,
+    "operation": "resume",
+    "sameAttempt": true,
+    "sameContextNonce": true,
+    "sameRequestDigest": true,
+    "sameTerminalEvidence": true,
+    "sameNativeSlotDigest": true,
+    "redispatch": false,
+    "deadlineUnchanged": true
+  },
+  "resultProof": {
+    "status": "completed",
+    "actions": 1,
+    "effects": 1,
+    "settled": 1,
+    "pending": false,
+    "spent": 0,
+    "reserved": 0,
+    "checkpointAfterOperationProof": true
+  },
+  "cliExitCodes": {
+    "start": 0,
+    "propose": 0,
+    "interruptedDispatch": {
+      "code": null,
+      "signal": "SIGKILL"
+    },
+    "status": 0,
+    "resume": 0,
+    "checkpoint": 0
+  },
+  "evidence": {
+    "dom": true,
+    "css": true,
+    "screenshots": true,
+    "connectionWindowEvents": true,
+    "originalDocumentUnchanged": true,
+    "rawLocalOnly": true
+  },
+  "cleanup": {
+    "stopReturned": true,
+    "ownChromePidGone": true,
+    "ownCliPidGone": true,
+    "httpListenerReleased": true,
+    "cdpListenerReleased": true,
+    "initialPidZeroListenerObserved": true,
+    "initialSnapshotNotAccepted": true,
+    "subsequentTcpConnected": false,
+    "subsequentHttpResponded": false,
+    "subsequentTwoSnapshotsNoListeners": true,
+    "extraProcessTermination": false,
+    "physicalCause": "Unknown",
+    "profileAndStoreRetainedLocally": true
+  },
+  "notValidated": [
+    "real-game recovery after document replacement",
+    "browser crash or OS power loss",
+    "Android in this run",
+    "other Gameplay paths or Mod combinations",
+    "Windows Node 26.0.0",
+    "real historical CRLF receipts",
+    "full visual rendering"
+  ],
+  "knownLimitations": [
+    "fault injection only after original terminal was produced",
+    "HTML-only resource service",
+    "historical F07 and background screenshot physical causes Unknown",
+    "transient PID 0 listener physical cause Unknown"
+  ],
+  "nextCandidate": "separate blank PC instance: reviewed native navigation Start2 to Orphanage Intro with appropriate possible auto-save Scope; not run in this batch"
+}
