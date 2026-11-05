@@ -161,3 +161,5 @@ C06目标规范化补修已验收，代码`ea70fd5c1c57498975d78413789a14e453034
 | `scripts/lib/browser-abi/project-operation.cjs` | 冻结JS协议输入；1函数体未类型化，最终旧合同保持性通过 |
 
 最终固定代码`54187d78602dff7d23c91a521be512ee361ac786`；[完整Mac报告](CLOSEOUT_MAC.md)、[固定包manifest](package-core-g-manifest.json)。剩余实施：本机TS线无；待验收：Windows/Android/真实游戏与历史真实回执。F07初始空文档仍未解决，另列已知问题，不作已修声明。
+
+F07后续诊断已交付，固定代码`93facebe38a81ecbe2b6e2d9976ed92ef45b5926`；不重做TS迁移，完整Node632项631过/1跳过，启动控制源码/最低Node包各3组。历史物理根因仍Unknown。见[本批报告](../startup/REPORT.md)，同步/CI后停止。

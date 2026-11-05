@@ -1,0 +1,269 @@
+{
+  "codeCommit": "93facebe38a81ecbe2b6e2d9976ed92ef45b5926",
+  "baselineCommit": "49c15888a7fd1c54c5f50515e2f8c42ae7d9d345",
+  "oldFixedPackage": "54187d78602dff7d23c91a521be512ee361ac786",
+  "physicalCause": "unknown",
+  "naturalFailureReproducedThisBatch": false,
+  "productionChange": "bounded diagnostics only; original timeout, code and identity/refusal preserved",
+  "typeNegatives": 125,
+  "program": {
+    "nodeEntries": 98,
+    "domEntries": 17,
+    "artifacts": 133
+  },
+  "unitRed": {
+    "total": 9,
+    "passedControls": 2,
+    "expectedFailures": 7,
+    "oracle": "four modules from Git 49c15888, loaded without modifying worktree"
+  },
+  "targeted": {
+    "total": 35,
+    "passed": 35,
+    "failed": 0
+  },
+  "sourceNode": {
+    "total": 632,
+    "passed": 631,
+    "failed": 0,
+    "skipped": 1
+  },
+  "floorPackageNode": {
+    "node": "26.0.0",
+    "stripTypes": false,
+    "total": 632,
+    "passed": 631,
+    "failed": 0,
+    "skipped": 1
+  },
+  "baselineChromeRed": {
+    "node": "v26.0.0",
+    "mode": "hold-document",
+    "status": "failed",
+    "start": "refused",
+    "refusalCode": "PC_DOCUMENT_CHANGED",
+    "error": "STARTUP_JOURNAL_MISSING",
+    "checks": [],
+    "counts": {
+      "http-listening": 1,
+      "discovery": 2,
+      "cdp-connect": 1,
+      "context": 1,
+      "frame": 69,
+      "http-connection": 2,
+      "http-request": 1,
+      "gate-held": 1,
+      "start-refused": 1,
+      "gate-release": 1,
+      "http-response-close": 1
+    },
+    "browserCleanup": "confirmed",
+    "serverCleanup": "confirmed",
+    "cleanup": "confirmed",
+    "dropped": 0
+  },
+  "sourceChrome": {
+    "observe": {
+      "node": "v26.13.0",
+      "mode": "observe",
+      "status": "passed",
+      "start": "bound",
+      "checks": [
+        "the same immutable document observes the neutral script without retargeting"
+      ],
+      "counts": {
+        "http-listening": 1,
+        "discovery": 3,
+        "cdp-connect": 2,
+        "context": 3,
+        "frame": 10,
+        "http-connection": 2,
+        "http-request": 3,
+        "http-finish": 3,
+        "http-response-close": 3,
+        "Runtime.executionContextsCleared": 1,
+        "navigated": 1,
+        "Page.frameStoppedLoading": 1,
+        "bound": 1
+      },
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed",
+      "dropped": 0
+    },
+    "hold-document": {
+      "node": "v26.13.0",
+      "mode": "hold-document",
+      "status": "passed",
+      "start": "refused",
+      "refusalCode": "PC_DOCUMENT_CHANGED",
+      "checks": [
+        "withheld document refuses the original uncommitted target without a binding",
+        "startup journal distinguishes an incomplete main response without claiming a document commit"
+      ],
+      "counts": {
+        "http-listening": 1,
+        "discovery": 2,
+        "cdp-connect": 1,
+        "context": 1,
+        "frame": 92,
+        "http-connection": 2,
+        "http-request": 1,
+        "gate-held": 1,
+        "start-refused": 1,
+        "gate-release": 1,
+        "http-response-close": 1
+      },
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed",
+      "dropped": 0
+    },
+    "hold-script": {
+      "node": "v26.13.0",
+      "mode": "hold-script",
+      "status": "passed",
+      "start": "bound",
+      "checks": [
+        "withheld script is distinguishable from an uncommitted initial document",
+        "the same immutable document observes the neutral script without retargeting"
+      ],
+      "counts": {
+        "http-listening": 1,
+        "discovery": 3,
+        "cdp-connect": 2,
+        "context": 3,
+        "frame": 12,
+        "http-connection": 2,
+        "http-request": 3,
+        "http-finish": 3,
+        "http-response-close": 3,
+        "Runtime.executionContextsCleared": 1,
+        "navigated": 1,
+        "gate-held": 1,
+        "bound": 1,
+        "gate-release": 1,
+        "Page.frameStoppedLoading": 1
+      },
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed",
+      "dropped": 0
+    }
+  },
+  "floorChrome": {
+    "observe": {
+      "node": "v26.0.0",
+      "mode": "observe",
+      "status": "passed",
+      "start": "bound",
+      "checks": [
+        "the same immutable document observes the neutral script without retargeting"
+      ],
+      "counts": {
+        "http-listening": 1,
+        "discovery": 3,
+        "cdp-connect": 2,
+        "http-connection": 2,
+        "http-request": 3,
+        "http-finish": 3,
+        "http-response-close": 3,
+        "context": 3,
+        "Runtime.executionContextsCleared": 1,
+        "navigated": 1,
+        "Page.frameStoppedLoading": 1,
+        "frame": 7,
+        "bound": 1
+      },
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed",
+      "dropped": 0
+    },
+    "hold-document": {
+      "node": "v26.0.0",
+      "mode": "hold-document",
+      "status": "passed",
+      "start": "refused",
+      "refusalCode": "PC_DOCUMENT_CHANGED",
+      "checks": [
+        "withheld document refuses the original uncommitted target without a binding",
+        "startup journal distinguishes an incomplete main response without claiming a document commit"
+      ],
+      "counts": {
+        "http-listening": 1,
+        "discovery": 2,
+        "cdp-connect": 1,
+        "context": 1,
+        "frame": 62,
+        "http-connection": 2,
+        "http-request": 1,
+        "gate-held": 1,
+        "start-refused": 1,
+        "gate-release": 1,
+        "http-response-close": 1
+      },
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed",
+      "dropped": 0
+    },
+    "hold-script": {
+      "node": "v26.0.0",
+      "mode": "hold-script",
+      "status": "passed",
+      "start": "bound",
+      "checks": [
+        "withheld script is distinguishable from an uncommitted initial document",
+        "the same immutable document observes the neutral script without retargeting"
+      ],
+      "counts": {
+        "http-listening": 1,
+        "discovery": 3,
+        "cdp-connect": 2,
+        "context": 3,
+        "frame": 10,
+        "http-connection": 2,
+        "http-request": 3,
+        "http-finish": 3,
+        "http-response-close": 3,
+        "gate-held": 1,
+        "Runtime.executionContextsCleared": 1,
+        "navigated": 1,
+        "bound": 1,
+        "gate-release": 1,
+        "Page.frameStoppedLoading": 1
+      },
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed",
+      "dropped": 0
+    }
+  },
+  "relatedChrome": {
+    "sourceGer": 13,
+    "floorIntegration": 10
+  },
+  "package": {
+    "files": 431,
+    "zipSha256": "df3003d9425dee1e292088ad6657ea5b65ac998c8618dda8d664877142d52a6e",
+    "bytesMatchGit": true,
+    "exactExportSet": true,
+    "ownOfflineXState": true,
+    "outsideSourceAncestors": true
+  },
+  "notValidated": [
+    "Windows Chrome and filesystem behavior",
+    "Android/WebView device",
+    "real DoL/source",
+    "real historical pending receipts"
+  ],
+  "knownLimitations": [
+    "historical F07 physical trigger unknown",
+    "journal is best effort and can be absent/incomplete on storage failure",
+    "server-only counts do not prove a document commit or target identity",
+    "preexisting HTTP-close error may replace startup error",
+    "original cooperative build publication limits unchanged"
+  ],
+  "stopAfterSyncAndCI": true
+}
