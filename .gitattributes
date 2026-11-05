@@ -62,3 +62,4 @@ scripts/lib/browser/*.d.cts export-ignore
 scripts/lib/browser-abi/*.cjs text eol=lf
 tests/fixtures/typed-render-baseline/*.cjs text eol=lf
 tests/fixtures/typed-business-bindings-baseline/*.cjs text eol=lf
+tests/fixtures/typed-native-preparation-baseline/*.cjs text eol=lf

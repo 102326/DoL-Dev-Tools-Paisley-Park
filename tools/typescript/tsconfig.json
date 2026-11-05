@@ -69,6 +69,8 @@
     "../../scripts/lib/game-scope.cts",
     "../../scripts/lib/game-resource.cts",
     "../../scripts/lib/game-receipts.cts",
-    "../../scripts/lib/game-native-business-bindings.cts"
+    "../../scripts/lib/game-native-business-bindings.cts",
+    "../../scripts/lib/game-wardrobe-native.cts",
+    "../../scripts/lib/game-shop-native.cts"
   ]
 }
