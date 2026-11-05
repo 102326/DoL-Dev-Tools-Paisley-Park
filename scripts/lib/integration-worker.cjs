@@ -1,4 +1,4 @@
-// Generated from integration-worker.cts by TypeScript 6.0.2; source-lf-sha256=abfe32aac1a8d9ee4161c6b645d2493d869e5ffef039069f62ac354adf7762b0
+// Generated from integration-worker.cts by TypeScript 6.0.2; source-lf-sha256=5d1e7ece2f1b15ca58825bc6be44725a4d522d099fbb58608b82109fa31bbfa8
 "use strict";
 const { parentPort, workerData: rawWorkerData } = require('node:worker_threads');
 const workerData = rawWorkerData;
@@ -56,7 +56,8 @@ async function main() {
             const target = workerData.chromeTarget;
             if (target?.host !== 'chrome' || !target.document || !target.profilePath)
                 throw Error('Original Chrome document required');
-            bound = new (require('./chrome-host.cjs').ChromeHost)(target, { timeoutMs: 3000 });
+            const { ChromeHost } = require('./chrome-host.cjs');
+            bound = new ChromeHost(target, { timeoutMs: 3000 });
             client = bound;
             await bound.open();
         }

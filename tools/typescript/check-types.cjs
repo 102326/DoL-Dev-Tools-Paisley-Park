@@ -9,7 +9,8 @@ try{
   `import type {ResolverCode,ResolverStage,Resolution,ResolverEnvironment} from ${from('.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs')};\n`+
   `import type diagnostic = require(${from('scripts/lib/diagnostics.cjs')});\nimport type target = require(${from('scripts/lib/runtime-target.cjs')});\n`+
   `import type transport = require(${from('scripts/lib/cdp.cjs')});\n`+
-  `import type integration = require(${from('scripts/lib/integration.cjs')});\n`;
+  `import type integration = require(${from('scripts/lib/integration.cjs')});\n`+
+  `import type execution = require(${from('scripts/lib/execution-context.cjs')});\nimport type hostModule = require(${from('scripts/lib/chrome-host.cjs')});\n`;
  const args=['--noEmit','--strict','--target','ES2022','--lib','ES2022','--module','Node16','--moduleResolution','Node16','--types','node','--typeRoots',typeRoots];
  const run=source=>{const file=path.join(tmp,'contracts.mts');fs.writeFileSync(file,imports+source);return spawnSync(process.execPath,[compiler,...args,file],{encoding:'utf8'})};
  const positive=run("const stage: diagnostic.Stage='pc.document'; const code: diagnostic.Code='PC_DOCUMENT_CHANGED';\nconst original: target.Android={serial:'synthetic',package:'com.example.fixture',userId:'0',targetId:123};\nconst host: target.Chrome['host']='chrome'; const kind:Kind='passage';\n");
@@ -21,11 +22,12 @@ try{
   "const transportCode:transport.ErrorCode='RAW_EXCEPTION'; const open:ReturnType<transport.Client['isOpen']>='open'; const event:transport.OnEvent=(method:number)=>{};\n"+
   "async function unvalidated(client:transport.Client){const data=await client.evaluate('1');return data.value}\n"+
   "const packet:integration.Result={status:'available',data:{status:'available'},moduleSha256:['not-a-string']}; const reason:integration.FailureReason=['integration-load-failed']; const status:integration.Status='complete';\n"+
-  "declare const probe:integration.ProbeClient;probe.close();\n");
+  "declare const probe:integration.ProbeClient;probe.close();\ndeclare const bound:execution.BoundClient;bound.close(); const cleanup:execution.CleanupResult['status']='deleted'; const context:execution.Context={};\nasync function rawHost(host:InstanceType<typeof hostModule.ChromeHost>){const data=await host.evaluate('1');return data.value}\n");
  assert.equal(negative.status,2,'negative controls must fail compilation');
- assert.equal((negative.stdout.match(/error TS2322:/g)||[]).length,20,negative.stdout+negative.stderr);
- assert.equal((negative.stdout.match(/error TS18046:/g)||[]).length,1,'raw remote values require narrowing');
- assert.equal((negative.stdout.match(/error TS2339:/g)||[]).length,1,'probe interface does not own connection cleanup');
- assert.equal((negative.stdout.match(/error TS\d+:/g)||[]).length,22,'only the intended contract errors');
- console.log('PASS: CJS paths resolve authoritative types; twenty-two contract/unknown-boundary errors rejected.');
+ assert.equal((negative.stdout.match(/error TS2322:/g)||[]).length,21,negative.stdout+negative.stderr);
+ assert.equal((negative.stdout.match(/error TS18046:/g)||[]).length,2,'raw remote values require narrowing');
+ assert.equal((negative.stdout.match(/error TS2339:/g)||[]).length,2,'probe interface does not own connection cleanup');
+ assert.equal((negative.stdout.match(/error TS2740:/g)||[]).length,1,'contexts require lifecycle ownership');
+ assert.equal((negative.stdout.match(/error TS\d+:/g)||[]).length,26,'only the intended contract errors');
+ console.log('PASS: CJS paths resolve authoritative types; twenty-six contract/unknown-boundary errors rejected.');
 }finally{fs.rmSync(tmp,{recursive:true,force:true})}

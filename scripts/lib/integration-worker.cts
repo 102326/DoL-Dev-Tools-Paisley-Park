@@ -1,5 +1,6 @@
 import type integration from './integration.cjs';
 import type cdp from './cdp.cjs';
+import type targetTypes from './runtime-target.cjs';
 type Phase = 'load'|'contract'|'describe'|'document'|'detect'|'collect'|'redact';
 interface Reader extends integration.ProbeClient { close():void }
 interface BoundReader extends Reader { open():Promise<unknown>; assertBound():Promise<unknown> }
@@ -50,7 +51,8 @@ async function main():Promise<integration.Result> {
       // Never discover/adopt a current document when the owned record is absent.
       const target = workerData.chromeTarget as {host?:unknown;document?:unknown;profilePath?:unknown}|null|undefined;
       if (target?.host !== 'chrome' || !target.document || !target.profilePath) throw Error('Original Chrome document required');
-      bound = new (require('./chrome-host.cjs').ChromeHost)(target, { timeoutMs: 3000 }) as BoundReader;
+      const {ChromeHost}:typeof import('./chrome-host.cjs')=require('./chrome-host.cjs');
+      bound = new ChromeHost(target as unknown as targetTypes.Chrome, { timeoutMs: 3000 });
       client=bound;await bound.open();
     }
     const ctx = { client: { async evaluate(expression:unknown) {

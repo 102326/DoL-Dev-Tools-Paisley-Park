@@ -1,194 +1,292 @@
+// Generated from execution-context.cts by TypeScript 6.0.2; source-lf-sha256=f1aea76c24002d2f3b560dfbc80e597184a892d91debb3d7ca5fb7fd95412fdf
+"use strict";
 const collectors = require('./collectors.cjs');
 const { connect } = require('./cdp.cjs');
-
 async function documentURL(frame, transport) {
-  const unavailable = () => Object.assign(Error('Android document URL unavailable'),{code:'ANDROID_DOCUMENT_URL_UNAVAILABLE'});
-  const url = frame.url, hash = url.indexOf('#');
-  if (Object.hasOwn(frame,'urlFragment')) {
-    const fragment = frame.urlFragment;
-    if (typeof fragment !== 'string' || fragment !== '' && !fragment.startsWith('#') ||
-        hash >= 0 && url.slice(hash) !== fragment) throw unavailable();
-    return hash >= 0 ? url : url + fragment;
-  }
-  if (hash >= 0) return url; // Older peers may report the complete URL in this field.
-  // Missing optional metadata is not proof of an empty fragment. Read browser-owned
-  // history, not page JS, and correlate its current entry with this main-frame URL.
-  let history;
-  try { history = await transport.send('Page.getNavigationHistory'); }
-  catch (error) { if (error?.code === 'CDP_COMMAND_REJECTED') throw unavailable(); throw error; }
-  const index = history?.currentIndex;
-  if (!Array.isArray(history?.entries) || !Number.isSafeInteger(index) || index < 0 || index >= history.entries.length) throw unavailable();
-  const full = history.entries[index]?.url;
-  if (typeof full !== 'string' || !full || full.split('#',1)[0] !== url) throw unavailable();
-  return full;
-}
-
-function create(options, overrides = {}, settings = {}) {
-  const baseAdb = overrides.adb || collectors.android(options);
-  const controller = new AbortController();
-  const deadline = settings.timeoutMs === undefined ? Infinity : (settings.started ?? Date.now()) + settings.timeoutMs;
-  let client, forwardAllocationUncertain = false, actionDispatched = false, finished = false;
-  const cleanup = [];
-  const assertActive = () => {
-    if (controller.signal.aborted || Date.now() >= deadline) throw Object.assign(Error('Journey deadline'), { code: 'ETIMEDOUT' });
-  };
-  const timer = Number.isFinite(deadline) ? setTimeout(() => { controller.abort(); try { client?.close(); } catch {} }, Math.max(1, deadline - Date.now())) : null;
-  const execute = async (args, settings = {}) => {
-    assertActive();
-    const allocating = args[0] === 'forward' && args[1] === 'tcp:0';
-    if (allocating) forwardAllocationUncertain = true;
-    const signal = settings.signal ? AbortSignal.any([settings.signal, controller.signal]) : controller.signal;
-    const result = baseAdb.execute
-      ? await baseAdb.execute(args, { ...settings, timeout: Math.min(settings.timeout ?? 10000, 10000, Math.max(1, deadline - Date.now())), signal })
-      : await baseAdb(...args);
-    // Preserve a returned dynamic port even if the deadline expired during allocation.
-    if (!allocating) assertActive();
-    return result;
-  };
-  const adb = (...args) => execute(args);
-  adb.execute = execute;
-  const ctx = {
-    options, adb, cleanup,
-    cleanupAdb: (...args) => baseAdb.execute ? baseAdb.execute(args, { timeout: 3000 }) : baseAdb(...args),
-    assertActive,
-    markSideEffect() { assertActive(); actionDispatched = true; },
-    resetSideEffect() { actionDispatched = false; },
-    get actionDispatched() { return actionDispatched; },
-    get timedOut() { return controller.signal.aborted; },
-    async pause(ms) {
-      assertActive();
-      await new Promise((resolve, reject) => {
-        const tick = setTimeout(done, ms);
-        function done() { controller.signal.removeEventListener('abort', abort); resolve(); }
-        function abort() { clearTimeout(tick); reject(Object.assign(Error('Journey deadline'), { code: 'ETIMEDOUT' })); }
-        controller.signal.addEventListener('abort', abort, { once: true });
-      });
-      assertActive();
-    },
-    async closeTransport() {
-      let closeFailed = false;
-      try { client?.close(); } catch { closeFailed = true; }
-      client = undefined; ctx.client = undefined;
-      if (ctx.forwardPort) await collectors.removeForward(ctx);
-      ctx.appPid = undefined;
-      if (closeFailed) throw Error('Transport close failed');
-    },
-    async ensureWebview() {
-      assertActive();
-      if (client) { await ctx.client.assertBound(); return ctx.client; }
-      const pid = (await adb('shell', 'pidof', options.package)).toString().trim();
-      if (!/^\d+$/.test(pid)) throw Error('App identity unavailable');
-      await ctx.closeTransport(); assertActive();
-      ctx.appPid = pid;
-      await collectors.forward(ctx);
-      forwardAllocationUncertain = false;
-      assertActive();
-      const capture = settings.captureEvents ? collectors.events() : null;
-      const contexts = new Map(); let binding, invalid;
-      const reject = code => { invalid ||= code; throw Object.assign(Error(invalid), { code: invalid }); };
-      const onEvent = (method, params) => {
-        if (method === 'Runtime.executionContextCreated') contexts.set(params.context.id, params.context);
-        if (method === 'Runtime.executionContextDestroyed') {
-          if (binding && contexts.get(params.executionContextId)?.uniqueId === binding.uniqueContextId) invalid = 'ANDROID_DOCUMENT_CHANGED';
-          contexts.delete(params.executionContextId);
-        }
-        if (method === 'Runtime.executionContextsCleared') { contexts.clear(); if (binding) invalid = 'ANDROID_DOCUMENT_CHANGED'; }
-        if (method === 'Page.navigatedWithinDocument' && binding && params.frameId === binding.frameId) invalid = 'ANDROID_DOCUMENT_CHANGED';
-        capture?.onEvent(method, params);
-      };
-      try {
-        client = await (overrides.connect || connect)(ctx.endpoint, Math.min(settings.connectTimeoutMs ?? 15000, Math.max(1, deadline - Date.now())), onEvent, options.targetId || null);
-        const transport = client;
-        // Never use the default realm after binding; old holders cannot follow a reload.
-        await transport.send('Page.enable'); await transport.send('Runtime.enable'); assertActive();
-        const frame = (await transport.send('Page.getFrameTree')).frameTree?.frame;
-        const defaults = [...contexts.values()].filter(c => c.auxData?.isDefault === true && c.auxData.frameId === frame?.id && typeof c.uniqueId === 'string' && c.uniqueId);
-        if (!frame || !['id', 'loaderId', 'url'].every(k => typeof frame[k] === 'string' && frame[k]) || defaults.length !== 1) throw Error('Android default document unavailable');
-        binding = Object.freeze({ frameId: frame.id, loaderId: frame.loaderId, url: frame.url,
-          documentURL: await documentURL(frame,transport), uniqueContextId: defaults[0].uniqueId });
-        const bound = {
-          async assertBound() {
-            assertActive();
-            if (client !== transport || ctx.client !== bound) throw Object.assign(Error('Android transport binding closed'), { code: 'ANDROID_BINDING_CLOSED' });
-            if (invalid) reject(invalid);
-            if (transport.isOpen && !transport.isOpen()) reject('CDP_CONNECTION_CLOSED');
-            if ((await adb('shell', 'pidof', options.package)).toString().trim() !== pid) reject('ANDROID_TARGET_CHANGED');
-            const current = (await transport.send('Page.getFrameTree')).frameTree?.frame;
-            if (invalid || !current || current.id !== binding.frameId || current.loaderId !== binding.loaderId || current.url !== binding.url) reject('ANDROID_DOCUMENT_CHANGED');
-            let fullURL;
-            try { fullURL = await documentURL(current,transport); }
-            catch (error) { if (error?.code === 'ANDROID_DOCUMENT_URL_UNAVAILABLE') reject(error.code); throw error; }
-            if (invalid || fullURL !== binding.documentURL || ![...contexts.values()].some(c => c.uniqueId === binding.uniqueContextId && c.auxData?.isDefault === true && c.auxData.frameId === binding.frameId)) reject('ANDROID_DOCUMENT_CHANGED');
-            assertActive();
-          },
-          async evaluate(expression) {
-            const result = await bound.send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
-            if (result?.exceptionDetails) throw Error(JSON.stringify(result.exceptionDetails));
-            return result?.result?.value;
-          },
-          async send(method, params = {}, settings) {
-            if (method === 'Runtime.evaluate') {
-              if (params.contextId !== undefined || params.uniqueContextId !== undefined && params.uniqueContextId !== binding.uniqueContextId) throw Error('Wrong Android context');
-              params = { ...params, uniqueContextId: binding.uniqueContextId };
-            }
-            // Reviewed callFunctionOn paths use held objects, never an implicit current context.
-            if (method === 'Runtime.callFunctionOn' && (typeof params.objectId !== 'string' || !params.objectId || params.executionContextId !== undefined || params.uniqueContextId !== undefined)) throw Error('Bound Android object required; no context override');
-            await bound.assertBound();
-            const result = await transport.send(method, params, settings);
-            await bound.assertBound(); return result;
-          },
-        };
-        ctx.client = bound;
-        await bound.assertBound();
-        if (capture) {
-          ctx.channels = { Runtime: 'available' };
-          try { await bound.send('Network.enable'); ctx.channels.Network = 'available'; }
-          catch { assertActive(); ctx.channels.Network = 'unsupported'; }
-          ctx.capture = capture;
-        }
-      } catch (error) {
-        try { await ctx.closeTransport(); }
-        catch (cleanupError) { throw new AggregateError([error, cleanupError], 'Android document binding and cleanup failed'); }
+    const unavailable = () => Object.assign(Error('Android document URL unavailable'), { code: 'ANDROID_DOCUMENT_URL_UNAVAILABLE' });
+    const url = frame.url, hash = url.indexOf('#');
+    if (Object.hasOwn(frame, 'urlFragment')) {
+        const fragment = frame.urlFragment;
+        if (typeof fragment !== 'string' || fragment !== '' && !fragment.startsWith('#') ||
+            hash >= 0 && url.slice(hash) !== fragment)
+            throw unavailable();
+        return hash >= 0 ? url : url + fragment;
+    }
+    if (hash >= 0)
+        return url; // Older peers may report the complete URL in this field.
+    // Missing optional metadata is not proof of an empty fragment. Read browser-owned
+    // history, not page JS, and correlate its current entry with this main-frame URL.
+    let history;
+    try {
+        history = await transport.send('Page.getNavigationHistory');
+    }
+    catch (error) {
+        if (error?.code === 'CDP_COMMAND_REJECTED')
+            throw unavailable();
         throw error;
-      }
-      return ctx.client;
-    },
-    async finish() {
-      if (finished) return [];
-      finished = true;
-      if (timer) clearTimeout(timer);
-      controller.abort();
-      const results = [];
-      for (const restore of cleanup.reverse()) {
-        try { await restore(); results.push({ status: 'completed' }); }
-        catch { results.push({ status: 'failed', reason: 'restore-failed-or-conflict' }); }
-      }
-      try { await ctx.closeTransport(); results.push({ status: 'completed', resource: 'own CDP transport' }); }
-      catch { results.push({ status: 'failed', resource: 'own CDP transport' }); }
-      if (forwardAllocationUncertain) results.push({ status: 'failed', resource: 'ADB forward allocation', reason: 'ownership-unknown; no unrelated forwards removed' });
-      return results;
-    },
-  };
-  if (options.host === 'chrome') {
-    options={...options,chromeRecord:require('./host-options.cjs').chrome(options,{gameplay:options.gameplay===true})};ctx.options=options;
-    let opened = false;
-    ctx.assertForeground = async () => { assertActive(); if (client) await client.assertBound(); assertActive(); };
-    ctx.ensureWebview = async () => {
-      assertActive();
-      if (client) { await client.assertBound(); assertActive(); return client; }
-      if (opened) throw Object.assign(Error('Chrome transport closed; no automatic reconnect'),{code:'PC_DOCUMENT_CHANGED'});
-      opened = true;
-      ctx.cdpCaptureStart = new Date().toISOString();
-      client = overrides.chromeHostFactory ? overrides.chromeHostFactory(options.chromeRecord.target) : new (require('./chrome-host.cjs').ChromeHost)(options.chromeRecord.target,{assertActive,timeoutMs:Math.max(1,Math.min(5000,deadline-Date.now()))});
-      try {
-        await client.open(); assertActive();
-        ctx.client = client; ctx.capture = client.capture; ctx.channels = {Runtime:'available',Network:'available'};
-        return client;
-      } catch (error) { client?.close(); client = undefined; throw error; }
-    };
-    ctx.closeTransport = async () => { client?.close(); client = undefined; ctx.client = undefined; };
-  }
-  return ctx;
+    }
+    const value = history;
+    const index = value?.currentIndex;
+    if (!Array.isArray(value?.entries) || !Number.isSafeInteger(index) || index < 0 || index >= value.entries.length)
+        throw unavailable();
+    const full = value.entries[index]?.url;
+    if (typeof full !== 'string' || !full || full.split('#', 1)[0] !== url)
+        throw unavailable();
+    return full;
 }
-
-module.exports = { create, documentURL };
+function create(options, overrides = {}, settings = {}) {
+    const baseAdb = overrides.adb || collectors.android(options);
+    const controller = new AbortController();
+    const deadline = settings.timeoutMs === undefined ? Infinity : (settings.started ?? Date.now()) + settings.timeoutMs;
+    let client, forwardAllocationUncertain = false, actionDispatched = false, finished = false;
+    const cleanup = [];
+    const assertActive = () => {
+        if (controller.signal.aborted || Date.now() >= deadline)
+            throw Object.assign(Error('Journey deadline'), { code: 'ETIMEDOUT' });
+    };
+    const timer = Number.isFinite(deadline) ? setTimeout(() => { controller.abort(); try {
+        client?.close();
+    }
+    catch { } }, Math.max(1, deadline - Date.now())) : null;
+    const execute = async (args, settings = {}) => {
+        assertActive();
+        const allocating = args[0] === 'forward' && args[1] === 'tcp:0';
+        if (allocating)
+            forwardAllocationUncertain = true;
+        const signal = settings.signal ? AbortSignal.any([settings.signal, controller.signal]) : controller.signal;
+        const result = baseAdb.execute
+            ? await baseAdb.execute(args, { ...settings, timeout: Math.min(settings.timeout ?? 10000, 10000, Math.max(1, deadline - Date.now())), signal })
+            : await baseAdb(...args);
+        // Preserve a returned dynamic port even if the deadline expired during allocation.
+        if (!allocating)
+            assertActive();
+        return result;
+    };
+    const adb = (...args) => execute(args);
+    adb.execute = execute;
+    const ctx = {
+        options, adb, cleanup,
+        cleanupAdb: (...args) => baseAdb.execute ? baseAdb.execute(args, { timeout: 3000 }) : baseAdb(...args),
+        assertActive,
+        markSideEffect() { assertActive(); actionDispatched = true; },
+        resetSideEffect() { actionDispatched = false; },
+        get actionDispatched() { return actionDispatched; },
+        get timedOut() { return controller.signal.aborted; },
+        async pause(ms) {
+            assertActive();
+            await new Promise((resolve, reject) => {
+                const tick = setTimeout(done, ms);
+                function done() { controller.signal.removeEventListener('abort', abort); resolve(); }
+                function abort() { clearTimeout(tick); reject(Object.assign(Error('Journey deadline'), { code: 'ETIMEDOUT' })); }
+                controller.signal.addEventListener('abort', abort, { once: true });
+            });
+            assertActive();
+        },
+        async closeTransport() {
+            let closeFailed = false;
+            try {
+                client?.close();
+            }
+            catch {
+                closeFailed = true;
+            }
+            client = undefined;
+            ctx.client = undefined;
+            if (ctx.forwardPort)
+                await collectors.removeForward(ctx);
+            ctx.appPid = undefined;
+            if (closeFailed)
+                throw Error('Transport close failed');
+        },
+        async ensureWebview() {
+            assertActive();
+            if (client) {
+                await ctx.client.assertBound();
+                return ctx.client;
+            }
+            const pid = (await adb('shell', 'pidof', options.package)).toString().trim();
+            if (!/^\d+$/.test(pid))
+                throw Error('App identity unavailable');
+            await ctx.closeTransport();
+            assertActive();
+            ctx.appPid = pid;
+            await collectors.forward(ctx);
+            forwardAllocationUncertain = false;
+            assertActive();
+            const capture = settings.captureEvents ? collectors.events() : null;
+            const contexts = new Map();
+            let binding, invalid;
+            const reject = (code) => { invalid ||= code; throw Object.assign(Error(invalid), { code: invalid }); };
+            const onEvent = (method, raw) => {
+                const params = raw;
+                if (method === 'Runtime.executionContextCreated')
+                    contexts.set(params.context.id, params.context);
+                if (method === 'Runtime.executionContextDestroyed') {
+                    if (binding && contexts.get(params.executionContextId)?.uniqueId === binding.uniqueContextId)
+                        invalid = 'ANDROID_DOCUMENT_CHANGED';
+                    contexts.delete(params.executionContextId);
+                }
+                if (method === 'Runtime.executionContextsCleared') {
+                    contexts.clear();
+                    if (binding)
+                        invalid = 'ANDROID_DOCUMENT_CHANGED';
+                }
+                if (method === 'Page.navigatedWithinDocument' && binding && params.frameId === binding.frameId)
+                    invalid = 'ANDROID_DOCUMENT_CHANGED';
+                capture?.onEvent(method, params);
+            };
+            try {
+                client = await (overrides.connect || connect)(ctx.endpoint, Math.min(settings.connectTimeoutMs ?? 15000, Math.max(1, deadline - Date.now())), onEvent, options.targetId || null);
+                const transport = client;
+                // Never use the default realm after binding; old holders cannot follow a reload.
+                await transport.send('Page.enable');
+                await transport.send('Runtime.enable');
+                assertActive();
+                const frame = (await transport.send('Page.getFrameTree')).frameTree?.frame;
+                const defaults = [...contexts.values()].filter(c => c.auxData?.isDefault === true && c.auxData.frameId === frame?.id && typeof c.uniqueId === 'string' && c.uniqueId);
+                if (!frame || !['id', 'loaderId', 'url'].every(k => typeof frame[k] === 'string' && frame[k]) || defaults.length !== 1)
+                    throw Error('Android default document unavailable');
+                binding = Object.freeze({ frameId: frame.id, loaderId: frame.loaderId, url: frame.url,
+                    documentURL: await documentURL(frame, transport), uniqueContextId: defaults[0].uniqueId });
+                const bound = {
+                    async assertBound() {
+                        assertActive();
+                        if (client !== transport || ctx.client !== bound)
+                            throw Object.assign(Error('Android transport binding closed'), { code: 'ANDROID_BINDING_CLOSED' });
+                        if (invalid)
+                            reject(invalid);
+                        if (transport.isOpen && !transport.isOpen())
+                            reject('CDP_CONNECTION_CLOSED');
+                        if ((await adb('shell', 'pidof', options.package)).toString().trim() !== pid)
+                            reject('ANDROID_TARGET_CHANGED');
+                        const current = (await transport.send('Page.getFrameTree')).frameTree?.frame;
+                        if (invalid || !current || current.id !== binding.frameId || current.loaderId !== binding.loaderId || current.url !== binding.url)
+                            return reject('ANDROID_DOCUMENT_CHANGED');
+                        let fullURL;
+                        try {
+                            fullURL = await documentURL(current, transport);
+                        }
+                        catch (error) {
+                            if (error?.code === 'ANDROID_DOCUMENT_URL_UNAVAILABLE')
+                                reject('ANDROID_DOCUMENT_URL_UNAVAILABLE');
+                            throw error;
+                        }
+                        if (invalid || fullURL !== binding.documentURL || ![...contexts.values()].some(c => c.uniqueId === binding.uniqueContextId && c.auxData?.isDefault === true && c.auxData.frameId === binding.frameId))
+                            reject('ANDROID_DOCUMENT_CHANGED');
+                        assertActive();
+                    },
+                    async evaluate(expression) {
+                        const result = await bound.send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
+                        if (result?.exceptionDetails)
+                            throw Error(JSON.stringify(result.exceptionDetails));
+                        return result?.result?.value;
+                    },
+                    async send(method, params = {}, settings) {
+                        if (method === 'Runtime.evaluate') {
+                            if (params.contextId !== undefined || params.uniqueContextId !== undefined && params.uniqueContextId !== binding.uniqueContextId)
+                                throw Error('Wrong Android context');
+                            params = { ...params, uniqueContextId: binding.uniqueContextId };
+                        }
+                        // Reviewed callFunctionOn paths use held objects, never an implicit current context.
+                        if (method === 'Runtime.callFunctionOn' && (typeof params.objectId !== 'string' || !params.objectId || params.executionContextId !== undefined || params.uniqueContextId !== undefined))
+                            throw Error('Bound Android object required; no context override');
+                        await bound.assertBound();
+                        const result = await transport.send(method, params, settings);
+                        await bound.assertBound();
+                        return result;
+                    },
+                };
+                ctx.client = bound;
+                await bound.assertBound();
+                if (capture) {
+                    ctx.channels = { Runtime: 'available' };
+                    try {
+                        await bound.send('Network.enable');
+                        ctx.channels.Network = 'available';
+                    }
+                    catch {
+                        assertActive();
+                        ctx.channels.Network = 'unsupported';
+                    }
+                    ctx.capture = capture;
+                }
+            }
+            catch (error) {
+                try {
+                    await ctx.closeTransport();
+                }
+                catch (cleanupError) {
+                    throw new AggregateError([error, cleanupError], 'Android document binding and cleanup failed');
+                }
+                throw error;
+            }
+            return ctx.client;
+        },
+        async finish() {
+            if (finished)
+                return [];
+            finished = true;
+            if (timer)
+                clearTimeout(timer);
+            controller.abort();
+            const results = [];
+            for (const restore of cleanup.reverse()) {
+                try {
+                    await restore();
+                    results.push({ status: 'completed' });
+                }
+                catch {
+                    results.push({ status: 'failed', reason: 'restore-failed-or-conflict' });
+                }
+            }
+            try {
+                await ctx.closeTransport();
+                results.push({ status: 'completed', resource: 'own CDP transport' });
+            }
+            catch {
+                results.push({ status: 'failed', resource: 'own CDP transport' });
+            }
+            if (forwardAllocationUncertain)
+                results.push({ status: 'failed', resource: 'ADB forward allocation', reason: 'ownership-unknown; no unrelated forwards removed' });
+            return results;
+        },
+    };
+    if (options.host === 'chrome') {
+        options = { ...options, chromeRecord: require('./host-options.cjs').chrome(options, { gameplay: options.gameplay === true }) };
+        ctx.options = options;
+        let opened = false;
+        ctx.assertForeground = async () => { assertActive(); if (client)
+            await client.assertBound(); assertActive(); };
+        ctx.ensureWebview = async () => {
+            assertActive();
+            if (client) {
+                await client.assertBound();
+                assertActive();
+                return client;
+            }
+            if (opened)
+                throw Object.assign(Error('Chrome transport closed; no automatic reconnect'), { code: 'PC_DOCUMENT_CHANGED' });
+            opened = true;
+            ctx.cdpCaptureStart = new Date().toISOString();
+            const chrome = overrides.chromeHostFactory ? overrides.chromeHostFactory(options.chromeRecord.target) : new (require('./chrome-host.cjs').ChromeHost)(options.chromeRecord.target, { assertActive, timeoutMs: Math.max(1, Math.min(5000, deadline - Date.now())) });
+            client = chrome;
+            try {
+                await chrome.open();
+                assertActive();
+                ctx.client = chrome;
+                ctx.capture = chrome.capture;
+                ctx.channels = { Runtime: 'available', Network: 'available' };
+                return chrome;
+            }
+            catch (error) {
+                client?.close();
+                client = undefined;
+                throw error;
+            }
+        };
+        ctx.closeTransport = async () => { client?.close(); client = undefined; ctx.client = undefined; };
+    }
+    return ctx;
+}
+const execution = { create, documentURL };
+module.exports = execution;

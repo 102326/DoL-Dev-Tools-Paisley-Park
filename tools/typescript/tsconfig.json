@@ -25,6 +25,8 @@
     "../../scripts/lib/runtime-target.cts",
     "../../scripts/lib/cdp.cts",
     "../../scripts/lib/integration.cts",
-    "../../scripts/lib/integration-worker.cts"
+    "../../scripts/lib/integration-worker.cts",
+    "../../scripts/lib/chrome-host.cts",
+    "../../scripts/lib/execution-context.cts"
   ]
 }

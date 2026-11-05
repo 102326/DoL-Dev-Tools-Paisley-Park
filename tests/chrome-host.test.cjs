@@ -1,6 +1,30 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const {ChromeHost}=require('../scripts/lib/chrome-host.cjs');
+test('browser identity requires real string metadata rather than coercible arrays',async t=>{
+ const saved=global.fetch;t.after(()=>{global.fetch=saved});
+ const host=Object.create(ChromeHost.prototype);host.target={processId:process.pid,endpoint:'http://127.0.0.1:9222',browserId:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'};host.timeoutMs=1000;
+ const good={Browser:'Chrome/Fixture',webSocketDebuggerUrl:'ws://127.0.0.1:9222/devtools/browser/'+host.target.browserId};
+ for(const bad of [{...good,Browser:[good.Browser]},{...good,webSocketDebuggerUrl:[good.webSocketDebuggerUrl]}]){
+  global.fetch=async()=>({ok:true,json:async()=>bad});await assert.rejects(host.verifyBrowser(),{code:'PC_BROWSER_METADATA_INVALID'});
+ }
+ global.fetch=async()=>({ok:true,json:async()=>good});assert.equal(await host.verifyBrowser(),'Chrome/Fixture');
+});
+test('execution-context events cannot store scalar values as context objects',()=>{
+ const host=Object.create(ChromeHost.prototype);host.capture={onEvent(){}};host.contexts=new Map();host.binding=null;
+ assert.throws(()=>host.onEvent('Runtime.executionContextCreated',{context:'scalar'}),{code:'CDP_INVALID_RESPONSE'});assert.equal(host.contexts.size,0);
+ const context={id:1,uniqueId:'context',auxData:{isDefault:true,frameId:'frame'},origin:'http://127.0.0.1:8000'};
+ host.onEvent('Runtime.executionContextCreated',{context});assert.equal(host.contexts.get(1),context);
+});
+test('malformed frame metadata invalidates an existing binding permanently',async()=>{
+ const host=Object.create(ChromeHost.prototype);let malformed=true;
+ host.assertActive=()=>{};host.verifyBrowser=async()=>{};
+ host.binding={frameId:'frame',loaderId:'loader',url:'http://127.0.0.1:18767/index.html',uniqueContextId:'context'};
+ host.contexts=new Map([[1,{uniqueId:'context'}]]);
+ host.client={isOpen:()=>true,async send(){return malformed?{frameTree:{frame:[]}}:{frameTree:{frame:{id:'frame',loaderId:'loader',url:host.binding.url,urlFragment:''}}}}};
+ await assert.rejects(host.assertBound(),{code:'PC_DOCUMENT_CHANGED'});
+ malformed=false;await assert.rejects(host.assertBound(),{code:'PC_DOCUMENT_CHANGED'});
+});
 test('same-context URL change after preflight prevents expression side effects',async()=>{
  let clicks=0;const location={href:'http://127.0.0.1:18767/index.html'};
  const host=Object.create(ChromeHost.prototype);host.binding={url:location.href,uniqueContextId:'fixture-context'};

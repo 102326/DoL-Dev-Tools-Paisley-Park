@@ -17,6 +17,7 @@ const fields = ['action','type','selector','value','x','y','degrees'];
 const entries = {
   PC_DOCUMENT_CHANGED: ['pc.document','The original document binding is invalid. Preserve pending effects; a fresh binding is for new work, not settlement or automatic replay.'],
   PC_TARGET_UNAVAILABLE: ['pc.target','The exact owned page is unavailable. Inspect pc-pages; no replacement page was adopted.'],
+  PC_BROWSER_METADATA_INVALID: ['pc.browser','The original browser identity response is malformed. Inspect the owned endpoint; this does not prove a device fault or process change. No other browser was adopted.'],
   PC_BROWSER_UNAVAILABLE: ['pc.browser','The original owned browser is unavailable. Inspect its local instance records; no other browser was adopted.'],
   PC_BROWSER_IDENTITY_CHANGED: ['pc.browser','The live browser, endpoint or Profile differs from the original record. Preserve original execution evidence; do not retarget.'],
   PC_ACTION_UNSUPPORTED: ['pc.action','Use reviewed Web actions for Chrome; native Android actions require their explicit Android target.'],

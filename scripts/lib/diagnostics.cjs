@@ -1,4 +1,4 @@
-// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=f47cf6798105eb790527d228af69eb94ad8465d6c2ef2feba80663cd005671ed
+// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=58b78cf615e9d8bcf2d1e6e96f7a3f18df3955f2f7b407a5a7253422118fd842
 "use strict";
 // Public diagnostic metadata is finite; page messages, input and paths never pass through.
 const methods = new Set(['Runtime.evaluate', 'Runtime.callFunctionOn', 'Runtime.getProperties', 'Runtime.enable',
@@ -9,6 +9,7 @@ const fields = ['action', 'type', 'selector', 'value', 'x', 'y', 'degrees'];
 const entries = {
     PC_DOCUMENT_CHANGED: ['pc.document', 'The original document binding is invalid. Preserve pending effects; a fresh binding is for new work, not settlement or automatic replay.'],
     PC_TARGET_UNAVAILABLE: ['pc.target', 'The exact owned page is unavailable. Inspect pc-pages; no replacement page was adopted.'],
+    PC_BROWSER_METADATA_INVALID: ['pc.browser', 'The original browser identity response is malformed. Inspect the owned endpoint; this does not prove a device fault or process change. No other browser was adopted.'],
     PC_BROWSER_UNAVAILABLE: ['pc.browser', 'The original owned browser is unavailable. Inspect its local instance records; no other browser was adopted.'],
     PC_BROWSER_IDENTITY_CHANGED: ['pc.browser', 'The live browser, endpoint or Profile differs from the original record. Preserve original execution evidence; do not retarget.'],
     PC_ACTION_UNSUPPORTED: ['pc.action', 'Use reviewed Web actions for Chrome; native Android actions require their explicit Android target.'],
