@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "lib": [
+      "ES2022"
+    ],
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "strict": true,
+    "noEmit": true,
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "lf"
+  },
+  "files": [
+    "../../scripts/lib/source-find.cts",
+    "../../.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cts",
+    "../../scripts/lib/diagnostics.cts",
+    "../../scripts/lib/runtime-target.cts"
+  ]
+}

@@ -26,16 +26,16 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 无法准确识别的异常仍报告原因未知，不猜测根因。显式环境覆盖优先于位置记录，但不会绕过其它安装文件的完整性检查；成功路径按原合同返回工具根目录。
 
-维护者编辑 `scripts/resolve.cts`（本仓库Skill目录下），使用已有隔离编译依赖生成 `resolve.cjs`；使用者和已安装Skill只运行预生成CJS，不需要TS编译器或loader。源码工作区的检查命令：
+维护者在源码仓库编辑 `scripts/resolve.cts`（Skill目录下），使用隔离开发包生成 `resolve.cjs`；权威TS与开发工具不随运行包分发；使用者和已安装Skill只运行预生成CJS，不需要TS编译器或loader。源码工作区的检查命令：
 
 ```sh
-npm ci --prefix experiments/weather-report-20261104/source-finder --ignore-scripts --no-audit --no-fund
-node experiments/weather-report-20261104/source-finder/build-resolver.cjs --check
+npm ci --prefix tools/typescript --ignore-scripts --no-audit --no-fund
+node tools/typescript/build.cjs --check
 # 修改权威TS后才生成，并审查对应CJS差异
-node experiments/weather-report-20261104/source-finder/build-resolver.cjs --write-production
+node tools/typescript/build.cjs --write-production
 ```
 
-开发检查使用锁定TypeScript6.0.2；`--check`不改写resolver或清理目录。生成失败保留原CJS，不把部分输出当成成功安装。完整实验与跨平台边界见[Windows接续任务书](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/experiment/tusk-act4-7/docs/HANDOFF_TUSK_ACT4_7_WINDOWS.md)。这不是已发布6.1.0包的行为追认。
+开发检查使用锁定TypeScript6.0.2；`--check`不改写resolver或清理目录。完整Program检查四个Node模块，CJS入口及导出保持兼容。生成使用协作构建锁、权限保留与多文件失败回滚；外部编辑不受原子CAS保护，不在生成时手改产物。生成失败保留现场，不把部分输出当成成功安装。旧实验命令仍转接正式构建。完整实验与跨平台边界见[Windows接续任务书](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/experiment/tusk-act4-7/docs/HANDOFF_TUSK_ACT4_7_WINDOWS.md)。这不是已发布6.1.0包的行为追认。
 
 ## 运行前提
 

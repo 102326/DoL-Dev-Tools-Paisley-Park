@@ -11,3 +11,4 @@ __pycache__/
 *.apk
 *.keystore
 *.jks
+.paisley-ts-*/

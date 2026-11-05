@@ -1,0 +1,19 @@
+{
+  "name": "paisley-typescript-tools",
+  "version": "0.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "node build.cjs --check",
+    "generate": "node build.cjs --write-production",
+    "check-types": "node check-types.cjs",
+    "test": "node --test test/*.test.cjs"
+  },
+  "engines": {
+    "node": ">=26.0.0"
+  },
+  "devDependencies": {
+    "typescript": "6.0.2",
+    "@types/node": "25.9.5"
+  }
+}
