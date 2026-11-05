@@ -1,4 +1,4 @@
-// Generated from pc-session.cts by TypeScript 6.0.2; source-lf-sha256=8e022017a25e58d991360e6f601173ee7fe321f00fcc7945fa50b8cb3c7b9b67
+// Generated from pc-session.cts by TypeScript 6.0.2; source-lf-sha256=08d89bafc4b46740ccb71c58d8957e82771ba83ffa12acf84a8d00c3b17099a7
 "use strict";
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), { createHash, randomUUID } = require('node:crypto');
@@ -72,6 +72,14 @@ async function start(options) {
         browser = await require('./chrome-launch.cjs').launch({ out: path.join(output, 'chrome'), executable: options.chrome, url: server.url, mode: options.mode, resourceDigest: bundle.digest, resume, allowResourceUpdate: options['allow-resource-update'] === 'yes' });
     }
     catch (e) {
+        // Best-effort evidence must neither expose raw errors nor replace the launch
+        // failure. Exclusive creation preserves peer files; HTTP cleanup still runs.
+        try {
+            save(path.join(output, 'startup-failure.json'), { schemaVersion: 1, phase: 'launch-refused-before-http-shutdown', readyRecordReturned: false,
+                diagnostic: require('./diagnostics.cjs').describe(e) ?? { code: 'PC_START_FAILED', stage: 'pc.start' },
+                http: server.startupProgress?.() ?? null, httpDoesNotProveDocumentCommit: true });
+        }
+        catch { /* Original failure and owned cleanup take precedence. */ }
         await server.close();
         throw e;
     }

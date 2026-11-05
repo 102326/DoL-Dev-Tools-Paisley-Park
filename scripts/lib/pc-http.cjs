@@ -1,4 +1,4 @@
-// Generated from pc-http.cts by TypeScript 6.0.2; source-lf-sha256=aa2f31116a101f49b8c7ced0adfb14379a00d069cd0297ff32eaeb90c1585974
+// Generated from pc-http.cts by TypeScript 6.0.2; source-lf-sha256=aff46ebd0bbd2c1f4c47175b146776bde3e20cf558c39b59e69e5bb9e0fcdd6d
 "use strict";
 'use strict';
 const fs = require('node:fs');
@@ -74,6 +74,11 @@ async function serve(bundle, port) {
     if (!Number.isSafeInteger(port) || port < 1024 || port > 65535)
         throw error();
     const authority = '127.0.0.1:' + port;
+    const progress = { connections: 0, requests: 0, mainGetRequests: 0, mainResponsesFinished: 0, mainResponsesClosedEarly: 0, truncated: false };
+    const increment = (key) => { if (progress[key] < 65535)
+        progress[key]++;
+    else
+        progress.truncated = true; };
     const server = http.createServer((req, res) => {
         if (req.headers.host !== authority || !['GET', 'HEAD'].includes(req.method)) {
             res.writeHead(403);
@@ -103,10 +108,31 @@ async function serve(bundle, port) {
         res.writeHead(200, { 'Content-Type': file.type, 'Content-Length': file.bytes.length, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
         res.end(req.method === 'HEAD' ? undefined : file.bytes);
     });
+    // Passive lifecycle observations only: no clientError listener, socket data
+    // consumption, response mutation or change to Node's default error handling.
+    server.on('connection', () => increment('connections'));
+    server.on('request', (req, res) => {
+        increment('requests');
+        if (req.method !== 'GET' || req.headers.host !== authority)
+            return;
+        let url;
+        try {
+            url = new URL(req.url, 'http://' + authority);
+        }
+        catch {
+            return;
+        }
+        if (url.origin !== 'http://' + authority || !['/', '/index.html'].includes(url.pathname))
+            return;
+        increment('mainGetRequests');
+        res.once('finish', () => increment('mainResponsesFinished'));
+        res.once('close', () => { if (!res.writableFinished)
+            increment('mainResponsesClosedEarly'); });
+    });
     server.requestTimeout = 10000;
     server.headersTimeout = 10000;
     await new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', resolve); });
-    return { url: 'http://' + authority + '/index.html', async close() { server.closeAllConnections(); await new Promise((resolve, reject) => server.close(e => e ? reject(e) : resolve())); } };
+    return { url: 'http://' + authority + '/index.html', startupProgress: () => Object.freeze({ ...progress }), async close() { server.closeAllConnections(); await new Promise((resolve, reject) => server.close(e => e ? reject(e) : resolve())); } };
 }
 const pcHTTP = { load, serve };
 module.exports = pcHTTP;

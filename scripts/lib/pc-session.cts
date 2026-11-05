@@ -40,7 +40,14 @@ async function start(options:pcSession.Options){
  save(path.join(output,'resources.json'),{schemaVersion:1,resourceDigest:bundle.digest,inventory:bundle.inventory});
  const server=await (require('./pc-http.cjs') as typeof import('./pc-http.cjs')).serve(bundle,Number(options.port));let browser;
  try{browser=await (require('./chrome-launch.cjs') as typeof import('./chrome-launch.cjs')).launch({out:path.join(output,'chrome'),executable:options.chrome!,url:server.url,mode:options.mode as 'headless'|'visible',resourceDigest:bundle.digest,resume,allowResourceUpdate:options['allow-resource-update']==='yes'});}
- catch(e){await server.close();throw e}
+ catch(e){
+  // Best-effort evidence must neither expose raw errors nor replace the launch
+  // failure. Exclusive creation preserves peer files; HTTP cleanup still runs.
+  try{save(path.join(output,'startup-failure.json'),{schemaVersion:1,phase:'launch-refused-before-http-shutdown',readyRecordReturned:false,
+   diagnostic:(require('./diagnostics.cjs') as typeof import('./diagnostics.cjs')).describe(e)??{code:'PC_START_FAILED',stage:'pc.start'},
+   http:server.startupProgress?.()??null,httpDoesNotProveDocumentCommit:true})}catch{/* Original failure and owned cleanup take precedence. */}
+  await server.close();throw e;
+ }
  return {...browser,url:server.url,async stop(){let failure;try{await browser!.stop()}catch(e){failure=e}finally{await server.close()}if(failure)throw failure}};
 }
 async function capture(options:pcSession.Options,act=false){

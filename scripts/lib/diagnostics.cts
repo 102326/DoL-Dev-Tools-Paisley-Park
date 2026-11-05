@@ -2,7 +2,7 @@ declare namespace diagnostics {
   type CdpStage = 'cdp.discovery' | 'cdp.connect' | 'cdp.command';
   type Code = keyof typeof entries | 'CDP_DISCOVERY_TIMEOUT' | 'CDP_CONNECT_TIMEOUT' | 'ETIMEDOUT' | 'WEB_ACTION_REJECTED';
   type Stage = (typeof entries)[keyof typeof entries][0] | CdpStage | 'action.result';
-  interface ErrorMetadata { code?:unknown; cdpStage?:unknown; cdpMethod?:unknown; actionReason?:unknown; actionField?:unknown }
+  interface ErrorMetadata { code?:unknown; cdpStage?:unknown; cdpMethod?:unknown; actionReason?:unknown; actionField?:unknown; pcDocumentReason?:unknown }
   interface Diagnostic { code:Code; stage:Stage; hint:string; method?:string; field?:string; reason?:string; source?:'page-reported' }
 }
 // Public diagnostic metadata is finite; page messages, input and paths never pass through.
@@ -13,6 +13,8 @@ const methods = new Set(['Runtime.evaluate','Runtime.callFunctionOn','Runtime.ge
   'Page.getFrameTree','Page.getNavigationHistory','Page.navigate','Page.reload','Network.enable']);
 const cdpStages = ['cdp.discovery','cdp.connect','cdp.command'];
 const fields = ['action','type','selector','value','x','y','degrees'];
+const initialDocumentReasons = new Set(['initial-empty-document','initial-url-mismatch','initial-context-unavailable','initial-loader-unavailable']);
+
 
 const entries = {
   PC_DOCUMENT_CHANGED: ['pc.document','The original document binding is invalid. Preserve pending effects; a fresh binding is for new work, not settlement or automatic replay.'],
@@ -71,6 +73,7 @@ function describe(error: unknown): diagnostics.Diagnostic | null {
   const method = typeof metadata?.cdpMethod === 'string' ? metadata.cdpMethod : '';
   const field = typeof metadata?.actionField === 'string' ? metadata.actionField : '';
   const reason = typeof metadata?.actionReason === 'string' ? metadata.actionReason : '';
+  const initialReason = typeof metadata?.pcDocumentReason==='string'&&initialDocumentReasons.has(metadata.pcDocumentReason)?metadata.pcDocumentReason:undefined;
   let stage: diagnostics.Stage, hint: string;
   if (code === 'CDP_DISCOVERY_TIMEOUT' || code === 'CDP_CONNECT_TIMEOUT' || code === 'ETIMEDOUT' && cdpStages.includes(phase)) {
     stage = code === 'CDP_DISCOVERY_TIMEOUT' ? 'cdp.discovery' : code === 'CDP_CONNECT_TIMEOUT' ? 'cdp.connect' : phase as diagnostics.CdpStage;
@@ -79,12 +82,15 @@ function describe(error: unknown): diagnostics.Diagnostic | null {
     stage = 'action.result';
     hint = Object.hasOwn(rejections,reason) ? rejections[reason] : 'The web action was not confirmed; the rejection cause is unknown.';
     hint += ' This diagnostic does not prove zero side effects or settle a Gameplay effect.';
+  } else if(code==='PC_DOCUMENT_CHANGED'&&initialReason){
+    stage='pc.document';hint='The requested initial document binding is not ready on the selected target; no binding was created. For pc-start, inspect startup-failure.json when available, together with the owned HTTP/Chrome records. The cause is unknown; no alternate target or automatic action retry was attempted. Preserve any historical pending effects.';
   } else if (knownCode(code)) [stage,hint] = entries[code];
   else return null;
   return {code,stage,...(code === 'ETIMEDOUT' && stage === 'cdp.command' && methods.has(method) ? {method} : {}),
     ...(stage === 'action.validate' && fields.includes(field) ? {field} : {}),
     ...(code === 'WEB_ACTION_REJECTED' ? {source:'page-reported'} : {}),
-    ...(code === 'WEB_ACTION_REJECTED' && Object.hasOwn(rejections,reason) ? {reason} : {}),hint};
+    ...(code === 'WEB_ACTION_REJECTED' && Object.hasOwn(rejections,reason) ? {reason} : {}),
+    ...(code==='PC_DOCUMENT_CHANGED'&&initialReason?{reason:initialReason}:{}),hint};
 }
 function knownCode(code: unknown): code is keyof typeof entries { return typeof code === 'string' && Object.hasOwn(entries,code); }
 const diagnostics = {describe,cdpTimeout};

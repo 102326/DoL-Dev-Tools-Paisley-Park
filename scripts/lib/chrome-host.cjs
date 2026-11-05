@@ -1,4 +1,4 @@
-// Generated from chrome-host.cts by TypeScript 6.0.2; source-lf-sha256=284174385fd0d5fe2acd4ec28e2d5babf1cbe0082e75819d09689598b8a0cd8f
+// Generated from chrome-host.cts by TypeScript 6.0.2; source-lf-sha256=e076dfd600079916b7807e645997a7ac69762b52d6b72fe6d922d6c6d0f44900
 "use strict";
 const object = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 function mainFrame(value) {
@@ -119,8 +119,11 @@ class ChromeHost {
                 }
                 if (fullURL === pages[0].url && contexts.length === 1 && frame.loaderId)
                     break;
-                if (this.binding || Date.now() >= until)
+                if (this.binding)
                     throw failure('PC_DOCUMENT_CHANGED');
+                if (Date.now() >= until)
+                    throw Object.assign(failure('PC_DOCUMENT_CHANGED'), { pcDocumentReason: !frame.url ? 'initial-empty-document' : fullURL !== pages[0].url ? 'initial-url-mismatch' :
+                            contexts.length !== 1 ? 'initial-context-unavailable' : 'initial-loader-unavailable' });
                 await new Promise(resolve => setTimeout(resolve, 50));
             } while (true);
             const binding = { frameId: frame.id, loaderId: frame.loaderId, url: fullURL, uniqueContextId: contexts[0].uniqueId };

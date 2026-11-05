@@ -80,7 +80,10 @@ class ChromeHost {
     fullURL=null;
     try{fullURL=await documentURL(frame,client)}catch(e){if(this.binding||(e as {code?:unknown}|null|undefined)?.code!=='ANDROID_DOCUMENT_URL_UNAVAILABLE')throw e}
     if(fullURL===pages[0].url&&contexts.length===1&&frame.loaderId)break;
-    if(this.binding||Date.now()>=until)throw failure('PC_DOCUMENT_CHANGED');
+    if(this.binding)throw failure('PC_DOCUMENT_CHANGED');
+    if(Date.now()>=until)throw Object.assign(failure('PC_DOCUMENT_CHANGED'),{pcDocumentReason:
+     !frame.url?'initial-empty-document':fullURL!==pages[0].url?'initial-url-mismatch':
+     contexts.length!==1?'initial-context-unavailable':'initial-loader-unavailable'});
     await new Promise(resolve=>setTimeout(resolve,50));
    }while(true);
    const binding={frameId:frame.id,loaderId:frame.loaderId,url:fullURL!,uniqueContextId:contexts[0].uniqueId};

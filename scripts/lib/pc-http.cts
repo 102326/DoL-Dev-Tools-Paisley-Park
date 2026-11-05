@@ -2,7 +2,8 @@ declare namespace pcHTTP {
  interface Resource {bytes:Buffer;type:string;sha256:string}
  interface Inventory {urlPath:string;sha256:string;bytes:number}
  interface Bundle {files:Map<string,Resource>;inventory:Inventory[];digest:string}
- interface Hosted {url:string;close():Promise<void>}
+ interface StartupProgress {readonly connections:number;readonly requests:number;readonly mainGetRequests:number;readonly mainResponsesFinished:number;readonly mainResponsesClosedEarly:number;readonly truncated:boolean}
+ interface Hosted {url:string;close():Promise<void>;startupProgress():StartupProgress}
 }
 'use strict';
 const fs:typeof import('node:fs') = require('node:fs');
@@ -54,6 +55,8 @@ function load(html:string, manifest?:string):pcHTTP.Bundle {
 async function serve(bundle:pcHTTP.Bundle,port:number):Promise<pcHTTP.Hosted> {
   if (!Number.isSafeInteger(port) || port < 1024 || port > 65535) throw error();
   const authority='127.0.0.1:'+port;
+  const progress={connections:0,requests:0,mainGetRequests:0,mainResponsesFinished:0,mainResponsesClosedEarly:0,truncated:false};
+  const increment=(key:Exclude<keyof typeof progress,'truncated'>)=>{if(progress[key]<65535)progress[key]++;else progress.truncated=true};
   const server=http.createServer((req,res)=>{
     if (req.headers.host !== authority || !['GET','HEAD'].includes(req.method as string)) { res.writeHead(403); return res.end(); }
     let url; try { url=new URL(req.url!,'http://'+authority); } catch { res.writeHead(400); return res.end(); }
@@ -63,9 +66,21 @@ async function serve(bundle:pcHTTP.Bundle,port:number):Promise<pcHTTP.Hosted> {
     res.writeHead(200,{'Content-Type':file.type,'Content-Length':file.bytes.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
     res.end(req.method==='HEAD'?undefined:file.bytes);
   });
+  // Passive lifecycle observations only: no clientError listener, socket data
+  // consumption, response mutation or change to Node's default error handling.
+  server.on('connection',()=>increment('connections'));
+  server.on('request',(req,res)=>{
+    increment('requests');
+    if(req.method!=='GET'||req.headers.host!==authority)return;
+    let url;try{url=new URL(req.url!,'http://'+authority)}catch{return}
+    if(url.origin!=='http://'+authority||!['/','/index.html'].includes(url.pathname))return;
+    increment('mainGetRequests');
+    res.once('finish',()=>increment('mainResponsesFinished'));
+    res.once('close',()=>{if(!res.writableFinished)increment('mainResponsesClosedEarly')});
+  });
   server.requestTimeout=10000; server.headersTimeout=10000;
   await new Promise<void>((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
-  return {url:'http://'+authority+'/index.html',async close(){server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}};
+  return {url:'http://'+authority+'/index.html',startupProgress:()=>Object.freeze({...progress}),async close(){server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}};
 }
 const pcHTTP={load,serve};
 export = pcHTTP;

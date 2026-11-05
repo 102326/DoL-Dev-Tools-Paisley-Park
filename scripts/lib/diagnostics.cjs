@@ -1,4 +1,4 @@
-// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=58b78cf615e9d8bcf2d1e6e96f7a3f18df3955f2f7b407a5a7253422118fd842
+// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=c9dd86ef4f2f8776a2d5e755505e118c17aebb2e26c74ec317285f3728e9416c
 "use strict";
 // Public diagnostic metadata is finite; page messages, input and paths never pass through.
 const methods = new Set(['Runtime.evaluate', 'Runtime.callFunctionOn', 'Runtime.getProperties', 'Runtime.enable',
@@ -6,6 +6,7 @@ const methods = new Set(['Runtime.evaluate', 'Runtime.callFunctionOn', 'Runtime.
     'Page.getFrameTree', 'Page.getNavigationHistory', 'Page.navigate', 'Page.reload', 'Network.enable']);
 const cdpStages = ['cdp.discovery', 'cdp.connect', 'cdp.command'];
 const fields = ['action', 'type', 'selector', 'value', 'x', 'y', 'degrees'];
+const initialDocumentReasons = new Set(['initial-empty-document', 'initial-url-mismatch', 'initial-context-unavailable', 'initial-loader-unavailable']);
 const entries = {
     PC_DOCUMENT_CHANGED: ['pc.document', 'The original document binding is invalid. Preserve pending effects; a fresh binding is for new work, not settlement or automatic replay.'],
     PC_TARGET_UNAVAILABLE: ['pc.target', 'The exact owned page is unavailable. Inspect pc-pages; no replacement page was adopted.'],
@@ -61,6 +62,7 @@ function describe(error) {
     const method = typeof metadata?.cdpMethod === 'string' ? metadata.cdpMethod : '';
     const field = typeof metadata?.actionField === 'string' ? metadata.actionField : '';
     const reason = typeof metadata?.actionReason === 'string' ? metadata.actionReason : '';
+    const initialReason = typeof metadata?.pcDocumentReason === 'string' && initialDocumentReasons.has(metadata.pcDocumentReason) ? metadata.pcDocumentReason : undefined;
     let stage, hint;
     if (code === 'CDP_DISCOVERY_TIMEOUT' || code === 'CDP_CONNECT_TIMEOUT' || code === 'ETIMEDOUT' && cdpStages.includes(phase)) {
         stage = code === 'CDP_DISCOVERY_TIMEOUT' ? 'cdp.discovery' : code === 'CDP_CONNECT_TIMEOUT' ? 'cdp.connect' : phase;
@@ -71,6 +73,10 @@ function describe(error) {
         hint = Object.hasOwn(rejections, reason) ? rejections[reason] : 'The web action was not confirmed; the rejection cause is unknown.';
         hint += ' This diagnostic does not prove zero side effects or settle a Gameplay effect.';
     }
+    else if (code === 'PC_DOCUMENT_CHANGED' && initialReason) {
+        stage = 'pc.document';
+        hint = 'The requested initial document binding is not ready on the selected target; no binding was created. For pc-start, inspect startup-failure.json when available, together with the owned HTTP/Chrome records. The cause is unknown; no alternate target or automatic action retry was attempted. Preserve any historical pending effects.';
+    }
     else if (knownCode(code))
         [stage, hint] = entries[code];
     else
@@ -78,7 +84,8 @@ function describe(error) {
     return { code, stage, ...(code === 'ETIMEDOUT' && stage === 'cdp.command' && methods.has(method) ? { method } : {}),
         ...(stage === 'action.validate' && fields.includes(field) ? { field } : {}),
         ...(code === 'WEB_ACTION_REJECTED' ? { source: 'page-reported' } : {}),
-        ...(code === 'WEB_ACTION_REJECTED' && Object.hasOwn(rejections, reason) ? { reason } : {}), hint };
+        ...(code === 'WEB_ACTION_REJECTED' && Object.hasOwn(rejections, reason) ? { reason } : {}),
+        ...(code === 'PC_DOCUMENT_CHANGED' && initialReason ? { reason: initialReason } : {}), hint };
 }
 function knownCode(code) { return typeof code === 'string' && Object.hasOwn(entries, code); }
 const diagnostics = { describe, cdpTimeout };
