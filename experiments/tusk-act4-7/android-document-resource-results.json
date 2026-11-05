@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "sourceCommit": "2a7f730c99f182694106900f86bd2a32fe1e11a8",
+  "productionCodeCommit": "cd28b0aba280f986145378d2d5c86b4ee853b5a7",
+  "scope": "current TS Android document replacement and readonly original receipt/native resource boundaries",
+  "status": "scoped host checks passed; positive Android gameplay acceptance not validated",
+  "environment": {
+    "windows": "10.0.26340.0",
+    "powershell": "7.6.5",
+    "node": "v26.13.0",
+    "disableTypeStripping": true,
+    "adb": "37.0.1",
+    "androidCLI": "1.0.16486076",
+    "explicitExistingProjectSDK": true,
+    "deviceModel": "M367FC",
+    "android": "17",
+    "userId": "0",
+    "package": "com.vrelnir.dol.lyra.uicompat051213",
+    "url": "https://localhost/index.html",
+    "gameVersion": "0.5.12.13",
+    "sugarCube": "2.36.1+34",
+    "observedDoLGameUIVersion": "4.1.0",
+    "webviewProviderVersion": "not rechecked in this batch"
+  },
+  "realDevice": {
+    "reloads": 2,
+    "first": {
+      "status": "failed",
+      "startedAt": "2026-11-05T19:00:24.208Z",
+      "reloadRequestedAt": "2026-11-05T19:00:25.439Z",
+      "finishedAt": "2026-11-05T19:01:34.634Z",
+      "readinessWindowMs": 60000,
+      "observedFailure": "game version remained null at final readiness assertion",
+      "evaluationTimeouts": 2,
+      "oldHolderAssertionsReached": false,
+      "laterReadOnlyGameReady": true,
+      "physicalCause": "Unknown"
+    },
+    "revised": {
+      "status": "passed",
+      "startedAt": "2026-11-05T19:03:08.742Z",
+      "reloadRequestedAt": "2026-11-05T19:03:09.775Z",
+      "finishedAt": "2026-11-05T19:03:49.979Z",
+      "harnessChange": "assert old binding refusal before game readiness; experiment readiness cap 120s; no production timeout change",
+      "checks": [
+        {
+          "name": "old production evaluate",
+          "status": "passed",
+          "error": {
+            "code": "ANDROID_DOCUMENT_CHANGED",
+            "message": "ANDROID_DOCUMENT_CHANGED"
+          }
+        },
+        {
+          "name": "old production DOM object operation",
+          "status": "passed",
+          "error": {
+            "code": "ANDROID_DOCUMENT_CHANGED",
+            "message": "ANDROID_DOCUMENT_CHANGED"
+          }
+        },
+        {
+          "name": "transport old unique context",
+          "status": "passed",
+          "error": {
+            "code": "CDP_COMMAND_REJECTED",
+            "message": "CDP_COMMAND_REJECTED"
+          }
+        },
+        {
+          "name": "transport old DOM object",
+          "status": "passed",
+          "error": {
+            "code": "CDP_COMMAND_REJECTED",
+            "message": "CDP_COMMAND_REJECTED"
+          }
+        },
+        {
+          "name": "real reload replaces loader, unique default context and timeOrigin",
+          "status": "passed"
+        },
+        {
+          "name": "explicit fresh production binding reads actual new game document with same PID and target",
+          "status": "passed"
+        },
+        {
+          "name": "all six existing save metadata records unchanged",
+          "status": "passed"
+        },
+        {
+          "name": "original complete effect/resource rows unchanged",
+          "status": "passed"
+        }
+      ],
+      "samePID": true,
+      "sameTarget": true,
+      "sameURL": true,
+      "loaderChanged": true,
+      "uniqueContextChanged": true,
+      "timeOriginChanged": true,
+      "gameReady": true
+    }
+  },
+  "preserved": {
+    "existingSaveMetadataSlots": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "metadataDigestUnchanged": true,
+    "fullSaveBodiesRead": false,
+    "allEffectRows": 99,
+    "allEffectRowsAndResourcesDigestUnchanged": true,
+    "targetOpenEffects": 4,
+    "statuses": {
+      "acknowledged": 1,
+      "dispatching": 3
+    },
+    "noRuntimeStoreOpen": true,
+    "noNewSession": true,
+    "noSaveLoadDeleteOrDataReset": true,
+    "noReplay": true
+  },
+  "originalReceiptAndResource": {
+    "checks": [
+      {
+        "name": "production native snapshot refuses current identity against original last registered generation",
+        "status": "passed"
+      },
+      {
+        "name": "production recovery returns no evidence for three bound original effects; does not initialize missing page namespace",
+        "status": "passed"
+      },
+      {
+        "name": "all original target effects and registered resource documents preserved byte-for-byte",
+        "status": "passed"
+      }
+    ],
+    "receiptNamespaceAbsentBeforeReload": true,
+    "receiptNamespaceAbsentAfterRead": true,
+    "boundOriginalEffects": 3,
+    "readOnlyRecoveryResults": 0,
+    "oldEffectsSettled": 0,
+    "lastRegisteredGeneration": 5,
+    "currentNativeIdMatchesRegistered": false,
+    "productionSnapshot": {
+      "status": "rejected",
+      "code": null,
+      "message": "Native data generation changed"
+    },
+    "markerMatchesLastRegistered": true,
+    "differentNativeFacts": [
+      "stat filesystem device number; inode component unchanged"
+    ],
+    "physicalCause": "Unknown; no data-replacement inference",
+    "registeredGenerationChanged": false
+  },
+  "release": {
+    "checkedAt": "2026-11-05T19:04:37.4848393Z",
+    "forwardBaselineEmpty": true,
+    "forwardAfterEmpty": true,
+    "allDriverProcessesExited": true,
+    "appForceStopped": false,
+    "adbServerStopped": false,
+    "deviceReleased": true,
+    "lastObservedAppState": {
+      "passage": "Start2",
+      "turns": 2,
+      "gameReady": true
+    },
+    "foregroundAfterRelease": "not rechecked; no device operations after release"
+  },
+  "notValidated": [
+    "positive Android Gameplay dispatch/settlement/next action",
+    "recovery with actual historical terminal receipt",
+    "native data rebuild and correct generation registration",
+    "App lifecycle rebuild, active disconnect and Kotlin probe",
+    "historical CRLF receipt",
+    "other devices/providers/Mod combinations",
+    "Windows minimum Node 26.0.0"
+  ],
+  "limitations": [
+    "first 60-second readiness failure retained; physical cause Unknown",
+    "current registered native identity mismatch blocks positive original-target GER validation",
+    "missing original receipts cannot settle or disprove historical uncertain effects"
+  ],
+  "sourceChanges": false,
+  "fullSuitesRerun": false,
+  "privateEvidence": {
+    "directory": "artifacts/android-ts-device-20261106-025112",
+    "publishedRaw": false,
+    "files": [
+      {
+        "path": "resolver.json",
+        "bytes": 395,
+        "sha256": "af2f8b38856c2d000a7ebcd2a89835f2d1368aec699506be784a44bc12132ec6"
+      },
+      {
+        "path": "readonly-preflight.cjs",
+        "bytes": 2909,
+        "sha256": "7e2a41e6193aeffb3701309518933c82deb7ec75dd36eb674ca443e79c6a33f8"
+      },
+      {
+        "path": "readonly-preflight.json",
+        "bytes": 4788,
+        "sha256": "10e02f581e42760030c8ead3e05a79bea0ca3abb8d177ac01356e1f3e79b5b8a"
+      },
+      {
+        "path": "identity-ledger-readonly.cjs",
+        "bytes": 3147,
+        "sha256": "5e3b66f69d9178f4e03900c9b6c2d153ba2d19389ae271f9764c9e09f3843060"
+      },
+      {
+        "path": "identity-ledger-readonly.json",
+        "bytes": 38486,
+        "sha256": "105e07f50d704ef02ff0ed9393ecabd0abf0a4beef326d1dd805b2678af4e746"
+      },
+      {
+        "path": "document-reload.cjs",
+        "bytes": 8045,
+        "sha256": "80be93172791df63777328fa1b97fcc5e1853502be9a2855d60c87304927b5a8"
+      },
+      {
+        "path": "document-reload.json",
+        "bytes": 4466,
+        "sha256": "ed5acc5593fbe5db3a37b95c7881a824e66e20123e4387e22eb6fbb46b20d43e"
+      },
+      {
+        "path": "document-reload.log",
+        "bytes": 514,
+        "sha256": "6df6c42606e131584425d232a6a77ec5b90aac1e8f444ef43cd9e43a573b2f85"
+      },
+      {
+        "path": "document-reload.exit.txt",
+        "bytes": 3,
+        "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+      },
+      {
+        "path": "post-reload-readonly/readonly-preflight.json",
+        "bytes": 4788,
+        "sha256": "0985e139fcda1ca062b3b199d95c45f97e0f056b72d9fd31aebe1e3c355c5d9c"
+      },
+      {
+        "path": "document-reload-v2.cjs",
+        "bytes": 8559,
+        "sha256": "e590ea274b8ef447fbf56a6f417a62a72371e264bcdf405e8a5f1f697a6dd1cc"
+      },
+      {
+        "path": "document-reload-v2.json",
+        "bytes": 8332,
+        "sha256": "49630c28a3e66741dd6833989bd63f4c3e13dab92e3d98b7ae29b93ef1a223f0"
+      },
+      {
+        "path": "document-reload-v2.log",
+        "bytes": 1061,
+        "sha256": "5cbf57b178d1b2a873825f27564ab588ea1bffbb2c964030d9713f5a15c5a04f"
+      },
+      {
+        "path": "document-reload-v2.exit.txt",
+        "bytes": 3,
+        "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+      },
+      {
+        "path": "original-receipt-resource-readonly.cjs",
+        "bytes": 4554,
+        "sha256": "84d833de812240df317d23cd30997417c7545dcfc6e8633c98f92be69846c2e9"
+      },
+      {
+        "path": "original-receipt-resource-readonly.json",
+        "bytes": 2961,
+        "sha256": "6624b14f1c48a8e98335652d8bb6476f4666ac8d350278bc2f0874e0f1f2abfb"
+      },
+      {
+        "path": "original-receipt-resource-readonly.log",
+        "bytes": 739,
+        "sha256": "9b15a3150b68934e52fc08cc771e7779cb2aa550ee432455db1bd7a3d5cbb2b4"
+      },
+      {
+        "path": "device-release.json",
+        "bytes": 239,
+        "sha256": "61f6d2b4db91039c3ea223c30e7b57c3569ed5fc4c08939c10647547908e3b70"
+      },
+      {
+        "path": "layout-before.json",
+        "bytes": 11423,
+        "sha256": "5ce1c42e6cef082d53d35010e8d4abdd0aaf7303aa1c36bea5e29065f75ec635"
+      },
+      {
+        "path": "screen-before.png",
+        "bytes": 426532,
+        "sha256": "cc287fce31d015b7d5ebfd39710110b7af173d6fd1bac8e6054c8a9ed0e986d5"
+      },
+      {
+        "path": "screen-reload-failure.png",
+        "bytes": 423810,
+        "sha256": "5f9e9357ca3078b3587ee6381d36676375f4ad5ea5f8292a91b2230662cdc83c"
+      },
+      {
+        "path": "forwards-before.txt",
+        "bytes": 2,
+        "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+      },
+      {
+        "path": "forwards-after.txt",
+        "bytes": 2,
+        "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+      }
+    ]
+  }
+}
