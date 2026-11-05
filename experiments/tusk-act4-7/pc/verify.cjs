@@ -47,7 +47,8 @@ async function main(){
  cli(['journey','--host','chrome','--host-file',hostFile,'--file',journey,'--out',path.join(out,'journey'),'--test-environment','yes']);
  const journeyResult=JSON.parse(fs.readFileSync(path.join(out,'journey/manifest.json')));assert.equal(journeyResult.status,'complete');assert.equal(journeyResult.steps[2].artifacts.length,8);check('shared Journey executes Web Action, waits and captures eight bound Chrome checkpoints');
  const {ChromeHost}=require(root+'/scripts/lib/chrome-host.cjs');let held=await new ChromeHost(r.target).open();held.close();await assert.rejects(held.evaluate('window.neutralWorkshop.read()'));await held.open();assert.equal((await held.evaluate('window.neutralWorkshop.read()')).tokens,1);held.close();check('explicit reconnect retains the same document; disconnected operation refuses dispatch');
- const decoy=(await admin.send('Target.createTarget',{url:info.url})).targetId;
+ // Keep the duplicate behind the selected page: background screenshot scheduling is a separate Chrome limit.
+ const decoy=(await admin.send('Target.createTarget',{url:info.url,background:true})).targetId;
  await until(async()=>JSON.parse(cli(['pc-pages','--host-file',hostFile])).length===2);
  const before=JSON.parse(fs.readFileSync(path.join(out,'before/state-after.json')));
  await admin.send('Page.reload');await until(async()=>{const v=await admin.evaluate('window.neutralWorkshop.read()');return v.documentId!==before.documentId});

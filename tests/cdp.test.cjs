@@ -19,7 +19,8 @@ test('CDP timeouts identify discovery, connection and command without replay or 
     try{
       await assert.rejects(client.send('Page.getFrameTree',{private:'PRIVATE_INPUT'}),e=>e.code==='ETIMEDOUT'&&e.cdpStage==='cdp.command'&&e.cdpMethod==='Page.getFrameTree'&&e.message==='CDP evaluation timeout'&&e.notDispatched!==true);
       await assert.rejects(client.send('PRIVATE_METHOD'),e=>e.code==='ETIMEDOUT'&&e.cdpMethod===undefined&&!e.message.includes('PRIVATE'));
-      assert.equal(sends,2);
+      await assert.rejects(client.send('Page.captureScreenshot'),e=>e.code==='ETIMEDOUT'&&e.cdpMethod==='Page.captureScreenshot'&&require('../scripts/lib/diagnostics.cjs').describe(e).method==='Page.captureScreenshot');
+      assert.equal(sends,3);
     }finally{client.close()}
   }finally{global.fetch=oldFetch;global.WebSocket=oldSocket}
 });

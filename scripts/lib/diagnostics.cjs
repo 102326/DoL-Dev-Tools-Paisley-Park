@@ -3,7 +3,7 @@
 /** @typedef {{code:string,stage:string,hint:string,method?:string,field?:string,reason?:string,source?:'page-reported'}} Diagnostic */
 const methods = new Set(['Runtime.evaluate','Runtime.callFunctionOn','Runtime.getProperties','Runtime.enable',
   'DOM.getDocument','DOM.querySelector','DOM.getDetachedDomNodes','CSS.getComputedStyleForNode',
-  'Page.getFrameTree','Page.getNavigationHistory','Page.navigate','Page.reload','Network.enable']);
+  'Page.getFrameTree','Page.getNavigationHistory','Page.navigate','Page.reload','Page.captureScreenshot','Network.enable']);
 const cdpStages = ['cdp.discovery','cdp.connect','cdp.command'];
 const fields = ['action','type','selector','value','x','y','degrees'];
 /** @type {Record<string,[string,string]>} */

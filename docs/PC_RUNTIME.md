@@ -77,4 +77,6 @@ Chrome 的 Profile 路径摘要和资源摘要不是数据世代证明；不填�
 
 ## 验证范围
 
+Windows Chrome 156 的多标签实验中，后台页面的截图曾超时；简单后台页对照未复现，完整流程的协议追踪确认超时命令为 `Page.captureScreenshot`。工具不会为截图自动切换前台，后续采集失败仍保留已收到的动作 ACK；不要因此重放点击。PC 夹具将同 URL 干扰页明确设为后台，选页和干扰页状态断言保留。该编排调整不证明所有后台截图问题已解决。
+
 无内容 Debug 回归：`node experiments/tusk-act4-7/pc/verify.cjs ABS_CHROME NEW_OUTPUT headless`（也可 `visible`）；正式 GER/Evidence 中断恢复回归：`node experiments/tusk-act4-7/ger/verify.cjs ABS_CHROME NEW_OUTPUT`。`PAISLEY_TOOL_ROOT` 可指定独立解压包验证同一流程。GER 夹具只模拟原始状态 API、受审 Recipe 和公共元数据，没有游戏/Mod 源码。Mac 通过不等于 Windows、真实 DoL/存档、原生业务 profile 或 Android 通过。
