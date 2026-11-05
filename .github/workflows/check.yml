@@ -14,6 +14,7 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm ci --prefix experiments/weather-report-20261104/source-finder --ignore-scripts --no-audit --no-fund
       - run: npm --prefix experiments/weather-report-20261104/source-finder run build
+      - run: node experiments/weather-report-20261104/source-finder/build-resolver.cjs --check
       - run: node experiments/weather-report-20261104/source-finder/check-types.cjs
       - run: node --test experiments/weather-report-20261104/source-finder/test/build.test.cjs
       - run: npm test
