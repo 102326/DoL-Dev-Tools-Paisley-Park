@@ -12,12 +12,12 @@
 C06目标规范化补修已验收，代码`ea70fd5c1c57498975d78413789a14e453034eb3`；16定向及最低Node26包通过、562项561过/1Windows跳过、源码PC12+GER13、最低Node26独立包GER13通过，见[BATCH_C06](BATCH_C06.md)。
 - D 浏览器边界：D01已验收，代码`da5eacd4179d0ea1d6d4b3008bb163f0b47f094e`；DOM/CSS双Program、23定向、12对旧/新观察、构建5/5、541项540过/1Windows跳过；源码Chrome10+13与最低Node26独立包GER13通过。见[BATCH_D01](BATCH_D01.md)。D02 Inspector也已验收，代码`88bb7dcea6d7ede5500d02935422346d70e25513`；29定向、5构建、542项541过/1Windows跳过、源码与最低Node26无依赖独立包PC12/12，见[BATCH_D02](BATCH_D02.md)。E05另处理Journey等待探针，原32命中共处理五项（另含E09环境），其余继续逐项核对。
 - E CLI/Action/Journey/Evidence：E01受限采集/离线解析4模块已验收，代码`3ffcd81b772bd36a920ea1afdb5bd9b4cbaed38e`；32定向及最低Node26独立包32/32，542项541过/1Windows跳过、40类型负例、5构建。见[BATCH_E01](BATCH_E01.md)。E02安装/Doctor/源码查询入口3模块已验收，代码`5ebc5d8ea75f17f05498730d9b232220fca7643b`；543项542过/1Windows跳过，定向与最低Node26包31过/1Windows跳过、41类型负例、5构建；Doctor旧Node22门槛已对齐26，见[BATCH_E02](BATCH_E02.md)。E03 Support/SVG/兼容CLI四模块已验收，代码`4f866305791bf640b3444a5b94cadb64f39b8679`；543项542过/1Windows跳过，定向与最低Node26包12/12、44类型负例、5构建，见[BATCH_E03](BATCH_E03.md)。E04 Action已验收，代码`a443698a30839a8b3dbce8f659d0bf0186e34430`；52定向、545项544过/1Windows跳过、48类型负例、5构建，五种实际派发源码/参数旧对照一致、独立审查15/15；源码及最低Node26包GER13/13，见[BATCH_E04](BATCH_E04.md)。E05 Journey/ChromeEvidence已验收，代码`cbf1fcdd93f9aee33b6cc8756717727d8129eb65`；70定向、546项545过/1Windows跳过、52类型负例、5构建，20等待旧对照；源码ChromePC12+GER13、最低Node26无依赖独立包PC12通过，见[BATCH_E05](BATCH_E05.md)。E06标准Evidence已验收，代码`8c101c5ac102ddef96e8f990be1fcbde5c9ff16c`；78定向、548项547过/1Windows跳过、55类型负例、5构建，版本/description投影两项RED/GREEN；源码Integration10+GER13、最低Node26独立包78定向及Integration10通过，见[BATCH_E06](BATCH_E06.md)。E07连续性能/进程内存/原生布局已验收，代码`9a95c9fcb7adeccfa885e18835bbff4132c6bb70`；7定向及最低Node26包7/7、549项548过/1Windows跳过、58类型负例、5构建，有限错误分类RED/GREEN，见[BATCH_E07](BATCH_E07.md)。E08网络/视口/矩阵已验收，代码`37c4a8fbafc0d85011bdd867a4b08e22022be4a3`；19定向及最低Node26包19/19、549项548过/1Windows跳过、61类型负例、5构建，见[BATCH_E08](BATCH_E08.md)。E09环境Node/DOM已验收，代码`dd5dbabcf93dda0e1a18994757a6b2189c055dac`；40定向、551项550过/1Windows跳过、63类型负例、5构建，8种旧metadata对照；源码/最低Node26独立包GER各13/13，见[BATCH_E09](BATCH_E09.md)。CLI主体等继续。
-- F GER/Session/业务Provider：F01意图/预算/原生调用已验收，代码`0c48af184cb23714861f4c2a1fccb42712d5a3cf`；19定向及最低Node26包通过、552项551过/1Windows跳过、66类型负例、5构建、源码Chrome GER13/13，见[BATCH_F01](BATCH_F01.md)。F02原生render协调已验收，代码`067d6b5a47e8c0ef91202671f37db3524de33a07`；45Node/5DOM strict之外明确保留1个JS协议输入（2函数未类型化），40定向及最低Node26包通过、554项553过/1Windows跳过、68类型负例、5构建，固定原摘要/帧及CRLF负对照通过，见[BATCH_F02](BATCH_F02.md)。F03源码证明已验收，代码`1f966b6089184a6adfc6c2c7642e900b4f985778`；61定向及最低Node26包通过、557项556过/1Windows跳过、71类型负例、5构建，falsy协议失败RED/GREEN40组合；源码/最低Node26独立包真实CDP闭包各7/7，见[BATCH_F03](BATCH_F03.md)。F04 Goal条件/报价已验收，代码`1c2b27ada8c2e44bd1508a3204b8eee4302a504c`；77定向及最低Node26包通过、560项559过/1Windows跳过、74类型负例、5构建，克隆丢字段RED/GREEN；源码/最低Node26独立包真实Chrome状态条件各8/8，见[BATCH_F04](BATCH_F04.md)。F05授权/原生资源已验收，代码`bbe2b0475afc8a5d775477db1c3820027e818bdd`；66定向及最低Node26包通过、566项565过/1Windows跳过、77类型负例、5构建、独立12/12；源码/最低Node26包Chrome GER各13/13，见[BATCH_F05](BATCH_F05.md)。F06回执协调/DOM已验收，代码`b7cecdc43ebd3ff6dc5f7d6ef99fad4cb88f9875`；13定向及最低Node26包通过、569项568过/1Windows跳过、80类型负例、5构建、独立7/7；源码/最低Node26包真实回执维护各8及GER各13通过，见[BATCH_F06](BATCH_F06.md)。F07业务闭包绑定已验收，代码`f96881d4db07f45fa364c840e942463fe400bb98`；30定向及最低Node26包通过、571项570过/1Windows跳过、84类型负例、5构建、独立17/17；源码/最低Node26无钩子包真实Chrome各6/6。最低Node包两次绑定前空文档超时保留，物理原因未定，后续通过不表示启动可靠性修复，见[BATCH_F07](BATCH_F07.md)。F08衣柜/商店原生准备已验收，代码`6a357bfbf8a9400638d269deda4a0d2363740a84`；26定向及最低Node26包通过、574项573过/1Windows跳过、89类型负例、5构建、独立9/9；20种旧准备帧/摘要对照及最低Node26包Chrome GER13通过，见[BATCH_F08](BATCH_F08.md)。F09衣柜/商店映射producer已验收，代码`9481ad0e954fbcabb07d22f32e90ce537b71fae9`；48定向及最低Node26包通过、579项578过/1Windows跳过、94类型负例、5构建、独立17/17，见[BATCH_F09](BATCH_F09.md)。F10原生控件/导航已验收，代码`325a08301a53cf6f172173b8791f6d0c29b8bd59`；52定向及最低Node26包通过、582项581过/1Windows跳过、99类型负例、5构建、独立10/10；源码/最低Node26包真实Chrome闭包/控件读取各6项通过，见[BATCH_F10](BATCH_F10.md)。其余继续，源码指纹与旧未决恢复是硬合同。
+- F GER/Session/业务Provider：F01意图/预算/原生调用已验收，代码`0c48af184cb23714861f4c2a1fccb42712d5a3cf`；19定向及最低Node26包通过、552项551过/1Windows跳过、66类型负例、5构建、源码Chrome GER13/13，见[BATCH_F01](BATCH_F01.md)。F02原生render协调已验收，代码`067d6b5a47e8c0ef91202671f37db3524de33a07`；45Node/5DOM strict之外明确保留1个JS协议输入（2函数未类型化），40定向及最低Node26包通过、554项553过/1Windows跳过、68类型负例、5构建，固定原摘要/帧及CRLF负对照通过，见[BATCH_F02](BATCH_F02.md)。F03源码证明已验收，代码`1f966b6089184a6adfc6c2c7642e900b4f985778`；61定向及最低Node26包通过、557项556过/1Windows跳过、71类型负例、5构建，falsy协议失败RED/GREEN40组合；源码/最低Node26独立包真实CDP闭包各7/7，见[BATCH_F03](BATCH_F03.md)。F04 Goal条件/报价已验收，代码`1c2b27ada8c2e44bd1508a3204b8eee4302a504c`；77定向及最低Node26包通过、560项559过/1Windows跳过、74类型负例、5构建，克隆丢字段RED/GREEN；源码/最低Node26独立包真实Chrome状态条件各8/8，见[BATCH_F04](BATCH_F04.md)。F05授权/原生资源已验收，代码`bbe2b0475afc8a5d775477db1c3820027e818bdd`；66定向及最低Node26包通过、566项565过/1Windows跳过、77类型负例、5构建、独立12/12；源码/最低Node26包Chrome GER各13/13，见[BATCH_F05](BATCH_F05.md)。F06回执协调/DOM已验收，代码`b7cecdc43ebd3ff6dc5f7d6ef99fad4cb88f9875`；13定向及最低Node26包通过、569项568过/1Windows跳过、80类型负例、5构建、独立7/7；源码/最低Node26包真实回执维护各8及GER各13通过，见[BATCH_F06](BATCH_F06.md)。F07业务闭包绑定已验收，代码`f96881d4db07f45fa364c840e942463fe400bb98`；30定向及最低Node26包通过、571项570过/1Windows跳过、84类型负例、5构建、独立17/17；源码/最低Node26无钩子包真实Chrome各6/6。最低Node包两次绑定前空文档超时保留，物理原因未定，后续通过不表示启动可靠性修复，见[BATCH_F07](BATCH_F07.md)。F08衣柜/商店原生准备已验收，代码`6a357bfbf8a9400638d269deda4a0d2363740a84`；26定向及最低Node26包通过、574项573过/1Windows跳过、89类型负例、5构建、独立9/9；20种旧准备帧/摘要对照及最低Node26包Chrome GER13通过，见[BATCH_F08](BATCH_F08.md)。F09衣柜/商店映射producer已验收，代码`9481ad0e954fbcabb07d22f32e90ce537b71fae9`；48定向及最低Node26包通过、579项578过/1Windows跳过、94类型负例、5构建、独立17/17，见[BATCH_F09](BATCH_F09.md)。F10原生控件/导航已验收，代码`325a08301a53cf6f172173b8791f6d0c29b8bd59`；52定向及最低Node26包通过、582项581过/1Windows跳过、99类型负例、5构建、独立10/10；源码/最低Node26包真实Chrome闭包/控件读取各6项通过，见[BATCH_F10](BATCH_F10.md)。F11 History/save/environment协调已验收，代码`6bc4f6a62375a6758ad571fb8326bfd250c64859`；60定向及最低Node包、586项585过/1Windows跳过、106类型负例、5构建、独立18/18；源码/最低Node包真实IndexedDB观察各5项及恢复冲突负对照，见[BATCH_F11](BATCH_F11.md)。其余继续，源码指纹与旧未决恢复是硬合同。
 - G 适合的开发/验证工具：随批维护测试，剩余迁移待实施；Markdown/Kotlin/Python不机械替换。
 
 ## 核心模块清单
 
-开工运行集合95个Node CJS，当前57个Node权威TS接入strict；另新增8个DOM-only浏览器TS/运行CJS，运行清单共109项、strict源共65项；另6个冻结JS协议资产（11函数体未类型化），整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
+开工运行集合95个Node CJS，当前60个Node权威TS接入strict；另新增8个DOM-only浏览器TS/运行CJS，运行清单共112项、strict源共68项；另9个冻结JS协议资产（23函数体未类型化），整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
 
 | 原运行入口 | Node迁移 | 浏览器边界 |
 | --- | --- | --- |
@@ -58,11 +58,11 @@ C06目标规范化补修已验收，代码`ea70fd5c1c57498975d78413789a14e453034
 | `scripts/lib/game-native-business-bindings.cjs` | Node协调strict，F07本机通过 | 1冻结JS guard未类型化；原摘要/LF/帧与真实闭包 |
 | `scripts/lib/game-native-control.cjs` | Node协调strict，F10本机通过 | 1冻结JS reader未类型化；完整旧帧与真实DOM归属 |
 | `scripts/lib/game-native-daily-state.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/game-native-environment.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
+| `scripts/lib/game-native-environment.cjs` | Node协调strict，F11本机通过 | 8冻结函数未类型化；原guard/metadata/owner |
 | `scripts/lib/game-native-garden-state.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/game-native-generic-landing.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/game-native-hall-state.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/game-native-history.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
+| `scripts/lib/game-native-history.cjs` | Node协调strict，F11本机通过 | 2冻结函数未类型化；原history源码/帧 |
 | `scripts/lib/game-native-hour-state.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/game-native-invocation.cjs` | strict构建已接入，F01本机通过 | 未命中该静态模式 |
 | `scripts/lib/game-native-navigation.cjs` | strict构建已接入，F10本机通过 | 原模板/摘要/清理；真实V8 lexical与send/evaluate边界 |
@@ -70,7 +70,7 @@ C06目标规范化补修已验收，代码`ea70fd5c1c57498975d78413789a14e453034
 | `scripts/lib/game-native-provider.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/game-native-radio.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/game-native-render-tasks.cjs` | Node协调strict，F02本机通过 | 2函数原样JS ABI，未类型化；固定原digest/帧/LF |
-| `scripts/lib/game-native-save.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
+| `scripts/lib/game-native-save.cjs` | Node协调strict，F11本机通过 | 2冻结函数未类型化；原digest/投影及真实合成IDB |
 | `scripts/lib/game-native-street-recovery.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/game-native-street-state.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/game-native-time.cjs` | 待迁移 | 未命中该静态模式 |
@@ -132,6 +132,9 @@ C06目标规范化补修已验收，代码`ea70fd5c1c57498975d78413789a14e453034
 | `scripts/lib/browser-abi/wardrobe-mapping.cjs` | 原样JS协议输入；2函数；F09 | reader/branchGuard原文，未类型化 |
 | `scripts/lib/browser-abi/shop-mapping.cjs` | 原样JS协议输入；1函数；F09 | reader原文，未类型化 |
 | `scripts/lib/browser-abi/native-control.cjs` | 原样JS协议输入；1函数；F10 | clickReader原文，未类型化 |
+| `scripts/lib/browser-abi/native-history.cjs` | 原样JS协议输入；F11 | 2函数体未类型化，原文/摘要/旧帧 |
+| `scripts/lib/browser-abi/native-save.cjs` | 原样JS协议输入；F11 | 2函数体未类型化，原文/摘要/旧帧 |
+| `scripts/lib/browser-abi/native-environment.cjs` | 原样JS协议输入；F11 | 8函数体未类型化，原文/摘要/旧帧 |
 | `scripts/lib/browser/widget-source.cjs` | DOM-only TS生成；F03真实CDP闭包通过 |
 | `scripts/lib/browser/goal-reader.cjs` | DOM-only TS生成；F04本机通过 |
 | `scripts/lib/browser/receipts.cjs` | DOM-only TS生成；F06本机通过 |

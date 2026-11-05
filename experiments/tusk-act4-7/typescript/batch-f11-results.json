@@ -1,0 +1,84 @@
+{
+  "codeCommit": "6bc4f6a62375a6758ad571fb8326bfd250c64859",
+  "strictNodeModules": 60,
+  "strictBrowserModules": 8,
+  "frozenBrowserAbiAssets": 9,
+  "frozenUntypedFunctions": 23,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 112,
+  "artifacts": 77,
+  "rootTests": {
+    "total": 586,
+    "passed": 585,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 60,
+  "floorPackageTargetedTests": 60,
+  "buildProtectionTests": 5,
+  "typeNegatives": 106,
+  "independentReviewerTests": 18,
+  "oldProtocolCases": {
+    "history": 5,
+    "save": 5,
+    "environment": 6
+  },
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "notValidated": [
+    "Windows",
+    "Android WebView/device",
+    "real DoL",
+    "original game save profile or real Ledger acceptance"
+  ],
+  "sourceChromeSaveObserver": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Real Chrome IndexedDB and frozen observer with self-authored storage owners; no game save/profile or real Ledger acceptance",
+    "checks": [
+      "actual aborted IndexedDB writes retain the exact synthetic pending record and roll back storage",
+      "real transaction completion and independent stored data readback produce the one-write witness",
+      "no-write completion records zero observed transactions without inventing another save",
+      "every outcome restores the native add descriptor and original hook tables",
+      "the synthetic business counter remains zero while only fixture-owned storage is written"
+    ],
+    "observerCleanup": "confirmed",
+    "status": "passed",
+    "browserCleanup": "confirmed",
+    "cleanup": "confirmed"
+  },
+  "floorPackageChromeSaveObserver": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Real Chrome IndexedDB and frozen observer with self-authored storage owners; no game save/profile or real Ledger acceptance",
+    "checks": [
+      "actual aborted IndexedDB writes retain the exact synthetic pending record and roll back storage",
+      "real transaction completion and independent stored data readback produce the one-write witness",
+      "no-write completion records zero observed transactions without inventing another save",
+      "every outcome restores the native add descriptor and original hook tables",
+      "the synthetic business counter remains zero while only fixture-owned storage is written"
+    ],
+    "observerCleanup": "confirmed",
+    "status": "passed",
+    "browserCleanup": "confirmed",
+    "cleanup": "confirmed"
+  },
+  "expectedRestoreConflict": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Real Chrome IndexedDB and frozen observer with self-authored storage owners; no game save/profile or real Ledger acceptance",
+    "checks": [],
+    "observerCleanup": "unconfirmed",
+    "faultInjectionObserved": true,
+    "status": "failed",
+    "failure": "SAVE_OBSERVER_FIXTURE_FAILED",
+    "browserCleanup": "confirmed",
+    "cleanup": "unconfirmed",
+    "expectedFailure": true
+  }
+}
