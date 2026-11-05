@@ -1,6 +1,7 @@
 import type cdp from './cdp.cjs';
 import type targets from './runtime-target.cjs';
-interface Capture {onEvent:cdp.OnEvent;snapshot():unknown}
+import type collectionTypes from './collectors.cjs';
+type Capture=collectionTypes.Capture;
 interface Frame {id:string;loaderId:string;url:string;urlFragment?:unknown}
 interface ContextView {id?:unknown;uniqueId?:unknown;auxData?:unknown;origin?:unknown}
 interface AuxData {isDefault?:unknown;frameId?:unknown}
@@ -8,16 +9,16 @@ interface AndroidBinding {frameId:string;loaderId:string;url:string;documentURL:
 interface Transport extends Pick<cdp.Client,'send'|'evaluate'|'close'> {isOpen?():boolean}
 interface ChromeReader extends execution.BoundClient {open():Promise<unknown>;close():void;capture:Capture}
 declare namespace execution {
- interface Options {host?:unknown;package?:string;targetId?:unknown;gameplay?:boolean;chromeRecord?:{target:targets.Chrome};[key:string]:unknown}
+ interface Options extends collectionTypes.Options {host?:unknown;package?:string;targetId?:unknown;gameplay?:boolean;chromeRecord?:{target:targets.Chrome};[key:string]:unknown}
  interface CommandSettings {timeout?:number;signal?:AbortSignal;[key:string]:unknown}
  interface Settings {timeoutMs?:number;started?:number;captureEvents?:boolean;connectTimeoutMs?:number}
  interface Adb {(...args:string[]):Promise<Buffer>;execute?:(args:string[],settings?:CommandSettings)=>Promise<Buffer>}
  interface BoundClient {assertBound():Promise<void>;evaluate(expression:string):Promise<unknown>;send(method:string,params?:Record<string,unknown>,settings?:unknown):Promise<unknown>}
  interface CleanupResult {status:'completed'|'failed';resource?:string;reason?:string}
- interface Context {options:Options;adb:Adb;cleanup:(()=>unknown)[];cleanupAdb(...args:string[]):Promise<unknown>;assertActive():void;markSideEffect():void;resetSideEffect():void;readonly actionDispatched:boolean;readonly timedOut:boolean;pause(ms:number):Promise<void>;closeTransport():Promise<void>;ensureWebview():Promise<BoundClient>;finish():Promise<CleanupResult[]>;client?:BoundClient;appPid?:string;endpoint?:string;capture?:Capture;channels?:Record<string,'available'|'unsupported'>;assertForeground?:()=>Promise<void>;[key:string]:unknown}
+ interface Context {options:Options;adb:Adb;cleanup:(()=>unknown)[];cleanupAdb(...args:string[]):Promise<Buffer>;assertActive():void;markSideEffect():void;resetSideEffect():void;readonly actionDispatched:boolean;readonly timedOut:boolean;pause(ms:number):Promise<void>;closeTransport():Promise<void>;ensureWebview():Promise<BoundClient>;finish():Promise<CleanupResult[]>;client?:BoundClient;appPid?:string|null;endpoint?:string;capture?:Capture;channels?:Record<string,'available'|'unsupported'>;assertForeground?:()=>Promise<void>;[key:string]:unknown}
  interface Overrides {adb?:Adb;connect?:(endpoint:string|URL,timeout:number,event:cdp.OnEvent,targetId?:unknown)=>Promise<Transport>;chromeHostFactory?:(target:targets.Chrome)=>ChromeReader;[key:string]:unknown}
 }
-const collectors:{android(options:execution.Options):execution.Adb;forward(ctx:execution.Context):Promise<unknown>;removeForward(ctx:execution.Context):Promise<unknown>;events():Capture}=require('./collectors.cjs');
+const collectors:typeof import('./collectors.cjs')=require('./collectors.cjs');
 const {connect}:typeof import('./cdp.cjs')=require('./cdp.cjs');
 
 async function documentURL(frame:Pick<Frame,'url'|'urlFragment'>,transport:Pick<cdp.Client,'send'>):Promise<string> {

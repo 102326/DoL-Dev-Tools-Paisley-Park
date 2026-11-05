@@ -1,4 +1,4 @@
-// Generated from chrome-host.cts by TypeScript 6.0.2; source-lf-sha256=3ae1146c475efd03eb07c6c49f64ab1be36442addf9bf663babe7562de3fa134
+// Generated from chrome-host.cts by TypeScript 6.0.2; source-lf-sha256=284174385fd0d5fe2acd4ec28e2d5babf1cbe0082e75819d09689598b8a0cd8f
 "use strict";
 const object = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 function mainFrame(value) {

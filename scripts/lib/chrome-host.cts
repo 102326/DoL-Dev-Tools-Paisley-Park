@@ -1,6 +1,6 @@
 import type cdp from './cdp.cjs';
 import type targetTypes from './runtime-target.cjs';
-interface Capture { onEvent(method:string,params:unknown):void; snapshot():unknown }
+type Capture=import('./collectors.cjs').Capture;
 interface Frame { id:string; loaderId:string; url:string; urlFragment?:unknown }
 interface AuxData {isDefault?:unknown;frameId?:unknown}
 interface Remote {objectId?:unknown;value?:unknown}
@@ -15,7 +15,7 @@ function mainFrame(value:unknown):Frame {
 'use strict';
 const {connect,targets}:typeof import('./cdp.cjs')=require('./cdp.cjs');
 const {target:validateTarget}:typeof import('./runtime-target.cjs')=require('./runtime-target.cjs');
-const {events}:{events():Capture}=require('./collectors.cjs');
+const {events}:typeof import('./collectors.cjs')=require('./collectors.cjs');
 const {documentURL}:typeof import('./execution-context.cjs')=require('./execution-context.cjs');
 const {randomUUID}:typeof import('node:crypto')=require('node:crypto');
 const failure=(code:string)=>Object.assign(Error(code),{code});

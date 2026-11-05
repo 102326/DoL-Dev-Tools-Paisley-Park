@@ -31,6 +31,9 @@
     "../../scripts/lib/pc-http.cts",
     "../../scripts/lib/pc-session.cts",
     "../../scripts/lib/chrome-launch.cts",
-    "../../scripts/lib/host-options.cts"
+    "../../scripts/lib/host-options.cts",
+    "../../scripts/lib/collectors.cts",
+    "../../scripts/lib/privacy.cts",
+    "../../scripts/lib/owned-files.cts"
   ]
 }
