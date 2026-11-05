@@ -4,7 +4,7 @@
 
 **任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。本任务书不是正式发布指令。**
 
-用户现已将完整Node核心TS迁移列为7.0发布门槛；开发包P2，UI4.2优先级P1。Mac仍继续分批迁移。原95个Node入口已有47个strict；另新增7个DOM-only资产，运行清单103项、strict源54项；另1个冻结JS协议资产（2函数体未类型化）（A+B、C01–C05、D01–D02、E01–E09、F01–F04），不能把旧接线报告当成整体7.0已完成。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
+用户现已将完整Node核心TS迁移列为7.0发布门槛；开发包P2，UI4.2优先级P1。Mac仍继续分批迁移。原95个Node入口已有47个strict；另新增7个DOM-only资产，运行清单103项、strict源54项；另1个冻结JS协议资产（2函数体未类型化）（A+B、C01–C06、D01–D02、E01–E09、F01–F04），不能把旧接线报告当成整体7.0已完成。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序
 
@@ -12,7 +12,7 @@
 | --- | --- |
 | 仓库 | [102326/DoL-Dev-Tools-Paisley-Park](https://github.com/102326/DoL-Dev-Tools-Paisley-Park) |
 | 研发分支 | [experiment/tusk-act4-7](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/experiment/tusk-act4-7) |
-| **本次固定代码基线，含TS F04及启动等待修复C05；完整迁移仍继续** | **`1c2b27ada8c2e44bd1508a3204b8eee4302a504c`** |
+| **本次固定代码基线，含TS F04、目标规范化C06及启动等待C05；完整迁移仍继续** | **`ea70fd5c1c57498975d78413789a14e453034eb3`** |
 | TS A+B代码及对应独立包 | `0196e86989facae13e765dc3bff58046b53502a7` |
 | Chrome optional Integration固定代码 | `bd3f1b61798552953c27ec0066280169c3f61da3` |
 | typed Skill resolver 固定代码及对应包 | `10082eff5715e26f086d19310f815c22872b9dfe` |
@@ -24,7 +24,7 @@
 | 上一轮 PC / Journey 接续基线 | `241c77262b560481447dff75903d679bb2fedc2e` |
 | 正式 main，本次交接核对值 | `cfd76a75e6c28efbbdcf447b25679cd9f257ef54` |
 
-固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/1c2b27ada8c2e44bd1508a3204b8eee4302a504c)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
+固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/ea70fd5c1c57498975d78413789a14e453034eb3)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
 
 本任务书在上述基线之后提交；它不可能位于其自身所指的旧提交中。Windows 先核对最新远端与基线的差异，记录**实际运行的完整 SHA**，不要把本页中的 SHA 当成永远不变的远端 HEAD。若远端仅增加交接文档，可从确认后的最新研发分支接续；存在新代码时先检查改动及其验证记录。
 
@@ -45,7 +45,8 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 
 | Mac 证据 | 实际范围 |
 | --- | --- |
-| 最新 Node 全套，1c2b27a | 560项：559通过、0失败、1项Windows专属句柄行为跳过 |
+| 最新 Node 全套，ea70fd5 | 562项：561通过、0失败、1项Windows专属句柄行为跳过 |
+| TS C06 | 目标实际克隆身份与键一致，正常固定哈希保持；16定向/最低Node26包通过、源码PC12+GER13、最低Node26包GER13；全套561过/1Windows跳过，见[C06报告](../experiments/tusk-act4-7/typescript/BATCH_C06.md) |
 | TS F04 | 47Node+7DOM/62产物，74类型负例、5构建；77定向/最低Node26包通过，克隆后验证回归；源码/最低Node26包真实Chrome状态条件各8/8，全套559过/1Windows跳过；见[F04报告](../experiments/tusk-act4-7/typescript/BATCH_F04.md) |
 | TS F03 | 46Node+6DOM/59产物，71类型负例、5构建；61定向/最低Node26包通过，falsy失败40组合；源码/最低Node26独立包真实Chrome闭包各7/7；全套556过/1Windows跳过，见[F03报告](../experiments/tusk-act4-7/typescript/BATCH_F03.md) |
 | TS F02 | 45Node+5DOM/56产物，另1个JS协议输入/2函数未类型化；固定原LF render摘要、Git换行属性、CRLF负对照与40定向/最低Node26包通过；全套553过/1Windows跳过；见[F02报告](../experiments/tusk-act4-7/typescript/BATCH_F02.md) |
