@@ -7,7 +7,9 @@ const from=relative=>JSON.stringify(path.join(root,relative));
 try{
  const imports=`import type {Kind,Code,Result,Candidate} from ${from('scripts/lib/source-find.cjs')};\n`+
   `import type {ResolverCode,ResolverStage,Resolution,ResolverEnvironment} from ${from('.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs')};\n`+
-  `import type diagnostic = require(${from('scripts/lib/diagnostics.cjs')});\nimport type target = require(${from('scripts/lib/runtime-target.cjs')});\n`;
+  `import type diagnostic = require(${from('scripts/lib/diagnostics.cjs')});\nimport type target = require(${from('scripts/lib/runtime-target.cjs')});\n`+
+  `import type transport = require(${from('scripts/lib/cdp.cjs')});\n`+
+  `import type integration = require(${from('scripts/lib/integration.cjs')});\n`;
  const args=['--noEmit','--strict','--target','ES2022','--lib','ES2022','--module','Node16','--moduleResolution','Node16','--types','node','--typeRoots',typeRoots];
  const run=source=>{const file=path.join(tmp,'contracts.mts');fs.writeFileSync(file,imports+source);return spawnSync(process.execPath,[compiler,...args,file],{encoding:'utf8'})};
  const positive=run("const stage: diagnostic.Stage='pc.document'; const code: diagnostic.Code='PC_DOCUMENT_CHANGED';\nconst original: target.Android={serial:'synthetic',package:'com.example.fixture',userId:'0',targetId:123};\nconst host: target.Chrome['host']='chrome'; const kind:Kind='passage';\n");
@@ -15,9 +17,15 @@ try{
  const negative=run("const kind:Kind='regex'; const code:Code='RAW_EXCEPTION'; const outcome:Result['outcome']='matched'; const role:Candidate['basis'][number]['role']='executed';\n"+
   "const resolverCode:ResolverCode='RAW_EXCEPTION'; const resolverStage:ResolverStage='resolve.guess'; const version:Resolution['version']=26; const env:ResolverEnvironment={DOL_DEV_TOOLS_HOME:42};\n"+
   "const diagnosticCode:diagnostic.Code='RAW_EXCEPTION'; const diagnosticStage:diagnostic.Stage='database.root';\n"+
-  "const host:target.Chrome['host']='android'; const serial:target.Android['serial']=42; const androidHost:target.Android['host']='android'; const processId:target.Chrome['processId']='123';\n");
+  "const host:target.Chrome['host']='android'; const serial:target.Android['serial']=42; const androidHost:target.Android['host']='android'; const processId:target.Chrome['processId']='123';\n"+
+  "const transportCode:transport.ErrorCode='RAW_EXCEPTION'; const open:ReturnType<transport.Client['isOpen']>='open'; const event:transport.OnEvent=(method:number)=>{};\n"+
+  "async function unvalidated(client:transport.Client){const data=await client.evaluate('1');return data.value}\n"+
+  "const packet:integration.Result={status:'available',data:{status:'available'},moduleSha256:['not-a-string']}; const reason:integration.FailureReason=['integration-load-failed']; const status:integration.Status='complete';\n"+
+  "declare const probe:integration.ProbeClient;probe.close();\n");
  assert.equal(negative.status,2,'negative controls must fail compilation');
- assert.equal((negative.stdout.match(/error TS2322:/g)||[]).length,14,negative.stdout+negative.stderr);
- assert.equal((negative.stdout.match(/error TS\d+:/g)||[]).length,14,'only the intended contract errors');
- console.log('PASS: CJS paths resolve authoritative types; fourteen finite-contract drifts rejected (TS2322).');
+ assert.equal((negative.stdout.match(/error TS2322:/g)||[]).length,20,negative.stdout+negative.stderr);
+ assert.equal((negative.stdout.match(/error TS18046:/g)||[]).length,1,'raw remote values require narrowing');
+ assert.equal((negative.stdout.match(/error TS2339:/g)||[]).length,1,'probe interface does not own connection cleanup');
+ assert.equal((negative.stdout.match(/error TS\d+:/g)||[]).length,22,'only the intended contract errors');
+ console.log('PASS: CJS paths resolve authoritative types; twenty-two contract/unknown-boundary errors rejected.');
 }finally{fs.rmSync(tmp,{recursive:true,force:true})}

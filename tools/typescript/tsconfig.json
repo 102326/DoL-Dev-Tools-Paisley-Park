@@ -22,6 +22,9 @@
     "../../scripts/lib/source-find.cts",
     "../../.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cts",
     "../../scripts/lib/diagnostics.cts",
-    "../../scripts/lib/runtime-target.cts"
+    "../../scripts/lib/runtime-target.cts",
+    "../../scripts/lib/cdp.cts",
+    "../../scripts/lib/integration.cts",
+    "../../scripts/lib/integration-worker.cts"
   ]
 }

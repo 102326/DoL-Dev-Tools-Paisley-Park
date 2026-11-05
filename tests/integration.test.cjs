@@ -13,6 +13,14 @@ function fixture(t) {
   return { root, module(name, source) { const filename = path.join(root, `${name}.cjs`); fs.writeFileSync(filename, source); return filename; } };
 }
 const entry = overrides => `module.exports={contractVersion:1,describe:()=>({name:'example-mod',version:'1.2.3'}),detect:()=> 'available',collect:()=>({status:'available'}),redact:value=>value,${overrides}};`;
+test('worker protocol metadata is validated as strings without array coercion',async t=>{
+ const f=fixture(t);
+ for(const [name,metadata]of [['hash',{moduleSha256:['a'.repeat(64)]}],['reason',{reason:['integration-load-failed']}],...[false,0,'',null].map((description,index)=>['description-'+index,{description}])]){
+  const packet={status:'available',data:{status:'available'},...metadata};
+  const source=`require('node:worker_threads').parentPort.postMessage(${JSON.stringify(JSON.stringify(packet))});`+entry('');
+  const result=await collect({},f.module('forged-'+name,source));assert.equal(result.status,'failed');assert.equal(result.reason,'integration-output-invalid');
+ }
+});
 test('Chrome integrations require an original document even when hooks never evaluate', async t => {
   const f = fixture(t), marker=path.join(f.root,'unexpected-collect');
   const file=f.module('requires-document',entry(`collect:()=>{require('node:fs').writeFileSync(${JSON.stringify(marker)},'unexpected');return {status:'available'}}`));

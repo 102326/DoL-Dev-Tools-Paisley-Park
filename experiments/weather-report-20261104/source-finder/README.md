@@ -21,7 +21,7 @@ node experiments/weather-report-20261104/source-finder/replay-maintenance.cjs
 node experiments/weather-report-20261104/entry/benchmark.cjs
 ```
 
-The compatibility checker now checks fourteen finite contract drifts across Source Find, resolver, diagnostics and target types. The native probe compares native execution of the generated native `.mts` view of the authoritative `.cts` with the prebuilt CommonJS output for five queries and invalid/cancelled requests. Running TS is not type checking; the [Node26 official contract](https://github.com/nodejs/node/blob/v26.0.0/doc/api/typescript.md) documents the distinction. CI performs the isolated checker steps; installed users do not receive checker dependencies.
+The compatibility checker covers the current finite contracts and unknown-data boundaries across Source Find, resolver, diagnostics, targets, CDP and Integration. The native probe compares native execution of the generated native `.mts` view of the authoritative `.cts` with the prebuilt CommonJS output for five queries and invalid/cancelled requests. Running TS is not type checking; the [Node26 official contract](https://github.com/nodejs/node/blob/v26.0.0/doc/api/typescript.md) documents the distinction. CI performs the isolated checker steps; installed users do not receive checker dependencies.
 
 The entry experiment defaults to the same prebuilt CommonJS runtime. To compare native startup, set `PAISLEY_SOURCE_ENGINE=native` for `benchmark.cjs` (PowerShell uses `$env:PAISLEY_SOURCE_ENGINE='native'`). This is an experiment enum, never an arbitrary module path. Do not rebuild during a compiled-engine comparison. Each benchmark records the actual loaded file, entry/fixture hashes and mode; child compile caching is disabled for this comparison.
 
