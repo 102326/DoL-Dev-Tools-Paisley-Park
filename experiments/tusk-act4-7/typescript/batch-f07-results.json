@@ -1,0 +1,77 @@
+{
+  "codeCommit": "f96881d4db07f45fa364c840e942463fe400bb98",
+  "strictNodeModules": 51,
+  "strictBrowserModules": 8,
+  "frozenBrowserAbiAssets": 2,
+  "frozenUntypedFunctions": 3,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 105,
+  "artifacts": 68,
+  "rootTests": {
+    "total": 571,
+    "passed": 570,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 30,
+  "floorPackageTargetedTests": 30,
+  "buildProtectionTests": 5,
+  "typeNegatives": 84,
+  "independentReviewerTests": 17,
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "initialFloorStartup": {
+    "status": "failed",
+    "failure": "PC_DOCUMENT_CHANGED",
+    "businessChecksReached": 0,
+    "cdpOnlyDiagnostic": "same prebinding blank document timeout reproduced",
+    "httpDiagnostic": "index and fixture returned 200, six checks passed, no clientError observed",
+    "physicalCause": "unknown",
+    "startupStabilityFixed": false,
+    "identityAndTimeoutUnchanged": true,
+    "failedOwnedProcessStopped": true,
+    "failedFixtureServerClosed": true
+  },
+  "notValidated": [
+    "Windows",
+    "Android WebView/device",
+    "real DoL",
+    "general Chrome startup reliability"
+  ],
+  "sourceChromeBusinessBindings": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Real Chrome synthetic original-function and V descriptor ownership; no DoL/gameplay acceptance",
+    "checks": [
+      "real widget function macro and captured State bind into the original caller-owned groups",
+      "the unchanged source guard accepts the original active variables getter and functions",
+      "a replaced original global function is rejected without calling it",
+      "a changed V descriptor is rejected and only the retained original getter restores ownership",
+      "a changed registered macro refuses while no fixture business function has run",
+      "caller releases all retained groups and the old bundle is no longer usable"
+    ],
+    "returnByValueControl": "window rejected; void window accepted",
+    "status": "passed",
+    "cleanup": "confirmed"
+  },
+  "floorPackageChromeBusinessBindings": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Real Chrome synthetic original-function and V descriptor ownership; no DoL/gameplay acceptance",
+    "checks": [
+      "real widget function macro and captured State bind into the original caller-owned groups",
+      "the unchanged source guard accepts the original active variables getter and functions",
+      "a replaced original global function is rejected without calling it",
+      "a changed V descriptor is rejected and only the retained original getter restores ownership",
+      "a changed registered macro refuses while no fixture business function has run",
+      "caller releases all retained groups and the old bundle is no longer usable"
+    ],
+    "returnByValueControl": "window rejected; void window accepted",
+    "status": "passed",
+    "cleanup": "confirmed"
+  }
+}
