@@ -21,6 +21,7 @@
     "../../probes/typescript/css.cts",
     "../../probes/typescript/inspectors.cts",
     "../../probes/typescript/journey-wait.cts",
-    "../../probes/typescript/environment.cts"
+    "../../probes/typescript/environment.cts",
+    "../../probes/typescript/widget-source.cts"
   ]
 }

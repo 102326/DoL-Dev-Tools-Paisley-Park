@@ -63,6 +63,7 @@
     "../../scripts/lib/game-semantic.cts",
     "../../scripts/lib/game-spend.cts",
     "../../scripts/lib/game-native-invocation.cts",
-    "../../scripts/lib/game-native-render-tasks.cts"
+    "../../scripts/lib/game-native-render-tasks.cts",
+    "../../scripts/lib/game-contract.cts"
   ]
 }

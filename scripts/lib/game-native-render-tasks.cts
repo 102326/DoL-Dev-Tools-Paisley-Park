@@ -9,7 +9,7 @@ interface RemoteView {exceptionDetails?:unknown;result?:{value?:unknown;objectId
 const {check,finish}:{check:renderTasks.SourceFunction;finish:renderTasks.SourceFunction}=require('./browser-abi/native-render-tasks.cjs');
 // SugarCube's original timed/repeat cleanup, executed by Engine.play itself.
 // This binds the retained timer sets; it never cancels a timer on the host's behalf.
-const {createHash}:typeof import('node:crypto')=require('node:crypto'),contracts:{member(client:renderTasks.Client,id:unknown,expression:string,group?:string):Promise<unknown>;captured(client:renderTasks.Client,id:unknown,name:string,type:string,options:{maxResponseBytes:number}):Promise<unknown>;sameObject(client:renderTasks.Client,left:unknown,right:unknown):Promise<boolean>}=require('./game-contract.cjs');
+const {createHash}:typeof import('node:crypto')=require('node:crypto'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const sources:Partial<Record<string,string>>={
   '#timed-timers-cleanup':'461d4217080ead7ec93c7970dd5d4b8b19dd9b09feb258cac525ef0c03734d7a',
   '#repeat-timers-cleanup':'831c4e82ec0584f1f4a721364426d8843f1ee66f62cd1b6006567754dd97b2fa',

@@ -1,4 +1,4 @@
-// Generated from game-native-invocation.cts by TypeScript 6.0.2; source-lf-sha256=d8205b0c57ccc82b9a3aeca37c93186ff8c5f100708cb6954431dbfee358e193
+// Generated from game-native-invocation.cts by TypeScript 6.0.2; source-lf-sha256=d63f01d6a251272b542a1b7aabdcd1649fa41d64cc7312fc2502465f4cb8819f
 "use strict";
 const { member, functionSource } = require('./game-contract.cjs');
 async function bind(client, receiverId) {

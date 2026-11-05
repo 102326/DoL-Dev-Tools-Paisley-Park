@@ -1,4 +1,4 @@
-// Generated from game-native-render-tasks.cts by TypeScript 6.0.2; source-lf-sha256=565168f0b162e22969ce3c423f9d1cbaf78c3e03f777e67ba681d3f851d1cf78
+// Generated from game-native-render-tasks.cts by TypeScript 6.0.2; source-lf-sha256=da97da53407c1f0c8924c0dfbae07bef50e8ee07541e29102e6209f69181e71c
 "use strict";
 const { check, finish } = require('./browser-abi/native-render-tasks.cjs');
 // SugarCube's original timed/repeat cleanup, executed by Engine.play itself.

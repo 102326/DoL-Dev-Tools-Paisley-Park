@@ -3,7 +3,7 @@ declare namespace invocation {
  type Client=Pick<cdp.Client,'send'>;
  interface Binding {receiverId:unknown;callableId:unknown}
 }
-const {member,functionSource}:{member(client:invocation.Client,receiverId:unknown,expression:string):Promise<unknown>;functionSource(client:invocation.Client,objectId:unknown):Promise<string>}=require('./game-contract.cjs');
+const {member,functionSource}:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 async function bind(client:invocation.Client,receiverId:unknown):Promise<invocation.Binding>{
  let callableId:unknown;
  try{
