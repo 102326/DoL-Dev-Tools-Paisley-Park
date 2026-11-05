@@ -9,14 +9,14 @@
 - A 构建正式化：本机验收完成，代码`0196e86989facae13e765dc3bff58046b53502a7`。隔离开发包、完整Program、5个生成产物、漂移/部分写入/回滚/权限/协作锁检查。
 - B diagnostics/runtime-target：本机验收完成。CJS导出与目标键保留，14类型负对照通过，44定向回归通过；独立包最低Node26和10项Chrome夹具通过；4项构建保护、527项全套中526通过/1Windows跳过。详见[BATCH_AB](BATCH_AB.md)。
 - C CDP/IPC/宿主：进行中。C01的CDP/IPC/worker已通过本机验收，固定代码`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`；532项全套中531通过/1Windows跳过，22类型负例、最低Node26独立包10项Chrome通过。详见[BATCH_C01](BATCH_C01.md)。C02宿主/执行上下文已验收，代码`7d0d91baface643efa43a18cbde9248858905624`；535项中534通过/1Windows跳过，26类型负例、源码Chrome GER13/13、最低Node26包Integration10/10，见[BATCH_C02](BATCH_C02.md)。C03启动/HTTP/宿主输入已验收，代码`3e6909fa01a0dfb76868dc4072c3242bd275ff72`；536项中535通过/1Windows跳过，源码与最低Node26独立包PC12/12，见[BATCH_C03](BATCH_C03.md)。C04共享Collector/privacy/owned-files已验收，代码`e55a4d43c44462c2f4fe33370226f49a87181126`；536项535通过/1Windows跳过、32类型负例、构建4/4。首次Chrome发现超时保留，串行诊断与最低Node26包均10/10；C05已修复准备循环一次发现超时提前退出，代码`d4c09ba089492d36d54445326ef2e6cd21497223`；539项538过/1Windows跳过，故障注入3/3，源码及最低Node26包PC12/12。首次物理超时根因不作无证据推断，见[BATCH_C04](BATCH_C04.md#c05-后续只读启动等待收口)。
-- D 浏览器边界：待实施，原32个静态命中需逐项核对，不凭编译通过勾选。
+- D 浏览器边界：D01已验收，代码`da5eacd4179d0ea1d6d4b3008bb163f0b47f094e`；DOM/CSS双Program、23定向、12对旧/新观察、构建5/5、541项540过/1Windows跳过；源码Chrome10+13与最低Node26独立包GER13通过。见[BATCH_D01](BATCH_D01.md)。原32个静态命中仅处理DOM/CSS两项，其余继续逐项核对。
 - E CLI/Action/Journey/Evidence：待实施。
 - F GER/Session/业务Provider：待实施，源码指纹与旧未决恢复是硬合同。
 - G 适合的开发/验证工具：随批维护测试，剩余迁移待实施；Markdown/Kotlin/Python不机械替换。
 
 ## 核心模块清单
 
-开工运行集合95个CJS。此表记录Node模块迁移；16个权威TS已接入strict构建，整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
+开工运行集合95个Node CJS，当前18个Node权威TS接入strict；另新增2个DOM-only浏览器TS/运行CJS，运行清单共97项、strict源共20项，整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
 
 | 原运行入口 | Node迁移 | 浏览器边界 |
 | --- | --- | --- |
@@ -39,11 +39,11 @@
 | `scripts/lib/chrome-host.cjs` | strict构建已接入，C02本机通过 | 未命中该静态模式 |
 | `scripts/lib/chrome-launch.cjs` | strict构建已接入，C03本机通过 | 未命中该静态模式 |
 | `scripts/lib/collectors.cjs` | strict构建已接入，C04本机通过 | 未命中该静态模式 |
-| `scripts/lib/css.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
+| `scripts/lib/css.cjs` | strict构建已接入，D01本机通过 | DOM-only独立Program，固定旧输出/真实Chrome通过 |
 | `scripts/lib/deep.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/diagnostics.cjs` | strict构建已接入，A+B本机通过 | 未命中该静态模式 |
 | `scripts/lib/doctor.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/dom.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
+| `scripts/lib/dom.cjs` | strict构建已接入，D01本机通过 | DOM-only独立Program，固定旧输出/真实Chrome通过 |
 | `scripts/lib/environment.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/evidence-tools.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/evidence.cjs` | 待迁移 | 未命中该静态模式 |
@@ -115,3 +115,10 @@
 | `scripts/lib/support.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/timeline.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/viewport.cjs` | 待迁移 | 未命中该静态模式 |
+
+## 新增运行资产（纳入清单，不隐藏新增工作）
+
+| 运行入口 | 角色与状态 |
+| --- | --- |
+| `scripts/lib/browser/dom.cjs` | DOM-only TS生成；D01本机通过 |
+| `scripts/lib/browser/css.cjs` | DOM-only TS生成；D01本机通过 |
