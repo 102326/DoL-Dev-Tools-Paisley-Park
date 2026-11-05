@@ -20,6 +20,7 @@
     "../../probes/typescript/dom.cts",
     "../../probes/typescript/css.cts",
     "../../probes/typescript/inspectors.cts",
-    "../../probes/typescript/journey-wait.cts"
+    "../../probes/typescript/journey-wait.cts",
+    "../../probes/typescript/environment.cts"
   ]
 }

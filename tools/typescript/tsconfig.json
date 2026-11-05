@@ -58,6 +58,7 @@
     "../../scripts/lib/native-layout.cts",
     "../../scripts/lib/network-lab.cts",
     "../../scripts/lib/viewport.cts",
-    "../../scripts/lib/matrix.cts"
+    "../../scripts/lib/matrix.cts",
+    "../../scripts/lib/environment.cts"
   ]
 }
