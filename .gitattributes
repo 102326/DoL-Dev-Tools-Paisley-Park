@@ -67,3 +67,7 @@ tests/fixtures/typed-clothing-mapping-baseline/*.cjs text eol=lf
 tests/fixtures/typed-native-control-baseline/*.cjs text eol=lf
 tests/fixtures/typed-native-witness-baseline/*.cjs text eol=lf
 tests/fixtures/typed-source-carrier-baseline/*.cjs text eol=lf
+
+# Integration source remains development-only; persisted browser ABI stays exact LF.
+integrations/**/*.cts export-ignore
+integrations/soft-and-wet/browser-abi/*.cjs text eol=lf

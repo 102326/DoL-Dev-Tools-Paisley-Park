@@ -24,6 +24,13 @@
     "../../probes/typescript/environment.cts",
     "../../probes/typescript/widget-source.cts",
     "../../probes/typescript/goal-reader.cts",
-    "../../probes/typescript/receipts.cts"
+    "../../probes/typescript/receipts.cts",
+    "../../probes/typescript/recorder.cts",
+    "../../probes/typescript/timeline.cts",
+    "../../probes/typescript/integration-patch-observation.cts",
+    "../../probes/typescript/integration-soft-wet.cts",
+    "../../probes/typescript/integration-soft-wet-gameplay.cts",
+    "../../probes/typescript/integration-native-head-state.cts",
+    "../../probes/typescript/integration-native-head-recovery.cts"
   ]
 }
