@@ -37,6 +37,10 @@
     "../../scripts/lib/owned-files.cts",
     "../../scripts/lib/dom.cts",
     "../../scripts/lib/css.cts",
-    "../../scripts/lib/inspectors.cts"
+    "../../scripts/lib/inspectors.cts",
+    "../../scripts/lib/performance.cts",
+    "../../scripts/lib/logcat.cts",
+    "../../scripts/lib/record.cts",
+    "../../scripts/lib/animation.cts"
   ]
 }
