@@ -1,0 +1,44 @@
+{
+  "codeCommit": "0c48af184cb23714861f4c2a1fccb42712d5a3cf",
+  "strictNodeModules": 44,
+  "strictBrowserModules": 5,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 100,
+  "artifacts": 55,
+  "rootTests": {
+    "total": 552,
+    "passed": 551,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 19,
+  "floorPackageTargetedTests": 19,
+  "buildProtectionTests": 5,
+  "typeNegatives": 66,
+  "sourceChromeGER": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  },
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  }
+}
