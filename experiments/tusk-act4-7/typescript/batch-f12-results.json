@@ -1,0 +1,33 @@
+{
+  "codeCommit": "6fc3657124118b0298ecafdb50ecdcc764030bb7",
+  "strictNodeModules": 69,
+  "sourceCarrierNodeModules": 9,
+  "strictBrowserModules": 8,
+  "frozenBrowserAbiAssets": 14,
+  "frozenUntypedFunctions": 36,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 117,
+  "artifacts": 86,
+  "rootTests": {
+    "total": 587,
+    "passed": 586,
+    "failed": 0,
+    "skipped": 1,
+    "selection": "all tracked tests matching both npm test globs; excludes other worker untracked tests not in this fixed code"
+  },
+  "targetedTests": 56,
+  "floorPackageTargetedTests": 56,
+  "buildProtectionTests": 5,
+  "typeNegatives": 109,
+  "independentReviewerTests": 31,
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "ownOfflineXState": true
+  },
+  "newRealChromeRun": false,
+  "notValidated": [
+    "Windows",
+    "Android WebView/device",
+    "real DoL"
+  ]
+}
