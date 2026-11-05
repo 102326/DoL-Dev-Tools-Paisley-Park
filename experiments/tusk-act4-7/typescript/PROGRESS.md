@@ -10,13 +10,13 @@
 - B diagnostics/runtime-target：本机验收完成。CJS导出与目标键保留，14类型负对照通过，44定向回归通过；独立包最低Node26和10项Chrome夹具通过；4项构建保护、527项全套中526通过/1Windows跳过。详见[BATCH_AB](BATCH_AB.md)。
 - C CDP/IPC/宿主：进行中。C01的CDP/IPC/worker已通过本机验收，固定代码`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`；532项全套中531通过/1Windows跳过，22类型负例、最低Node26独立包10项Chrome通过。详见[BATCH_C01](BATCH_C01.md)。C02宿主/执行上下文已验收，代码`7d0d91baface643efa43a18cbde9248858905624`；535项中534通过/1Windows跳过，26类型负例、源码Chrome GER13/13、最低Node26包Integration10/10，见[BATCH_C02](BATCH_C02.md)。C03启动/HTTP/宿主输入已验收，代码`3e6909fa01a0dfb76868dc4072c3242bd275ff72`；536项中535通过/1Windows跳过，源码与最低Node26独立包PC12/12，见[BATCH_C03](BATCH_C03.md)。C04共享Collector/privacy/owned-files已验收，代码`e55a4d43c44462c2f4fe33370226f49a87181126`；536项535通过/1Windows跳过、32类型负例、构建4/4。首次Chrome发现超时保留，串行诊断与最低Node26包均10/10；C05已修复准备循环一次发现超时提前退出，代码`d4c09ba089492d36d54445326ef2e6cd21497223`；539项538过/1Windows跳过，故障注入3/3，源码及最低Node26包PC12/12。首次物理超时根因不作无证据推断，见[BATCH_C04](BATCH_C04.md#c05-后续只读启动等待收口)。
 - D 浏览器边界：D01已验收，代码`da5eacd4179d0ea1d6d4b3008bb163f0b47f094e`；DOM/CSS双Program、23定向、12对旧/新观察、构建5/5、541项540过/1Windows跳过；源码Chrome10+13与最低Node26独立包GER13通过。见[BATCH_D01](BATCH_D01.md)。D02 Inspector也已验收，代码`88bb7dcea6d7ede5500d02935422346d70e25513`；29定向、5构建、542项541过/1Windows跳过、源码与最低Node26无依赖独立包PC12/12，见[BATCH_D02](BATCH_D02.md)。原32命中处理三项，其余继续逐项核对。
-- E CLI/Action/Journey/Evidence：待实施。
+- E CLI/Action/Journey/Evidence：E01受限采集/离线解析4模块已验收，代码`3ffcd81b772bd36a920ea1afdb5bd9b4cbaed38e`；32定向及最低Node26独立包32/32，542项541过/1Windows跳过、40类型负例、5构建。见[BATCH_E01](BATCH_E01.md)。CLI主体/Action/Journey/Evidence等继续。
 - F GER/Session/业务Provider：待实施，源码指纹与旧未决恢复是硬合同。
 - G 适合的开发/验证工具：随批维护测试，剩余迁移待实施；Markdown/Kotlin/Python不机械替换。
 
 ## 核心模块清单
 
-开工运行集合95个Node CJS，当前19个Node权威TS接入strict；另新增3个DOM-only浏览器TS/运行CJS，运行清单共98项、strict源共22项，整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
+开工运行集合95个Node CJS，当前23个Node权威TS接入strict；另新增3个DOM-only浏览器TS/运行CJS，运行清单共98项、strict源共26项，整体未完成。额外新增运行模块须纳入后续清单，不能以固定分母隐去新增工作。函数源码插值静态命中32个，不是完整数据流证明。
 
 | 原运行入口 | Node迁移 | 浏览器边界 |
 | --- | --- | --- |
@@ -32,7 +32,7 @@
 | `scripts/android-inspect.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/dol-dev.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/action.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/animation.cjs` | 待迁移 | 未命中该静态模式 |
+| `scripts/lib/animation.cjs` | strict构建已接入，E01本机通过 | 未命中该静态模式 |
 | `scripts/lib/app-lifecycle.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/cdp.cjs` | strict构建已接入，C01本机通过 | 未命中该静态模式 |
 | `scripts/lib/chrome-evidence.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
@@ -96,7 +96,7 @@
 | `scripts/lib/integration-worker.cjs` | strict构建已接入，C01本机通过 | 未命中该静态模式 |
 | `scripts/lib/integration.cjs` | strict构建已接入，C01本机通过 | 未命中该静态模式 |
 | `scripts/lib/journey.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
-| `scripts/lib/logcat.cjs` | 待迁移 | 未命中该静态模式 |
+| `scripts/lib/logcat.cjs` | strict构建已接入，E01本机通过 | 未命中该静态模式 |
 | `scripts/lib/matrix.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/native-layout.cjs` | 待迁移 | 未命中该静态模式 |
 | `scripts/lib/network-lab.cjs` | 待迁移 | 未命中该静态模式 |
@@ -104,10 +104,10 @@
 | `scripts/lib/pc-http.cjs` | strict构建已接入，C03本机通过 | 未命中该静态模式 |
 | `scripts/lib/pc-session.cjs` | strict构建已接入，C03本机通过 | 未命中该静态模式 |
 | `scripts/lib/performance-series.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/performance.cjs` | 待迁移 | 未命中该静态模式 |
+| `scripts/lib/performance.cjs` | strict构建已接入，E01本机通过 | 未命中该静态模式 |
 | `scripts/lib/privacy.cjs` | strict构建已接入，C04本机通过 | 未命中该静态模式 |
 | `scripts/lib/process-memory.cjs` | 待迁移 | 未命中该静态模式 |
-| `scripts/lib/record.cjs` | 待迁移 | 未命中该静态模式 |
+| `scripts/lib/record.cjs` | strict构建已接入，E01本机通过 | 未命中该静态模式 |
 | `scripts/lib/recorder.cjs` | 待迁移 | 待逐项处理源码注入/摘要边界 |
 | `scripts/lib/runtime-target.cjs` | strict构建已接入，A+B本机通过 | 未命中该静态模式 |
 | `scripts/lib/source-find-cli.cjs` | 待迁移 | 未命中该静态模式 |
