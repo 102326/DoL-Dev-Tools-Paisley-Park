@@ -52,6 +52,9 @@
     "../../scripts/lib/action.cts",
     "../../scripts/lib/journey.cts",
     "../../scripts/lib/chrome-evidence.cts",
-    "../../scripts/lib/evidence.cts"
+    "../../scripts/lib/evidence.cts",
+    "../../scripts/lib/performance-series.cts",
+    "../../scripts/lib/process-memory.cts",
+    "../../scripts/lib/native-layout.cts"
   ]
 }
