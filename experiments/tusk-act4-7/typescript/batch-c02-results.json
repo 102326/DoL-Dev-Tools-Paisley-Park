@@ -1,0 +1,67 @@
+{
+  "codeCommit": "7d0d91baface643efa43a18cbde9248858905624",
+  "strictCoreModules": 9,
+  "baselineCoreModules": 95,
+  "rootTests": {
+    "total": 535,
+    "passed": 534,
+    "failed": 0,
+    "skipped": 1
+  },
+  "initialSandboxRun": {
+    "passed": 532,
+    "failed": 2,
+    "skipped": 1,
+    "reason": "Loopback listen EPERM; authorized execution passed"
+  },
+  "buildProtectionTests": 4,
+  "typeNegatives": {
+    "total": 26,
+    "TS2322": 21,
+    "TS18046": 2,
+    "TS2339": 2,
+    "TS2740": 1
+  },
+  "sourceChromeGER": {
+    "schemaVersion": 1,
+    "node": "v26.13.0",
+    "platform": "darwin",
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "status": "passed"
+  },
+  "floorPackageChromeIntegration": {
+    "schemaVersion": 1,
+    "node": "v26.0.0",
+    "platform": "darwin",
+    "scope": "Synthetic Chrome Integration document binding only",
+    "checks": [
+      "formal Evidence CLI uses reviewed worker on the original Chrome document",
+      "same-URL peer never substitutes for the selected target",
+      "parent remembers a URL roundtrip before the worker binds, even when current identity fields match",
+      "hash between detect and collect rejects mixed data while retaining Generic Evidence",
+      "reload between detect and collect rejects mixed data while retaining Generic Evidence",
+      "explicit new-document binding permits a new collection",
+      "document change during redact cannot publish a stale successful Integration",
+      "missing local module remains optional and does not erase Generic artifacts",
+      "unresolved remote read returns a bounded optional failure with exactly one module attempt",
+      "closed original target fails without adopting the surviving same-URL peer"
+    ],
+    "status": "passed",
+    "cleanup": "confirmed"
+  }
+}

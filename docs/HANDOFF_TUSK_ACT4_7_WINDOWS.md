@@ -4,7 +4,7 @@
 
 **任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。本任务书不是正式发布指令。**
 
-用户现已将完整Node核心TS迁移列为7.0发布门槛；开发包P2，UI4.2优先级P1。Mac仍继续分批迁移。当前7/95个核心入口已验收（A+B与C01），不能把旧接线报告当成整体7.0已完成。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
+用户现已将完整Node核心TS迁移列为7.0发布门槛；开发包P2，UI4.2优先级P1。Mac仍继续分批迁移。当前9/95个核心入口已验收（A+B、C01、C02），不能把旧接线报告当成整体7.0已完成。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序
 
@@ -12,7 +12,7 @@
 | --- | --- |
 | 仓库 | [102326/DoL-Dev-Tools-Paisley-Park](https://github.com/102326/DoL-Dev-Tools-Paisley-Park) |
 | 研发分支 | [experiment/tusk-act4-7](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/experiment/tusk-act4-7) |
-| **本次固定代码基线，含TS C01；完整迁移仍继续** | **`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`** |
+| **本次固定代码基线，含TS C02；完整迁移仍继续** | **`7d0d91baface643efa43a18cbde9248858905624`** |
 | TS A+B代码及对应独立包 | `0196e86989facae13e765dc3bff58046b53502a7` |
 | Chrome optional Integration固定代码 | `bd3f1b61798552953c27ec0066280169c3f61da3` |
 | typed Skill resolver 固定代码及对应包 | `10082eff5715e26f086d19310f815c22872b9dfe` |
@@ -24,7 +24,7 @@
 | 上一轮 PC / Journey 接续基线 | `241c77262b560481447dff75903d679bb2fedc2e` |
 | 正式 main，本次交接核对值 | `cfd76a75e6c28efbbdcf447b25679cd9f257ef54` |
 
-固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
+固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/7d0d91baface643efa43a18cbde9248858905624)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
 
 本任务书在上述基线之后提交；它不可能位于其自身所指的旧提交中。Windows 先核对最新远端与基线的差异，记录**实际运行的完整 SHA**，不要把本页中的 SHA 当成永远不变的远端 HEAD。若远端仅增加交接文档，可从确认后的最新研发分支接续；存在新代码时先检查改动及其验证记录。
 
@@ -45,7 +45,8 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 
 | Mac 证据 | 实际范围 |
 | --- | --- |
-| 最新 Node 全套，eb8e13a | 532项：531通过、0失败、1项Windows专属句柄行为跳过 |
+| 最新 Node 全套，7d0d91b | 535项：534通过、0失败、1项Windows专属句柄行为跳过 |
+| TS C02 | 宿主/执行上下文接入，当前9模块/10产物，26类型负例；源码Chrome GER13/13，最低Node26独立包Integration10/10；见[C02报告](../experiments/tusk-act4-7/typescript/BATCH_C02.md) |
 | TS C01 | CDP/IPC/worker共3模块接入，当前7模块/8产物，22类型负对照；伪造worker元数据严格拒绝，最低Node26包Chrome10/10 |
 | TS A+B | 4个strict模块/5产物、14类型负对照、4构建保护通过；目标key与诊断旧CJS对照一致 |
 | Chrome optional Integration | 真实Chrome10/10；源码Node26.13.0和独立包最低26.0.0均通过。含worker连接前hash往返RED/GREEN、关闭原页不接干扰页、单次挂起及10秒总时限保护 |
