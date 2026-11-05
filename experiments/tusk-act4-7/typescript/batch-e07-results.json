@@ -1,0 +1,22 @@
+{
+  "codeCommit": "9a95c9fcb7adeccfa885e18835bbff4132c6bb70",
+  "strictNodeModules": 37,
+  "strictBrowserModules": 4,
+  "baselineNodeModules": 95,
+  "currentRuntimeEntries": 99,
+  "artifacts": 46,
+  "rootTests": {
+    "total": 549,
+    "passed": 548,
+    "failed": 0,
+    "skipped": 1
+  },
+  "targetedTests": 7,
+  "floorPackageTargetedTests": 7,
+  "buildProtectionTests": 5,
+  "typeNegatives": 58,
+  "independentPackage": {
+    "outsideSourceAncestors": true,
+    "withoutNodeModules": true
+  }
+}
