@@ -61,3 +61,4 @@ scripts/lib/browser/*.d.cts export-ignore
 # Exact browser function text is part of the existing render contract digest.
 scripts/lib/browser-abi/*.cjs text eol=lf
 tests/fixtures/typed-render-baseline/*.cjs text eol=lf
+tests/fixtures/typed-business-bindings-baseline/*.cjs text eol=lf

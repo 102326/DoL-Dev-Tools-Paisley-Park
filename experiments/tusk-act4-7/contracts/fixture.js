@@ -11,3 +11,5 @@ window.SugarCube={Macro:{get:name=>({handler:handlers[name]})},Story:{getAllWidg
 }}};
 window.contractFixture={setStory:mode=>{storyMode=mode},tamperMacro:()=>{handlers.syntheticmacro=macroFactory(true)}};
 window.SugarCube.State={passage:'Synthetic Room',turns:0,variables:{money:100,worn:{head:{variable:'naked'}},wardrobe:{head:[]}}};
+window.syntheticMoment=(()=>{const State=window.SugarCube.State;return function syntheticMoment(){return State.passage}})();
+(()=>{const _active={variables:window.SugarCube.State.variables};window.SugarCube.State.active=_active;Object.defineProperty(window,'V',{get:()=>_active.variables,configurable:true,enumerable:false})})();

@@ -5,6 +5,8 @@ declare namespace contracts {
  type Wrapper={handlerSha256:string;captured:{name:unknown;sha256:string}&({type:'object';property:'handler'}|{type:'function';property?:never})};
  interface Options {retain?:boolean;handlerSha256?:string;wrapperChain?:Wrapper[]}
  interface Widget {name:string;sha256:string;source:string;passage:string;handlerBinding:string;objectId?:unknown;bodyHandlerId?:unknown;definitionId?:unknown;wrapperBindings?:{objectId:unknown;property:string;valueId:unknown}[];wrapperFunctionIds?:unknown[];objectGroup?:string}
+ interface RetainedWidget extends Widget {objectId:unknown;bodyHandlerId:unknown;definitionId:unknown;wrapperBindings:NonNullable<Widget['wrapperBindings']>;wrapperFunctionIds:unknown[];objectGroup:string}
+ interface RetainedFunctionMacro extends FunctionMacro {objectId:unknown;functionId:unknown;objectGroup:string}
  interface FunctionMacro {name:string;sha256:string;source:string;handlerBinding:string;objectId?:unknown;functionId?:unknown;objectGroup?:string}
 }
 // Property views describe access, not validated CDP envelopes. Opaque remote IDs
@@ -26,6 +28,8 @@ function one(properties:PropertiesView|null|undefined, name:unknown) {
   return hits[0].value;
 }
 
+function attestWidget(client:contracts.Client,name:string,expectedSha256:string,options:contracts.Options&{retain:true}):Promise<contracts.RetainedWidget>;
+function attestWidget(client:contracts.Client,name:string,expectedSha256:string,options?:contracts.Options):Promise<contracts.Widget>;
 async function attestWidget(client:contracts.Client, name:string, expectedSha256:string, { retain = false, handlerSha256, wrapperChain = [] }:contracts.Options = {}):Promise<contracts.Widget> {
   if (!client || typeof client.send !== 'function'
     || typeof name !== 'string' || !/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(name)
@@ -135,6 +139,8 @@ async function attestWidget(client:contracts.Client, name:string, expectedSha256
   return result!;
 }
 
+function attestFunctionMacro(client:contracts.Client,name:string,expectedSha256:string,options:Pick<contracts.Options,'handlerSha256'>&{retain:true}):Promise<contracts.RetainedFunctionMacro>;
+function attestFunctionMacro(client:contracts.Client,name:string,expectedSha256:string,options?:Pick<contracts.Options,'retain'|'handlerSha256'>):Promise<contracts.FunctionMacro>;
 // Some loaded Mods replace a Twee widget with a captured JS function. The wrapper
 // text alone identifies none of that function's business behavior.
 async function attestFunctionMacro(client:contracts.Client, name:string, expectedSha256:string, { retain = false, handlerSha256 }:Pick<contracts.Options,'retain'|'handlerSha256'> = {}):Promise<contracts.FunctionMacro> {

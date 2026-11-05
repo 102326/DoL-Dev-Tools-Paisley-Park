@@ -1,4 +1,4 @@
-// Generated from game-contract.cts by TypeScript 6.0.2; source-lf-sha256=4eb67213dd554493f09ad80c06ae199e7b106aac519084fb0bdb1f767244de01
+// Generated from game-contract.cts by TypeScript 6.0.2; source-lf-sha256=2594b110c44875f81bba3eb08c09128e6277c47032aae358c8bb7ba3847284e8
 "use strict";
 const { loadedWidget } = require('./browser/widget-source.cjs');
 const { createHash, randomUUID } = require('node:crypto');
