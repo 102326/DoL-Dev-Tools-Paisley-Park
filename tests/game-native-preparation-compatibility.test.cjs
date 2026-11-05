@@ -37,11 +37,11 @@ async function capture(kind,old,mode){
  const profile={id:'synthetic-profile',terminalReviewed:true,payloadSha256:'payload-digest',shadowKeys:['_args'],widgets:{},functionMacros:{},functions:{updateMoment:{expr:'synthetic',sha256:'a'.repeat(64)}}};
  const request=shop?{type:'dol-shop',operation:'buy-one'}:{type:'dol-wardrobe',operation:mode==='unequip'?'unequip':'equip',slot:'head',variable:'hairpin',colour:'black',accessoryColour:'black'};
  if(shop){
-   stubs['./game-shop.cjs']={validate(){},async prepare(){frames.push({prepare:'shop'});if(mode==='mapping-fail')throw Error('synthetic mapping');return{objectIds:['mapped-id'],objectGroups:['owned-mapped'],arguments:[{objectId:'mapped-arg'}],interpretation:{status:'available'},source:'return undefined;'}}};
+   stubs['./game-shop.cjs']={validate(request){return request},async prepare(){frames.push({prepare:'shop'});if(mode==='mapping-fail')throw Error('synthetic mapping');return{objectIds:['mapped-id'],objectGroups:['owned-mapped'],arguments:[{objectId:'mapped-arg'}],interpretation:{status:'available'},source:'return undefined;'}}};
    stubs['./game-native-control.cjs']={async attest(){return held},clickReader:function clickReader(){return undefined}};
    stubs['./game-shop-operation.cjs']={operation:function syntheticOperation(){return {ok:true}}};stubs['./game-shop-profile.json']=profile;
  }else{
-   stubs['./game-wardrobe.cjs']={validate(){},async attest(){frames.push({attest:'wardrobe'});if(mode==='mapping-fail')throw Error('synthetic mapping');return held},reader:function syntheticReader(){return {}},branchGuard:function syntheticBranch(){return undefined}};
+   stubs['./game-wardrobe.cjs']={validate(request){return request},async attest(){frames.push({attest:'wardrobe'});if(mode==='mapping-fail')throw Error('synthetic mapping');return held},reader:function syntheticReader(){return {}},branchGuard:function syntheticBranch(){return undefined}};
    stubs['./game-wardrobe-operation.cjs']={operation:function syntheticOperation(){return {ok:true}}};stubs['./game-wardrobe-profile.json']=profile;
  }
  const api=load('game-'+kind+'-native',old,stubs),attempt='12345678-1234-1234-1234-123456789abc';let result,error;

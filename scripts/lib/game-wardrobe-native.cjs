@@ -1,4 +1,4 @@
-// Generated from game-wardrobe-native.cts by TypeScript 6.0.2; source-lf-sha256=3f79110ef1d5bf5f04ee05758a35d3acd9d54fee6562d17aaa0c44aa48704c70
+// Generated from game-wardrobe-native.cts by TypeScript 6.0.2; source-lf-sha256=3d4177fb938ffba6397b85b82c23b69979c52566a72cfb943c83cd2aee1c28b6
 "use strict";
 const { createHash } = require('node:crypto'), mapping = require('./game-wardrobe.cjs'), contracts = require('./game-contract.cjs');
 const { functionSource } = contracts, environment = require('./game-native-environment.cjs'), receipts = require('./game-receipts.cjs');
@@ -7,8 +7,8 @@ const sha = (s) => createHash('sha256').update(s).digest('hex');
 const { bind: bindBusiness, checkBindings } = require('./game-native-business-bindings.cjs');
 // Business completion is separate from cosmetic canvas/tooltip/number rendering.
 // The local profile binds the reviewed original business and receiving branches.
-async function prepare(client, request, attemptId, { attestOnly = false, scope } = {}) {
-    mapping.validate(request);
+async function prepare(client, raw, attemptId, { attestOnly = false, scope } = {}) {
+    const request = mapping.validate(raw);
     if (typeof attestOnly !== 'boolean' || !attestOnly && (profile.terminalReviewed !== true || !/^[a-f0-9-]{36}$/.test((attemptId || ''))))
         throw Object.assign(Error('Reviewed native wardrobe contract unavailable'), { code: 'MAPPING_UNAVAILABLE' });
     let held, releaseCalled = false;

@@ -3,17 +3,17 @@ import type action from './action.cjs';
 import type predicates from './game-goal-reader.cjs';
 import type receiptsAPI from './game-receipts.cjs';
 import type business from './game-native-business-bindings.cjs';
+import type mapping from './game-shop.cjs';
 declare namespace nativeShop {
  type Client=Pick<cdp.Client,'send'|'evaluate'>;
- type Request={type:'dol-shop';operation:'quantity-one'|'buy-one'|'return-menu';selector?:never}|{type:'dol-shop';operation:'browse';selector:string};
+ type Request=mapping.Request;
  interface Options {quote?:predicates.Quote;attestOnly?:boolean;scope?:unknown}
  interface Attested {status:'attested';actions:false;profile:string;before:unknown;widgets:number;functions:number;bindingCleanup:'completed'}
  interface Prepared {clickReceiverObjectId:unknown;action:{type:'web-click';selector:string};arguments:{objectId:unknown}[];objectGroups:string[];objectIds:unknown[];source:string;executionBinding:receiptsAPI.Binding;interpretation:Record<string,unknown>&{provider:'dol-shop-native';contract:string;execution:'native-operation'};operation:Readonly<action.Operation>}
  type SourceFunction=(...args:unknown[])=>unknown;
 }
 // Bounded ports to existing JS producers. Opaque IDs and page snapshots stay unknown.
-interface Mapped {objectIds:unknown[];objectGroups:string[];arguments:{objectId:unknown}[];source:string;interpretation:Record<string,unknown>}
-interface Mapping {validate:(request:unknown)=>asserts request is nativeShop.Request;prepare:(client:nativeShop.Client,request:nativeShop.Request,goal:unknown,options:{quote:predicates.Quote})=>Promise<Mapped>}
+type Mapped=mapping.Prepared;
 interface Held {objectGroup:string;objects:{state:unknown;node:unknown;click:unknown;context:unknown};release:()=>Promise<void>;payloadSha256:string;shadowKeys:unknown;payload:unknown}
 interface Control {attest:(client:nativeShop.Client,descriptor:{kind:'menu';selected:{type:'web-click';selector:string}},options:{allowShopPropagationStops:true})=>Promise<Held>;clickReader:nativeShop.SourceFunction}
 interface SaveWatch {objectId:unknown;digest:string}
@@ -21,13 +21,13 @@ interface Save {bind:(client:nativeShop.Client,scope:unknown,group:string)=>Prom
 interface Environment {bind:(client:nativeShop.Client,held:{objectGroup:string},profile:unknown,flagsMatch:undefined,allowSave:boolean)=>Promise<{guard:string;arguments:{objectId:unknown}[]}>}
 interface RemoteView {exceptionDetails?:unknown;result?:{type?:unknown;objectId?:unknown;value?:unknown}}
 const {branch,readCurrent,dateGetterOf,sourceCheck}:{branch:nativeShop.SourceFunction;readCurrent:nativeShop.SourceFunction;dateGetterOf:nativeShop.SourceFunction;sourceCheck:nativeShop.SourceFunction}=require('./browser-abi/native-shop.cjs');
-const {createHash}:typeof import('node:crypto')=require('node:crypto'),shop:Mapping=require('./game-shop.cjs'),control:Control=require('./game-native-control.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
+const {createHash}:typeof import('node:crypto')=require('node:crypto'),shop:typeof import('./game-shop.cjs')=require('./game-shop.cjs'),control:Control=require('./game-native-control.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const {bind,checkBindings}:typeof import('./game-native-business-bindings.cjs')=require('./game-native-business-bindings.cjs'),environment:Environment=require('./game-native-environment.cjs'),receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
 const {operation}:{operation:(...args:unknown[])=>unknown}=require('./game-shop-operation.cjs'),profile:business.Profile&{id:string;payloadSha256:string;shadowKeys:unknown}=require('./game-shop-profile.json');
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 const button='#buy-send-home > .buy-button > .buy-button-inner',anchor=button+' > a.link-internal';
-async function prepare(client:nativeShop.Client,request:unknown,goal:unknown,attemptId:unknown,{quote,attestOnly=false,scope}:nativeShop.Options={}):Promise<nativeShop.Attested|nativeShop.Prepared>{
-  shop.validate(request);
+async function prepare(client:nativeShop.Client,raw:unknown,goal:unknown,attemptId:unknown,{quote,attestOnly=false,scope}:nativeShop.Options={}):Promise<nativeShop.Attested|nativeShop.Prepared>{
+  const request=shop.validate(raw);
   if(request.operation!=='buy-one'||!quote||typeof attestOnly!=='boolean'||!attestOnly&&!/^[a-f0-9-]{36}$/.test((attemptId||'') as string))throw Object.assign(Error('Native purchase contract unavailable'),{code:'MAPPING_UNAVAILABLE'});
   let mapped:Mapped|undefined,held:Held|undefined,releaseCalled=false;const groups:string[]=[];
   const release=async()=>{releaseCalled=true;const results=await Promise.allSettled([...groups.splice(0).map(objectGroup=>client.send('Runtime.releaseObjectGroup',{objectGroup})),

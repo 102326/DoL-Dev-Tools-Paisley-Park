@@ -1,4 +1,4 @@
-// Generated from game-shop-native.cts by TypeScript 6.0.2; source-lf-sha256=ed09dd09726f3c3a81c9909a7b9fcf32d181571ff155f1a5291f856cd64566bd
+// Generated from game-shop-native.cts by TypeScript 6.0.2; source-lf-sha256=470ddefe5772967471046dd0240c8cf40e424d326f34bdcc7ff984bdcaf45b5f
 "use strict";
 const { branch, readCurrent, dateGetterOf, sourceCheck } = require('./browser-abi/native-shop.cjs');
 const { createHash } = require('node:crypto'), shop = require('./game-shop.cjs'), control = require('./game-native-control.cjs'), contracts = require('./game-contract.cjs');
@@ -6,8 +6,8 @@ const { bind, checkBindings } = require('./game-native-business-bindings.cjs'), 
 const { operation } = require('./game-shop-operation.cjs'), profile = require('./game-shop-profile.json');
 const sha = (s) => createHash('sha256').update(s).digest('hex');
 const button = '#buy-send-home > .buy-button > .buy-button-inner', anchor = button + ' > a.link-internal';
-async function prepare(client, request, goal, attemptId, { quote, attestOnly = false, scope } = {}) {
-    shop.validate(request);
+async function prepare(client, raw, goal, attemptId, { quote, attestOnly = false, scope } = {}) {
+    const request = shop.validate(raw);
     if (request.operation !== 'buy-one' || !quote || typeof attestOnly !== 'boolean' || !attestOnly && !/^[a-f0-9-]{36}$/.test((attemptId || '')))
         throw Object.assign(Error('Native purchase contract unavailable'), { code: 'MAPPING_UNAVAILABLE' });
     let mapped, held, releaseCalled = false;

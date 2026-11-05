@@ -2,22 +2,22 @@ import type cdp from './cdp.cjs';
 import type action from './action.cjs';
 import type receiptsAPI from './game-receipts.cjs';
 import type business from './game-native-business-bindings.cjs';
+import type wardrobe from './game-wardrobe.cjs';
 declare namespace nativeWardrobe {
  type Client=Pick<cdp.Client,'send'|'evaluate'>;
- type Request={type:'dol-wardrobe';slot:'head'}&({operation:'unequip'}|{operation:'equip';variable:'hairpin'|'beanie';colour:string;accessoryColour:string|null|0;modder?:string|null});
+ type Request=wardrobe.Request;
  interface Options {attestOnly?:boolean;scope?:unknown}
  interface Interpretation {selector:string;index:unknown;before:unknown;[key:string]:unknown}
  interface Attested {status:'attested';actions:false;profile:string;terminalReviewed:boolean;widgets:number;functions:number;bindingCleanup:'completed'}
  interface Prepared {clickReceiverObjectId:unknown;action:{type:'web-click';selector:string};arguments:{objectId:unknown}[];objectGroups:string[];source:string;executionBinding:receiptsAPI.Binding;interpretation:Interpretation&{provider:'dol-wardrobe-native';execution:'native-operation';contract:string};operation:Readonly<action.Operation>}
 }
 // Bounded ports to existing JS producers, not validation of raw CDP facts.
-interface Held {objectGroup:string;objects:{state:unknown;node:unknown;click:unknown;context:unknown;shadowStore:unknown};release:()=>Promise<void>;interpretation:nativeWardrobe.Interpretation;requestDigest:string;payload:unknown}
-interface Mapping {validate:(request:unknown)=>asserts request is nativeWardrobe.Request;attest:(client:nativeWardrobe.Client,request:nativeWardrobe.Request)=>Promise<Held>;branchGuard:(...args:unknown[])=>unknown;reader:(...args:unknown[])=>unknown}
+type Held=wardrobe.Attested;
 interface SaveWatch {objectId:unknown;digest:string}
 interface Save {bind:(client:nativeWardrobe.Client,scope:unknown,group:string)=>Promise<SaveWatch|null>;execution:(source:string,index:number)=>string}
 interface Environment {bind:(client:nativeWardrobe.Client,held:{objectGroup:string},profile:unknown,flagsMatch:undefined,allowSave:boolean)=>Promise<{guard:string;arguments:{objectId:unknown}[]}>}
 interface RemoteView {exceptionDetails?:unknown;result?:{type?:unknown;objectId?:unknown;value?:unknown}}
-const {createHash}:typeof import('node:crypto')=require('node:crypto'),mapping:Mapping=require('./game-wardrobe.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
+const {createHash}:typeof import('node:crypto')=require('node:crypto'),mapping:typeof import('./game-wardrobe.cjs')=require('./game-wardrobe.cjs'),contracts:typeof import('./game-contract.cjs')=require('./game-contract.cjs');
 const {functionSource}=contracts,environment:Environment=require('./game-native-environment.cjs'),receipts:typeof import('./game-receipts.cjs')=require('./game-receipts.cjs');
 const {operation}:{operation:(...args:unknown[])=>unknown}=require('./game-wardrobe-operation.cjs'),profile:business.Profile&{id:string;terminalReviewed:boolean}=require('./game-wardrobe-profile.json');
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
@@ -25,8 +25,8 @@ const {bind:bindBusiness,checkBindings}:typeof import('./game-native-business-bi
 
 // Business completion is separate from cosmetic canvas/tooltip/number rendering.
 // The local profile binds the reviewed original business and receiving branches.
-async function prepare(client:nativeWardrobe.Client,request:unknown,attemptId:unknown,{attestOnly=false,scope}:nativeWardrobe.Options={}):Promise<nativeWardrobe.Attested|nativeWardrobe.Prepared>{
-  mapping.validate(request);
+async function prepare(client:nativeWardrobe.Client,raw:unknown,attemptId:unknown,{attestOnly=false,scope}:nativeWardrobe.Options={}):Promise<nativeWardrobe.Attested|nativeWardrobe.Prepared>{
+  const request=mapping.validate(raw);
   if(typeof attestOnly!=='boolean'||!attestOnly&&(profile.terminalReviewed!==true||!/^[a-f0-9-]{36}$/.test((attemptId||'') as string)))
     throw Object.assign(Error('Reviewed native wardrobe contract unavailable'),{code:'MAPPING_UNAVAILABLE'});
   let held:Held|undefined,releaseCalled=false;const groups:string[]=[];
