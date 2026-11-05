@@ -4,6 +4,13 @@
 
 **任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。本任务书不是正式发布指令。**
 
+## 7.0 发布时统一更名（用户决定，2026-11-06）
+
+- 正式项目名称：**DoL Dev Tools — Gold Experience（黄金体验）**。Paisley Park 保留为历史项目代号，不再作为新一代核心平台的正式名称。
+- 定位：为 Agent 提供深入 DoL 的能力，让其能够观察、理解、操作、调查和验证游戏。项目理念：**创造能力，赋予行动。**
+- 用户确认在 **7.0 发布收口时**统一更名，检查 README、Skill、CLI 对外说明、发布文案及制品展示名称的一致性；当前先记录决定，不立即改代码、包名、仓库名、路径或版本。
+- 历史版本与验收记录保留当时名称及证据身份。内部标识和路径按实际兼容需要处理，不因更名自动迁移；本记录不授权合并主线或发布。
+
 Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记录](../experiments/tusk-act4-7/WINDOWS_REPORT.md)、[新 TS Android 只读复验](../experiments/tusk-act4-7/ANDROID_TS_READONLY_20261105.md)、[七组 contracts 补验](../experiments/tusk-act4-7/WINDOWS_CONTRACTS_20261106.md)与[新 TS 真实 DoL 原生保存](../experiments/tusk-act4-7/WINDOWS_TS_REAL_SAVE_20261106.md)。最后一项使用新建空白 PC 环境，生产 GER 保存一次并结清，不触碰 Android 或历史 Store。下方“尚待 Windows”的描述保留原 Mac 交接时点；已完成项按对应固定代码和报告去重，不自动重跑。最低 Node26.0.0 的 Windows 运行、真实历史回执及其它真实游戏业务仍有未覆盖范围，不能据这些代表性结果宣布整体7.0可发布。
 
 同日新增：[固定独立包的真实保存与原回执恢复](../experiments/tusk-act4-7/WINDOWS_PACKAGE_REAL_SAVE_RECOVERY_20261106.md)已通过。新建空白 PC 环境执行唯一保存，在原 terminal 返回边界实际中断自有 CLI，新 CLI 恢复同一 attempt 并结清，动作数仍为 1。没有占用平板或操作历史 Store；保留中断和清理首轮未确认记录。
