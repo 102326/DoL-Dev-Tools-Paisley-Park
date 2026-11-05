@@ -2,7 +2,9 @@
 
 更新：2026-11-05。接收方：家用 Windows 开发环境的 Codex。
 
-**任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。Mac 接线已完成，不要重新开发另一套 Runtime；本任务书不是正式发布指令。**
+**任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。本任务书不是正式发布指令。**
+
+用户现已将完整Node核心TS迁移列为7.0发布门槛；开发包P2，UI4.2优先级P1。Mac仍继续分批迁移。当前A+B的4/95个核心入口已验收，不能把旧接线报告当成整体7.0已完成。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)与[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序
 
@@ -10,7 +12,8 @@
 | --- | --- |
 | 仓库 | [102326/DoL-Dev-Tools-Paisley-Park](https://github.com/102326/DoL-Dev-Tools-Paisley-Park) |
 | 研发分支 | [experiment/tusk-act4-7](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/experiment/tusk-act4-7) |
-| **本次固定代码基线，包含下列全部成果及 Chrome optional Integration** | **`bd3f1b61798552953c27ec0066280169c3f61da3`** |
+| **本次固定代码基线，含TS A+B；完整迁移仍继续** | **`0196e86989facae13e765dc3bff58046b53502a7`** |
+| Chrome optional Integration固定代码 | `bd3f1b61798552953c27ec0066280169c3f61da3` |
 | typed Skill resolver 固定代码及对应包 | `10082eff5715e26f086d19310f815c22872b9dfe` |
 | 上一次完整Windows接续任务书 | `6a6fb273e619fe5dc6d99713482b9927f1ea5f8f` |
 | 上轮 Windows 交接文档 | `01fe9fd478a770d71bcd63ec4e5cfaa6ebecd5dd` |
@@ -20,7 +23,7 @@
 | 上一轮 PC / Journey 接续基线 | `241c77262b560481447dff75903d679bb2fedc2e` |
 | 正式 main，本次交接核对值 | `cfd76a75e6c28efbbdcf447b25679cd9f257ef54` |
 
-固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/bd3f1b61798552953c27ec0066280169c3f61da3)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
+固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/0196e86989facae13e765dc3bff58046b53502a7)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
 
 本任务书在上述基线之后提交；它不可能位于其自身所指的旧提交中。Windows 先核对最新远端与基线的差异，记录**实际运行的完整 SHA**，不要把本页中的 SHA 当成永远不变的远端 HEAD。若远端仅增加交接文档，可从确认后的最新研发分支接续；存在新代码时先检查改动及其验证记录。
 
@@ -41,7 +44,8 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 
 | Mac 证据 | 实际范围 |
 | --- | --- |
-| 最新 Node 全套，bd3f1b6 | 526项：525通过、0失败、1项Windows专属句柄行为跳过 |
+| 最新 Node 全套，0196e86 | 527项：526通过、0失败、1项Windows专属句柄行为跳过 |
+| TS A+B | 4个strict模块/5产物、14类型负对照、4构建保护通过；目标key与诊断旧CJS对照一致 |
 | Chrome optional Integration | 真实Chrome10/10；源码Node26.13.0和独立包最低26.0.0均通过。含worker连接前hash往返RED/GREEN、关闭原页不接干扰页、单次挂起及10秒总时限保护 |
 | typed resolver / 安装 / 源码查询定向 | 43项：42通过、1项Windows跳过；构建保护3/3、8个类型负对照全部被拒绝 |
 | Python | 10项：9通过、1项可选Pillow缺失跳过 |
@@ -49,7 +53,7 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 | 独立包原PC流程 | 12/12；覆盖选页、重绑、资源更新与保留进度 |
 | 恢复 | 真正终止派发CLI后，SQLite保留pending，原terminal恢复，购买只一次；停止后reconcile不续期、不完成Goal |
 | 回执容量 | 65条其它标签历史+1条当前记录先RED后GREEN；保留原66 Session回归 |
-| 最新归档及安装，bd3f1b6 | 321文件逐一对应Git blob；最低Node26.0.0且禁用类型剥离，help/version/安装/resolver通过。Skill文件未改，复用10082ef宿主安装前0、forceReload后1、重启后1证据 |
+| 最新归档及安装，0196e86 | 320文件逐一对应Git blob，不含CTS/MTS与开发构建包；最低Node26.0.0禁用类型剥离，help/version/安装/resolver/source-find及10项Chrome通过。Skill文件未改，复用10082ef宿主发现证据 |
 | CI | 最新[bd3f1b6](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41963804264)成功；原[10082ef](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41962097547)、[eff14d6](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41800367209)与[8863e65](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41801537480)亦成功；CI是Linux证据 |
 
 **Not validated：Windows Chrome、Android SDK/APK/设备/WebView、真实 DoL/Mod/存档与原生业务 profile、真实多区域源码检索质量、当前 Desktop 聊天热重载。** Mac 的合成状态 API 不是游戏源码，Recipe 的通过不证明真实游戏 profile 已支持。
@@ -78,7 +82,7 @@ Chrome optional Integration 的原实现缺口已在bd3f1b6关闭：worker复用
 ```powershell
 git clone --branch experiment/tusk-act4-7 https://github.com/102326/DoL-Dev-Tools-Paisley-Park.git Paisley-Park-Tusk7
 Set-Location .\Paisley-Park-Tusk7
-$Baseline = 'bd3f1b61798552953c27ec0066280169c3f61da3'
+$Baseline = '0196e86989facae13e765dc3bff58046b53502a7'
 git remote get-url origin
 git fetch origin
 git merge-base --is-ancestor $Baseline HEAD
@@ -113,11 +117,10 @@ node .agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs
 
 ```powershell
 npm test
-npm ci --prefix experiments/weather-report-20261104/source-finder --ignore-scripts --no-audit --no-fund
-node experiments/weather-report-20261104/source-finder/build.cjs --check
-node experiments/weather-report-20261104/source-finder/build-resolver.cjs --check
-node experiments/weather-report-20261104/source-finder/check-types.cjs
-node --test experiments/weather-report-20261104/source-finder/test/build.test.cjs
+npm ci --prefix tools/typescript --ignore-scripts --no-audit --no-fund
+node tools/typescript/build.cjs --check
+node tools/typescript/check-types.cjs
+node --test tools/typescript/test/*.test.cjs
 
 New-Item -ItemType Directory -Force artifacts | Out-Null
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -142,7 +145,7 @@ try {
 重点核验：
 
 - Windows原先跳过的句柄测试实际执行；Node/Python的通过/失败/跳过分别列出，不硬要求Mac相同数量。
-- Skill resolver实际安装后只依赖CJS，使用`node --no-strip-types INSTALLED_RESOLVER`核对六个成功字段和所选工具根；畸形元数据/缺文件/失效覆盖按有限code/stage拒绝，无私人路径回显。生成器的CRLF、类型漂移、部分写入和未知文件保留由3项构建测试验证；Windows的目标文件占用与rename行为尚未实测，失败应保留旧CJS，不放宽完整性或改用运行时TS。
+- Skill resolver实际安装后只依赖CJS，使用`node --no-strip-types INSTALLED_RESOLVER`核对六个成功字段和所选工具根；畸形元数据/缺文件/失效覆盖按有限code/stage拒绝，无私人路径回显。生成器的CRLF、类型漂移、部分写入、权限/回滚、协作锁和已观察未知文件保留由4项构建测试验证；Windows的目标文件占用与rename行为尚未实测，失败应保留旧CJS，不放宽完整性或改用运行时TS。
 - 路径空格、Unicode资源、可见/无头、origin/Profile保留、重新绑定与同URL干扰标签、进程退出和端口释放。
 - GER13场景尤其SIGKILL后的真实Windows终止语义、SQLite/WAL与句柄、报价拒绝pending=false、原terminal恢复一次、停止后reconcile不续期/不完成Goal、旧文档拒绝与跨Session围栏。
 - Evidence manifest、目标身份、DOM/CSS/事件/存储/环境/截图/性能，以及缺元数据unknown、Known Good双向比较与不支持项。
@@ -193,7 +196,7 @@ try {
 
 来源和源码夹具分开：发布ZIP按 `.gitattributes` 排除实验，所以Windows同时保留源码工作区供复现，`PAISLEY_TOOL_ROOT` 指向独立解压工具包供实际运行。解压目录不能复用源码node_modules。
 
-最新Mac包来自固定`bd3f1b61798552953c27ec0066280169c3f61da3`，321文件，ZIP摘要`ae2607227eb27d1b04bde9e31973a93655c4ab14cb3a586ba7c5e20c1a1d089d`，逐文件清单见上方integration记录。原10082ef包及eff14d6包在各自报告中保留原身份。它们都不是GitHub Release资产，不要求跨机复制。**从后续文档提交重建ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
+最新Mac包来自固定`0196e86989facae13e765dc3bff58046b53502a7`，320文件，ZIP摘要`e2fe8ae75aab901799f258aced38df245913beaaca46d5418943b1c523b93a13`，[清单](../experiments/tusk-act4-7/typescript/package-ab-manifest.json)。原bd3f1b6 Integration包的321文件和摘要仍在其原报告中保留。原10082ef包及eff14d6包在各自报告中保留原身份。它们都不是GitHub Release资产，不要求跨机复制。**从后续文档提交重建ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
 
 用实际选定的完整SHA、新输出名重新归档，避免Windows换行转换：
 
