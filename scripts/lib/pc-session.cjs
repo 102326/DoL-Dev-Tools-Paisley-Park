@@ -1,4 +1,4 @@
-// Generated from pc-session.cts by TypeScript 6.0.2; source-lf-sha256=08d89bafc4b46740ccb71c58d8957e82771ba83ffa12acf84a8d00c3b17099a7
+// Generated from pc-session.cts by TypeScript 6.0.2; source-lf-sha256=2533ae983892b27fd6e3320b23009f8f82f0c101658ca71c35e6fb4c22119327
 "use strict";
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), { createHash, randomUUID } = require('node:crypto');
@@ -25,6 +25,7 @@ function record(file) {
     return r;
 }
 function save(file, value) { fs.writeFileSync(file, JSON.stringify(value, null, 2), { flag: 'wx', mode: 0o600 }); }
+function cleanupFailure(errors) { return Object.assign(new AggregateError(errors, 'Owned PC cleanup unconfirmed', { cause: errors[0] }), { code: 'PC_CLEANUP_UNCONFIRMED' }); }
 async function pages(file) {
     const r = record(file), h = new ChromeHost(r.target);
     await h.verifyBrowser();
@@ -80,19 +81,32 @@ async function start(options) {
                 http: server.startupProgress?.() ?? null, httpDoesNotProveDocumentCommit: true });
         }
         catch { /* Original failure and owned cleanup take precedence. */ }
-        await server.close();
+        try {
+            await server.close();
+        }
+        catch (cleanup) {
+            throw cleanupFailure([e, cleanup]);
+        }
         throw e;
     }
-    return { ...browser, url: server.url, async stop() { let failure; try {
-            await browser.stop();
-        }
-        catch (e) {
-            failure = e;
-        }
-        finally {
-            await server.close();
-        } if (failure)
-            throw failure; } };
+    return { ...browser, url: server.url, async stop() {
+            let failed = false, failure;
+            try {
+                await browser.stop();
+            }
+            catch (e) {
+                failed = true;
+                failure = e;
+            }
+            try {
+                await server.close();
+            }
+            catch (cleanup) {
+                throw cleanupFailure([...(failed ? [failure] : []), cleanup]);
+            }
+            if (failed)
+                throw failure;
+        } };
 }
 async function capture(options, act = false) {
     const r = record(options['host-file']);

@@ -1,4 +1,4 @@
-// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=69db8cc02692aaabbf04d2b86115ec578affbb121b816dd8aebc3a0449e83ed7
+// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=9dccc036fb44b7b6c3a91eb3d511618d961c1251fe41352537bc7c8d6006b29a
 "use strict";
 // Public diagnostic metadata is finite; page messages, input and paths never pass through.
 const methods = new Set(['Runtime.evaluate', 'Runtime.callFunctionOn', 'Runtime.getProperties', 'Runtime.enable',
@@ -14,6 +14,7 @@ const entries = {
     PC_BROWSER_UNAVAILABLE: ['pc.browser', 'The original owned browser is unavailable. Inspect its local instance records; no other browser was adopted.'],
     PC_BROWSER_IDENTITY_CHANGED: ['pc.browser', 'The live browser, endpoint or Profile differs from the original record. Preserve original execution evidence; do not retarget.'],
     PC_ACTION_UNSUPPORTED: ['pc.action', 'Use reviewed Web actions for Chrome; native Android actions require their explicit Android target.'],
+    PC_CLEANUP_UNCONFIRMED: ['pc.cleanup', 'Owned instance cleanup was not fully confirmed. Retain its Profile and local records, including startup-failure.json when present; inspect this instance before reusing it. Do not assume its browser or HTTP listener is closed. No automatic cleanup retry or operation replay.'],
     PROJECT_SCOPE_TARGET_CHANGED: ['gameplay.authority', 'The original authorized target/data domain does not match. Keep the original Session and unresolved effects; supplied identity omitted.'],
     PROJECT_SCOPE_INTENT_CHANGED: ['gameplay.authority', 'The requested operation is outside the recorded authority. Review the task scope; no automatic expansion or retry.'],
     SOURCE_REQUEST_INVALID: ['source.request', 'Use schemaVersion 1, bounded literal clues and limits. Supply an absolute --root; query files omit root/revision. See docs/GAME_SOURCE.md.'],

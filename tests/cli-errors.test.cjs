@@ -107,3 +107,12 @@ test('initial PC refusal is actionable while arbitrary startup metadata stays pr
   if(reason==='initial-empty-document'){assert.match(result.stderr,/reason=initial-empty-document/);assert.match(result.stderr,/startup-failure.json/)}else assert.equal(result.stderr.includes('reason='),false);
  }
 });
+test('owned PC cleanup uncertainty exposes a fixed phase and recovery advice without raw causes',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-cleanup-cli-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const shim=path.join(root,'shim.cjs');
+ fs.writeFileSync(shim,`require(${JSON.stringify(require.resolve('../scripts/lib/pc-session.cjs'))}).start=async()=>{throw Object.assign(new AggregateError([Error('PRIVATE_PRIMARY'),Error('PRIVATE_CLEANUP')],'PRIVATE_MESSAGE',{cause:Error('PRIVATE_CAUSE')}),{code:'PC_CLEANUP_UNCONFIRMED'})};`);
+ const result=run(['pc-start','--file','PRIVATE_HTML','--chrome','PRIVATE_CHROME','--port','18784','--mode','headless','--out','PRIVATE_OUT'],['-r',shim]);
+ assert.equal(result.status,1);assert.match(result.stderr,/PC_CLEANUP_UNCONFIRMED stage=pc.cleanup/);
+ assert.match(result.stderr,/Retain/);assert.match(result.stderr,/No automatic cleanup retry/);
+ assert.ok(!result.stderr.includes('PRIVATE'));assert.ok(!result.stderr.includes(root));
+});

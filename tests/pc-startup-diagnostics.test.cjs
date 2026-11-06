@@ -55,3 +55,37 @@ test('exclusive startup journal creation preserves an observed peer file',async 
  await assert.rejects(require('../scripts/lib/pc-session.cjs').start(f.options),error=>error===f.primary);
  assert.equal(fs.readFileSync(path.join(f.options.out,'startup-failure.json'),'utf8'),'peer-owned');assert.equal(f.closes(),1);
 });
+
+test('launch failure and HTTP cleanup failure retain both errors with finite recovery diagnostics',async t=>{
+ const f=startFixture(t),cleanup=Object.assign(Error('PRIVATE_HTTP_CLOSE'),{code:'PRIVATE_CLOSE_CODE'});
+ httpAPI.serve=async()=>({url,startupProgress:()=>f.progress,close:async()=>{throw cleanup}});
+ await assert.rejects(require('../scripts/lib/pc-session.cjs').start(f.options),error=>{
+  assert.ok(error instanceof AggregateError);assert.deepEqual(error.errors,[f.primary,cleanup]);assert.equal(error.cause,f.primary);
+  assert.equal(error.code,'PC_CLEANUP_UNCONFIRMED');
+  const diagnostic=diagnostics.describe(error);assert.equal(diagnostic.stage,'pc.cleanup');assert.match(diagnostic.hint,/Retain/);
+  assert.ok(!JSON.stringify(diagnostic).includes('PRIVATE'));return true;
+ });
+ assert.equal(JSON.parse(fs.readFileSync(path.join(f.options.out,'startup-failure.json'))).diagnostic.code,'PC_DOCUMENT_CHANGED');
+});
+test('owned stop preserves falsy browser failures and attempts HTTP close exactly once',async t=>{
+ for(const primary of [undefined,null,false,0,''])await t.test(String(primary),async t=>{
+  const f=startFixture(t);let stops=0;
+  launcher.launch=async()=>({stop:async()=>{stops++;throw primary}});
+  const instance=await require('../scripts/lib/pc-session.cjs').start(f.options);let rejected=false;
+  try{await instance.stop()}catch(error){rejected=true;assert.equal(error,primary)}
+  assert.equal(rejected,true);assert.equal(stops,1);assert.equal(f.closes(),1);
+ });
+});
+test('owned stop reports HTTP-only and combined cleanup uncertainty without hiding falsy primary',async t=>{
+ for(const failed of [false,true])await t.test(failed?'both':'http-only',async t=>{
+  const f=startFixture(t),cleanup=Error('PRIVATE_HTTP_CLOSE');let stops=0,closes=0;
+  launcher.launch=async()=>({stop:async()=>{stops++;if(failed)throw false}});
+  httpAPI.serve=async()=>({url,close:async()=>{closes++;throw cleanup}});
+  const instance=await require('../scripts/lib/pc-session.cjs').start(f.options);
+  await assert.rejects(instance.stop(),error=>{
+   assert.equal(error.code,'PC_CLEANUP_UNCONFIRMED');assert.ok(error instanceof AggregateError);
+   assert.deepEqual(error.errors,failed?[false,cleanup]:[cleanup]);assert.equal(error.cause,failed?false:cleanup);return true;
+  });
+  assert.equal(stops,1);assert.equal(closes,1);
+ });
+});

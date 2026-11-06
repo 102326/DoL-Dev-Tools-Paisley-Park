@@ -17,6 +17,7 @@ function record(file:string|undefined):pcSession.OwnedRecord{
  const validated=target(r.target);r.target=validated;if(validated.host!=='chrome'||!validated.document)throw invalid();return r as unknown as pcSession.OwnedRecord;
 }
 function save(file:string,value:unknown){fs.writeFileSync(file,JSON.stringify(value,null,2),{flag:'wx',mode:0o600})}
+function cleanupFailure(errors:unknown[]){return Object.assign(new AggregateError(errors,'Owned PC cleanup unconfirmed',{cause:errors[0]}),{code:'PC_CLEANUP_UNCONFIRMED'})}
 async function pages(file:string|undefined){
  const r=record(file),h=new ChromeHost(r.target);
  await h.verifyBrowser();
@@ -46,9 +47,10 @@ async function start(options:pcSession.Options){
   try{save(path.join(output,'startup-failure.json'),{schemaVersion:1,phase:'launch-refused-before-http-shutdown',readyRecordReturned:false,
    diagnostic:(require('./diagnostics.cjs') as typeof import('./diagnostics.cjs')).describe(e)??{code:'PC_START_FAILED',stage:'pc.start'},
    http:server.startupProgress?.()??null,httpDoesNotProveDocumentCommit:true})}catch{/* Original failure and owned cleanup take precedence. */}
-  await server.close();throw e;
+  try{await server.close()}catch(cleanup){throw cleanupFailure([e,cleanup])}throw e;
  }
- return {...browser,url:server.url,async stop(){let failure;try{await browser!.stop()}catch(e){failure=e}finally{await server.close()}if(failure)throw failure}};
+ return {...browser,url:server.url,async stop(){let failed=false,failure:unknown;try{await browser!.stop()}catch(e){failed=true;failure=e}
+  try{await server.close()}catch(cleanup){throw cleanupFailure([...(failed?[failure]:[]),cleanup])}if(failed)throw failure}};
 }
 async function capture(options:pcSession.Options,act=false){
  const r=record(options['host-file']);
