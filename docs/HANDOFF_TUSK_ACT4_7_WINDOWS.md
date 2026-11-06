@@ -25,13 +25,17 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 
 完整Node核心TS迁移已完成本机Scoped Done；开发包P2，UI4.2优先级P1。95个原入口全部strict（含9源码载体），另17DOM-only源、21冻结JS输入共46函数体未类型化，运行清单133项。G另3个开发入口，Node Program98项/总133生成产物。详见[完整Mac收口](../experiments/tusk-act4-7/typescript/CLOSEOUT_MAC.md)。Windows/Android/真实游戏已通过上列代表性验收，其余未覆盖范围保留，不能称整体7.0可发布。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
+本机后续已统一收口：[Mac 剩余项盘点与完整清理修复](../experiments/tusk-act4-7/MAC_CLOSEOUT_20261106.md)。最新代码 `0a75b59df6898c460ca26b73ee7bc33a8be0b0d5` 保留启动主异常及浏览器/CDP/HTTP/FD 清理失败，源码和最低 Node26 独立包各 43/43；固定包真实中性 Chrome 正常/拒绝两组清理均确认。官方 CI Actions 已升级 v7，仍是原单 job。当前合理 Mac 实现待办已耗尽，外部输入和可选研究分列，不重做已验 TS/GER/contracts，不改变 Android 四条 pending 的原合同。
+
 ## 1. 固定身份与读取顺序
 
 | 对象 | 固定身份 |
 | --- | --- |
 | 仓库 | [102326/DoL-Dev-Tools-Paisley-Park](https://github.com/102326/DoL-Dev-Tools-Paisley-Park) |
 | 研发分支 | [experiment/tusk-act4-7](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/experiment/tusk-act4-7) |
-| **最新 Mac 固定代码，含有界 revision 源码查找修复** | **`a8ac74bd14eb8155aed1e528ada49539bedf0cf9`** |
+| **最新 Mac 固定代码，含查询及完整启动清理修复** | **`0a75b59df6898c460ca26b73ee7bc33a8be0b0d5`** |
+| 有界 revision 源码查找修复及原包 | `a8ac74bd14eb8155aed1e528ada49539bedf0cf9` |
+| 轻量 CI 官方 Action 更新 | `95c9dab7fef6a15eb2306ba29919b30a35bb2972` |
 | 本次同步的 Windows 基线，含截至此时的实机接续与更名决定 | `8a0b4263f10dd3804f0eefcd7218c06641689664` |
 | 既有完整Node核心/G及config一致性修复、F07诊断代码 | `93facebe38a81ecbe2b6e2d9976ed92ef45b5926` |
 | TS A+B代码及对应独立包 | `0196e86989facae13e765dc3bff58046b53502a7` |
@@ -45,7 +49,7 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 | 上一轮 PC / Journey 接续基线 | `241c77262b560481447dff75903d679bb2fedc2e` |
 | 正式 main，本次交接核对值 | `cfd76a75e6c28efbbdcf447b25679cd9f257ef54` |
 
-固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/a8ac74bd14eb8155aed1e528ada49539bedf0cf9)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
+固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/0a75b59df6898c460ca26b73ee7bc33a8be0b0d5)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
 
 本任务书在上述基线之后提交；它不可能位于其自身所指的旧提交中。Windows 先核对最新远端与基线的差异，记录**实际运行的完整 SHA**，不要把本页中的 SHA 当成永远不变的远端 HEAD。若远端仅增加交接文档，可从确认后的最新研发分支接续；存在新代码时先检查改动及其验证记录。
 
@@ -104,12 +108,12 @@ Mac 实际环境：macOS 27.0.1 ARM64，Chrome 156.0.8078.73，Node 26.13.0 与�
 | 独立包原PC流程 | 12/12；覆盖选页、重绑、资源更新与保留进度 |
 | 恢复 | 真正终止派发CLI后，SQLite保留pending，原terminal恢复，购买只一次；停止后reconcile不续期、不完成Goal |
 | 回执容量 | 65条其它标签历史+1条当前记录先RED后GREEN；保留原66 Session回归 |
-| 最新归档及安装，0196e86 | 320文件逐一对应Git blob，不含CTS/MTS与开发构建包；最低Node26.0.0禁用类型剥离，help/version/安装/resolver/source-find及10项Chrome通过。Skill文件未改，复用10082ef宿主发现证据 |
+| 历史归档及安装，0196e86 | 320文件逐一对应Git blob，不含CTS/MTS与开发构建包；最低Node26.0.0禁用类型剥离，help/version/安装/resolver/source-find及10项Chrome通过。Skill文件未改，复用10082ef宿主发现证据 |
 | CI历史接线基线 | [bd3f1b6](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41963804264)成功；原[10082ef](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41962097547)、[eff14d6](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41800367209)与[8863e65](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/41801537480)亦成功；CI是Linux证据 |
 
-**Not validated：Windows Chrome、Android SDK/APK/设备/WebView、真实 DoL/Mod/存档与原生业务 profile、真实多区域源码检索质量、当前 Desktop 聊天热重载。** Mac 的合成状态 API 不是游戏源码，Recipe 的通过不证明真实游戏 profile 已支持。
+**上述旧 Mac 接线批次当时未验：Windows Chrome、Android SDK/APK/设备/WebView、真实 DoL/Mod/存档与原生业务 profile、真实多区域源码检索质量、当前 Desktop 聊天热重载。** 后续 Windows 已补齐顶部所列代表范围；当前仍缺的证据以统一 Mac 收口的四类清单为准。Mac 合成状态 API 不是游戏源码，Recipe 的通过不证明所有真实游戏 profile 已支持。
 
-Chrome optional Integration 的原实现缺口已在bd3f1b6关闭：worker复用ChromeHost不可变绑定，主连接前后检查保留其失效事件，10秒总时限覆盖全部检查。模块失败仍为可选失败，已成功Generic制品保留。只有中性模块在Mac验过；内置桥及真实Mod API需要实际detect/collect，不能由入口支持推断其已验收。Android原Contract 1顺序采集语义未变。
+Chrome optional Integration 的原实现缺口已在bd3f1b6关闭：worker复用ChromeHost不可变绑定，主连接前后检查保留其失效事件，10秒总时限覆盖全部检查。模块失败仍为可选失败，已成功Generic制品保留。上述Mac批次只验中性模块，Windows随后也已补验中性流程；内置桥及真实Mod API需要实际detect/collect，不能由入口支持推断其已验收。Android原Contract 1顺序采集语义未变。
 
 上一增量改Skill位置解析器及开发构建检查：`resolve.cts`是权威源，安装时仍只复制预生成`resolve.cjs`；成功JSON与环境覆盖规则保持，新增有限code/stage/hint，拒绝空版本和畸形JSON。最新增量接入可选Integration，不改GER/Store/Unknown，也不要求普通用户安装TS。普通Debug仍无需安装XState。Windows需额外核验下列resolver入口、生成器文件占用/换行及Integration文档/worker生命周期行为。
 
@@ -133,7 +137,7 @@ Chrome optional Integration 的原实现缺口已在bd3f1b6关闭：worker复用
 ```powershell
 git clone --branch experiment/tusk-act4-7 https://github.com/102326/DoL-Dev-Tools-Paisley-Park.git Paisley-Park-Tusk7
 Set-Location .\Paisley-Park-Tusk7
-$Baseline = 'eb8e13ad4e5ac2d1b6b10f03714a94041b339b49'
+$Baseline = '0a75b59df6898c460ca26b73ee7bc33a8be0b0d5'
 git remote get-url origin
 git fetch origin
 git merge-base --is-ancestor $Baseline HEAD
@@ -166,7 +170,7 @@ node .agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs
 
 先做这一阶段，再打开真实游戏。输出目录必须是新的；旧失败、Profile和pending留存。PC脚本使用18767（无头）/18768（可见），GER使用18771–18775，Integration使用18776及动态回环控制端口；确认端口可用，**串行运行**，不要为占用端口杀未知进程。
 
-TS后续合成探针见各批报告：`contracts/business-bindings-verify.cjs`使用18780，`contracts/control-verify.cjs`使用18781，`contracts/save-observer-verify.cjs`使用18782，`contracts/probes-verify.cjs`使用18783（完整路径在`experiments/tusk-act4-7/`下）；参数均为明确Chrome可执行文件与全新输出目录。它们是实验脚本，Windows尚待验证，不是正式跨平台CLI，也不证明真实游戏来源profile已验收。失败时保留日志/Profile，不改变目标或清理Unknown。
+TS后续合成探针见各批报告：`contracts/business-bindings-verify.cjs`使用18780，`contracts/control-verify.cjs`使用18781，`contracts/save-observer-verify.cjs`使用18782，`contracts/probes-verify.cjs`使用18783（完整路径在`experiments/tusk-act4-7/`下）；参数均为明确Chrome可执行文件与全新输出目录。它们是实验脚本，已在[Windows七组合同](../experiments/tusk-act4-7/WINDOWS_CONTRACTS_20261106.md)完成源码/独立包补验，不是正式跨平台CLI，也不证明真实游戏来源profile已验收。失败时保留日志/Profile，不改变目标或清理Unknown。
 
 ```powershell
 npm test
@@ -198,12 +202,12 @@ try {
 重点核验：
 
 - Windows原先跳过的句柄测试实际执行；Node/Python的通过/失败/跳过分别列出，不硬要求Mac相同数量。
-- Skill resolver实际安装后只依赖CJS，使用`node --no-strip-types INSTALLED_RESOLVER`核对六个成功字段和所选工具根；畸形元数据/缺文件/失效覆盖按有限code/stage拒绝，无私人路径回显。生成器的CRLF、类型漂移、部分写入、权限/回滚、协作锁和已观察未知文件保留由4项构建测试验证；Windows的目标文件占用与rename行为尚未实测，失败应保留旧CJS，不放宽完整性或改用运行时TS。
+- Skill resolver实际安装后只依赖CJS，使用`node --no-strip-types INSTALLED_RESOLVER`核对六个成功字段和所选工具根；畸形元数据/缺文件/失效覆盖按有限code/stage拒绝，无私人路径回显。生成器CRLF、类型漂移、部分写入、权限/回滚、协作锁及未知文件保留按完整G套件核对；真实Windows句柄占用已由[文件锁报告](../experiments/tusk-act4-7/WINDOWS_FILE_LOCK_20261106.md)补齐为6/6，不为旧待验描述重复操作。新变更实际影响发布时再做定向验证，失败保留旧CJS，不放宽完整性或改用运行时TS。
 - 路径空格、Unicode资源、可见/无头、origin/Profile保留、重新绑定与同URL干扰标签、进程退出和端口释放。
 - 检查browser-abi协议资产及固定oracle确为LF；运行原摘要断言，不能让新旧一起转成CRLF而掩盖不同合同。历史CRLF checkout回执保留原身份，用原兼容基线恢复或记录拒绝，不能重算摘要后结清旧pending。
-- 合成源码证明可运行 `node experiments/tusk-act4-7/contracts/verify.cjs ABS_CHROME NEW_OUTPUT`（实验脚本，Windows尚待实际执行）；确认真实V8闭包与group释放，falsy故障使用合同测试复现，不把合成Widget当真实DoL。
-- 合成Goal条件可运行 `node experiments/tusk-act4-7/contracts/goal-proof-verify.cjs ABS_CHROME NEW_OUTPUT`（Windows尚待实跑）；它只验证自写State/DOM stand-in，实际游戏必须另做原回执/库存/支出佐证。
-- 合成回执容量维护可运行 `node experiments/tusk-act4-7/contracts/receipt-verify.cjs ABS_CHROME NEW_OUTPUT`（Windows尚待实跑）；它构造自写页面终态，不能替代真实业务的提交/Outcome证据。
+- 合成源码证明可运行 `node experiments/tusk-act4-7/contracts/verify.cjs ABS_CHROME NEW_OUTPUT`（实验脚本，Windows源码/独立包已补验，见七组合同报告）；确认真实V8闭包与group释放，falsy故障使用合同测试复现，不把合成Widget当真实DoL。
+- 合成Goal条件可运行 `node experiments/tusk-act4-7/contracts/goal-proof-verify.cjs ABS_CHROME NEW_OUTPUT`（Windows源码/独立包已补验，见七组合同报告）；它只验证自写State/DOM stand-in，实际游戏必须另做原回执/库存/支出佐证。
+- 合成回执容量维护可运行 `node experiments/tusk-act4-7/contracts/receipt-verify.cjs ABS_CHROME NEW_OUTPUT`（Windows源码/独立包已补验，见七组合同报告）；它构造自写页面终态，不能替代真实业务的提交/Outcome证据。
 - GER13场景尤其SIGKILL后的真实Windows终止语义、SQLite/WAL与句柄、报价拒绝pending=false、原terminal恢复一次、停止后reconcile不续期/不完成Goal、旧文档拒绝与跨Session围栏。
 - Evidence manifest、目标身份、DOM/CSS/事件/存储/环境/截图/性能，以及缺元数据unknown、Known Good双向比较与不支持项。
 - Integration固定原Profile/browser/target/document；连接前hash往返、detect→collect刷新、redact导航、原页关闭均不能混代成功。迟到前检查不启动worker，后检查仍受同一总时限；模块缺失/失败不丢Generic，挂起不重复调用。源码单元包含这类deadline断言，不把worker终止理解成远端取消。
@@ -253,7 +257,7 @@ try {
 
 来源和源码夹具分开：发布ZIP按 `.gitattributes` 排除实验，所以Windows同时保留源码工作区供复现，`PAISLEY_TOOL_ROOT` 指向独立解压工具包供实际运行。解压目录不能复用源码node_modules。
 
-本次最新固定Mac包来自`93facebe38a81ecbe2b6e2d9976ed92ef45b5926`，431文件，ZIP摘要`df3003d9425dee1e292088ad6657ea5b65ac998c8618dda8d664877142d52a6e`，[清单](../experiments/tusk-act4-7/startup/package-manifest.json)。以后以最新批次固定提交/manifest为准，不挪用此包摘要。历史C01包来自固定`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`，321文件，ZIP摘要`9f063b6285ad782cdf0e2e3c16324602b63e9b60ef32c57d945121032f800bea`，[清单](../experiments/tusk-act4-7/typescript/package-c01-manifest.json)。A+B原包记录保留。原bd3f1b6 Integration包的321文件和摘要仍在其原报告中保留。原10082ef包及eff14d6包在各自报告中保留原身份。它们都不是GitHub Release资产，不要求跨机复制。**从后续文档提交重建ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
+本次最新固定Mac包来自`0a75b59df6898c460ca26b73ee7bc33a8be0b0d5`，432文件，ZIP摘要`27ca3ef056d64625fa4310732e737e8c1717fcd09dd98cb33fbcb2e4aa14462e`，[清单](../experiments/tusk-act4-7/mac-closeout-package-manifest.json)。此前F07包来自`93facebe38a81ecbe2b6e2d9976ed92ef45b5926`，431文件，ZIP摘要`df3003d9425dee1e292088ad6657ea5b65ac998c8618dda8d664877142d52a6e`，[原清单](../experiments/tusk-act4-7/startup/package-manifest.json)。以后以最新批次固定提交/manifest为准，不挪用此包摘要。历史C01包来自固定`eb8e13ad4e5ac2d1b6b10f03714a94041b339b49`，321文件，ZIP摘要`9f063b6285ad782cdf0e2e3c16324602b63e9b60ef32c57d945121032f800bea`，[清单](../experiments/tusk-act4-7/typescript/package-c01-manifest.json)。A+B原包记录保留。原bd3f1b6 Integration包的321文件和摘要仍在其原报告中保留。原10082ef包及eff14d6包在各自报告中保留原身份。它们都不是GitHub Release资产，不要求跨机复制。**从后续文档提交重建ZIP不应期待相同摘要**；逐文件manifest按其原提交对应，不能挪用到新包。
 
 用实际选定的完整SHA、新输出名重新归档，避免Windows换行转换：
 
@@ -313,3 +317,8 @@ F07初始空文档PC_DOCUMENT_CHANGED仍未解决，原失败保留。本轮四�
 ## 2026-11-06 Mac 后续授权
 
 上节“同步后停止”是上一批 F07 工作的已履行停止条件。用户随后授权先同步最新 Windows 进展、继续本机可做的开发并同步研发分支。本轮只处理有证据的固定 revision 查询卡点；不因此重开无边界重构、Android 原 Store 操作或正式发布。最新代码、包清单、测量和剩余验收见本页顶部源码查找报告。
+
+
+## 2026-11-06 全部合理 Mac 待办接续结果
+
+用户后续授权继续完成不依赖 Windows 的合理工作，取代上一批“仅固定 revision 卡点”的临时范围。已按计划、最新 Windows 证据和实际调用链收完本机缺口，详见顶部统一报告的四类清单。没有把外部未验收项目移交回 Mac 假验，也没有为了继续工作创造下一套 Runtime；新增输入到位后按具体任务继续。

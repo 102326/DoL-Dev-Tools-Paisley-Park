@@ -4,6 +4,10 @@ First device question: can a foreground app expose its own state for observation
 
 The JVM Weather experiment established useful identity and Unknown boundaries in a different environment; it did not establish Android lifecycle behavior. This probe deliberately does not copy its file-based commit store or claim durability. A missing, stale, incomplete or unreadable UI dump is Unknown, not a zero count or proof that an operation failed. A new process UUID is not by itself proof of a particular cause of process death.
 
+## Subsequent device evidence (2026-11-06)
+
+The [Windows record](../WINDOWS_REPORT.md) now includes an actual build and authorized device run: JDK 21.0.11 compiling JVM 17, Gradle 8.9, SDK 35 / Build Tools 34; controlled counter increment and Activity replacement with a stable process UUID were observed, then the probe was uninstalled. This is probe lifecycle evidence, not a transport/agent, persistent effect or performance result. The preparation-machine limits below still apply to Mac; do not repeat deployment merely because this older preparation section remains.
+
 ## Windows build preparation
 
 No SDK, APK build or device execution was performed on the preparation machine. On Windows inspect the existing authorized installation first. This project specifies Android Gradle Plugin 8.7.3, Kotlin 2.0.21, compile/target SDK 35 and min SDK 23. Use JDK 17 and Gradle 8.9; install SDK Platform 35 and required build tools through an authorized Android SDK installation if missing. AGP 8.7 compatibility is documented by [Android](https://developer.android.com/build/releases/agp-8-7-0-release-notes); [Gradle/JDK requirements](https://developer.android.com/build/releases/about-agp) and [Android JDK guidance](https://developer.android.com/build/jdks) provide context. Dependency resolution requires network and repository access on Windows. There is intentionally no Gradle wrapper JAR in this source handoff; use an existing trusted Gradle 8.9 installation or configure a trusted wrapper on Windows, rather than silently using an arbitrary Gradle version.

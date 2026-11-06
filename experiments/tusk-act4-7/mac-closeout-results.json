@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "baseline": "32e1466bd109175bfa29b8901a82d4bcd908115b",
+  "codeCommit": "0a75b59df6898c460ca26b73ee7bc33a8be0b0d5",
+  "ciActionCommit": "95c9dab7fef6a15eb2306ba29919b30a35bb2972",
+  "environment": {
+    "os": "macOS 27.0.1",
+    "arch": "arm64",
+    "sourceNode": "26.13.0",
+    "packageNode": "26.0.0",
+    "chrome": "156.0.8078.80"
+  },
+  "targetedTests": {
+    "source": {
+      "pass": 43,
+      "fail": 0,
+      "skip": 0
+    },
+    "independentPackageFloor26": {
+      "pass": 43,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "strictProgram": {
+    "nodeModules": 98,
+    "domModules": 17,
+    "artifacts": 133,
+    "negativeTypeControls": 125
+  },
+  "finalPackageChrome": [
+    {
+      "node": "v26.0.0",
+      "platform": "darwin",
+      "mode": "observe",
+      "status": "passed",
+      "start": "bound",
+      "businessDispatches": 0,
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed"
+    },
+    {
+      "node": "v26.0.0",
+      "platform": "darwin",
+      "mode": "hold-document",
+      "status": "passed",
+      "start": "refused",
+      "businessDispatches": 0,
+      "browserCleanup": "confirmed",
+      "serverCleanup": "confirmed",
+      "cleanup": "confirmed"
+    }
+  ],
+  "archive": {
+    "commit": "0a75b59df6898c460ca26b73ee7bc33a8be0b0d5",
+    "files": 432,
+    "sha256": "27ca3ef056d64625fa4310732e737e8c1717fcd09dd98cb33fbcb2e4aa14462e",
+    "bytesMatchGit": true,
+    "exactExportSet": true
+  },
+  "limits": [
+    "neutral fixtures only",
+    "no Windows or Android execution",
+    "no real game sources",
+    "no legacy Store access or effect settlement",
+    "no global Skill install or new host discovery"
+  ],
+  "ci": {
+    "conclusion": "success",
+    "headSha": "0a75b59df6898c460ca26b73ee7bc33a8be0b0d5",
+    "status": "completed",
+    "url": "https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/42168854353",
+    "node": {
+      "pass": 655,
+      "fail": 0,
+      "skip": 2
+    },
+    "buildProtection": {
+      "pass": 5,
+      "fail": 0,
+      "skip": 1
+    },
+    "python": {
+      "pass": 9,
+      "fail": 0,
+      "skip": 1
+    }
+  }
+}
