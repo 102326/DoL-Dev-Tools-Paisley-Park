@@ -1,9 +1,10 @@
-// Generated from pc-session.cts by TypeScript 6.0.2; source-lf-sha256=2533ae983892b27fd6e3320b23009f8f82f0c101658ca71c35e6fb4c22119327
+// Generated from pc-session.cts by TypeScript 6.0.2; source-lf-sha256=f46b723434b5116706c49a5e5163c0c0e94d90838c3899cf22c13661a296331a
 "use strict";
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), { createHash, randomUUID } = require('node:crypto');
 const { ChromeHost } = require('./chrome-host.cjs'), { target } = require('./runtime-target.cjs');
 const { targets } = require('./cdp.cjs');
+const { pcCleanup } = require('./diagnostics.cjs');
 const invalid = () => Object.assign(Error('Invalid owned PC input'), { code: 'PC_INPUT_INVALID' });
 function json(file, max = 16384) { try {
     if (!path.isAbsolute(file || '') || !fs.statSync(file).isFile() || fs.statSync(file).size > max)
@@ -25,7 +26,6 @@ function record(file) {
     return r;
 }
 function save(file, value) { fs.writeFileSync(file, JSON.stringify(value, null, 2), { flag: 'wx', mode: 0o600 }); }
-function cleanupFailure(errors) { return Object.assign(new AggregateError(errors, 'Owned PC cleanup unconfirmed', { cause: errors[0] }), { code: 'PC_CLEANUP_UNCONFIRMED' }); }
 async function pages(file) {
     const r = record(file), h = new ChromeHost(r.target);
     await h.verifyBrowser();
@@ -85,7 +85,7 @@ async function start(options) {
             await server.close();
         }
         catch (cleanup) {
-            throw cleanupFailure([e, cleanup]);
+            throw pcCleanup([e, cleanup]);
         }
         throw e;
     }
@@ -102,7 +102,7 @@ async function start(options) {
                 await server.close();
             }
             catch (cleanup) {
-                throw cleanupFailure([...(failed ? [failure] : []), cleanup]);
+                throw pcCleanup([...(failed ? [failure] : []), cleanup]);
             }
             if (failed)
                 throw failure;

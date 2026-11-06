@@ -1,9 +1,10 @@
-// Generated from chrome-launch.cts by TypeScript 6.0.2; source-lf-sha256=98b366abcec80c7c72ce0a2cece611a10b6eaeaaaa5189f156900697959709b1
+// Generated from chrome-launch.cts by TypeScript 6.0.2; source-lf-sha256=8e5abc117fe66eac3d0ea3a589b407be9e24d2cdc68fdd9b4a0899873f6250f6
 "use strict";
 'use strict';
 // Owned-browser startup adapted from the MIT ACT4 host, fixed history 52a8893.
 const fs = require('node:fs'), path = require('node:path'), { spawn } = require('node:child_process'), { createHash } = require('node:crypto');
 const { targets } = require('./cdp.cjs'), { ChromeHost } = require('./chrome-host.cjs');
+const { pcCleanup } = require('./diagnostics.cjs');
 const pause = (ms) => new Promise(r => setTimeout(r, ms));
 function fail(code) { return Object.assign(Error(code), { code }); }
 async function launch(options) {
@@ -42,6 +43,13 @@ async function launch(options) {
     profile = fs.realpathSync(profile);
     const logs = [];
     let browser, host, closed = false;
+    function closeLogs() { const errors = []; for (const fd of logs.splice(0))
+        try {
+            fs.closeSync(fd);
+        }
+        catch (error) {
+            errors.push(error);
+        } return errors; }
     async function stop() { if (!browser || closed)
         return; let timer; const end = new Promise(resolve => browser.once('close', resolve)); try {
         browser.kill();
@@ -52,16 +60,18 @@ async function launch(options) {
     finally {
         clearTimeout(timer);
     } }
+    let launchFailed = false, failure, started;
     try {
         for (const name of ['chrome-stdout.log', 'chrome-stderr.log'])
             logs.push(fs.openSync(path.join(output, name), 'wx', 0o600));
         browser = spawn(options.executable, [...(options.mode === 'headless' ? ['--headless=new'] : []), '--enable-automation', '--no-first-run', '--no-default-browser-check', '--disable-extensions', '--disable-background-networking', '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0', '--user-data-dir=' + profile, url.href], { windowsHide: options.mode === 'headless', stdio: ['ignore', logs[0], logs[1]] });
-        logs.forEach(fd => fs.closeSync(fd));
-        logs.length = 0;
         let failed = false;
         browser.on('error', () => { failed = true; });
         browser.once('close', () => { closed = true; });
         fs.writeFileSync(path.join(output, 'launch.json'), JSON.stringify({ processId: browser.pid, profilePath: profile, executable: options.executable, resourceDigest: options.resourceDigest, scope: 'Owned launch; preserve on unconfirmed termination' }), { flag: 'wx', mode: 0o600 });
+        const logErrors = closeLogs();
+        if (logErrors.length)
+            throw pcCleanup(logErrors);
         const active = path.join(profile, 'DevToolsActivePort');
         let endpoint, socket;
         const deadline = Date.now() + 15000;
@@ -103,17 +113,31 @@ async function launch(options) {
             throw fail('PC_LAUNCH_FAILED');
         const hostFile = path.join(output, 'host.json');
         fs.writeFileSync(hostFile, JSON.stringify(record, null, 2), { flag: 'wx', mode: 0o600 });
-        return { record, hostFile, browser, isClosed: () => closed, stop };
+        started = { record, hostFile, browser, isClosed: () => closed, stop };
     }
-    catch (e) {
+    catch (error) {
+        launchFailed = true;
+        failure = error;
+    }
+    const cleanup = closeLogs();
+    try {
         host?.close();
-        await stop();
-        throw e;
     }
-    finally {
-        logs.forEach(fd => fs.closeSync(fd));
-        host?.close();
+    catch (error) {
+        cleanup.push(error);
     }
+    if (launchFailed || cleanup.length) {
+        try {
+            await stop();
+        }
+        catch (error) {
+            cleanup.push(error);
+        }
+        if (cleanup.length)
+            throw pcCleanup([...(launchFailed ? [failure] : []), ...cleanup]);
+        throw failure;
+    }
+    return started;
 }
 const launcher = { launch };
 module.exports = launcher;

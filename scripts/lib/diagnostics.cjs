@@ -1,4 +1,4 @@
-// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=9dccc036fb44b7b6c3a91eb3d511618d961c1251fe41352537bc7c8d6006b29a
+// Generated from diagnostics.cts by TypeScript 6.0.2; source-lf-sha256=e3a685fae5a1f5e1709fa26210b3a18526eb6dea391947a30d1ce9588e932505
 "use strict";
 // Public diagnostic metadata is finite; page messages, input and paths never pass through.
 const methods = new Set(['Runtime.evaluate', 'Runtime.callFunctionOn', 'Runtime.getProperties', 'Runtime.enable',
@@ -89,5 +89,6 @@ function describe(error) {
         ...(code === 'PC_DOCUMENT_CHANGED' && initialReason ? { reason: initialReason } : {}), hint };
 }
 function knownCode(code) { return typeof code === 'string' && Object.hasOwn(entries, code); }
-const diagnostics = { describe, cdpTimeout };
+function pcCleanup(errors) { return Object.assign(new AggregateError(errors, 'Owned PC cleanup unconfirmed', { cause: errors[0] }), { code: 'PC_CLEANUP_UNCONFIRMED' }); }
+const diagnostics = { describe, cdpTimeout, pcCleanup };
 module.exports = diagnostics;

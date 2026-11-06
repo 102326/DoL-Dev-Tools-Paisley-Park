@@ -25,7 +25,9 @@ HTML 位于 `/index.html`，`/` 同样提供该文件。按 HTML 中真实相对
 
 保持启动命令运行。Ctrl+C、SIGTERM 或本轮 Chrome 退出后释放自己的 HTTP/Chrome；不处理日常 Profile，不自动删除任何 Profile。强制杀死宿主进程或断电不能保证清理；通过实例内 `chrome/launch.json` 和 host.json 核对原进程，不按进程名批量杀浏览器。启动失败也保留日志和记录；`PC_STOP_UNCONFIRMED` 表示退出尚未确认。
 
-`PC_CLEANUP_UNCONFIRMED stage=pc.cleanup` 表示 HTTP 清理未完全确认；浏览器也可能有未确认的退出，不能直接重用实例、Profile 或端口。启动和 HTTP 清理同时失败时，HTTP 清理前的启动诊断仍保留在 `startup-failure.json`（若写入成功）；程序接口抛出的 `AggregateError.errors` 按原失败、清理失败排序，`cause` 保留首个失败，CLI 不回显这些原始异常。正常停止时也保留浏览器与 HTTP 的双重失败，包括 `false`、`null` 等异常值；仅浏览器失败则保留原异常。清理仍只尝试本轮拥有的资源一次，不自动重试或删除 Profile。
+`PC_CLEANUP_UNCONFIRMED stage=pc.cleanup` 表示本轮某项资源清理未完全确认；浏览器或 HTTP 仍可能存在，不能直接重用实例、Profile 或端口。启动和清理同时失败时，HTTP 清理前的有限诊断仍保留在 `startup-failure.json`（若写入成功）；程序接口抛出的 `AggregateError.errors` 按原失败、清理失败排序，`cause` 保留首个失败，CLI 不回显这些原始异常。正常停止时也保留浏览器与 HTTP 的双重失败，包括 `false`、`null` 等异常值；仅浏览器失败则保留原异常。
+
+Chrome 启动器在 CDP 关闭抛错时仍尝试停止自己创建的浏览器；在返回可用句柄前发生清理失败也不会放任浏览器继续运行而报告成功。日志 FD 各尝试关闭一次，某个失败不跳过其他 FD，也不重新关闭结果未知的 FD；未知 FD 是否实际已关闭仍无法保证。`launch.json` 尽量在日志 FD 关闭前保留进程身份，文件写入本身失败时仍可能没有该记录。清理不自动重试、删除 Profile 或处理其它浏览器。
 
 ## 初始绑定失败的定位记录
 

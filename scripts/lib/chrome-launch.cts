@@ -3,11 +3,13 @@ import type pcSession from './pc-session.cjs';
 import type targetTypes from './runtime-target.cjs';
 declare namespace launcher {
  interface Options {out:string;executable:string;url:string;mode:'visible'|'headless';resourceDigest:string;resume?:pcSession.OwnedRecord;allowResourceUpdate?:boolean}
+ interface Started {record:pcSession.OwnedRecord;hostFile:string;browser:ChildProcess;isClosed():boolean;stop():Promise<void>}
 }
 'use strict';
 // Owned-browser startup adapted from the MIT ACT4 host, fixed history 52a8893.
 const fs:typeof import('node:fs')=require('node:fs'),path:typeof import('node:path')=require('node:path'),{spawn}:typeof import('node:child_process')=require('node:child_process'),{createHash}:typeof import('node:crypto')=require('node:crypto');
 const {targets}:typeof import('./cdp.cjs')=require('./cdp.cjs'),{ChromeHost}:typeof import('./chrome-host.cjs')=require('./chrome-host.cjs');
+const {pcCleanup}:typeof import('./diagnostics.cjs')=require('./diagnostics.cjs');
 const pause=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 function fail(code:string){return Object.assign(Error(code),{code})}
 async function launch(options:launcher.Options){
@@ -24,13 +26,15 @@ async function launch(options:launcher.Options){
  }else fs.mkdirSync(profile,{mode:0o700});
  profile=fs.realpathSync(profile);
  const logs:number[]=[];let browser:ChildProcess|undefined,host:InstanceType<typeof ChromeHost>|undefined,closed=false;
+ function closeLogs(){const errors:unknown[]=[];for(const fd of logs.splice(0))try{fs.closeSync(fd)}catch(error){errors.push(error)}return errors}
  async function stop(){if(!browser||closed)return;let timer:ReturnType<typeof setTimeout>|undefined;const end=new Promise(resolve=>browser!.once('close',resolve));try{browser.kill();await Promise.race([end,new Promise(resolve=>{timer=setTimeout(resolve,5000)})]);if(!closed)throw fail('PC_STOP_UNCONFIRMED')}finally{clearTimeout(timer)}}
+ let launchFailed=false,failure:unknown,started:launcher.Started|undefined;
  try{
   for(const name of ['chrome-stdout.log','chrome-stderr.log'])logs.push(fs.openSync(path.join(output,name),'wx',0o600));
   browser=spawn(options.executable,[...(options.mode==='headless'?['--headless=new']:[]),'--enable-automation','--no-first-run','--no-default-browser-check','--disable-extensions','--disable-background-networking','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0','--user-data-dir='+profile,url.href],{windowsHide:options.mode==='headless',stdio:['ignore',logs[0],logs[1]]});
-  logs.forEach(fd=>fs.closeSync(fd));logs.length=0;
   let failed=false;browser.on('error',()=>{failed=true});browser.once('close',()=>{closed=true});
   fs.writeFileSync(path.join(output,'launch.json'),JSON.stringify({processId:browser.pid,profilePath:profile,executable:options.executable,resourceDigest:options.resourceDigest,scope:'Owned launch; preserve on unconfirmed termination'}),{flag:'wx',mode:0o600});
+  const logErrors=closeLogs();if(logErrors.length)throw pcCleanup(logErrors);
   const active=path.join(profile,'DevToolsActivePort');let endpoint,socket;
   const deadline=Date.now()+15000;
   while(Date.now()<deadline&&!failed&&!closed){
@@ -56,8 +60,15 @@ async function launch(options:launcher.Options){
   const record:pcSession.OwnedRecord={format:'paisley-owned-chrome',version:1,executable:options.executable,profilePath:profile,mode:options.mode,createdAt:new Date().toISOString(),browserVersion:await host.verifyBrowser(),resourceDigest:options.resourceDigest,...(options.resume&&options.resume.resourceDigest!==options.resourceDigest?{previousResourceDigest:options.resume.resourceDigest,resourceUpdateReviewed:true}:{}),target:{...target,document:host.binding!}};
   if(closed||failed)throw fail('PC_LAUNCH_FAILED');
   const hostFile=path.join(output,'host.json');fs.writeFileSync(hostFile,JSON.stringify(record,null,2),{flag:'wx',mode:0o600});
-  return {record,hostFile,browser,isClosed:()=>closed,stop};
- }catch(e){host?.close();await stop();throw e}finally{logs.forEach(fd=>fs.closeSync(fd));host?.close()}
+  started={record,hostFile,browser,isClosed:()=>closed,stop};
+ }catch(error){launchFailed=true;failure=error}
+ const cleanup=closeLogs();try{host?.close()}catch(error){cleanup.push(error)}
+ if(launchFailed||cleanup.length){
+  try{await stop()}catch(error){cleanup.push(error)}
+  if(cleanup.length)throw pcCleanup([...(launchFailed?[failure]:[]),...cleanup]);
+  throw failure;
+ }
+ return started!;
 }
 const launcher={launch};
 export = launcher;

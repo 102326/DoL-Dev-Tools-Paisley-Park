@@ -94,5 +94,6 @@ function describe(error: unknown): diagnostics.Diagnostic | null {
     ...(code==='PC_DOCUMENT_CHANGED'&&initialReason?{reason:initialReason}:{}),hint};
 }
 function knownCode(code: unknown): code is keyof typeof entries { return typeof code === 'string' && Object.hasOwn(entries,code); }
-const diagnostics = {describe,cdpTimeout};
+function pcCleanup(errors:unknown[]){return Object.assign(new AggregateError(errors,'Owned PC cleanup unconfirmed',{cause:errors[0]}),{code:'PC_CLEANUP_UNCONFIRMED' as const})}
+const diagnostics = {describe,cdpTimeout,pcCleanup};
 export = diagnostics;
