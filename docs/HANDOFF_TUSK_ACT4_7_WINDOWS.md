@@ -21,7 +21,9 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 
 同日后续：[系统 Node 更新与兼容记录](../experiments/tusk-act4-7/WINDOWS_NODE_UPDATE_20261106.md)。用户随后选择更新现有 Node：当前默认 26.13.0 LTS / npm 11.20.0，68 项定向检查和 Program 通过，最低 26.0.0 仍未验证。旧 MSI 嵌套卸载实际调用 Restart Manager，具体 UI 提前退出的 PID/时间关联仍待核实；后续更新须协调所有相关动态任务停稳。未改开发包版本或操作 Android。
 
-完整Node核心TS迁移已完成本机Scoped Done；开发包P2，UI4.2优先级P1。95个原入口全部strict（含9源码载体），另17DOM-only源、21冻结JS输入共46函数体未类型化，运行清单133项。G另3个开发入口，Node Program98项/总133生成产物。详见[完整Mac收口](../experiments/tusk-act4-7/typescript/CLOSEOUT_MAC.md)。尚未完成Windows/Android/真实游戏验收，不能称整体7.0可发布。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
+同日 Mac 继续开发：[固定 revision 源码查找修复](../experiments/tusk-act4-7/source-find/REPORT.md)。已安全同步 Windows 基线 `8a0b4263f10dd3804f0eefcd7218c06641689664`；新代码 `d5b3c584a9edc32d501e52d9c7bc3b512949dc67` 把逐文件 Git 内容读取改为有界批量，保留原 commit、预算和 partial 合同。合成 512 文件的结果一致，Git 调用 1,029→9；源码及最低 Node26.0.0 独立包各 32/32 定向测试。工具自身固定 commit 的 796 文件查询完整通过。真实游戏全仓和 Windows 新 Git 路径尚待补验，不解除 Android 原资源身份/四条 pending 的既有边界，也不改此前真实平台记录。
+
+完整Node核心TS迁移已完成本机Scoped Done；开发包P2，UI4.2优先级P1。95个原入口全部strict（含9源码载体），另17DOM-only源、21冻结JS输入共46函数体未类型化，运行清单133项。G另3个开发入口，Node Program98项/总133生成产物。详见[完整Mac收口](../experiments/tusk-act4-7/typescript/CLOSEOUT_MAC.md)。Windows/Android/真实游戏已通过上列代表性验收，其余未覆盖范围保留，不能称整体7.0可发布。先读[TS迁移进度](../experiments/tusk-act4-7/typescript/PROGRESS.md)、[首批报告](../experiments/tusk-act4-7/typescript/BATCH_AB.md)和[C01报告](../experiments/tusk-act4-7/typescript/BATCH_C01.md)，再按实际最新提交安排Windows验证。
 
 ## 1. 固定身份与读取顺序
 
@@ -29,7 +31,9 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 | --- | --- |
 | 仓库 | [102326/DoL-Dev-Tools-Paisley-Park](https://github.com/102326/DoL-Dev-Tools-Paisley-Park) |
 | 研发分支 | [experiment/tusk-act4-7](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/experiment/tusk-act4-7) |
-| **本次固定代码基线，含完整Node核心/G及config一致性修复；本机TS收口** | **`93facebe38a81ecbe2b6e2d9976ed92ef45b5926`** |
+| **最新 Mac 固定代码，含有界 revision 源码查找修复** | **`d5b3c584a9edc32d501e52d9c7bc3b512949dc67`** |
+| 本次同步的 Windows 基线，含截至此时的实机接续与更名决定 | `8a0b4263f10dd3804f0eefcd7218c06641689664` |
+| 既有完整Node核心/G及config一致性修复、F07诊断代码 | `93facebe38a81ecbe2b6e2d9976ed92ef45b5926` |
 | TS A+B代码及对应独立包 | `0196e86989facae13e765dc3bff58046b53502a7` |
 | Chrome optional Integration固定代码 | `bd3f1b61798552953c27ec0066280169c3f61da3` |
 | typed Skill resolver 固定代码及对应包 | `10082eff5715e26f086d19310f815c22872b9dfe` |
@@ -41,7 +45,7 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 | 上一轮 PC / Journey 接续基线 | `241c77262b560481447dff75903d679bb2fedc2e` |
 | 正式 main，本次交接核对值 | `cfd76a75e6c28efbbdcf447b25679cd9f257ef54` |
 
-固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/93facebe38a81ecbe2b6e2d9976ed92ef45b5926)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
+固定源码：[接续树](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/tree/d5b3c584a9edc32d501e52d9c7bc3b512949dc67)。C01差异：[A+B → CDP/IPC](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/f4316cccdcb1eb68d85639c669366bd287223d37...eb8e13ad4e5ac2d1b6b10f03714a94041b339b49)。最近TS差异：[开工 → A+B](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/18544c8d1cb2a751130bf023cfc37b531ed6b722...0196e86989facae13e765dc3bff58046b53502a7)。差异：[上轮接线 → 本次代码基线](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/241c77262b560481447dff75903d679bb2fedc2e...bd3f1b61798552953c27ec0066280169c3f61da3)、[最近交接 → Chrome Integration](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/compare/6a6fb273e619fe5dc6d99713482b9927f1ea5f8f...bd3f1b61798552953c27ec0066280169c3f61da3)。
 
 本任务书在上述基线之后提交；它不可能位于其自身所指的旧提交中。Windows 先核对最新远端与基线的差异，记录**实际运行的完整 SHA**，不要把本页中的 SHA 当成永远不变的远端 HEAD。若远端仅增加交接文档，可从确认后的最新研发分支接续；存在新代码时先检查改动及其验证记录。
 
@@ -304,3 +308,8 @@ F07初始空文档PC_DOCUMENT_CHANGED仍未解决，原失败保留。本轮四�
 历史两次F07物理根因仍Unknown，本批没有新的自然首败；不得把控制重现或通过运行写成已修根因。journal缺失/不完整时保留原证据，不自动重启、重导航或清pending。服务响应完成不证明页面提交，也不是业务零副作用证据。
 
 本批全部本机必要检查结束后提交并同步、实际确认CI，然后停止等待用户回家；不开始下一批、不自动发布或单独补丁6.1。
+
+
+## 2026-11-06 Mac 后续授权
+
+上节“同步后停止”是上一批 F07 工作的已履行停止条件。用户随后授权先同步最新 Windows 进展、继续本机可做的开发并同步研发分支。本轮只处理有证据的固定 revision 查询卡点；不因此重开无边界重构、Android 原 Store 操作或正式发布。最新代码、包清单、测量和剩余验收见本页顶部源码查找报告。
