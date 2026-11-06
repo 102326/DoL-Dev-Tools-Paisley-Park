@@ -1,6 +1,6 @@
 {
-  "commit": "d5b3c584a9edc32d501e52d9c7bc3b512949dc67",
-  "zipSha256": "f63906a51f3d54a38819e00fb8755a3d5621253ff49d11216b22caec7ce12a46",
+  "commit": "a8ac74bd14eb8155aed1e528ada49539bedf0cf9",
+  "zipSha256": "a14ad6f54eabf65b207a0a6690c7c8af2292a8d4b1e40043fcfad342fecf7018",
   "files": [
     {
       "file": ".agents/skills/dol-dev-tools-paisley-park/SKILL.md",
@@ -1044,7 +1044,7 @@
     },
     {
       "file": "scripts/lib/source-find.cjs",
-      "sha256": "3e5cd9286db9abbc3397a65cd6b64d51e01db6050927f4802122cae8ad664d9e"
+      "sha256": "28435bacb361e4eae30557d28f5984d2bc6e43481ecd9118793fc74f7fca75c7"
     },
     {
       "file": "scripts/lib/support.cjs",
@@ -1688,7 +1688,7 @@
     },
     {
       "file": "tests/source-find-revision.test.cjs",
-      "sha256": "de96d8e404137582223256e4c5a5135e1c51e4d7b32af67328be577d72c0e8d8"
+      "sha256": "f6c549c871e8786468b391bb9f499207227136ccda5fa6165bfd2b35279cf830"
     },
     {
       "file": "tests/source-find.test.cjs",

@@ -1,23 +1,23 @@
 {
   "syntheticFiles": 512,
   "beforeModuleSha256": "efe805aa51a87f5183881c447c4e4c336ad4744ec612fd583b1979e357c433bd",
-  "afterModuleSha256": "3e5cd9286db9abbc3397a65cd6b64d51e01db6050927f4802122cae8ad664d9e",
+  "afterModuleSha256": "28435bacb361e4eae30557d28f5984d2bc6e43481ecd9118793fc74f7fca75c7",
   "before": {
-    "ms": 13328.5995,
+    "ms": 10495.630958,
     "gitCalls": 1029,
     "files": 512,
     "candidates": 1,
     "complete": true
   },
   "after": {
-    "ms": 206.21612500000083,
+    "ms": 158.34087499999987,
     "gitCalls": 9,
     "files": 512,
     "candidates": 1,
     "complete": true
   },
   "defaultBudget": {
-    "ms": 175.7811669999992,
+    "ms": 151.49312499999905,
     "gitCalls": 9,
     "files": 512,
     "candidates": 1,
