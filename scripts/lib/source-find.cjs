@@ -1,4 +1,4 @@
-// Generated from source-find.cts by TypeScript 6.0.2; source-lf-sha256=d34251d3561b348b23dd7bdc516654fe89840785b75c5ec50167827be699e833
+// Generated from source-find.cts by TypeScript 6.0.2; source-lf-sha256=d706d0a697aaf453473ef4a7ef949e287a8de905b7d62d3cbeb8b2fa92d9813e
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -109,7 +109,8 @@ function git(root, args, signal, input) {
     cancelled(signal);
     return new Promise((resolve, reject) => {
         let inputError;
-        const child = (0, node_child_process_1.execFile)('git', ['--no-replace-objects', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-C', root, ...args], { env: Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.toUpperCase().startsWith('GIT_'))), encoding: 'buffer', maxBuffer: 34 * 1024 * 1024, timeout: 10000, signal }, (error, stdout) => {
+        // Local lookup must not fetch promisor objects, including excluded paths.
+        const child = (0, node_child_process_1.execFile)('git', ['--no-replace-objects', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-C', root, ...args], { env: { ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.toUpperCase().startsWith('GIT_'))), GIT_NO_LAZY_FETCH: '1', GIT_ALLOW_PROTOCOL: '' }, encoding: 'buffer', maxBuffer: 34 * 1024 * 1024, timeout: 10000, signal }, (error, stdout) => {
             if (signal?.aborted)
                 reject(new SourceError('SOURCE_CANCELLED', 'search'));
             else if (error || inputError)

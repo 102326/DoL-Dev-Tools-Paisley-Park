@@ -6,6 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const cp = require('node:child_process');
 const {createHash} = require('node:crypto');
+const {pathToFileURL} = require('node:url');
 const {findSource} = require('../scripts/lib/source-find.cjs');
 async function fixture(t, files) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(),'source-revision-'));
@@ -20,6 +21,33 @@ async function fixture(t, files) {
   return {root,git};
 }
 const request = (root,limits={}) => ({schemaVersion:1,root,revision:'HEAD',clues:[{kind:'text',value:'needle'}],limits});
+test('local revision queries do not lazily fetch excluded or missing objects from a promisor remote',async t=>{
+ for(const mode of ['excluded','missing-source','protocol-config-override'])await t.test(mode,async t=>{
+  const remote=await fixture(t,{'a.js':'needle available','img/private.png':'excluded asset','profiles/private.js':'excluded private source',...(mode==='missing-source'?{'b.js':'needle missing'}:{})});
+  remote.git('config','uploadpack.allowFilter','true');
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'source-promisor-'));
+  t.after(()=>fs.rm(root,{recursive:true,force:true}));
+  cp.execFileSync('git',['clone','--quiet','--filter=blob:none','--no-checkout','--no-local',pathToFileURL(remote.root).href,root]);
+  const local=(...args)=>cp.execFileSync('git',['-C',root,...args],{encoding:'utf8'}).trim();
+  local('config','protocol.file.allow','always');
+  assert.equal(local('show','HEAD:a.js'),'needle available');
+  const absent=remote.git('rev-parse','HEAD:img/private.png');
+  const hasLocal=oid=>cp.spawnSync('git',['-C',root,'cat-file','-e',oid],{env:{...process.env,GIT_NO_LAZY_FETCH:'1',GIT_ALLOW_PROTOCOL:''},encoding:'utf8'}).status===0;
+  assert.equal(hasLocal(absent),false);
+  if(mode==='protocol-config-override'){
+    const original=cp.execFile;
+    t.mock.method(cp,'execFile',function(command,args,options,callback){return original.call(this,command,args,{...options,env:{...options.env,GIT_NO_LAZY_FETCH:'0'}},callback)});
+  }
+  let result;
+  if(mode==='protocol-config-override')await assert.rejects(findSource(request(root)),{code:'SOURCE_REVISION_UNAVAILABLE'});
+  else{result=await findSource(request(root));assert.equal(result.complete,mode!=='missing-source');assert.equal(result.candidates[0].file,'a.js')}
+  assert.equal(hasLocal(absent),false,'an excluded asset must stay absent rather than being fetched during enumeration');
+  if(mode==='missing-source'){
+    assert.deepEqual(result.partialReasons,['file-unreadable']);assert.equal(result.stats.filesAttempted,2);assert.equal(result.stats.filesRead,1);
+    assert.equal(hasLocal(remote.git('rev-parse','HEAD:b.js')),false);
+  }
+ });
+});
 function intercept(t, transform = bytes => bytes) {
   const original = cp.execFile, calls = [], inputs = [];
   t.mock.method(cp,'execFile',function(command,args,options,callback) {

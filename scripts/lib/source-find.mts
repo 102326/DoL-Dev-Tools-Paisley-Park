@@ -82,8 +82,9 @@ function git(root: string, args: string[], signal?: AbortSignal, input?: string)
   cancelled(signal);
   return new Promise((resolve, reject) => {
     let inputError: Error | undefined;
+    // Local lookup must not fetch promisor objects, including excluded paths.
     const child = execFile('git', ['--no-replace-objects', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-C', root, ...args],
-      { env: Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.toUpperCase().startsWith('GIT_'))), encoding: 'buffer', maxBuffer: 34 * 1024 * 1024, timeout: 10000, signal }, (error, stdout) => {
+      { env: {...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.toUpperCase().startsWith('GIT_'))), GIT_NO_LAZY_FETCH:'1', GIT_ALLOW_PROTOCOL:''}, encoding: 'buffer', maxBuffer: 34 * 1024 * 1024, timeout: 10000, signal }, (error, stdout) => {
         if (signal?.aborted) reject(new SourceError('SOURCE_CANCELLED','search'));
         else if (error || inputError) reject(error || inputError);
         else resolve(stdout);
