@@ -27,6 +27,8 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 
 本机后续已统一收口：[Mac 剩余项盘点与完整清理修复](../experiments/tusk-act4-7/MAC_CLOSEOUT_20261106.md)。最新代码 `0a75b59df6898c460ca26b73ee7bc33a8be0b0d5` 保留启动主异常及浏览器/CDP/HTTP/FD 清理失败，源码和最低 Node26 独立包各 43/43；固定包真实中性 Chrome 正常/拒绝两组清理均确认。官方 CI Actions 已升级 v7，仍是原单 job。当前合理 Mac 实现待办已耗尽，外部输入和可选研究分列，不重做已验 TS/GER/contracts，不改变 Android 四条 pending 的原合同。
 
+Windows 后续：[源码查询与启动清理增量验收](../experiments/tusk-act4-7/WINDOWS_FOLLOWUP_20261106.md)已同步至 `7f3ce2d` 并实跑入站变更。另修复部分克隆查询的隐式 Git 抓取，固定代码 `c4423ae4945687689e07397ca30d35400098d192`；最终源码/独立包查询各 36 通过、1 平台跳过，原启动清理集各 43/43，真实中性 Chrome 正常/拒绝及资源清理通过。精确上游 0.5.12.13 已取得，局部候选和有界固定 revision partial 分别核验，不能宣称全仓完整或运行现场逐字对应。用户选择使用更新的 Node26.13；最低 Windows26.0 仍单列未验证。Android 继续等待 UI 释放，无设备动作。
+
 ## 1. 固定身份与读取顺序
 
 | 对象 | 固定身份 |

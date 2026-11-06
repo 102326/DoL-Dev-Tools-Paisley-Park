@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "incomingCommit": "7f3ce2d035b739dc5e796669035244ae6454f1c7",
+  "codeCommit": "c4423ae4945687689e07397ca30d35400098d192",
+  "result": "scoped Windows follow-up passed; Android waits for UI release",
+  "environment": {
+    "windows": "10.0.26340.0",
+    "powershell": "7.6.5",
+    "node": "26.13.0",
+    "git": "2.56.0.windows.2",
+    "chrome": "156.0.8078.80",
+    "floor26Windows": "Not validated; user chose newer Node, no portable runtime downloaded or executed"
+  },
+  "tests": {
+    "incomingSourceAndPackageLookup": {
+      "each": {
+        "pass": 32,
+        "skip": 1,
+        "fail": 0
+      }
+    },
+    "sourceAndPackageStartupCleanup": {
+      "each": {
+        "pass": 43,
+        "skip": 0,
+        "fail": 0
+      }
+    },
+    "finalSourceAndPackageLookup": {
+      "each": {
+        "pass": 36,
+        "skip": 1,
+        "fail": 0,
+        "total": 37
+      }
+    },
+    "platformSkip": "nonregular query stream input",
+    "program": {
+      "nodeModules": 98,
+      "domModules": 17,
+      "artifacts": 133,
+      "negativeControls": 125
+    },
+    "localFullSuitesRepeated": false
+  },
+  "neutralChrome": {
+    "testedPackageCommit": "7f3ce2d035b739dc5e796669035244ae6454f1c7",
+    "reusedForFinalCodeBecauseStartupModuleBytesIdentical": true,
+    "cases": [
+      {
+        "mode": "observe",
+        "status": "passed",
+        "start": "bound",
+        "refusalCode": null,
+        "businessDispatches": 0,
+        "browserCleanup": "confirmed",
+        "serverCleanup": "confirmed",
+        "cleanup": "confirmed"
+      },
+      {
+        "mode": "hold-document",
+        "status": "passed",
+        "start": "refused",
+        "refusalCode": "PC_DOCUMENT_CHANGED",
+        "businessDispatches": 0,
+        "browserCleanup": "confirmed",
+        "serverCleanup": "confirmed",
+        "cleanup": "confirmed"
+      }
+    ],
+    "port18789ListeningAfter": false
+  },
+  "comparison": {
+    "syntheticFiles": 512,
+    "beforeModuleSha256": "efe805aa51a87f5183881c447c4e4c336ad4744ec612fd583b1979e357c433bd",
+    "afterModuleSha256": "ca10f5c5163c9213acd7ceda603e11dc792b3159c069e69e9ef5add1c10b29d6",
+    "before": {
+      "ms": 44315.4978,
+      "gitCalls": 1029,
+      "files": 512,
+      "candidates": 1,
+      "complete": true
+    },
+    "after": {
+      "ms": 485.3523999999961,
+      "gitCalls": 9,
+      "files": 512,
+      "candidates": 1,
+      "complete": true
+    },
+    "defaultBudget": {
+      "ms": 471.09560000000056,
+      "gitCalls": 9,
+      "files": 512,
+      "candidates": 1,
+      "complete": true
+    },
+    "identicalResults": true,
+    "codeCommit": "7f3ce2d035b739dc5e796669035244ae6454f1c7",
+    "scope": "512 synthetic files only; not game/general speedup",
+    "rerunAfterNoFetchFix": false
+  },
+  "realSource": {
+    "officialTag": "0.5.12.13",
+    "commit": "0354ffeb81884323d70f2ec2338bcaa52567cb67",
+    "checkout": "independent shallow sparse partial clone; no game execution",
+    "runtimeEquivalence": "upstream version candidate, not proof of Lyra/translation/Mod byte equivalence",
+    "worktreeScoped": {
+      "sidebar": {
+        "complete": true,
+        "file": "game/base-system/datetime-text.twee",
+        "line": 17
+      },
+      "weather": {
+        "complete": true,
+        "file": "game/base-system/widgets.twee",
+        "line": 1749
+      },
+      "wardrobe": {
+        "complete": false,
+        "reason": "max-results",
+        "file": "game/base-clothing/wardrobes.twee",
+        "line": 324
+      }
+    },
+    "finalFixedRevision": {
+      "consistency": "git-objects",
+      "complete": false,
+      "outcome": "partial",
+      "elapsedMs": 6237,
+      "exitCode": 2,
+      "stats": {
+        "filesRead": 803,
+        "filesAttempted": 998,
+        "bytesRead": 33554424,
+        "eligibleFiles": 998,
+        "skipped": 18820
+      },
+      "partialReasons": [
+        "file-unreadable",
+        "max-bytes",
+        "max-results"
+      ],
+      "firstCandidate": {
+        "file": "game/base-clothing/wardrobes.twee",
+        "line": 324
+      },
+      "codeSha256": "ff2a3e06c5e9323d6a299fe447222434b42c8e541d690bb3e1d69e3d444625d9",
+      "objectCountsUnchanged": true,
+      "matchingProcessesAfter": 0,
+      "stagingAfter": 0
+    },
+    "oldVersionQueries": "0.5.11.9 results remain separate and partial"
+  },
+  "fix": {
+    "sharedGitHelperOnly": true,
+    "authoritativeCTSAndNativeTSKeptInSync": true,
+    "generatedCJS": true,
+    "internalNoLazyFetch": true,
+    "internalEmptyProtocolAllowList": true,
+    "noBudgetIncrease": true,
+    "noRuntimeLedgerOrResourceChanges": true,
+    "independentReview": "read-only; no tests/device/network by reviewer"
+  },
+  "failuresRetained": [
+    {
+      "kind": "harness request",
+      "code": "SOURCE_REQUEST_INVALID",
+      "reason": "revision was put in query JSON; corrected to CLI --revision"
+    },
+    {
+      "kind": "real partial-clone query",
+      "code": "SOURCE_REVISION_UNAVAILABLE",
+      "elapsedMs": 10329,
+      "extraObjectsFetched": 40,
+      "extraObjects": "metadata/devTools; no img or game/fonts",
+      "ownedDescendantsLeft": true,
+      "ownedDescendantsManuallyCleaned": true
+    },
+    {
+      "kind": "before-fix regression",
+      "result": "excluded object was fetched"
+    },
+    {
+      "kind": "fallback regression expectation",
+      "result": "initially expected success; corrected to require explicit refusal with no fetched object"
+    }
+  ],
+  "archive": {
+    "commit": "c4423ae4945687689e07397ca30d35400098d192",
+    "files": 432,
+    "sha256": "ad65eacb2121a4a6500554b70ccef6d8077a7c51df616411d3ad357d4808b6c4",
+    "bytesMatchGit": true,
+    "exactExportSet": true,
+    "postTestBytesVerified": true,
+    "dependenciesInstalled": false,
+    "version": "6.1.0 development snapshot; not 7.0 Release"
+  },
+  "notValidated": [
+    "Android positive business/data boundary and historical receipt; UI still owns device",
+    "Windows Node26.0 floor",
+    "actual old Git releases",
+    "general Windows descendant cancellation",
+    "Kotlin same-task benefit/agent capabilities",
+    "historical F07/background screenshot physical causes"
+  ],
+  "privacy": {
+    "rawEvidencePublished": false,
+    "gameSourcePublished": false,
+    "noDeviceOperations": true,
+    "noHistoricalStoreOrMarkerAccess": true,
+    "noAPKOrModHubChanges": true
+  },
+  "privateEvidence": {
+    "directory": "artifacts/windows-followup-20261106-223552",
+    "files": [
+      {
+        "path": "program.log",
+        "bytes": 120,
+        "sha256": "b3e48b3be75be1ff1356f672fa15acff4b9a34f6f948830c00ad408cc0c6ebc1"
+      },
+      {
+        "path": "source-find-tests.log",
+        "bytes": 21750,
+        "sha256": "60f5010c393e83082525323541d941238e4de2d2a5a30d19226683ea22cc4106"
+      },
+      {
+        "path": "startup-cleanup-tests.log",
+        "bytes": 3949,
+        "sha256": "86b89ca28a81f1bb8495d65781d57f3e41b103c0365c9abcaf855601e319ab33"
+      },
+      {
+        "path": "package-source-find-tests.log",
+        "bytes": 22194,
+        "sha256": "3bcecc2baec7b19ee89c3b6e2466e706985c712b7e5460a77c37a01cc260c7a2"
+      },
+      {
+        "path": "package-startup-cleanup-tests.log",
+        "bytes": 3948,
+        "sha256": "e5fbea81691a21924ff54d8cae15c9ef2be12f8a5fb5228127041669e0411f9b"
+      },
+      {
+        "path": "source-find-comparison.json",
+        "bytes": 623,
+        "sha256": "6dd2aef62dacae1f651a2497b57bad2367a7ae7dfdf722003047c63a02584e78"
+      },
+      {
+        "path": "source-find-comparison.err",
+        "bytes": 52736,
+        "sha256": "162f194e9f10da4d1806708171143dfe93dbe774830eecb1ef1c36ae2db11932"
+      },
+      {
+        "path": "whole-wardrobe-command.json",
+        "bytes": 268,
+        "sha256": "f3efaa20828016a4c2298357162c64c97a8ac3f75329e3f438ff76372b01112e"
+      },
+      {
+        "path": "real-source-summary-v2.json",
+        "bytes": 3795,
+        "sha256": "d8f40646a0a71ee14bb0560dd7a848ccd8e49299f1d17d137dffa498e6421019"
+      },
+      {
+        "path": "official-source-refs.json",
+        "bytes": 4775,
+        "sha256": "a1662434e3dfb74f917eaf7637744057a96cf03c11df6441e7f12b92cc8e212f"
+      },
+      {
+        "path": "no-lazy-fetch-before.log",
+        "bytes": 1015,
+        "sha256": "ef83637437b37652a4bb6c9a467207689c90a3431267ca871ce69dbf9712e07f"
+      },
+      {
+        "path": "no-lazy-fetch-final.log",
+        "bytes": 1530,
+        "sha256": "26c7d33d55ff117956a25f479dac4421f5d49ee44bc4e53661f2adfdd6c1dfe4"
+      },
+      {
+        "path": "no-lazy-fetch-final2.log",
+        "bytes": 444,
+        "sha256": "5774e47cd1d196350a58744c5b46ebabc3e3ed1eedde68d214a0fc9fca16ecad"
+      },
+      {
+        "path": "no-lazy-fetch-source-suite.log",
+        "bytes": 22517,
+        "sha256": "a2f7218a6eab1f04021140cb0bf6342d69f6e3c46ffad5ff04c1df47f329855a"
+      },
+      {
+        "path": "final-program.log",
+        "bytes": 120,
+        "sha256": "b3e48b3be75be1ff1356f672fa15acff4b9a34f6f948830c00ad408cc0c6ebc1"
+      },
+      {
+        "path": "final-negative-types.log",
+        "bytes": 134,
+        "sha256": "77d1c93c23a48d61ae0a667206453813d6d63928d7efd3512d2ded623b34a967"
+      },
+      {
+        "path": "final-package-source-tests.log",
+        "bytes": 22520,
+        "sha256": "1fdfc8bff68bf0862cafa2f4a6537f7a69a68f48788d4ef1fb81f8c73e5f9849"
+      },
+      {
+        "path": "exact-source/postfix-final-wardrobe.json",
+        "bytes": 18584,
+        "sha256": "37b82aa622a7113a560aeee34098aba56a0348205b1307187b9289f455ee4357"
+      },
+      {
+        "path": "exact-source/postfix-final-objects-before.txt",
+        "bytes": 110,
+        "sha256": "5c0b0d212fb8041c6507b0c33e5cec062b6e3947e6648893c12fe4a613954494"
+      },
+      {
+        "path": "exact-source/postfix-final-objects-after.txt",
+        "bytes": 110,
+        "sha256": "5c0b0d212fb8041c6507b0c33e5cec062b6e3947e6648893c12fe4a613954494"
+      },
+      {
+        "path": "exact-source/postfix-final-resources.txt",
+        "bytes": 52,
+        "sha256": "eca74bf681389b5ee90803a594ce2b0bbc6c9bff80c3d16df213948c08dec387"
+      },
+      {
+        "path": "package-startup-observe/results.json",
+        "bytes": 3475,
+        "sha256": "764ad1c3c7bcd560fe0dffe42a6938b0c145bdfe25baea23b224acb5a7a5fad1"
+      },
+      {
+        "path": "package-startup-hold-document/results.json",
+        "bytes": 12396,
+        "sha256": "f8f8c8e4f066ba477836e5b5ebb3fb0741f1af8038c50912faac536c4e19519a"
+      }
+    ]
+  }
+}
