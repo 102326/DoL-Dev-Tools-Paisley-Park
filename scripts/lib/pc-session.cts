@@ -8,7 +8,6 @@ declare namespace pcSession {
 const fs:typeof import('node:fs')=require('node:fs'),path:typeof import('node:path')=require('node:path'),{createHash,randomUUID}:typeof import('node:crypto')=require('node:crypto');
 const {ChromeHost}:typeof import('./chrome-host.cjs')=require('./chrome-host.cjs'),{target}:typeof import('./runtime-target.cjs')=require('./runtime-target.cjs');
 const {targets}:typeof import('./cdp.cjs')=require('./cdp.cjs');
-const {pcCleanup}:typeof import('./diagnostics.cjs')=require('./diagnostics.cjs');
 const invalid=()=>Object.assign(Error('Invalid owned PC input'),{code:'PC_INPUT_INVALID'});
 function json(file:string|undefined,max=16384):unknown{try{if(!path.isAbsolute(file||'')||!fs.statSync(file!).isFile()||fs.statSync(file!).size>max)throw invalid();return JSON.parse(fs.readFileSync(file!,'utf8'))}catch{throw invalid()}}
 function record(file:string|undefined):pcSession.OwnedRecord{
@@ -18,6 +17,7 @@ function record(file:string|undefined):pcSession.OwnedRecord{
  const validated=target(r.target);r.target=validated;if(validated.host!=='chrome'||!validated.document)throw invalid();return r as unknown as pcSession.OwnedRecord;
 }
 function save(file:string,value:unknown){fs.writeFileSync(file,JSON.stringify(value,null,2),{flag:'wx',mode:0o600})}
+function pcCleanup(errors:unknown[]){return Object.assign(new AggregateError(errors,'Owned PC cleanup unconfirmed',{cause:errors[0]}),{code:'PC_CLEANUP_UNCONFIRMED'})}
 async function pages(file:string|undefined){
  const r=record(file),h=new ChromeHost(r.target);
  await h.verifyBrowser();

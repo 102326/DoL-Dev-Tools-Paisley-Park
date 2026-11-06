@@ -1,12 +1,12 @@
-// Generated from chrome-launch.cts by TypeScript 6.0.2; source-lf-sha256=8e5abc117fe66eac3d0ea3a589b407be9e24d2cdc68fdd9b4a0899873f6250f6
+// Generated from chrome-launch.cts by TypeScript 6.0.2; source-lf-sha256=63100ff9ceac0a82cc883de781ba97f0c648912c1e718d74de562bd8acd3e2b8
 "use strict";
 'use strict';
 // Owned-browser startup adapted from the MIT ACT4 host, fixed history 52a8893.
 const fs = require('node:fs'), path = require('node:path'), { spawn } = require('node:child_process'), { createHash } = require('node:crypto');
 const { targets } = require('./cdp.cjs'), { ChromeHost } = require('./chrome-host.cjs');
-const { pcCleanup } = require('./diagnostics.cjs');
 const pause = (ms) => new Promise(r => setTimeout(r, ms));
 function fail(code) { return Object.assign(Error(code), { code }); }
+function pcCleanup(errors) { return Object.assign(new AggregateError(errors, 'Owned PC cleanup unconfirmed', { cause: errors[0] }), { code: 'PC_CLEANUP_UNCONFIRMED' }); }
 async function launch(options) {
     if (!options.out || !path.isAbsolute(options.executable || '') || !fs.statSync(options.executable).isFile() || !['visible', 'headless'].includes(options.mode))
         throw fail('PC_LAUNCH_INVALID');

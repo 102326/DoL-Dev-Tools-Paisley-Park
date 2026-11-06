@@ -9,9 +9,9 @@ declare namespace launcher {
 // Owned-browser startup adapted from the MIT ACT4 host, fixed history 52a8893.
 const fs:typeof import('node:fs')=require('node:fs'),path:typeof import('node:path')=require('node:path'),{spawn}:typeof import('node:child_process')=require('node:child_process'),{createHash}:typeof import('node:crypto')=require('node:crypto');
 const {targets}:typeof import('./cdp.cjs')=require('./cdp.cjs'),{ChromeHost}:typeof import('./chrome-host.cjs')=require('./chrome-host.cjs');
-const {pcCleanup}:typeof import('./diagnostics.cjs')=require('./diagnostics.cjs');
 const pause=(ms:number)=>new Promise(r=>setTimeout(r,ms));
 function fail(code:string){return Object.assign(Error(code),{code})}
+function pcCleanup(errors:unknown[]){return Object.assign(new AggregateError(errors,'Owned PC cleanup unconfirmed',{cause:errors[0]}),{code:'PC_CLEANUP_UNCONFIRMED'})}
 async function launch(options:launcher.Options){
  if(!options.out||!path.isAbsolute(options.executable||'')||!fs.statSync(options.executable).isFile()||!['visible','headless'].includes(options.mode))throw fail('PC_LAUNCH_INVALID');
  const url=new URL(options.url);if(url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port||url.username||url.password||url.hash)throw fail('PC_LAUNCH_INVALID');
