@@ -159,8 +159,10 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
       const listing = (await git(root,['ls-tree','-r','-l','-z',commit],signal)).toString();
       for (const item of listing.split('\0')) {
         if (!item) continue;
-        const match = /^(100644|100755) blob ([a-f0-9]{40,64}) +(\d+)\t([\s\S]+)$/.exec(item);
-        if (match && Number.isSafeInteger(Number(match[3])) && allowed(match[4]!)) entries.push({file:match[4]!,object:match[2]!,size:Number(match[3])});
+        const match = /^(100644|100755) blob ([a-f0-9]{40,64}) +([^ \t]+)\t([\s\S]+)$/.exec(item);
+        // Git prints BAD for unavailable sizes. Keep the file eligible and attempted.
+        if (match && allowed(match[4]!)) entries.push({file:match[4]!,object:match[2]!,
+          ...(/^\d+$/.test(match[3]!) && Number.isSafeInteger(Number(match[3])) ? {size:Number(match[3])} : {})});
         else skipped++;
         if (entries.length > 20000) { reasons.add('enumeration-limit'); break; }
       }
@@ -200,6 +202,7 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
     let buffer: Buffer;
     try {
       if (entry.object) {
+        if (entry.size === undefined) throw new Error('SOURCE_BLOB_UNAVAILABLE');
         if (entry.size! > request.limits.maxBytes - bytesRead) { reasons.add('max-bytes'); continue; }
         if (!cached.has(entry.object)) {
           const window: Entry[] = [];
@@ -208,6 +211,7 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
           const end = Math.min(entries.length,index + 128,index + request.limits.maxFiles - filesAttempted + 1);
           for (let next = index; next < end; next++) {
             const item = entries[next]!;
+            if (item.size === undefined) continue;
             if (item.size! > request.limits.maxBytes - bytesRead - bytes) continue;
             if (window.length && bytes + item.size! > 1024 * 1024) break;
             window.push(item); bytes += item.size!;

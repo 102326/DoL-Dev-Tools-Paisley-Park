@@ -142,3 +142,19 @@ test('batch stdin failure kills only the owned child and reports a partial read'
   assert.equal(result.stats.filesRead,0);
   assert.ok(!JSON.stringify(result).includes('PRIVATE_STDIN_FAILURE'));
 });
+test('a genuinely missing Git blob remains an attempted unreadable file, not a filtered complete no-match',async t => {
+  const {root,git} = await fixture(t,{'a.js':'needle unavailable','b.js':'needle available'});
+  const oid = git('rev-parse','HEAD:a.js');
+  // Delete only a known loose object in this freshly created, owned synthetic repository.
+  await fs.unlink(path.join(root,'.git','objects',oid.slice(0,2),oid.slice(2)));
+  const result = await findSource(request(root));
+  assert.equal(result.complete,false);
+  assert.deepEqual(result.partialReasons,['file-unreadable']);
+  assert.equal(result.stats.eligibleFiles,2); assert.equal(result.stats.filesAttempted,2);
+  assert.equal(result.stats.filesRead,1); assert.equal(result.candidates[0].file,'b.js');
+  const {inputs} = intercept(t);
+  const limited = await findSource(request(root,{maxFiles:1}));
+  assert.deepEqual(limited.partialReasons,['file-unreadable','max-files']);
+  assert.equal(limited.stats.filesAttempted,1); assert.equal(limited.stats.filesRead,0);
+  assert.deepEqual(inputs,[]);
+});

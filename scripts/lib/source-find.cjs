@@ -1,4 +1,4 @@
-// Generated from source-find.cts by TypeScript 6.0.2; source-lf-sha256=3a64cbd609140b9b79e3a9eab38fb1be81eb504c5fe892187f3171a3daf34d6f
+// Generated from source-find.cts by TypeScript 6.0.2; source-lf-sha256=d34251d3561b348b23dd7bdc516654fe89840785b75c5ec50167827be699e833
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -211,9 +211,11 @@ async function search(request, signal, until) {
             for (const item of listing.split('\0')) {
                 if (!item)
                     continue;
-                const match = /^(100644|100755) blob ([a-f0-9]{40,64}) +(\d+)\t([\s\S]+)$/.exec(item);
-                if (match && Number.isSafeInteger(Number(match[3])) && allowed(match[4]))
-                    entries.push({ file: match[4], object: match[2], size: Number(match[3]) });
+                const match = /^(100644|100755) blob ([a-f0-9]{40,64}) +([^ \t]+)\t([\s\S]+)$/.exec(item);
+                // Git prints BAD for unavailable sizes. Keep the file eligible and attempted.
+                if (match && allowed(match[4]))
+                    entries.push({ file: match[4], object: match[2],
+                        ...(/^\d+$/.test(match[3]) && Number.isSafeInteger(Number(match[3])) ? { size: Number(match[3]) } : {}) });
                 else
                     skipped++;
                 if (entries.length > 20000) {
@@ -281,6 +283,8 @@ async function search(request, signal, until) {
         let buffer;
         try {
             if (entry.object) {
+                if (entry.size === undefined)
+                    throw new Error('SOURCE_BLOB_UNAVAILABLE');
                 if (entry.size > request.limits.maxBytes - bytesRead) {
                     reasons.add('max-bytes');
                     continue;
@@ -292,6 +296,8 @@ async function search(request, signal, until) {
                     const end = Math.min(entries.length, index + 128, index + request.limits.maxFiles - filesAttempted + 1);
                     for (let next = index; next < end; next++) {
                         const item = entries[next];
+                        if (item.size === undefined)
+                            continue;
                         if (item.size > request.limits.maxBytes - bytesRead - bytes)
                             continue;
                         if (window.length && bytes + item.size > 1024 * 1024)
