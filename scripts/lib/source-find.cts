@@ -77,18 +77,42 @@ function allowed(file: string): boolean {
 function cancelled(signal?: AbortSignal): void {
   if (signal?.aborted) throw new SourceError('SOURCE_CANCELLED','search');
 }
-function git(root: string, args: string[], signal?: AbortSignal): Promise<Buffer> {
+function git(root: string, args: string[], signal?: AbortSignal, input?: string): Promise<Buffer> {
   cancelled(signal);
   return new Promise((resolve, reject) => {
-    execFile('git', ['--no-replace-objects', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-C', root, ...args],
+    let inputError: Error | undefined;
+    const child = execFile('git', ['--no-replace-objects', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-C', root, ...args],
       { env: Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.toUpperCase().startsWith('GIT_'))), encoding: 'buffer', maxBuffer: 34 * 1024 * 1024, timeout: 10000, signal }, (error, stdout) => {
         if (signal?.aborted) reject(new SourceError('SOURCE_CANCELLED','search'));
-        else if (error) reject(error);
+        else if (error || inputError) reject(error || inputError);
         else resolve(stdout);
       });
+    if (input !== undefined) {
+      child.stdin!.on('error', (error: Error) => { inputError = error; child.kill(); });
+      child.stdin!.end(input);
+    }
   });
 }
-interface Entry { file: string; object?: string; }
+interface Entry { file: string; object?: string; size?: number; }
+/** Only tree-selected hex IDs enter stdin; bodies are byte-framed, never line-decoded. */
+async function blobs(root: string, entries: Entry[], signal: AbortSignal): Promise<Map<string, Buffer | null>> {
+  const selected = new Map(entries.map(entry => [entry.object!, entry.size!]));
+  const output = await git(root, ['cat-file','--batch'], signal, [...selected.keys()].join('\n') + '\n');
+  const result = new Map<string, Buffer | null>();
+  let offset = 0;
+  for (const [object, size] of selected) {
+    const end = output.indexOf(10, offset);
+    if (end < offset || end - offset > 128) throw new Error('SOURCE_BATCH_INVALID');
+    const header = output.toString('utf8',offset,end);
+    offset = end + 1;
+    if (header === `${object} missing`) { result.set(object,null); continue; }
+    if (header !== `${object} blob ${size}` || size > output.length - offset - 1 || output[offset + size] !== 10) throw new Error('SOURCE_BATCH_INVALID');
+    result.set(object,output.subarray(offset,offset + size));
+    offset += size + 1;
+  }
+  if (offset !== output.length) throw new Error('SOURCE_BATCH_INVALID');
+  return result;
+}
 function definition(kind: Kind, line: string, value: string): boolean {
   const s = line.trim();
   if (kind === 'passage') return s.startsWith('::') && s.slice(2).trim().split(/\s+[\[{]/)[0]?.trim() === value;
@@ -131,11 +155,11 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
     try {
       if (repositoryRoot === null || await fs.realpath(repositoryRoot) !== root) throw 0;
       commit = (await git(root,['rev-parse','--verify','--end-of-options',`${request.revision}^{commit}`],signal)).toString().trim();
-      const listing = (await git(root,['ls-tree','-r','-z',commit],signal)).toString();
+      const listing = (await git(root,['ls-tree','-r','-l','-z',commit],signal)).toString();
       for (const item of listing.split('\0')) {
         if (!item) continue;
-        const match = /^(100644|100755) blob ([a-f0-9]{40,64})\t([\s\S]+)$/.exec(item);
-        if (match && allowed(match[3]!)) entries.push({file:match[3]!,object:match[2]!});
+        const match = /^(100644|100755) blob ([a-f0-9]{40,64}) +(\d+)\t([\s\S]+)$/.exec(item);
+        if (match && Number.isSafeInteger(Number(match[3])) && allowed(match[4]!)) entries.push({file:match[4]!,object:match[2]!,size:Number(match[3])});
         else skipped++;
         if (entries.length > 20000) { reasons.add('enumeration-limit'); break; }
       }
@@ -165,18 +189,33 @@ async function search(request: Request, signal: AbortSignal, until: number): Pro
   entries.sort((a,b) => a.file.localeCompare(b.file));
   const candidates: Candidate[] = [];
   let filesRead = 0, filesAttempted = 0, bytesRead = 0;
+  let cached = new Map<string, Buffer | null>();
   // Keep only the best bounded candidates while scanning the remaining selected files.
   const compare = (a: Candidate, b: Candidate) => b.score - a.score || a.file.localeCompare(b.file) || a.line - b.line;
-  for (const entry of entries) {
+  for (const [index, entry] of entries.entries()) {
     active();
     if (filesAttempted >= request.limits.maxFiles) { reasons.add('max-files'); break; }
     filesAttempted++;
     let buffer: Buffer;
     try {
       if (entry.object) {
-        const size = Number((await git(root,['cat-file','-s',entry.object],signal)).toString());
-        if (size > request.limits.maxBytes - bytesRead) { reasons.add('max-bytes'); continue; }
-        buffer = await git(root,['cat-file','blob',entry.object],signal);
+        if (entry.size! > request.limits.maxBytes - bytesRead) { reasons.add('max-bytes'); continue; }
+        if (!cached.has(entry.object)) {
+          const window: Entry[] = [];
+          let bytes = 0;
+          // Bound prefetch by attempted files and remaining bytes, counting duplicate files too.
+          const end = Math.min(entries.length,index + 128,index + request.limits.maxFiles - filesAttempted + 1);
+          for (let next = index; next < end; next++) {
+            const item = entries[next]!;
+            if (item.size! > request.limits.maxBytes - bytesRead - bytes) continue;
+            if (window.length && bytes + item.size! > 1024 * 1024) break;
+            window.push(item); bytes += item.size!;
+          }
+          cached = await blobs(root, window, signal);
+        }
+        const body = cached.get(entry.object);
+        if (!body) throw new Error('SOURCE_BLOB_UNAVAILABLE');
+        buffer = body;
       } else {
         const selected = path.join(root,entry.file);
         const real = await fs.realpath(selected);

@@ -68,6 +68,8 @@ node RESOLVED_CLI source-find --root REVIEWED_REPOSITORY_ROOT --revision REVIEWE
 
 默认限制50结果、2000次文件尝试、8MiB读入、上下文前后各1行、10秒。上限和可选值见Schema。时间限制是协作式检查，不是OS硬实时抢占；工作树也不是跨文件原子快照。工作树commit只是基线，dirty保守包含ignored文件；候选摘要绑定实际读取字节。固定revision模式读取Git对象、禁用replace refs、不checkout/reset；需从仓库根调用。已有精确商店Source Link合同保持独立，候选结果不冒充matched。
 
+固定revision的合格文件使用有界批量读取，减少逐文件启动Git的开销；预取受剩余文件尝试数及字节预算约束。同一blob出现在多个文件时，预算仍按各文件计，不因传输去重而扩大查找范围。对象缺失或批量回包异常保留`file-unreadable`及partial，不能据此声明完整无匹配；此优化不改变默认超时或固定commit身份。
+
 此入口以严格检查的TS维护、以预生成CommonJS运行；运行无需TypeScript编译器、类型擦除、npm开发依赖或额外loader。开发/CI检查源码与运行产物一致，原生TS保留在实验对照中。Windows文件系统、真实Android和非商店真实游戏源码尚未由本轮Mac验收；普通源码定位可以先做，实际加载验证仍按目标项目合同执行。
 
 ## 内容与执行边界
