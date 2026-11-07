@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "baseline": "ff618b843f9cda0eebfffa7cc13e52b4a1b14a09",
+  "probeSourceCommit": "d068ea82318c74433a5aa6df78f7227205a1d32c",
+  "comparisonDriverCommit": "38bdfcffa390dda62a5f4e97f690aa2ba5c77c33",
+  "visualFixCommit": "8e63e7a7322661620f182c50e5bbc15b9d1ea5e8",
+  "result": "Scoped Done for self-App snapshot comparison; keep prototype, do not promote to production",
+  "environment": {
+    "windows": "10.0.26340.0",
+    "node": "26.13.0",
+    "powershell": "7.6.5",
+    "adb": "37.0.1",
+    "android": "17",
+    "userId": "0",
+    "androidCli": "1.0.16486076",
+    "gradle": "8.9",
+    "kotlin": "2.0.21",
+    "agp": "8.7.3",
+    "compileSdk": 35,
+    "buildTools": "34",
+    "jdk": "21.0.11",
+    "jvmTarget": 17
+  },
+  "artifacts": {
+    "measuredApkVersion": "0.2",
+    "measuredApkSha256": "7491dedfa6959888a3d53dcf7dbdfcb12f450a87be2a409df5585113c4f7cb0a",
+    "visualFixedApkVersion": "0.3",
+    "visualFixedApkSha256": "b92ab929f56dd063ff4d880f49a703c97aba2cfa6ac8cc1e742bd5d2d449ca0f"
+  },
+  "checks": {
+    "invalidRequestsRefused": 7,
+    "maxReadRows": 16,
+    "snapshotAndLayoutAgree": true,
+    "threeStableTimingRounds": true,
+    "buttonZeroToOne": true,
+    "rotationRecreatedActivityAndPreservedCount": true,
+    "backgroundUnavailableWithNulls": true,
+    "explicitReturnPreservedCount": true,
+    "coldReadStartedOnlyProviderProcess": true,
+    "explicitRestartExposedNewProcessAndActivity": true,
+    "visualFixCheckedOnDevice": true,
+    "missingSdkRejectedBeforeOutput": true
+  },
+  "wallTimeMs": {
+    "rounds": [
+      {
+        "singleMs": 1145.4040999999997,
+        "fiveIndividualMs": 5595.677700000004,
+        "fiveIndividualSamplesMs": [
+          1135.604800000001,
+          1116.0908000000018,
+          1095.1743999999999,
+          1115.1237,
+          1133.684000000001
+        ],
+        "fiveBatchMs": 1104.4555,
+        "batchBytes": 1565,
+        "uiLayoutMs": 2487.1677999999993,
+        "uiLayoutBytes": 6867
+      },
+      {
+        "singleMs": 1138.8037000000004,
+        "fiveIndividualMs": 5638.022000000001,
+        "fiveIndividualSamplesMs": [
+          1123.8676999999989,
+          1112.7896,
+          1141.6719000000012,
+          1119.4971000000005,
+          1140.1957000000002
+        ],
+        "fiveBatchMs": 1135.430400000001,
+        "batchBytes": 1565,
+        "uiLayoutMs": 1065.8582999999999,
+        "uiLayoutBytes": 6867
+      },
+      {
+        "singleMs": 1141.468399999998,
+        "fiveIndividualMs": 5647.573299999996,
+        "fiveIndividualSamplesMs": [
+          1134.7122999999992,
+          1119.6815999999963,
+          1119.0206000000035,
+          1140.8237999999983,
+          1133.3349999999991
+        ],
+        "fiveBatchMs": 1137.5561000000016,
+        "batchBytes": 1565,
+        "uiLayoutMs": 1082.661699999997,
+        "uiLayoutBytes": 6867
+      }
+    ],
+    "median": {
+      "single": 1141.468399999998,
+      "fiveIndividual": 5638.022000000001,
+      "fiveBatch": 1135.430400000001,
+      "officialLayout": 1082.661699999997
+    },
+    "scope": "neutral self-App only; five immediate rows are not separate time points or game tasks"
+  },
+  "failure": {
+    "legacyUiautomatorExit": 137,
+    "cause": "Unknown",
+    "originalFailureRetained": true,
+    "notRetried": true,
+    "unsupportedInstrumentationDiagnosticRetained": true
+  },
+  "cleanup": {
+    "uninstalledFromUser0": true,
+    "rotationRestored": true,
+    "forwardsEmpty": true,
+    "originalGameOperations": 0,
+    "defaultStoreStillAbsent": true
+  },
+  "decision": {
+    "productionPath": "existing Android CLI / ADB / CDP",
+    "promoteHelper": false,
+    "newRuntimeOrLedger": false,
+    "prototypeRequiredForRelease": false
+  },
+  "notValidated": [
+    "real DoL or Mod integration",
+    "WebView/CDP comparison",
+    "independent unprivileged-client denial",
+    "background waiting or action transport",
+    "persistent effects, recovery or other devices"
+  ],
+  "localFullNodePythonRepeated": false
+}

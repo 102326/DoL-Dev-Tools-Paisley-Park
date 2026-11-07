@@ -1,5 +1,5 @@
 'use strict';
-// Explicitly selected neutral probe only; never installs, launches or controls an App.
+// Neutral probe only; no installation, Activity launch or UI controls. Provider writes are rejection tests.
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const {performance}=require('node:perf_hooks');
 const [serial,directory]=process.argv.slice(2),pkg='org.paisleypark.tuskprobe',uri=`content://${pkg}.snapshot/current`;

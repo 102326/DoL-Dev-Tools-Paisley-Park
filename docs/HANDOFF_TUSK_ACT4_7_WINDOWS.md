@@ -33,6 +33,8 @@ Windows 后续：[源码查询与启动清理增量验收](../experiments/tusk-a
 
 同日后续已修复[旧 Goal 账本缺失时初始化空库的问题](../experiments/tusk-act4-7/ANDROID_INDEPENDENT_RECOVERY_20261107.md#后续旧任务账本缺失时拒绝创建替代库)：固定代码 `3939b6ed947cca65614b8f15513fba6d5994377a`，旧任务共用入口先拒绝缺失/空/非普通 Store，CLI 给出 `SESSION_STORE_UNAVAILABLE`。临时夹具先证实旧 status 创建 32 KiB 空库；修复后定向 5/5、受影响 78/78、独立包 CLI 13/13，已有独立真实 Session 逻辑行未变。无设备动作，不恢复原默认库、不结清旧未决；这是打开前检查，不是外部并发删除锁或自动数据恢复。新的本地验证包及实际边界见同节，仍不合并或发布。
 
+同日已完成 [Android 设备侧快照与取舍](../experiments/tusk-act4-7/ANDROID_SNAPSHOT_COMPARISON_20261107.md)。自有 Kotlin 探针验证有限只读 IPC、后台 unavailable/null、旋转与进程重建，并与同机官方 layout 对照。批量五行约 1.14 秒、独立五次约 5.64 秒；单次约 1.14 秒，没有优于预热布局或证明真实 DoL 收益。结论为保留实验，生产继续 Android CLI/ADB/CDP，不新增 helper 依赖或发布门槛。旧 `uiautomator dump` 137 首败保留；截图发现并修复探针文字遮挡。探针已卸载、旋转恢复，原游戏/旧账本未操作；完整输入、双 APK 身份和限制见报告。
+
 ## 1. 固定身份与读取顺序
 
 | 对象 | 固定身份 |
