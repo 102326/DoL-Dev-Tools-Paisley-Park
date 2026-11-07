@@ -1,4 +1,4 @@
-# DoL Dev Tools 7.0.0 — Gold Experience（黄金体验）
+# DoL Dev Tools 7.0.0 — Gold Experience
 
 创造能力，赋予行动。
 
