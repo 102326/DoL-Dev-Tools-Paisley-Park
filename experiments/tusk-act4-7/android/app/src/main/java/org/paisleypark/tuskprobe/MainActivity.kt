@@ -26,6 +26,11 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
             setPadding(24, 48, 24, 24)
+            setOnApplyWindowInsetsListener { view, insets ->
+                @Suppress("DEPRECATION")
+                view.setPadding(24, 24 + insets.systemWindowInsetTop, 24, 24 + insets.systemWindowInsetBottom)
+                insets
+            }
             addView(state)
             addView(increment)
         })
