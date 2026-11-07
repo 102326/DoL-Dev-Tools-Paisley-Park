@@ -3,6 +3,17 @@ const {spawnSync}=require('node:child_process');
 const cli=path.resolve(__dirname,'../scripts/dol-dev.cjs');
 const run=(args,extra=[])=>spawnSync(process.execPath,[...extra,cli,...args],{encoding:'utf8',windowsHide:true});
 
+test('missing original Session Stores are refused without replacement or private path disclosure',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-store-missing-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const dir=path.join(root,'goal'),store=path.join(root,'PRIVATE_STORE','sessions.sqlite');fs.mkdirSync(dir);
+  fs.writeFileSync(path.join(dir,'goal.json'),JSON.stringify({format:'paisley-session-link',version:2,store,sessionId:'00000000-0000-4000-8000-000000000001'}));
+  for(const args of [['game-goal-status','--goal',dir],['game-session','--goal',dir,'--operation','resume','--test-environment','yes']]){
+    const result=run(args);assert.equal(result.status,1);assert.match(result.stderr,/SESSION_STORE_UNAVAILABLE stage=game-session.store/);
+    assert.match(result.stderr,/original Store|verified backup/);assert(!result.stderr.includes(root));assert(!result.stderr.includes('PRIVATE_STORE'));
+    assert.equal(fs.existsSync(path.dirname(store)),false);assert.deepEqual(fs.readdirSync(dir),['goal.json']);
+  }
+});
+
 test('safe CDP diagnostics retain method and phase while omitting supplied data and unknown method names',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'paisley-cdp-error-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const shim=path.join(root,'shim.cjs');

@@ -51,7 +51,15 @@ function open(store:string,overrides:Overrides={}){
   if(!path.isAbsolute(store))throw Error('Absolute shared Store required');
   const Runtime=loadRuntime();return new Runtime(store,{provider,leaseMs:120000,...overrides.runtime});
 }
-function link(dir:string){const l=readJson(path.join(path.resolve(dir),'goal.json'),262144) as LinkView;if(l.format!=='paisley-session-link')throw Error('Foundation history is read-only; start a new scoped Goal. No automatic migration or unknown-result dismissal.');if(l.version!==2||!path.isAbsolute(l.store)||!/^[-a-f0-9]{36}$/.test(l.sessionId))throw Error('Invalid Session link');return l}
+function link(dir:string){
+  const l=readJson(path.join(path.resolve(dir),'goal.json'),262144) as LinkView;
+  if(l.format!=='paisley-session-link')throw Error('Foundation history is read-only; start a new scoped Goal. No automatic migration or unknown-result dismissal.');
+  if(l.version!==2||!path.isAbsolute(l.store)||!/^[-a-f0-9]{36}$/.test(l.sessionId))throw Error('Invalid Session link');
+  // An existing Goal must not let Runtime initialization replace a missing ledger.
+  try{const stat=fs.statSync(l.store);if(!stat.isFile()||stat.size===0)throw Error('Unavailable Store')}
+  catch{throw Object.assign(Error('Original Session Store unavailable'),{code:'SESSION_STORE_UNAVAILABLE'})}
+  return l;
+}
 function status(dir:string){const raw=readJson(path.join(path.resolve(dir),'goal.json'),262144) as LinkView;if(raw.format!=='paisley-session-link')return {...loadLegacy(path.resolve(dir)),readOnly:true};const l=link(dir),r=open(l.store);try{return r.status(l.sessionId)}finally{r.close()}}
 function decisionView(raw:unknown)
 {const decision=raw as DecisionView|null|undefined;

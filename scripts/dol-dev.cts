@@ -124,6 +124,7 @@ function errorMessage(value:unknown) {
     PC_STOP_UNCONFIRMED:['pc.cleanup','Browser termination was not confirmed. Retain its Profile and local records; inspect this instance before reusing it.'],
     PC_ACTION_UNSUPPORTED:['pc.action','Chrome supports reviewed Web actions. Native Android actions require their explicit Android target; see docs/PC_RUNTIME.md.'],
     GAMEPLAY_RUNTIME_UNAVAILABLE:['runtime.prerequisites','Gameplay Runtime requires XState and Node SQLite. Use Node.js 26+ and run npm ci --ignore-scripts --no-audit --no-fund in the Tools root. Generic diagnostics remain available.'],
+    SESSION_STORE_UNAVAILABLE:['game-session.store','The original Session Store is missing or unavailable. Locate the original Store or a verified backup; do not create a replacement or replay actions.'],
     INVALID_CLI_ARGUMENTS:['cli.parse','Unknown, duplicate or incomplete option; use --help. Supplied arguments omitted.'],
     UNSUPPORTED_CHECKPOINT_NAME:['journey.validate','field=name: Action/Journey checkpoints do not accept name. See docs/ACTIONS.md.'],
     CLI_OPTION_NOT_APPLICABLE:['cli.validate','field=seconds: omit --seconds for this command. Use logcat, record or perf --deep for supported timed collection; see --help.'],

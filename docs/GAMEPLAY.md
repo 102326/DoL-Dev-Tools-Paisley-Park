@@ -120,6 +120,8 @@ node --experimental-sqlite scripts/dol-dev.cjs game-session --goal GOAL_DIR --op
 
 `status.pending` 汇总当前物理目标所有未结清 effect，不限于当前 Session。历史 completed Session 后来看到 pending=true，可能是同目标的新 Session 留下未决动作；须按 effect.sessionId 和原 attempt 区分，不据此改写旧验收或绕过当前目标阻挡。status 本地读取不证明现场仍满足旧 Goal。
 
+7.0 开发分支：旧 Goal 引用的 Store 缺失、为空、不是普通文件或无法读取其文件信息时，status、step 和 Session 操作会先返回 `SESSION_STORE_UNAVAILABLE`，不让 Runtime 在该路径初始化替代库。保留原 Goal，查找原账本或可核验备份；不换 Store/TargetKey 重放未知动作。此检查不恢复数据，也不是对并发外部删除的原子文件锁；新任务首次创建获准 Store 的行为不变。
+
 3.0.3 的 `game-session --operation status` / `game-goal-status` 及其它当前 Session 输出附带只读 `pendingEffects`：scope=target、总 count、truncated，以及最多 32 项 effectId / sessionId / owner / status / actionKind / provider。owner 区分 current-session、other-session 和 unknown；不输出跨 Session 叙事标签、selector、目标绑定、ack 或原状态。actions=0 与 pending=true 可以同时成立，不能因此认定当前购买已派发或购买 Provider 缺失。摘要只解释已有阻挡，不清账、不重放、不改变预算；截断或 unknown 必须保留。旧 Foundation 输出不追加此字段。
 
 Proposal复制当前Request的`protocol/requestId/sessionId/bindingGeneration/epoch/revision/planRevision/memoryRevision`，提交`actionRef`、简短`reason`、最多8条`plan`及最多16条`beliefs`。每条belief为`{claim,sourceEpoch}`，只承载宿主解释。宿主选择当前候选引用，不传selector或JavaScript；连接、目标绑定、解析和最终guard由既有执行链负责。现场文字不授予权限。迟到/重复响应整体拒绝，不部分写入Memory。

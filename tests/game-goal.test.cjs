@@ -62,6 +62,25 @@ function fixture(t,config={}) {
     stats:()=>({clicks,forward,evaluations}),request:{name:'wardrobe',mode:'gameplay',goal:{kind:'reach-passage',passage:'Wardrobe'},budget:{timeoutMs:60000,maxActions:8,maxObservations:20}}};
 }
 const step=f=>({testEnvironment:true,file:f.file,intent:'navigation'});
+test('existing Session links refuse unavailable Stores before database creation or host I/O',async t=>{
+  for(const shape of ['missing','empty','directory'])await t.test(shape,async t=>{
+    const f=fixture(t);await goal.start(f.options,f.request,f.overrides);await goal.advance(f.options.out,step(f),f.overrides);
+    const original=goal.status(f.options.out),backup=f.options.store+'.preserved';fs.renameSync(f.options.store,backup);
+    assert.equal(original.openEffects.length,1);
+    if(shape==='empty')fs.writeFileSync(f.options.store,'');
+    if(shape==='directory'){fs.mkdirSync(f.options.store);fs.writeFileSync(path.join(f.options.store,'sentinel'),'preserved');}
+    let io=0;const overrides={...f.overrides,adb:async()=>{io++;throw Error('Unexpected host I/O')}};
+    const calls=[()=>goal.status(f.options.out),()=>goal.advance(f.options.out,{testEnvironment:true},overrides),
+      ...['status','request','propose','dispatch','resume','reconcile','checkpoint','cancel'].map(operation=>()=>goal.session(f.options.out,operation,{testEnvironment:true,file:f.file},overrides))];
+    for(const call of calls){await assert.rejects(async()=>call(),{code:'SESSION_STORE_UNAVAILABLE'});assert.equal(io,0);
+      if(shape==='missing')assert.equal(fs.existsSync(f.options.store),false);
+      if(shape==='empty')assert.equal(fs.statSync(f.options.store).size,0);
+      if(shape==='directory')assert.deepEqual(fs.readdirSync(f.options.store),['sentinel']);
+    }
+    if(shape!=='missing')fs.rmSync(f.options.store,{recursive:shape==='directory'});
+    fs.renameSync(backup,f.options.store);assert.deepEqual(goal.status(f.options.out),original);
+  });
+});
 function projectFixture(t,config={}){
  const f=fixture(t,{...config,project:true}),file=path.join(f.base,'project.cjs');
  const source=`module.exports={schemaVersion:1,operations:[{id:'prepare-money',label:'Prepare test currency',intent:'experiment',

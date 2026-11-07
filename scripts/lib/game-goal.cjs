@@ -1,4 +1,4 @@
-// Generated from game-goal.cts by TypeScript 6.0.2; source-lf-sha256=e5e25260ceda1f3db0d290e7ca5f7a17e94f873989e64e75be16789beaee586a
+// Generated from game-goal.cts by TypeScript 6.0.2; source-lf-sha256=71e93ef0a914972acb283f44755f3e2a20249bbd156f3570b64a94c67d4d2b47
 "use strict";
 const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
 const { randomUUID, createHash } = require('node:crypto');
@@ -46,9 +46,23 @@ function open(store, overrides = {}) {
     const Runtime = loadRuntime();
     return new Runtime(store, { provider, leaseMs: 120000, ...overrides.runtime });
 }
-function link(dir) { const l = readJson(path.join(path.resolve(dir), 'goal.json'), 262144); if (l.format !== 'paisley-session-link')
-    throw Error('Foundation history is read-only; start a new scoped Goal. No automatic migration or unknown-result dismissal.'); if (l.version !== 2 || !path.isAbsolute(l.store) || !/^[-a-f0-9]{36}$/.test(l.sessionId))
-    throw Error('Invalid Session link'); return l; }
+function link(dir) {
+    const l = readJson(path.join(path.resolve(dir), 'goal.json'), 262144);
+    if (l.format !== 'paisley-session-link')
+        throw Error('Foundation history is read-only; start a new scoped Goal. No automatic migration or unknown-result dismissal.');
+    if (l.version !== 2 || !path.isAbsolute(l.store) || !/^[-a-f0-9]{36}$/.test(l.sessionId))
+        throw Error('Invalid Session link');
+    // An existing Goal must not let Runtime initialization replace a missing ledger.
+    try {
+        const stat = fs.statSync(l.store);
+        if (!stat.isFile() || stat.size === 0)
+            throw Error('Unavailable Store');
+    }
+    catch {
+        throw Object.assign(Error('Original Session Store unavailable'), { code: 'SESSION_STORE_UNAVAILABLE' });
+    }
+    return l;
+}
 function status(dir) { const raw = readJson(path.join(path.resolve(dir), 'goal.json'), 262144); if (raw.format !== 'paisley-session-link')
     return { ...loadLegacy(path.resolve(dir)), readOnly: true }; const l = link(dir), r = open(l.store); try {
     return r.status(l.sessionId);
