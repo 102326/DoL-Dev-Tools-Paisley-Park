@@ -1,6 +1,6 @@
 # PC 本地测试入口（7.0）
 
-本页对应 Gold Experience 7.0 本地候选。PC Debug、共享 Action/Journey、GER Goal/Session 和标准 Evidence 已接入 owned Chrome。需要持久预算、受保护业务动作和原回执恢复时，使用共享 GER，不能把普通点击补记成 GER 派发。
+本页对应 Gold Experience 7.0。PC Debug、共享 Action/Journey、GER Goal/Session 和标准 Evidence 已接入 owned Chrome。需要持久预算、受保护业务动作和原回执恢复时，使用共享 GER，不能把普通点击补记成 GER 派发。
 
 ## 启动与资源
 

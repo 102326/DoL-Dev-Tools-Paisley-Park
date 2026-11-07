@@ -1,8 +1,8 @@
 # Gold Experience 7.0：范围与覆盖
 
-2026-11-07。本轮从已完成的 Windows 接续进入本地发行准备。当前名称为 **DoL Dev Tools — Gold Experience（黄金体验）**，版本7.0.0。Tusk ACT4 是研发阶段名，Paisley Park 是历史名称；内部包名、Skill 标识、Schema/receipt 身份、启动器别名和数据路径保持兼容。
+2026-11-07。本轮完成 Windows 接续及本地候选收口，并按用户随后指示准备正式发布。当前名称为 **DoL Dev Tools — Gold Experience（黄金体验）**，版本7.0.0。Tusk ACT4 是研发阶段名，Paisley Park 是历史名称；内部包名、Skill 标识、Schema/receipt 身份、启动器别名和数据路径保持兼容。
 
-本页区分能力完成、一次实验的结果和覆盖限制。main 合并、Tag、GitHub Release 与仓库更名不在本轮执行范围；候选包的固定源码、摘要和新验货结果随包单列，不提前声称已发布或已获正式发布批准。
+本页区分能力完成、一次实验的结果和覆盖限制。用户在本地候选验货后明确授权正式发布7.0，包括主线整合、Tag和GitHub Release；不更改仓库地址或保护规则。正式包的固定源码、摘要与发布后核验另记，候选的原身份与结果保留。
 
 ## Delivered
 

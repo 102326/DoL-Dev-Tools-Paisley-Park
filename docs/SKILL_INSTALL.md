@@ -66,9 +66,9 @@ node tools/typescript/build.cjs --write-production
 
 <a id="gold-experience-install"></a>
 
-## 7.0.0 Gold Experience 本地候选安装
+## 7.0.0 Gold Experience 安装
 
-本轮只生成本地候选，尚未创建7.0的GitHub Release。取得经核对的候选ZIP、SHA-256与manifest后，解压到新的长期保留目录；旧Tools和Skill保留作回退。运行`DoL-Dev.cmd --version`应返回`7.0.0`，help首行以`DoL Dev Tools — Gold Experience（黄金体验） 7.0.0`开头。macOS/Linux使用`node scripts/dol-dev.cjs`；本轮本地结果只覆盖Windows。
+从 [7.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0) 下载命名的工具ZIP，核对SHA-256与manifest，再解压到新的长期保留目录；旧Tools和Skill保留作回退。运行`DoL-Dev.cmd --version`应返回`7.0.0`，help首行以`DoL Dev Tools — Gold Experience（黄金体验） 7.0.0`开头。macOS/Linux使用`node scripts/dol-dev.cjs`；本轮本地结果只覆盖Windows。
 
 按本页顶部命令向空目标安装，再运行resolver，确认版本7.0.0和所选目录。内部包名、`dol-dev-tools-paisley-park` Skill标识、`Paisley-Park.cmd`与既有数据路径继续兼容，不要求重命名旧库或更换Store。新名称不等于旧未决已恢复。当前范围和限制见[7.0收口](CLOSEOUT_7_0.md)。
 

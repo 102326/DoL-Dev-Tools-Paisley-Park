@@ -4,7 +4,7 @@
 
 Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可以查看真实 Android / WebView 现场，也可以在独立 Chrome 中调查获准的本地页面，再接到源码、构建和复验。它可以独立使用，也可以由宿主 Agent 调用。
 
-**7.0.0 本地候选，尚未公开发布。** [安装与升级](docs/SKILL_INSTALL.md) · [本版更新](docs/RELEASE_7.0.0.md) · [支持范围](docs/CLOSEOUT_7_0.md)
+**7.0.0** · [下载工具包](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/DoL-Dev-Tools-7.0.0.zip) · [安装与升级](docs/SKILL_INSTALL.md) · [本版更新](docs/RELEASE_7.0.0.md) · [支持范围](docs/CLOSEOUT_7_0.md)
 
 这是此前的 Paisley Park。旧 Skill 标识、启动命令和数据路径继续兼容，不需要改名或迁移已有账本。它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。
 
@@ -26,7 +26,7 @@ Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可
 
 ### 1. 解压并确认版本
 
-取得 `DoL-Dev-Tools-7.0.0.zip` 本地候选后，核对随附的 SHA-256 和来源清单，再解压到长期保留的新目录。保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。7.0 尚未公开发布；已发布的 [6.1.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 仍可取得。
+从 [7.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0) 下载 `DoL-Dev-Tools-7.0.0.zip`，核对随附的 SHA-256 和来源清单，再解压到长期保留的新目录。保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。[6.1.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 等历史版本继续保留。
 
 7.0 要求 **Node.js 26.0.0+**。本轮 Windows 使用26.13.0；旧6.1.0包仍按其原要求使用。在 Tools 根目录运行：
 
@@ -104,7 +104,7 @@ Android 继续使用 Android CLI、ADB 和 CDP。Kotlin 设备探针只保留为
 
 ## 当前验证范围
 
-本版已有 Windows Chrome 代表性宿主验证、真实 DoL 保存与导航、独立 Android 测试副本的原生保存及原回执恢复，以及源码查询、Windows 文件占用和独立包安装检查。原始输入、固定提交、各轮实际结果和复用边界保留在 [7.0 收口](docs/CLOSEOUT_7_0.md)，候选包的新验货结果另附 `validation.json`。
+本版已有 Windows Chrome 代表性宿主验证、真实 DoL 保存与导航、独立 Android 测试副本的原生保存及原回执恢复，以及源码查询、Windows 文件占用和独立包安装检查。原始输入、固定提交、各轮实际结果和复用边界保留在 [7.0 收口](docs/CLOSEOUT_7_0.md)，正式包来源见随附 `artifact-manifest.json`，本轮验货结果在收口记录中保留。
 
 Windows 使用 Node26.13.0，未在Windows重跑最低26.0.0；其它系统的既有记录不能代替本机结果。没有穷举全部游戏、存档、Mod、WebView 或设备，也未完成无人接管的完整 Android Mod 修复闭环。
 

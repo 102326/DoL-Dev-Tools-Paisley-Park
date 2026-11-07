@@ -2,30 +2,55 @@
 
 创造能力，赋予行动。
 
-本页是本地候选的更新说明，7.0 尚未在 GitHub 发布。
+Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。7.0 将独立 Chrome 测试和按版本查找源码接入已有流程，让你从真实运行现场找到相关代码，修改后再回到目标环境核对结果。
 
-原 Paisley Park 从这一版起使用新名称。你仍可以用原来的 Skill 标识和启动命令，不需要改名、搬迁或重建已有执行记录。
+此前的 Paisley Park 从这一版起使用新名称。工具可以独立使用，也可以交给宿主 Agent 调用；原 Skill 标识、启动命令和数据路径继续保留。
 
-## 在电脑上调查和验证
+[下载工具包](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/DoL-Dev-Tools-7.0.0.zip) · [安装说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/v7.0.0/docs/SKILL_INSTALL.md#gold-experience-install) · [反馈问题](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/issues)
 
-现在可以选择已安装的 Chrome，在独立测试 Profile 中打开获准 HTML，并明确列出允许提供的资源。选中页面后，同一套 Action/Journey、Gameplay Runtime 和 Evidence 可以继续工作。页面重载后，旧文档绑定会被拒绝，需要重新建立绑定，避免把动作送到另一个现场。
+## 本次更新
 
-这不是接管日常 Chrome 的入口，也不取消浏览器或宿主工具的访问限制。具体用法见 [PC Runtime](PC_RUNTIME.md)。
+### 在电脑上复现和调查
 
-## 找到当前版本的游戏实现
+现在可以选择已安装的 Chrome，用独立测试 Profile 打开获准的本地 HTML，并明确列出页面需要的资源。选中目标后，可以读取 DOM、样式、Console 和网络信息，执行复现步骤，再保存前后证据。
 
-`source-find` 可以在指定源码工作树或固定 Git revision 中组合 Passage、文字、符号和路径线索，返回候选位置、上下文与摘要。达到查找预算或缺少 Git 对象时，结果会保留未覆盖原因，不会自动联网补齐。
+PC 入口使用已有 Action/Journey、Gameplay Runtime 和 Evidence。页面重载后，旧文档绑定会被拒绝；重新建立绑定后，可以继续调查当前页面。
 
-源码命中仍需要和现场核对，不能把上游代码直接当成平板当前加载的 Lyra、汉化或 Mod 版本。见 [源码查询](GAME_SOURCE.md)。
+### 按版本找到游戏源码
 
-## 继续使用已有开发流程
+`source-find` 可以在源码工作树或固定 Git revision 中组合 Passage、文字、符号和路径线索，返回候选文件、上下文和摘要。结果会标出尚未查完的范围，便于缩小线索继续调查。
 
-Android CLI、ADB、CDP、Mod 研究经验、Debug 和受支持 Gameplay 都继续保留。旧目标的执行记录丢失时，恢复命令会明确停止，避免创建一个空库冒充旧记录；历史未知结果不会自动结清。
+找到候选代码后，再核对设备实际加载的游戏和 Mod，避免把另一版本的实现当成当前现场。入口见[游戏源码查询](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/v7.0.0/docs/GAME_SOURCE.md)。
 
-内部代码改用 TypeScript 维护，工具包仍运行预生成 CommonJS，使用者不需要 TypeScript 编译器。Kotlin 探针保留为实验，没有加入生产工具包，也没有新增 helper 安装要求。
+### 接续已有的开发工作
 
-## 升级
+Android CLI、ADB 和 Chrome Inspect/CDP 继续负责真机与 WebView 现场。Mod 研究经验、Debug、受支持的 Gameplay 和原回执恢复仍可使用，普通诊断无需创建 Gameplay Goal。
 
-7.0 需要 Node.js 26.0.0 或更新版本。将经核对的候选包解压到新目录，保留旧 Tools 和 Skill，按 [安装指南](SKILL_INSTALL.md#gold-experience-install)切换。普通诊断不需要 npm 依赖；使用 Gameplay 时，在新的 Tools 根目录按锁文件安装 XState。
+工具包继续提供可直接运行的 CommonJS。内部 TypeScript 维护不增加使用者的编译步骤；Android 也不需要安装新的 helper。
 
-本版不承诺全设备、全 Mod 或完整自主游戏支持。后台截图、历史账本恢复与其它未覆盖范围见 [当前限制](CLOSEOUT_7_0.md#known-limitations)。构建成功、包已加载和游戏业务正确仍需要分别证明。
+## 安装与升级
+
+需要 **Node.js 26.0.0 或更新版本**。下载命名的工具 ZIP 后解压使用，不要放入 ModLoader。
+
+1. 保留旧 Tools、Skill 和执行记录，将新包解压到长期保留的新目录。
+2. 在工具根目录运行 `DoL-Dev.cmd --version`，应返回 `7.0.0`；用 `DoL-Dev.cmd --help` 查看入口。macOS/Linux 使用 `node scripts/dol-dev.cjs`。
+3. 需要 Agent 工作流时，按[安装指南](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/v7.0.0/docs/SKILL_INSTALL.md#gold-experience-install)备份旧 Skill，再向空目标安装。
+4. 需要 Gameplay 时，在新 Tools 根目录运行 `npm ci --ignore-scripts --no-audit --no-fund`。普通诊断、源码查询和 Skill 安装无需这一步。
+
+Android 调查另需已有 ADB、USB 调试授权，以及支持调试的目标 WebView；PC 测试使用已安装的 Google Chrome。原 `Paisley-Park.cmd` 和 `$dol-dev-tools-paisley-park` 继续可用。
+
+## 下载文件
+
+| 下载 | 用途 |
+| --- | --- |
+| [DoL-Dev-Tools-7.0.0.zip](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/DoL-Dev-Tools-7.0.0.zip) | 工具、Skill、使用文档和必要资源 |
+| [SHA256SUMS.txt](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/SHA256SUMS.txt) | 核对下载文件完整性 |
+| [artifact-manifest.json](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/artifact-manifest.json) | 核对工具包对应的源码与文件摘要 |
+
+GitHub 自动生成的 Source code 是源码归档；首次使用请下载上方命名的工具包。游戏、APK 和第三方 Mod 需另行取得。
+
+## 已知限制
+
+- 缺失的旧 Store 仍需可信原记录才能恢复；四条历史待处理任务没有被这次升级结清。
+- 后台截图可能超时。先核对动作是否已经发生，不因截图失败直接重复业务操作。
+- Windows 最低 Node 26.0、当前正式 ZIP 重装后的 Android 业务流程，以及当前聊天的 Skill 热重载没有新增验证。Skill 可能需要刷新宿主或开启新会话才能被发现。
