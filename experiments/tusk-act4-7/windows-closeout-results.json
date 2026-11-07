@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "result": "Completed: agreed Windows continuation scope; ready for release closeout preparation, not release authorization",
+  "packageSourceCommit": "a9dc4bc9a91a84f95d790089338db9e3002491f6",
+  "harnessCommit": "9094e08118100d2e693f669c81a9d638486bcd8e",
+  "package": {
+    "sha256": "93b1dc7b3b6f4047fe9cfd5da1da19746b3398e78afacbf896b6c3e732b8ba36",
+    "files": 432,
+    "exactExportSet": true,
+    "bytesMatchGit": true,
+    "postRunOriginalBytesUnchanged": true,
+    "version": "6.1.0",
+    "externalExtraction": true,
+    "xstate": "5.33.2",
+    "lockedOfflineInstall": true,
+    "xstateResolvedInsidePackage": true,
+    "prototypeExcluded": true
+  },
+  "freshValidation": {
+    "node": "v26.13.0",
+    "platform": "win32",
+    "chrome": "156.0.8078.81",
+    "gerPassed": 13,
+    "gerFailed": 0,
+    "scope": "Synthetic original state and production Recipe/GER; no game acceptance",
+    "checks": [
+      "formal CLI Chrome Goal/Decision/propose/dispatch/Outcome settles one effect and real spend",
+      "Chrome Session uses its original document, without Android resource identity",
+      "changed independent state/quote refuses before purchase without zero-effect pending",
+      "bound CDP objects support closures/properties/call/scroll and owned cleanup; foreign IDs and context overrides refuse",
+      "callFunctionOn checks URL in the same JS turn and detected URL ABA cannot revive an old holder",
+      "SIGKILL after effect preserves SQLite pending; original terminal resumes without re-buy",
+      "stopped Chrome Session reconciles its original terminal without new dispatch, deadline extension or Goal completion",
+      "reload refuses old Session and keeps original unresolved effect",
+      "explicit new document/Session shares Profile pending fence, without replay or receipt substitution",
+      "standard Evidence CLI captures Chrome Web data with owned document identity",
+      "missing loader metadata remains unknown in real Chrome Evidence Compare",
+      "standard Chrome environment supports Known Good and comparison in both directions with complete synthetic metadata",
+      "standard Evidence Compare reads Chrome; Android-only and optional Integration do not fabricate support"
+    ],
+    "firstRunAlsoPassedButChildFlagsNotExplicit": true,
+    "finalParentAndEightCliSitesDisableTypeStripping": true,
+    "resolverPassed": true,
+    "browserRootsGone": 10,
+    "httpAndCdpPortsClosed": true,
+    "localFullNodePythonRepeated": false,
+    "deviceOperations": 0
+  },
+  "workstreams": {
+    "W1": "Completed with stated platform coverage limits",
+    "W2": "Completed representative production contracts and real native DoL paths",
+    "W3": "Completed bounded exact-version candidate investigation; partials preserved",
+    "W4": "Completed Android representative paths and Kotlin keep-experimental decision",
+    "W5": "Completed independent package and isolated discovery scope; current chat hot reload not claimed"
+  },
+  "reusedEvidence": [
+    "WINDOWS_REPORT.md",
+    "WINDOWS_CONTRACTS_20261106.md",
+    "WINDOWS_FILE_LOCK_20261106.md",
+    "WINDOWS_FOLLOWUP_20261106.md",
+    "WINDOWS_TS_REAL_SAVE_20261106.md",
+    "WINDOWS_PACKAGE_REAL_SAVE_RECOVERY_20261106.md",
+    "WINDOWS_PACKAGE_NATIVE_NAVIGATION_20261106.md",
+    "ANDROID_TS_READONLY_20261105.md",
+    "ANDROID_DOCUMENT_RESOURCE_20261106.md",
+    "ANDROID_INDEPENDENT_RECOVERY_20261107.md",
+    "ANDROID_SNAPSHOT_COMPARISON_20261107.md"
+  ],
+  "knownLimitations": [
+    "original default Store missing: 95-effect generation-4 backup is not latest 99-effect generation-5 Store; four old pending retained",
+    "F07, screenshot timeout, native stat-device drift and uiautomator 137 physical causes remain Unknown",
+    "missing-Store check is preflight, not atomic external-deletion protection or global lost-history detection"
+  ],
+  "notValidated": [
+    "Windows Node 26.0.0; user chose existing newer runtime",
+    "historical CRLF receipt recovery without original compatible input",
+    "more devices, Mods, wrappers and game scenarios",
+    "production device-side agent, current chat hot reload or 7.0 global installation"
+  ],
+  "release": {
+    "versionNamingAndFormalArtifactNotStarted": true,
+    "globalSkillUnchanged": true,
+    "mainMerge": false,
+    "tag": false,
+    "release": false
+  }
+}
