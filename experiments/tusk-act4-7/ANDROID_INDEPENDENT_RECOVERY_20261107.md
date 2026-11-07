@@ -75,3 +75,23 @@
 原始 APK、签名材料、Store、终端回执、游戏状态、完整命令及断言脚本仅留在本地忽略目录 `artifacts/android-resume-20261107-023717/`；公开记录只含脱敏身份与结果。没有上传游戏文件、存档或设备标识。
 
 本轮只需报告/链接/证据一致性检查，不重跑不受影响的完整 Node/Python 套件。按既有授权仅同步研发分支，main、Tag 和 Release 保持不动。7.0 更名仍在正式发布收口时处理。
+
+## 后续：旧任务账本缺失时拒绝创建替代库
+
+同日用户授权继续处理。固定输入 `ea67a5001f09e7041e3f0bfb897e6b61a8848997`，新增修复为 `3939b6ed947cca65614b8f15513fba6d5994377a`。本节是后续本地回归，不改写上文实机验收的代码或制品身份。
+
+临时夹具确认了一个实际问题：旧 Goal 的 Store 已不存在时，`game-goal-status` 会先由 Runtime 创建父目录及 32 KiB 空 SQLite，随后才因 Session 不存在而报通用错误。它没有执行游戏动作，但留下的空库容易被误当成原账本。本轮没有在真实默认路径复现，也没有据此认定它是原账本消失的原因。
+
+修复在既有 `game-goal.link()` 入口检查文件是否存在、非空且为普通文件，文件信息无法读取也拒绝；所有旧任务 status/step/Session 路径共用该检查。CLI 返回 `SESSION_STORE_UNAVAILABLE / game-session.store` 和固定处理建议，不输出私人路径。新任务首次建库、Runtime/Effect/receipt 合同及原 Unknown 均未改变。它是打开前检查，不是防止并发外部删除/替换的原子锁，也不能自行识别所有新 Goal 是否误指向已丢失历史的目标。
+
+实际验证：
+
+- 修复前保留了真实 CLI 创建空库的证据，以及新增定向测试的预期失败。修复后首轮因夹具误写不存在的 `goal.step` 而失败；按既有 CLI 的真实调用改为 `goal.advance`，没有改业务断言来制造通过。
+- 新增定向检查 **5/5**：缺失、空文件、目录占位下，status/advance 及八种 Session operation 均在设备 I/O 前拒绝；不创建缺失库、不改空文件或目录内容。放回原夹具数据库后，含未决 Effect 的完整 Session 状态与之前相同。另验缺失父目录不创建、CLI 私人路径不披露。
+- Goal/Resource/CLI 受影响集合 **78/78**；98 Node / 17 DOM / 133 生成产物一致，125 项类型负对照通过。未重跑不受影响的本地完整 Node/Python 或真实游戏动作。
+- 对上一轮独立 App 遗留的自有 Store 只做本地 status：completed、actions=1、pending=false，Session/Effect 逻辑行完全未变。没有重新安装副本或连接设备。
+- 重新导出固定修复提交，**432 文件**的 ZIP CRC、export 集合及逐文件 Git blob 一致。ZIP SHA-256 为 `811514b8679585ea5bed70fc8e54f7fc90fad1882b3c4af194f16013f48c7770`。在源码树外的新目录运行包内 CLI 测试 **13/13**，关闭类型剥离，清除 NODE_PATH/NODE_OPTIONS，未安装 node_modules 或借源码依赖。这是本地开发验证包，仍为 6.1.0，不是 7.0 Release。
+
+还检查了已知 DoL/工作区/Codex 备份目录及本地工具目录中的 SQLite 和相关命名归档，没有找到更新副本。原默认 Store 仍未恢复或创建；四条旧未决继续保留在已有备份。本次修复不解除原目标业务阻挡，原数据恢复及历史 receipt 兼容仍是独立、未验证的事项。
+
+本节原始首败、修复后日志、临时夹具和 ZIP 清单保留本地忽略目录 `artifacts/store-missing-20261107-173821/`。本轮不合并 main、不发布，也不因仍有额外覆盖而继续扩大验收。

@@ -31,6 +31,8 @@ Windows 后续：[源码查询与启动清理增量验收](../experiments/tusk-a
 
 2026-11-07 后续：[Android 独立环境保存与原回执恢复](../experiments/tusk-act4-7/ANDROID_INDEPENDENT_RECOVERY_20261107.md)已完成。UI 释放后先只读核对原目标，发现默认 Store 目录缺失；现有最完整备份有 95 条 Effect，保留四条旧未决，但不等于最后 99 条/generation 5 的完整账本，未恢复或新建默认库，原目标业务仍不可据此重新派发。用户另行授权独立包 `org.goldexperience.acceptance7`，验证新 UID/root、空白数据和独立 Store后，生产 GER 保存一次，在原 terminal 返回边界中断 CLI，新进程恢复同一 attempt 并结清，再通过 required checkpoint；动作数仍为 1。副本已对 user 0 卸载，自有 forward/transport 清理完成，原生身份未变。原 App 后台 CDP 复查超时保留，本轮不宣称再次核对六槽内容或恢复旧 Unknown。实际运行是工作树 CJS，未冒充 ZIP Android 重跑；无产品代码修改、main 合并或发布。
 
+同日后续已修复[旧 Goal 账本缺失时初始化空库的问题](../experiments/tusk-act4-7/ANDROID_INDEPENDENT_RECOVERY_20261107.md#后续旧任务账本缺失时拒绝创建替代库)：固定代码 `3939b6ed947cca65614b8f15513fba6d5994377a`，旧任务共用入口先拒绝缺失/空/非普通 Store，CLI 给出 `SESSION_STORE_UNAVAILABLE`。临时夹具先证实旧 status 创建 32 KiB 空库；修复后定向 5/5、受影响 78/78、独立包 CLI 13/13，已有独立真实 Session 逻辑行未变。无设备动作，不恢复原默认库、不结清旧未决；这是打开前检查，不是外部并发删除锁或自动数据恢复。新的本地验证包及实际边界见同节，仍不合并或发布。
+
 ## 1. 固定身份与读取顺序
 
 | 对象 | 固定身份 |

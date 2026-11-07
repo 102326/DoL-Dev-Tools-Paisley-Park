@@ -87,5 +87,25 @@
     "Windows minimum Node 26.0 or Kotlin device-agent benefit"
   ],
   "productCodeChanged": false,
+  "storeAvailabilityFollowup": {
+    "date": "2026-11-07",
+    "baseline": "ea67a5001f09e7041e3f0bfb897e6b61a8848997",
+    "codeCommit": "3939b6ed947cca65614b8f15513fba6d5994377a",
+    "productCodeChanged": true,
+    "before": "Existing Goal status created a 32768-byte replacement SQLite before failing; reproduced only in owned temporary fixture",
+    "fixedError": "SESSION_STORE_UNAVAILABLE stage=game-session.store",
+    "scope": "existing Session link paths; first creation unchanged; no native or receipt contract change",
+    "focusedTests": {"passed": 5, "failed": 0},
+    "affectedTests": {"passed": 78, "failed": 0},
+    "packageCliTests": {"passed": 13, "failed": 0},
+    "packageFiles": 432,
+    "packageSha256": "811514b8679585ea5bed70fc8e54f7fc90fad1882b3c4af194f16013f48c7770",
+    "packageRuntimeDependenciesInstalled": false,
+    "priorIndependentRealSessionLogicalStoreUnchanged": true,
+    "originalStoreRestoredOrCreated": false,
+    "deviceOperations": 0,
+    "fullLocalNodePythonRepeated": false,
+    "limitation": "Preflight is not an atomic lock against external deletion/replacement, nor a global detector for lost history when starting new Goals"
+  },
   "mainMergeOrReleaseAuthorizedByThisRun": false
 }
