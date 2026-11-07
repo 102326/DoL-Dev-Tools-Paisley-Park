@@ -85,10 +85,12 @@ test('Journey detached checkpoint forwards its bounded CDP response option and c
  assert.ok(calls.find(c=>c.method==='DOM.disable'));
 });
 test('Journey deadline prevents subsequent side effects and marks the dispatched result unknown',async t=>{
+  // Advance time after dispatch; fixture filesystem setup must not consume the action window.
+  t.mock.timers.enable({apis:['setTimeout','Date'],now:Date.now()});
   const root=fixture(t),f=adbFixture();let count=0;
   const loaded=load([{type:'home'},{type:'home'}]);loaded.plan.timeoutMs=30;
   const report=await journey.run(options(path.join(root,'deadline')),loaded,{adb:f.adb,executeAction:async ctx=>{
-    count++;ctx.markSideEffect();await new Promise(resolve=>setTimeout(resolve,50));ctx.assertActive();
+    count++;ctx.markSideEffect();await new Promise(resolve=>{setTimeout(resolve,50);t.mock.timers.tick(50)});assert.equal(ctx.timedOut,true);ctx.assertActive();
   }});
   assert.equal(count,1);assert.equal(report.steps.length,1);assert.equal(report.steps[0].outcome,'unknown; side effect may have occurred');
   assert.equal(report.status,'failed');
@@ -148,8 +150,9 @@ test('Chrome Journey rejects native action before output and preserves unsupport
  assert.equal(JSON.parse(fs.readFileSync(path.join(out,'step-0-performance.json'))).data.collectorStatus,'unsupported');
 });
 test('Chrome deadline closes transport and preserves uncertain action without dispatching another',async t=>{
+ t.mock.timers.enable({apis:['setTimeout','Date'],now:Date.now()});
  const f=chromeFixture(t);let attempts=0;
- const mock=fakeChrome({evaluate:async()=>{attempts++;await new Promise(r=>setTimeout(r,50));return {ok:true}}});
+ const mock=fakeChrome({evaluate:async()=>{attempts++;assert.equal(mock.closes,0);await new Promise(r=>{setTimeout(r,50);t.mock.timers.tick(50)});assert.ok(mock.closes>=1);return {ok:true}}});
  const loaded=load([{type:'web-click',selector:'#a'},{type:'web-click',selector:'#a'}]);loaded.plan.timeoutMs=20;
  const r=await journey.run(f.options(path.join(f.root,'deadline')),loaded,{chromeHostFactory:()=>mock.host});
  assert.equal(attempts,1);assert.equal(r.steps.length,1);assert.match(r.steps[0].outcome,/unknown/);assert.ok(mock.closes>=1);

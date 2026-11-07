@@ -126,5 +126,22 @@
     "background waiting or action transport",
     "persistent effects, recovery or other devices"
   ],
-  "localFullNodePythonRepeated": false
+  "localFullNodePythonRepeated": false,
+  "ciTimingFollowup": {
+    "firstRunId": 42363100388,
+    "firstRunConclusion": "failure",
+    "firstRunNode": {
+      "total": 666,
+      "passed": 663,
+      "failed": 1,
+      "skipped": 2
+    },
+    "failure": "Chrome deadline expected one dispatch but actual zero",
+    "controlledReproduction": "40ms first checkpoint delay before dispatch consumes real 20ms budget",
+    "testOnlyFix": "mock Date/setTimeout; advance after fake dispatch; production deadlines unchanged",
+    "focusedControlledChecksPassed": true,
+    "journeyFilePassed": 16,
+    "productionCodeChanged": false,
+    "oldRunRerun": false
+  }
 }

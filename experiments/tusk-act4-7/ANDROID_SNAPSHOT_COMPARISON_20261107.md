@@ -60,7 +60,7 @@ Provider 的对外访问要求 `android.permission.DUMP`；这个权限由 Andro
 
 真实 DoL/Mod 中的设备侧观察、WebView/CDP 对照、后台等待、动作执行、业务回执、持久化、其它设备、无权限独立客户端与生产 Host 接入均未验证。本实验不解决原 App 的完整账本缺失、四条旧 Unknown、历史 CRLF receipt 或 F07 根因。
 
-本轮没有重跑不受影响的完整本地 Node/Python，也没有重新打包工具 ZIP；改动仅在已 export-ignore 的 Android 实验与交接文档。APK 是本地自有调试制品，未上传；当前开发包版本和安装的全局 Skill 未改。
+本轮没有重跑不受影响的完整本地 Node/Python，也没有重新打包工具 ZIP。Android 实验与交接文档已 export-ignore；后续另修正了一项 CI 暴露的 Journey 测试时序问题，见下节。生产 Runtime、CLI 与打包入口没有变更。APK 是本地自有调试制品，未上传；当前开发包版本和安装的全局 Skill 未改。
 
 ## Known limitations 与决定
 
@@ -69,3 +69,11 @@ Provider 的对外访问要求 `android.permission.DUMP`；这个权限由 Andro
 Provider 查询可能启动自己的进程，不能称为物理无副作用。它只提供即时事实，不保持旧绑定、处理 Goal、执行动作或结清 Effect；调用方必须理解 identity/availability。冷读 unavailable 和 count=null 不等于游戏状态归零；进程、Activity、Bundle 与持久业务是不同边界。
 
 原始命令、快照、计时、APK、完整布局与截图保留本地忽略目录 `artifacts/android-snapshot-20261107-175602/`。公开摘要不包含设备标识、进程 UUID、私人应用清单、通知、游戏或签名密钥。已结束设备窗口；main、Tag、Release 和正式 7.0 更名未操作。
+
+## 后续 CI：固定测试时间推进顺序
+
+首轮 CI `42363100388` 在 `tests/journey.test.cjs` 的 Chrome deadline 用例失败：预期一次派发，实际为 0；本次该运行共 666 项、663 通过、1 失败、2 跳过，原失败保留，没有重跑旧 run 到绿。
+
+该用例从 Journey 开始即使用真实 20ms 时限，假动作等待 50ms。派发前的同步文件写入/调度已经可能耗完预算；在原用例首个 checkpoint 写入注入 40ms 延迟，可确定复现同样的 0 派发失败。这证明测试依赖不可靠的墙钟前提，不证明 CI 物理卡顿具体发生在哪个文件。
+
+最小修正仅在测试：复用已有 `t.mock.timers` 的 Date/setTimeout，在假动作已开始后推进 50ms，保留生产时限和 Unknown/停止后续动作断言，并确认 timer 在假动作返回前关闭 Chrome transport。同样修正相邻的 Android deadline 用例，因为它有相同的准备时序假设。受控延迟下的定向检查通过，Journey 文件 16/16；没有修改生产 deadline、增加等待上限、跳过测试或操作设备。
