@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "inputCommit": "0f5b77c3b43b870007cb74a7ae651840173a71f9",
+  "codeCommit": "c4423ae4945687689e07397ca30d35400098d192",
+  "result": "Scoped Done for independent Android native save and original receipt recovery; original Store recovery unresolved",
+  "execution": "current source precompiled CJS with --no-strip-types; not a ZIP Android rerun",
+  "environment": {
+    "windows": "10.0.26340.0",
+    "powershell": "7.6.5",
+    "node": "26.13.0",
+    "adb": "37.0.1",
+    "android": "17",
+    "userId": "0",
+    "webview": "com.google.android.webview / 156.0.8078.47",
+    "gameVersion": "0.5.12.13",
+    "sugarCube": "2.36.1+34"
+  },
+  "isolation": {
+    "package": "org.goldexperience.acceptance7",
+    "separateUserScopeApproved": true,
+    "differentNativeRootAndUid": true,
+    "initialSaveSlots": 0,
+    "privateSaveOrModCacheImported": false,
+    "apkSha256": "b78f1893520cbf7d65e363bf81a3b5a5c4684c62a353ff51fde6f40b47e2e0a4",
+    "uninstalledFromUser0": true
+  },
+  "business": {
+    "recipe": "docs/recipes/dol-save-state.cjs",
+    "scopeIntents": ["save"],
+    "newSlot": 8,
+    "actions": 1,
+    "effects": 1,
+    "originalNativeTerminalBeforeInterruption": true,
+    "actualOwnCliProcessInterrupted": true,
+    "newCliResumedOriginalAttempt": true,
+    "originalNonceAndRequestDigestExact": true,
+    "originalTerminalEvidenceExact": true,
+    "nativeSavedRecordMatchesTerminal": true,
+    "currentMoneyTimePassageTurnsUnchanged": true,
+    "redispatchAfterInterruption": false,
+    "deadlineUnchanged": true,
+    "effectSettled": true,
+    "requiredCheckpointPassed": true,
+    "goalStatus": "completed",
+    "pending": false
+  },
+  "failuresRetained": [
+    "initial Journey refused missing checkbox; failed/unknown retained, not replayed",
+    "original App background read-only postcheck CDP_DISCOVERY_TIMEOUT; no launch/reload/retry",
+    "post-run exact source/archive module comparison failed on CRLF versus LF; no package runtime equivalence claim"
+  ],
+  "oldStore": {
+    "defaultPathExists": false,
+    "cause": "Unknown",
+    "lastKnownEffects": 99,
+    "bestLocatedBackupEffects": 95,
+    "lastKnownTargetEffects": 24,
+    "backupTargetEffects": 20,
+    "lastKnownResourceGeneration": 5,
+    "backupResourceGeneration": 4,
+    "allFourOldPendingPreservedInBackup": true,
+    "originalStoreRestoredOrCreated": false,
+    "oldEffectsSettledOrReplayed": false,
+    "originalNativeIdentityUnchanged": true,
+    "originalSixSaveContentsPostvalidated": false,
+    "readerSidecars": "initial readOnly SQLite audit updated reader WAL/SHM; subsequent backup reads immutable after empty WAL check"
+  },
+  "cleanup": {
+    "ownInterruptedForwardRemoved": true,
+    "transportsClosed": true,
+    "forwardBaselineAndFinalEmpty": true,
+    "originalAppBusinessReloadRestartOrDataClear": false,
+    "privateEvidenceRetainedLocally": true
+  },
+  "validationReused": [
+    "ANDROID_TS_READONLY_20261105.md",
+    "ANDROID_DOCUMENT_RESOURCE_20261106.md"
+  ],
+  "notValidated": [
+    "original complete generation-5 Store recovery or historical Unknown closure",
+    "historical CRLF receipt cross-build recovery",
+    "Android ZIP execution rerun",
+    "device disconnect or other save crash windows",
+    "other devices, Mod combinations, purchases or wardrobe",
+    "Windows minimum Node 26.0 or Kotlin device-agent benefit"
+  ],
+  "productCodeChanged": false,
+  "mainMergeOrReleaseAuthorizedByThisRun": false
+}

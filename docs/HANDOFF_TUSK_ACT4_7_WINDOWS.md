@@ -1,6 +1,6 @@
 # Paisley Park 7.0 TUSK ACT4 — Windows 接续任务书
 
-更新：2026-11-06。接收方：家用 Windows 开发环境的 Codex。
+更新：2026-11-07。接收方：家用 Windows 开发环境的 Codex。
 
 **任务：接续当前研发分支，验证 Windows Chrome、真实 DoL 和 Android 行为，修复实际发现的问题，并给出下一步收口判断。本任务书不是正式发布指令。**
 
@@ -28,6 +28,8 @@ Windows 后续状态（2026-11-06）：已完成的范围见 [Windows 接续记�
 本机后续已统一收口：[Mac 剩余项盘点与完整清理修复](../experiments/tusk-act4-7/MAC_CLOSEOUT_20261106.md)。最新代码 `0a75b59df6898c460ca26b73ee7bc33a8be0b0d5` 保留启动主异常及浏览器/CDP/HTTP/FD 清理失败，源码和最低 Node26 独立包各 43/43；固定包真实中性 Chrome 正常/拒绝两组清理均确认。官方 CI Actions 已升级 v7，仍是原单 job。当前合理 Mac 实现待办已耗尽，外部输入和可选研究分列，不重做已验 TS/GER/contracts，不改变 Android 四条 pending 的原合同。
 
 Windows 后续：[源码查询与启动清理增量验收](../experiments/tusk-act4-7/WINDOWS_FOLLOWUP_20261106.md)已同步至 `7f3ce2d` 并实跑入站变更。另修复部分克隆查询的隐式 Git 抓取，固定代码 `c4423ae4945687689e07397ca30d35400098d192`；最终源码/独立包查询各 36 通过、1 平台跳过，原启动清理集各 43/43，真实中性 Chrome 正常/拒绝及资源清理通过。精确上游 0.5.12.13 已取得，局部候选和有界固定 revision partial 分别核验，不能宣称全仓完整或运行现场逐字对应。用户选择使用更新的 Node26.13；最低 Windows26.0 仍单列未验证。Android 继续等待 UI 释放，无设备动作。
+
+2026-11-07 后续：[Android 独立环境保存与原回执恢复](../experiments/tusk-act4-7/ANDROID_INDEPENDENT_RECOVERY_20261107.md)已完成。UI 释放后先只读核对原目标，发现默认 Store 目录缺失；现有最完整备份有 95 条 Effect，保留四条旧未决，但不等于最后 99 条/generation 5 的完整账本，未恢复或新建默认库，原目标业务仍不可据此重新派发。用户另行授权独立包 `org.goldexperience.acceptance7`，验证新 UID/root、空白数据和独立 Store后，生产 GER 保存一次，在原 terminal 返回边界中断 CLI，新进程恢复同一 attempt 并结清，再通过 required checkpoint；动作数仍为 1。副本已对 user 0 卸载，自有 forward/transport 清理完成，原生身份未变。原 App 后台 CDP 复查超时保留，本轮不宣称再次核对六槽内容或恢复旧 Unknown。实际运行是工作树 CJS，未冒充 ZIP Android 重跑；无产品代码修改、main 合并或发布。
 
 ## 1. 固定身份与读取顺序
 
