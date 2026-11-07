@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "product": "DoL Dev Tools — Gold Experience（黄金体验）",
+  "version": "7.0.0",
+  "status": "Completed: 7.0 local candidate and Windows validation; not publicly released",
+  "sourceCommit": "8804a8f7555a20542ca464901929c11f5a867486",
+  "package": {
+    "file": "DoL-Dev-Tools-7.0.0.zip",
+    "sha256": "034634e316d7d861458b80a966b37a52c0f0873bd0bb29b8a1d2176c53a043a1",
+    "files": 434,
+    "bytesMatchGit": true,
+    "exactExportSet": true,
+    "postRunPayloadUnchanged": true,
+    "compilerAndExperimentalPayloadExcluded": true
+  },
+  "environment": {
+    "os": "Windows NT 10.0.26340.0",
+    "powerShell": "7.6.9",
+    "node": "26.13.0",
+    "npm": "11.20.0",
+    "python": "3.14.9",
+    "chrome": "156.0.8078.81",
+    "codexCli": "codex-cli 0.167.0-alpha.3.2"
+  },
+  "freshValidation": {
+    "sourceNode": {
+      "total": 667,
+      "passed": 665,
+      "failed": 0,
+      "skipped": 2
+    },
+    "packageNode": {
+      "total": 667,
+      "passed": 665,
+      "failed": 0,
+      "skipped": 2
+    },
+    "sourcePython": {
+      "total": 10,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 1
+    },
+    "packagePython": {
+      "total": 10,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 1
+    },
+    "nodeSkipReasons": [
+      "unprivileged macOS filesystem behavior",
+      "nonregular query path platform test"
+    ],
+    "pythonSkipReason": "optional Pillow unavailable",
+    "affectedNameInstallCliTests": 20,
+    "strictNodeProgram": 98,
+    "domFiles": 17,
+    "generatedArtifacts": 133,
+    "negativeTypeControls": 125,
+    "sourceSkillStructureValid": true,
+    "installedSkillStructureValid": true,
+    "newBrandRegression": {
+      "before": "RESOLVER_METADATA_INVALID, one focused test failed",
+      "after": "new name and both historical names pass; unrelated package refused"
+    },
+    "packagePreflight": {
+      "noExternalXState": true,
+      "offlineVersion": true,
+      "offlineHelp": true,
+      "missingGameplayDependencyRefused": true,
+      "missingDependencyBeforeStoreWrite": true,
+      "isolatedSkillInstalled": true,
+      "resolverVersion": "7.0.0",
+      "resolverDisplayName": "DoL Dev Tools — Gold Experience（黄金体验）"
+    },
+    "lockedOfflineXState": "5.33.2",
+    "pcChromePassed": 12,
+    "gerChromePassed": 13,
+    "integrationChromePassed": 10,
+    "runtimeTypeStrippingDisabled": true,
+    "shippedChangedMarkdownLinks": 205,
+    "hostDiscovery": {
+      "before": 0,
+      "afterForceReload": 1,
+      "afterProcessRestart": 1,
+      "displayName": "DoL Dev Tools — Gold Experience（黄金体验）",
+      "errors": 0,
+      "modelTurns": 0,
+      "hostExitCodes": [
+        0,
+        0
+      ]
+    },
+    "cleanup": {
+      "ownedChromeRootsExited": 9,
+      "ownedPortsClosed": 16,
+      "originalDefaultStoreStillAbsent": true
+    }
+  },
+  "localInstallation": {
+    "fromVersion": "6.1.0",
+    "version": "7.0.0",
+    "payloadMatchesSource": true,
+    "oldSkillBackedUp": true,
+    "oldToolsPreserved": true,
+    "xstateResolvedInsideStableInstallation": true,
+    "windowsLaunchersVersionChecked": true,
+    "storeMigration": false,
+    "currentDesktopHotReloadValidated": false
+  },
+  "reusedEvidence": {
+    "fixedWindowsCloseoutCommit": "00c44a58e70178e1016776785e2a548e14e55e5f",
+    "scope": [
+      "real Windows DoL native save and original-receipt recovery",
+      "native navigation and narrow Scope refusal",
+      "Android original document rejection and isolated native save recovery",
+      "Windows file sharing/rollback",
+      "exact-revision multi-region game source lookup",
+      "Kotlin deployment/lifecycle comparison, not production adoption"
+    ]
+  },
+  "notValidated": [
+    "Windows Node 26.0.0 minimum",
+    "current ZIP Android reinstall and full business rerun",
+    "all devices, games, Mods and WebView combinations",
+    "complete autonomous Android Mod repair workflow",
+    "current Desktop chat hot reload",
+    "Kotlin production integration or real DoL benefit"
+  ],
+  "knownLimitations": [
+    "Original target Store missing; stale backups and native identity drift do not permit settling four historical pending effects",
+    "Missing Store preflight does not provide atomic protection against concurrent external deletion",
+    "Background page screenshot timeout cause remains unresolved",
+    "Native Providers remain reviewed-contract and version constrained"
+  ],
+  "publication": {
+    "testBranch": "experiment/tusk-act4-7",
+    "mainMerged": false,
+    "tagCreated": false,
+    "githubReleaseCreated": false
+  },
+  "sourceCI": {
+    "runId": 42371542417,
+    "url": "https://github.com/102326/DoL-Dev-Tools-Paisley-Park/actions/runs/42371542417",
+    "headSha": "8804a8f7555a20542ca464901929c11f5a867486",
+    "status": "completed",
+    "conclusion": "success"
+  }
+}
