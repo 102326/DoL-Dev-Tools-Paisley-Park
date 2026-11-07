@@ -1,6 +1,6 @@
-# PC 本地测试入口（7.0 开发中）
+# PC 本地测试入口（7.0）
 
-这是 `experiment/tusk-act4-7` 的开发能力，正式发行版本尚未改变。PC Debug、共享 Action/Journey、GER Goal/Session 和标准 Evidence 已接入 owned Chrome。需要持久预算、受保护业务动作和原回执恢复时，使用共享 GER，不能把普通点击补记成 GER 派发。
+本页对应 Gold Experience 7.0 本地候选。PC Debug、共享 Action/Journey、GER Goal/Session 和标准 Evidence 已接入 owned Chrome。需要持久预算、受保护业务动作和原回执恢复时，使用共享 GER，不能把普通点击补记成 GER 派发。
 
 ## 启动与资源
 
@@ -95,4 +95,4 @@ Chrome 的 Profile 路径摘要和资源摘要不是数据世代证明；不填�
 
 Windows Chrome 156 的多标签实验中，后台页面的截图曾超时；简单后台页对照未复现，完整流程的协议追踪确认超时命令为 `Page.captureScreenshot`。工具不会为截图自动切换前台，后续采集失败仍保留已收到的动作 ACK；不要因此重放点击。PC 夹具将同 URL 干扰页明确设为后台，选页和干扰页状态断言保留。该编排调整不证明所有后台截图问题已解决。
 
-无内容 Debug 回归：`node experiments/tusk-act4-7/pc/verify.cjs ABS_CHROME NEW_OUTPUT headless`（也可 `visible`）；正式 GER/Evidence 中断恢复回归：`node experiments/tusk-act4-7/ger/verify.cjs ABS_CHROME NEW_OUTPUT`。`PAISLEY_TOOL_ROOT` 可指定独立解压包验证同一流程。GER 夹具只模拟原始状态 API、受审 Recipe 和公共元数据，没有游戏/Mod 源码。Mac 通过不等于 Windows、真实 DoL/存档、原生业务 profile 或 Android 通过。
+无内容 Debug 回归：`node experiments/tusk-act4-7/pc/verify.cjs ABS_CHROME NEW_OUTPUT headless`（也可 `visible`）；正式 GER/Evidence 中断恢复回归：`node experiments/tusk-act4-7/ger/verify.cjs ABS_CHROME NEW_OUTPUT`。`PAISLEY_TOOL_ROOT` 可指定独立解压包验证同一流程。GER 夹具只模拟原始状态 API、受审 Recipe 和公共元数据，没有游戏/Mod 源码。该段命令验证受控夹具，不包含真实游戏。Windows Chrome、真实 DoL 代表保存/导航与独立 Android 原回执恢复另有对应记录，见 [7.0 支持范围](CLOSEOUT_7_0.md)；不同实验的结果不能互相代替。

@@ -1,7 +1,7 @@
 {
   "name": "dol-dev-tools-paisley-park",
-  "displayName": "DoL Dev Tools",
-  "version": "6.1.0",
+  "displayName": "DoL Dev Tools — Gold Experience（黄金体验）",
+  "version": "7.0.0",
   "private": true,
   "license": "MIT",
   "engines": {
@@ -13,5 +13,5 @@
   "dependencies": {
     "xstate": "5.33.2"
   },
-  "releaseName": "White Snake"
+  "releaseName": ""
 }

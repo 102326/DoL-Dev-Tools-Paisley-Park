@@ -11,9 +11,11 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装成功只证明文件已写入；宿主何时重新扫描取决于实际 Agent 环境。按宿主支持的方法刷新或开启新会话，确认其可发现 Skill 并调用正确版本。当前回合显式读取或 resolver 成功不能冒充宿主自动发现验收。
 
-## 当前研发分支：resolver 诊断与维护
+<a id="resolver-maintenance"></a>
 
-`experiment/tusk-act4-7` 的 resolver 成功 JSON 字段保持不变。失败退出1，stderr提供固定代码、阶段及处理建议，不回显输入路径或原始异常：
+## 7.0 resolver 诊断与维护
+
+7.0 的 resolver 成功 JSON 字段保持不变。失败退出1，stderr提供固定代码、阶段及处理建议，不回显输入路径或原始异常：
 
 | 代码 | 阶段 | 处理方向 |
 | --- | --- | --- |
@@ -35,11 +37,11 @@ node tools/typescript/build.cjs --check
 node tools/typescript/build.cjs --write-production
 ```
 
-开发检查使用锁定TypeScript6.0.2；`--check`不改写resolver或清理目录。完整Program检查四个Node模块，CJS入口及导出保持兼容。生成使用协作构建锁、权限保留与多文件失败回滚；外部编辑不受原子CAS保护，不在生成时手改产物。生成失败保留现场，不把部分输出当成成功安装。旧实验命令仍转接正式构建。完整实验与跨平台边界见[Windows接续任务书](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/experiment/tusk-act4-7/docs/HANDOFF_TUSK_ACT4_7_WINDOWS.md)。这不是已发布6.1.0包的行为追认。
+开发检查使用锁定TypeScript6.0.2；`--check`不改写resolver或清理目录。当前完整Program检查98个Node文件（含3个开发工具）与独立17个DOM文件，CJS入口及导出保持兼容。生成使用协作构建锁、权限保留与多文件失败回滚；外部编辑不受原子CAS保护，不在生成时手改产物。生成失败保留现场，不把部分输出当成成功安装。旧实验命令仍转接正式构建。完整实验与跨平台边界见[Windows接续任务书](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/experiment/tusk-act4-7/docs/HANDOFF_TUSK_ACT4_7_WINDOWS.md)。这不是已发布6.1.0包的行为追认。
 
 ## 运行前提
 
-当前维护源码最低 Node.js 26.0.0，建议使用Node26 LTS；已发布6.1.0工具包保持原Node22.12.0要求，不能用新分支要求改写旧包验收。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2。Node26提供内置SQLite；直接运行Gameplay CLI的现有示例仍使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，两个Windows launcher也保留该参数，不需修改系统配置。最低版本声明不是新的设备授权、Store迁移或自动环境安装。
+7.0 工具包与维护源码最低 Node.js 26.0.0，Windows 本轮使用26.13.0；已发布6.1.0工具包保持原Node22.12.0要求，不能用新分支要求改写旧包验收。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2。Node26提供内置SQLite；直接运行Gameplay CLI的现有示例仍使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，两个Windows launcher也保留该参数，不需修改系统配置。最低版本声明不是新的设备授权、Store迁移或自动环境安装。
 
 缺依赖拒绝不表示设备故障。只使用自有临时库做环境 smoke，不打开旧 Store 来测试是否加载成功。
 
@@ -62,9 +64,17 @@ node tools/typescript/build.cjs --write-production
 
 这不是整个目录事务或断电保证。进程在入口发布前退出时，可能留下隐藏暂存及没有 SKILL.md 的最终目录，下一次安装会拒绝覆盖；resolver 拒绝其不完整清单。入口发布后退出时，安装可能已经完整但命令没有返回成功，先独立核验，不盲目重装。Mac 已测写入/权限/竞争/实际子进程中断；[Windows 补验](WINDOWS_5_1.md)已覆盖 NTFS 中文/空格路径、hard link、真实文件占用、竞争、失败及实际子进程中断，不外推其它文件系统。
 
-## 6.1.0 White Snake 安装与验货
+<a id="gold-experience-install"></a>
 
-本文对应 `6.1.0 — White Snake`。从 [6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 下载命名的工具 ZIP；保留原 [6.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 安装及 Skill 作回退。Windows 实际验货范围见[补验记录](WINDOWS_6_1.md)。
+## 7.0.0 Gold Experience 本地候选安装
+
+本轮只生成本地候选，尚未创建7.0的GitHub Release。取得经核对的候选ZIP、SHA-256与manifest后，解压到新的长期保留目录；旧Tools和Skill保留作回退。运行`DoL-Dev.cmd --version`应返回`7.0.0`，help首行以`DoL Dev Tools — Gold Experience（黄金体验） 7.0.0`开头。macOS/Linux使用`node scripts/dol-dev.cjs`；本轮本地结果只覆盖Windows。
+
+按本页顶部命令向空目标安装，再运行resolver，确认版本7.0.0和所选目录。内部包名、`dol-dev-tools-paisley-park` Skill标识、`Paisley-Park.cmd`与既有数据路径继续兼容，不要求重命名旧库或更换Store。新名称不等于旧未决已恢复。当前范围和限制见[7.0收口](CLOSEOUT_7_0.md)。
+
+## 历史：6.1.0 White Snake 安装与验货
+
+本节保留 `6.1.0 — White Snake` 的安装记录。从 [6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 下载命名的工具 ZIP；保留原 [6.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 安装及 Skill 作回退。Windows 实际验货范围见[补验记录](WINDOWS_6_1.md)。
 
 解压到新的长期保留目录。macOS在该目录运行 `node scripts/dol-dev.cjs --version` 和 `node scripts/dol-dev.cjs --help`；版本应为 `6.1.0`，help首行以 `DoL Dev Tools 6.1.0 — White Snake` 开头。Windows使用 `DoL-Dev.cmd` 或 `Paisley-Park.cmd`。Mac与Windows的实际结果分别记录，不互相代替。
 

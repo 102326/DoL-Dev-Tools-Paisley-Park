@@ -1,4 +1,4 @@
-# DoL Dev Tools: Paisley Park：公共开发工具架构约束
+# DoL Dev Tools — Gold Experience（黄金体验）：公共开发工具架构约束
 
 2026-10-06更新：正式v3.0.0已撤为Foundation，最新Gameplay架构以[重新审计](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md)为准。保留通用诊断/业务真相/安全边界；原“只允许薄层、不建设Agent Runtime”的限制不再适用于新的正式3.0研发。能复用就复用，缺核心就设计，旧结构阻碍就重构。
 
@@ -13,7 +13,7 @@ Android CLI看到真机画面；Chrome Inspect/CDP是Agent进入真实WebView内
 
 | 部分 | 职责 | 边界 |
 | --- | --- | --- |
-| DoL Dev Tools: Paisley Park | 进入 Android/WebView 现场，采证与比较；独立执行有限复现实验 | 面向所有 DoL Mod 作者，不依赖某个 Mod、Runtime 或源码目录 |
+| DoL Dev Tools — Gold Experience（黄金体验） | 进入 Android/WebView 现场，采证与比较；独立执行有限复现实验 | 面向所有 DoL Mod 作者，不依赖某个 Mod、Runtime 或源码目录 |
 | 目标项目 / Runtime Integration | 提供自身版本、模块、能力与运行状态解释 | 自愿接入、平级可选；项目保有自己的业务模型与状态，Tools 不复制 Runtime |
 | DoL Development Skill | 选择诊断与复现路径，解释证据，按任务完成修改/部署/复验 | 调用实际工具与目标项目既有命令，不复制实现，不虚构蓝图中的命令 |
 

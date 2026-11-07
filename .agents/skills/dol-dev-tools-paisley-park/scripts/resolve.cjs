@@ -1,4 +1,4 @@
-// Generated from resolve.cts by TypeScript 6.0.2; source-lf-sha256=77d9370970efae4eb513784c332e7f8015bc9e991f9c7de3a6940aa2f9771b64
+// Generated from resolve.cts by TypeScript 6.0.2; source-lf-sha256=a4ac05ee98b8c864e5cf9058085ca86c757f58f2e998689e9e6309e6b25291f5
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateRoot = validateRoot;
@@ -13,7 +13,7 @@ const errors = {
     RESOLVER_LOCATION_INVALID: ['resolve.location', 'Invalid Tools location', 'Review tool-location.json or set DOL_DEV_TOOLS_HOME to an explicitly verified absolute Tools root; no alternate directory was searched.'],
     RESOLVER_ROOT_INVALID: ['resolve.root', 'Explicit absolute Tools root required', 'Use an absolute Tools root in DOL_DEV_TOOLS_HOME or tool-location.json; supplied input omitted.'],
     RESOLVER_ROOT_UNAVAILABLE: ['resolve.root', 'Tools root unavailable', 'Check the explicitly selected directory, its documentation and permissions; no fallback root or download was used.'],
-    RESOLVER_METADATA_INVALID: ['resolve.metadata', 'Invalid Tools root metadata', 'Check the complete package.json: Paisley Park identity, supported displayName and nonempty version.'],
+    RESOLVER_METADATA_INVALID: ['resolve.metadata', 'Invalid Tools root metadata', 'Check the complete package.json: DoL Dev Tools package identity, supported displayName and nonempty version.'],
     RESOLVER_ENTRY_INVALID: ['resolve.entry', 'Invalid Tools root entry', 'Check scripts/dol-dev.cjs is a regular file inside the resolved Tools root; do not use an entry redirected elsewhere.'],
 };
 class ResolverError extends Error {
@@ -77,7 +77,7 @@ function validateRoot(candidate) {
         return fail('RESOLVER_ROOT_UNAVAILABLE');
     }
     const metadata = json((0, node_path_1.join)(root, 'package.json'), 65536, 'RESOLVER_METADATA_INVALID');
-    if (!object(metadata) || metadata.name !== 'dol-dev-tools-paisley-park' || metadata.displayName !== 'DoL Dev Tools' && metadata.displayName !== 'DoL Dev Tools: Paisley Park' ||
+    if (!object(metadata) || metadata.name !== 'dol-dev-tools-paisley-park' || metadata.displayName !== 'DoL Dev Tools' && metadata.displayName !== 'DoL Dev Tools: Paisley Park' && metadata.displayName !== 'DoL Dev Tools — Gold Experience（黄金体验）' ||
         typeof metadata.version !== 'string' || !metadata.version.trim() || metadata.version.length > 64)
         fail('RESOLVER_METADATA_INVALID');
     let cli;

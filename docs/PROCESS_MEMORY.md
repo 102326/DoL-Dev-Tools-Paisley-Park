@@ -1,4 +1,4 @@
-# DoL Dev Tools: Paisley Park — Android 关联进程内存
+# DoL Dev Tools — Gold Experience（黄金体验） — Android 关联进程内存
 
 ```powershell
 node scripts/dol-dev.cjs process-memory --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/processes-001

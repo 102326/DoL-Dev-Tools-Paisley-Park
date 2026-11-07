@@ -74,7 +74,7 @@ node RESOLVED_CLI source-find --root REVIEWED_REPOSITORY_ROOT --revision REVIEWE
 
 固定revision的合格文件使用有界批量读取，减少逐文件启动Git的开销；预取受剩余文件尝试数及字节预算约束。同一blob出现在多个文件时，预算仍按各文件计，不因传输去重而扩大查找范围。对象缺失或批量回包异常保留`file-unreadable`及partial，不能据此声明完整无匹配；此优化不改变默认超时或固定commit身份。
 
-此入口以严格检查的TS维护、以预生成CommonJS运行；运行无需TypeScript编译器、类型擦除、npm开发依赖或额外loader。开发/CI检查源码与运行产物一致，原生TS保留在实验对照中。Windows文件系统、真实Android和非商店真实游戏源码尚未由本轮Mac验收；普通源码定位可以先做，实际加载验证仍按目标项目合同执行。
+此入口以严格检查的TS维护、以预生成CommonJS运行；运行无需TypeScript编译器、类型擦除、npm开发依赖或额外loader。开发/CI检查源码与运行产物一致，原生TS保留在实验对照中。Windows 已补验中文/空格路径、受控文件占用及精确上游版本的衣柜、侧栏和其它逻辑候选；具体范围见 [7.0 收口](CLOSEOUT_7_0.md)。源码命中不证明设备当前采用该实现，实际加载验证仍按目标项目合同执行。
 
 ## 内容与执行边界
 

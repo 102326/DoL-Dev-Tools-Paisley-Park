@@ -8,13 +8,13 @@ const errors = {
   RESOLVER_LOCATION_INVALID: ['resolve.location','Invalid Tools location','Review tool-location.json or set DOL_DEV_TOOLS_HOME to an explicitly verified absolute Tools root; no alternate directory was searched.'],
   RESOLVER_ROOT_INVALID: ['resolve.root','Explicit absolute Tools root required','Use an absolute Tools root in DOL_DEV_TOOLS_HOME or tool-location.json; supplied input omitted.'],
   RESOLVER_ROOT_UNAVAILABLE: ['resolve.root','Tools root unavailable','Check the explicitly selected directory, its documentation and permissions; no fallback root or download was used.'],
-  RESOLVER_METADATA_INVALID: ['resolve.metadata','Invalid Tools root metadata','Check the complete package.json: Paisley Park identity, supported displayName and nonempty version.'],
+  RESOLVER_METADATA_INVALID: ['resolve.metadata','Invalid Tools root metadata','Check the complete package.json: DoL Dev Tools package identity, supported displayName and nonempty version.'],
   RESOLVER_ENTRY_INVALID: ['resolve.entry','Invalid Tools root entry','Check scripts/dol-dev.cjs is a regular file inside the resolved Tools root; do not use an entry redirected elsewhere.'],
 } as const;
 export type ResolverCode = keyof typeof errors;
 export type ResolverStage = (typeof errors)[ResolverCode][0];
 export interface Resolution {
-  root:string; cli:string; name:'DoL Dev Tools'|'DoL Dev Tools: Paisley Park'; version:string; docs:string;
+  root:string; cli:string; name:'DoL Dev Tools'|'DoL Dev Tools: Paisley Park'|'DoL Dev Tools — Gold Experience（黄金体验）'; version:string; docs:string;
   validation:'location only; not a code trust guarantee';
 }
 export interface ResolverEnvironment { readonly DOL_DEV_TOOLS_HOME?:string }
@@ -52,7 +52,7 @@ export function validateRoot(candidate:unknown):Resolution {
   if(typeof candidate!=='string'||!isAbsolute(candidate))fail('RESOLVER_ROOT_INVALID');
   let root:string;try{root=realpathSync(candidate)}catch{return fail('RESOLVER_ROOT_UNAVAILABLE')}
   const metadata=json(join(root,'package.json'),65536,'RESOLVER_METADATA_INVALID');
-  if(!object(metadata)||metadata.name!=='dol-dev-tools-paisley-park'||metadata.displayName!=='DoL Dev Tools'&&metadata.displayName!=='DoL Dev Tools: Paisley Park'||
+  if(!object(metadata)||metadata.name!=='dol-dev-tools-paisley-park'||metadata.displayName!=='DoL Dev Tools'&&metadata.displayName!=='DoL Dev Tools: Paisley Park'&&metadata.displayName!=='DoL Dev Tools — Gold Experience（黄金体验）'||
     typeof metadata.version!=='string'||!metadata.version.trim()||metadata.version.length>64)fail('RESOLVER_METADATA_INVALID');
   let cli:string;
   try{cli=realpathSync(join(root,'scripts/dol-dev.cjs'));if(cli!==join(root,'scripts/dol-dev.cjs')||!statSync(cli).isFile())fail('RESOLVER_ENTRY_INVALID')}

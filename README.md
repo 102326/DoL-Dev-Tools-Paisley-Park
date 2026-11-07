@@ -1,27 +1,24 @@
-# 你只管开车，办法由老爹来想！
+# DoL Dev Tools — Gold Experience（黄金体验）
 
-你定目标、作最终决策；Agent 借助 Paisley Park，在授权范围内尽可能自主完成 DoL 调查、复现、源码定位、开发与验证，减少人工操作，并用实际证据确认结果。
+创造能力，赋予行动。
 
-## DoL Dev Tools: Paisley Park
+Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可以查看真实 Android / WebView 现场，也可以在独立 Chrome 中调查获准的本地页面，再接到源码、构建和复验。它可以独立使用，也可以由宿主 Agent 调用。
 
-Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 Android / WebView 现场诊断、源码与制品核验、Mod 兼容性调查，以及可接续的研究经验。它帮助你从运行问题找到相关源码，核对构建包与实际加载结果，并用证据比较修改前后。可以独立使用，也可以由宿主 Agent 调用。
+**7.0.0 本地候选，尚未公开发布。** [安装与升级](docs/SKILL_INSTALL.md) · [本版更新](docs/RELEASE_7.0.0.md) · [支持范围](docs/CLOSEOUT_7_0.md)
 
-**6.1.0 — White Snake** · [下载](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) · [安装与升级](docs/SKILL_INSTALL.md) · [更新说明](docs/RELEASE_6.1.0.md) · [支持范围](docs/CLOSEOUT_6_1.md)
+这是此前的 Paisley Park。旧 Skill 标识、启动命令和数据路径继续兼容，不需要改名或迁移已有账本。它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。
 
-它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。宿主 Agent 负责判断，工具提供调查、执行和验证依据。
+## 它能帮你做什么
 
-## 为什么需要 Paisley Park
+问题出在设备上时，源码和构建日志往往只说明了一部分。你还需要知道当前加载了哪个包、控件为什么这样显示，以及修改后是否真的生效。
 
-当问题出现在设备上，只看源码或构建日志往往不够。你还需要核对当前界面、运行状态和实际加载的包。你可以用 Paisley Park：
+- 查看画面、DOM、样式、Console 和系统日志，调查界面与运行问题。
+- 在自有 Chrome 测试 Profile 中复现获准页面，准确选择目标与文档，保留操作前后证据。
+- 按版本查找游戏源码中的 Passage、宏、符号和调用线索，再核对现场实际采用的实现。
+- 调用目标项目自己的构建与部署流程，比较修改前后，区分“构建成功”“包已加载”和“业务结果正确”。
+- 接续有版本条件的 Mod 研究经验；在已授权范围内完成受支持的游戏目标，并保留未知结果和原回执。
 
-- 检查界面错位、控件命中、Console 异常和 Mod 加载状态。
-- 用 Action/Journey 复现已审阅的步骤，保留失败和前后证据，比较修改结果。
-- 连接目标项目自己的源码、构建和部署流程，确认设备实际加载的包。
-- 核对框架注册、缓存采用、依赖与补丁目标，结合实际执行证据调查兼容问题；优先复用上游已有功能。
-- 从类似问题的研究经验中选择方法，重新核对版本、适用条件和反例，再继续调查。
-- 在授权范围内推进受支持的游戏目标，中断后继续，并读取原游戏状态确认结果。
-
-已有标准能力足够时优先使用；需要更灵活的调查时，可以直接使用 CDP、ADB 或项目测试。按当前问题选择工具，不要求每次走完整管线。
+已有标准能力足够时优先使用；需要更灵活的调查时，可以直接使用 CDP、ADB 或项目测试。不要求每个问题都走完整管线。
 
 ## 快速开始
 
@@ -29,16 +26,16 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 An
 
 ### 1. 解压并确认版本
 
-从 [6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 下载 `DoL-Dev-Tools-6.1.0.zip`，核对随附的 SHA-256 后解压到长期保留的新目录。升级时保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。页面自动生成的 Source code 是源码归档；首次使用请下载上面命名的工具包。
+取得 `DoL-Dev-Tools-7.0.0.zip` 本地候选后，核对随附的 SHA-256 和来源清单，再解压到长期保留的新目录。保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。7.0 尚未公开发布；已发布的 [6.1.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 仍可取得。
 
-当前维护源码要求 **Node.js 26.0.0+**，建议使用Node26 LTS。已发布的6.1.0工具ZIP仍按原Node22.12+要求使用，本分支的最低版本调整不追改该发布包。在 Tools 根目录运行：
+7.0 要求 **Node.js 26.0.0+**。本轮 Windows 使用26.13.0；旧6.1.0包仍按其原要求使用。在 Tools 根目录运行：
 
 ```powershell
 .\DoL-Dev.cmd --version
 .\DoL-Dev.cmd --help
 ```
 
-版本输出应为 `6.1.0`，help 首行以 `DoL Dev Tools 6.1.0 — White Snake` 开头。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
+版本输出应为 `7.0.0`，help 首行以 `DoL Dev Tools — Gold Experience（黄金体验） 7.0.0` 开头。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
 
 ### 2. 连接已授权的 Android App
 
@@ -48,10 +45,10 @@ Paisley Park 是面向 DoL Mod 作者和 Agent 的本地开发工具，提供 An
 
 ```powershell
 New-Item -ItemType Directory -Path artifacts -Force
-.\Paisley-Park.cmd doctor --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/doctor.json
-.\Paisley-Park.cmd capture --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/screen-001
+.\DoL-Dev.cmd doctor --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/doctor.json
+.\DoL-Dev.cmd capture --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/screen-001
 # 需要 WebView 结构、Console、网络等证据时：
-.\Paisley-Park.cmd evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages'
+.\DoL-Dev.cmd evidence --serial DEVICE_SERIAL --package YOUR.APP.PACKAGE --out artifacts/evidence-001 --scope '#passages'
 ```
 
 先读 Doctor 的具体结果。它不会修复环境或启动游戏，`complete` 也不单独证明目标 WebView 可用。输出文件或目录必须尚不存在，重复采集换新名称。通用诊断无需 npm 依赖；工具包不捆绑游戏、APK、ADB 或 Android CLI。
@@ -61,7 +58,7 @@ New-Item -ItemType Directory -Path artifacts -Force
 需要Agent工作流时，在Tools根目录安装Skill；普通诊断、源码调查、Skill安装和resolver无需先装npm依赖：
 
 ```powershell
-.\Paisley-Park.cmd install-skill --out "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park"
+.\DoL-Dev.cmd install-skill --out "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park"
 node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
 ```
 
@@ -71,7 +68,7 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 npm ci --ignore-scripts --no-audit --no-fund
 ```
 
-安装器拒绝覆盖已有 Skill。更新时先备份并移出旧安装，保留原 Tools，再向空目录安装；Tools 必须留在稳定位置。当前源码使用Node26内置SQLite，现有Gameplay示例及Windows launcher保留显式`--experimental-sqlite`参数。旧6.1.0包在Node22下仍需该参数。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
+安装器拒绝覆盖已有 Skill。更新时先备份并移出旧安装，保留原 Tools，再向空目录安装；Tools 必须留在稳定位置。7.0使用Node26内置SQLite，Gameplay示例及Windows launcher保留显式`--experimental-sqlite`参数。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
 
 安装后按宿主支持的方法刷新或开启新会话，确认 Skill 确实被发现；文件安装和 resolver 成功不保证下一回合自动可用。发现后显式使用 `$dol-dev-tools-paisley-park`，告诉 Agent 工作区、设备、App、问题或目标，以及获准操作的数据范围。例如：
 
@@ -81,86 +78,66 @@ npm ci --ignore-scripts --no-audit --no-fund
 
 ## 核心能力
 
-Android CLI、Chrome Inspect/CDP 和 ADB 负责设备与运行现场；Source Link 和 Skill/Recipe 帮助接到源码与后续开发：
-
-| 入口 | 你能看到什么 |
+| 入口 | 用途与边界 |
 | --- | --- |
-| Android CLI | 真机画面、标注截图与原生布局 |
-| Chrome Inspect / CDP | WebView 内部的 DOM、Computed Style、Console、异常、Network、Storage 摘要与 Performance |
+| Android CLI | 真机画面、标注截图与原生布局；按需使用已安装的官方工具 |
+| Chrome Inspect / CDP | 进入 WebView 内部读取 DOM、Computed Style、Console、异常、Network、Storage 摘要和 Performance |
 | ADB | Android / App 的日志、进程、内存、帧统计和生命周期 |
-| Source Link | 可选的组件源码关联，当前只覆盖选定商店 Toolbar |
-| Skill / Recipe | 帮助 Agent 按问题选择工具、接续调查依据与未确认结果 |
+| PC Chrome | 显式选择已安装 Chrome，以独立 Profile 和资源白名单运行获准 HTML，复用 Action/Journey、GER 与 Evidence |
+| 源码查询 | 在指定工作树或固定 Git revision 中组合线索，输出有界候选、摘要与未覆盖原因；不自动下载缺失源码 |
+| Source Link / Component Lab | 为已接入 UI 工程关联组件源码和本地预览；首轮 Source Link 只覆盖选定商店 Toolbar |
+| Skill / Recipe | 按问题选择工具、研究 Mod 机制，并接续现场、源码与制品的调查依据 |
 
-Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁，可以读取当前控件、样式和页面状态，结合截图与系统日志调查问题。通用诊断可用于原版、内容、框架、UI 和管理器 Mod，不要求安装某个特定 Mod 或 UI Runtime。
+Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁。通用诊断不要求 Soft & Wet 或其它特定 Mod；项目 Integration 只是可选增强，失败时单独记录，保留已成功的通用采集。
 
-## 6.1 新增内容
+Component Lab 由目标 UI 工程维护，不在 Tools ZIP 中。它用于组件开发与预览，不代表游戏内热替换、自动部署或业务验证。
 
-- 验证更贴合当前改动：输入没有变化的有效证据可以复用，该补的证明仍要补。工具位置可按条件复用，设备和页面身份继续重新核对。详见 [开发流程](docs/DEVELOPMENT_FLOW.md#验证选择与停止)。
-- 重构时按需比较状态、回调次数与顺序、异常和副作用，说明哪些行为要保持、哪些缺陷要修。随包的 [Hook 生命周期案例](examples/behavior-preservation/README.md)展示了“最终数字相同，回调却多执行一次”的区别；输入须另行取得并审查，不包含第三方 Mod。
-- 补强配方检查：CE 验证器检查完整输出成员，并尊重指定 Python；Patch 观测保留初始资源选择，等待摘要时使用单调时钟，不受系统时间回拨影响。
+## 7.0 有哪些变化
 
-这些改进使用现有Skill和项目测试，不增加Runtime或通用行为等价引擎，也没有证明所有任务普遍加速。
+7.0 将独立 PC Chrome 接入已有开发流程：准确选择页面，拒绝重载后的旧文档绑定，用同一套工具做诊断、复现、受支持业务操作和证据保存。持久业务仍使用 GER，不把普通点击补记成已结算动作。参见 [PC 使用说明](docs/PC_RUNTIME.md)。
 
-## 6.0 已有能力
+需要调查原游戏实现时，可以用 `source-find` 查指定版本，组合 Passage、文字、路径或符号线索。达到预算或缺少 Git 对象会如实返回部分结果，不隐式联网补全。候选源码与设备实际采用的代码仍要分别核对。参见 [源码查询](docs/GAME_SOURCE.md)。
 
-White Snake 将 Mod 专业研究、兼容性调查、按需执行观测和经验接续接到既有开发流程：
+内部代码改为 TypeScript 维护，运行包继续提供预生成 CommonJS。使用者不需要安装 TypeScript 或额外 loader。部分页面函数保持原文，以兼容已有执行摘要；这不代表所有页面代码都有静态类型保证。
 
-- **框架机制研究与能力复用**：按问题查阅注册、缓存采用、依赖声明、补丁目标检查和消费者构建方法，先确认上游已提供什么能力。见 [研究与经验入口](docs/MOD_KNOWLEDGE.md)。
-- **兼容性调查与定向修复**：结合源码、调用和实际加载结果，区分可选依赖误报、共享修改目标与真实故障。已有 [可选框架探测修复](docs/knowledge/cheat-optional-framework.md)和 [共享目标共存对照](docs/knowledge/shared-caption-coexistence.md)；同一目标被多个 Mod 修改，不等于发生冲突。
-- **按需 Patch 观测**：显式选择研究对象，记录修改与发布阶段的内容指纹、漏采、未决及恢复状态，接入已有 Evidence。见 [观测配方](examples/patch-provenance/README.md)。需要审查后启用，不会默认安装探针，也不提供全量冲突判定。
-- **跨会话经验接续**：按问题检索有版本条件的知识，保留反例和未知项。独立新会话已经自行找到案例，并重建出与实机所用版本一致的修复包；不能把历史结论直接套用到新版本。
-
-研究对象的具体名称、固定版本、来源与验证边界保留在专业参考和案例中，见 [6.0 支持范围](docs/CLOSEOUT_6_0.md)。第三方 Mod、游戏资源和私人现场记录不随包分发。
-
-## 保留能力
-
-5.1 校正命令和文档、按任务整理 Skill、改善已知错误与安装失败恢复，并明确普通 Integration 的顺序观察边界。Windows 补验修复了 Node 22 下安装器对自有临时文件的误判。实际环境与覆盖范围见 [维护记录](docs/MAINTENANCE_5_1.md)和 [Windows 验收](docs/WINDOWS_5_1.md)。以下 5.0 能力继续保留：
-
-| 能力 | 当前用途与范围 |
-| --- | --- |
-| UI Source Link | 将选定组件关联当前源码，首轮支持商店 Toolbar；源码变动、缺输入或未知组件保留对应状态 |
-| Vite Component Lab | 用于已接入 UI 工程的组件开发和预览，可编辑真实 Vue 组件并热更新；由 UI 工程维护，不包含在 Tools ZIP，不代表游戏内热替换、自动部署或业务验证 |
-| Skill / Recipe 接续 | 按问题关联现场、源码、构建与实际加载的包，同版本号仍核对字节；诊断可以独立交付，无需制造补丁 |
-
-4.0.1 的自主 Debug、受支持 Gameplay、可选消费额度、执行回执和恢复能力继续保留。5.0 未改写 GER、SQLite 或历史 Unknown 的合同。更多入口见 [5.0 使用说明](docs/PAISLEY_PARK_5_0.md)。
+Android 继续使用 Android CLI、ADB 和 CDP。Kotlin 设备探针只保留为实验，没有接入生产，也不要求安装 helper。此前 White Snake 的 Mod 知识、按需 Patch 观测、行为保持配方，以及 Debug、Gameplay 和恢复能力继续保留，见[历史说明](docs/HISTORY.md)。
 
 ## 当前验证范围
 
-6.1 的 [Windows 补验](docs/WINDOWS_6_1.md)包括 Node 完整回归 449 通过、1 跳过，最低 Node 22.12 定向检查 48 通过、1 跳过，Python 8 通过、1 项可选 Pillow 跳过；均无失败。真实 CE 原包的完整字节及 16 项表达式检查、中文/空格路径、独立包安装与新会话项目 Skill 发现均有实际记录。
+本版已有 Windows Chrome 代表性宿主验证、真实 DoL 保存与导航、独立 Android 测试副本的原生保存及原回执恢复，以及源码查询、Windows 文件占用和独立包安装检查。原始输入、固定提交、各轮实际结果和复用边界保留在 [7.0 收口](docs/CLOSEOUT_7_0.md)，候选包的新验货结果另附 `validation.json`。
 
-6.0 已有真实 Android 上的消费者加载、可选框架探测修复前后与原组合相关入口验证；共享目标的带/不带探针对照、真实 Chrome 发布夹具和独立会话经验应用分别保留证据边界。这些是既有6.0证据，不计为6.1新实机验证。当前支持范围见 [6.1 收口](docs/CLOSEOUT_6_1.md)，正式包验货以随附 `validation.json` 为准。
-
-未改动的安装与执行行为复用 [5.1 Windows 验收](docs/WINDOWS_5_1.md)：Node 24 完整套件 429 项通过、1 项跳过；Node 22.12 定向检查 24 项通过、1 项跳过。两个 Windows 启动器、NTFS 中文/空格路径、真实文件占用和新进程 Skill 发现有对应记录，不外推所有宿主或文件系统。
-
-源码关联与 Component Lab 保留 5.0 的有限原型验收（A/B），现场、源码和制品的接续保留代表性只读验证（C）。既有 Android 证据包括页面身份、受支持的存档操作、自动保存和受控购买；本轮未重新执行设备或真实游戏测试。详细时段与复用范围见 [5.0 收口](docs/CLOSEOUT_5_0.md) 和 [4.0 技术记录](docs/CLOSEOUT_4_0.md)。
+Windows 使用 Node26.13.0，未在Windows重跑最低26.0.0；其它系统的既有记录不能代替本机结果。没有穷举全部游戏、存档、Mod、WebView 或设备，也未完成无人接管的完整 Android Mod 修复闭环。
 
 ## 已知限制
 
-已验证的兼容修复案例由主会话完成平板部署与相关入口复验；独立新会话完成了经验发现与同摘要包构建，未独立部署设备。完整无人接管的 Android Mod 修复闭环、案例涉及的全部功能及更多组件、设备、Provider 和 Mod 组合未验证。Lab 回调、构建成功、包已加载与游戏业务通过是不同证据。
+Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱。Evaluator 可以执行传入的 JavaScript，“只读”是 Probe 和工作流约束。
 
-Integration 缺失、不支持或失败会单独记录，已成功的通用采集仍可保留。Integration 是经审查的本地代码，Worker 用于故障隔离，不是权限沙箱；Evaluator 可以执行传入的页面 JavaScript，“只读”是 Probe 和工作流约束。
+存档、覆盖、删除和数据重建必须属于用户实际授权。结果未知的动作保留原记录，不盲重放，不通过换 Store、Profile 或游戏实例隐藏。旧 Session 的 Store 缺失时停止，避免创建空库冒充恢复；新库不能还原遗失历史。升级后的 Store 不允许3.0.3继续写入，见[数据兼容提醒](docs/CLOSEOUT_4_0.md#数据重建与旧记录)。
 
-操作存档、覆盖、删除或数据重建必须属于用户实际授权。已授权范围内自主推进，结果未知的动作保留原记录，不盲重放，也不通过换 Store 隐藏。使用数据重建前一致备份执行记录；升级后的 Store 不允许 3.0.3 继续写入，见 [升级提醒](docs/CLOSEOUT_4_0.md#数据重建与旧记录)。
+部分历史原目标的账本恢复仍受缺失数据与身份差异阻挡。这是该目标的恢复限制，不表示独立测试副本已经替它结清未决。详细边界见[覆盖账本](docs/CLOSEOUT_7_0.md#coverage-ledger)。
 
-截图、日志、存档和私人原始证据不自动上传。Evidence 的 complete / partial / failed 描述一次采集；像素差异不能单独证明兼容失败，内存增长不能单独证明泄漏。
+后台页面截图可能超时。不要把采集失败当成操作未发生而重复点击。Evidence 的 complete / partial / failed 描述一次采集；截图差异不能单独证明兼容失败，内存增长不能单独证明泄漏。Lab 回调、构建成功、包已加载与游戏业务通过是不同证据。
+
+截图、日志、存档和私人原始证据不自动上传；工具包不分发游戏、APK、第三方 Mod 或私人数据。
 
 ## 文档入口
 
 | 你要做什么 | 入口 |
 | --- | --- |
-| 配置连接、读取运行现场 | [诊断工作流](docs/DIAGNOSTICS.md) |
-| 复现步骤、比较前后结果 | [Action/Journey](docs/ACTIONS.md) · [Evidence 工具](docs/EVIDENCE_TOOLS.md) |
+| 配置连接、读取运行现场 | [诊断工作流](docs/DIAGNOSTICS.md) · [Inspector](docs/INSPECTORS.md) |
+| 在独立 Chrome 测试获准页面 | [PC Runtime](docs/PC_RUNTIME.md) |
+| 复现步骤、比较前后结果 | [Action/Journey](docs/ACTIONS.md) · [Evidence](docs/EVIDENCE_TOOLS.md) |
 | 运行或恢复游戏目标 | [Gameplay](docs/GAMEPLAY.md) |
-| 关联源码、接入 Lab、接续研发 | [5.0 入口](docs/PAISLEY_PARK_5_0.md) · [development-flow Recipe](docs/DEVELOPMENT_FLOW.md) |
-| 修改、构建、部署 | [Workshop](docs/WORKSHOP.md) |
-| 按版本查游戏源码、原生API与调用点 | [游戏源码Reference与source-find](docs/GAME_SOURCE.md) |
-| 调查框架、Mod 关系与相似历史问题 | [知识入口](docs/MOD_KNOWLEDGE.md) · [框架注册与缓存采用](docs/MAPLEBIRCH.md) · [依赖与补丁检查](docs/MODHUB.md) |
-| 接入专属诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [Schema 与格式](docs/FORMATS.md) |
-| 查询验收、限制与历史 | [6.1 收口](docs/CLOSEOUT_6_1.md) · [6.1 Windows 验收](docs/WINDOWS_6_1.md) · [6.0 历史验收](docs/CLOSEOUT_6_0.md) · [历史索引](docs/HISTORY.md) |
+| 修改、构建、部署 | [Workshop](docs/WORKSHOP.md) · [开发流程](docs/DEVELOPMENT_FLOW.md) |
+| 按版本查原游戏源码 | [游戏源码与source-find](docs/GAME_SOURCE.md) |
+| 关联组件源码与预览 | [Source Link / Lab](docs/PAISLEY_PARK_5_0.md) |
+| 调查框架与相似历史问题 | [Mod知识](docs/MOD_KNOWLEDGE.md) · [框架注册与缓存](docs/MAPLEBIRCH.md) · [依赖与补丁](docs/MODHUB.md) |
+| 接入项目诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [格式](docs/FORMATS.md) |
+| 查询验证与限制 | [7.0收口](docs/CLOSEOUT_7_0.md) · [历史索引](docs/HISTORY.md) |
 | 贡献与打包 | [项目规则](AGENTS.md) · [架构](docs/ARCHITECTURE.md) · [包清单](docs/RELEASE_PACKAGE.md) |
 
 ## 贡献与开发
 
-贡献时按改动风险选择最小充分检查。离线入口为 `npm test` 和 `python -m unittest discover -s tests -p "test_*.py"`；离线通过不能替代真机或业务证明。
+按改动风险选择最小充分检查。离线入口是 `npm test` 和 `python -m unittest discover -s tests -p "test_*.py"`；修改权威 TypeScript 后按[维护说明](docs/SKILL_INSTALL.md#resolver-maintenance)生成并核对 CommonJS。离线通过不能代替真机或业务证明。
 
-源码使用 [MIT](LICENSE)，许可不涵盖游戏、加载器或其它 Mod。不要提交真实存档、日志、截图、凭据、第三方资源或 APK。
+源码使用 [MIT](LICENSE)，许可不涵盖游戏、加载器和其它 Mod。不要提交真实存档、日志、截图、凭据、第三方资源或 APK。

@@ -1,6 +1,6 @@
 # DoL Dev Tools — 历史索引
 
-2.0.0起采用产品名DoL Dev Tools: Paisley Park。以下为原DoL Dev Tools的历史交付与证据，保留当时版本、名称和验收边界；原始提案不因新品牌而改写。
+7.0 本地候选采用名称 DoL Dev Tools — Gold Experience（黄金体验），尚未公开发布；[当前范围](CLOSEOUT_7_0.md)与[更新说明](RELEASE_7.0.0.md)另列。2.0.0起曾采用产品名DoL Dev Tools: Paisley Park。以下为原DoL Dev Tools的历史交付与证据，保留当时版本、名称和验收边界；原始提案不因新品牌而改写。
 
 | 历史版本 | 记录 |
 | --- | --- |
