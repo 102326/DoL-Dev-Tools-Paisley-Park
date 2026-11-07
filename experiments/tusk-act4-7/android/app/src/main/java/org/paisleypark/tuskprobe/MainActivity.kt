@@ -8,12 +8,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import java.util.UUID
 
-// Process-local identity survives Activity recreation, not process death.
-private val processStartId = UUID.randomUUID().toString()
-
 class MainActivity : Activity() {
     private val activityInstanceId = UUID.randomUUID().toString()
     private var count = 0
+    private var phase = "created"
     private lateinit var state: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +37,12 @@ class MainActivity : Activity() {
         super.onSaveInstanceState(outState)
     }
 
+    override fun onResume() { super.onResume(); phase = "resumed"; render() }
+    override fun onPause() { phase = "paused"; render(); super.onPause() }
+    override fun onDestroy() { ProbeState.release(activityInstanceId); super.onDestroy() }
+
     private fun render() {
-        state.text = "process=$processStartId\nactivity=$activityInstanceId\ncount=$count"
+        val revision = ProbeState.publish(activityInstanceId, count, phase)
+        state.text = "process=${ProbeState.processId}\nactivity=$activityInstanceId\ncount=$count\nphase=$phase\nrevision=$revision"
     }
 }
