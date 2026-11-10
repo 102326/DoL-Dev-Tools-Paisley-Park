@@ -1,29 +1,11 @@
-# ACT4 PC 无内容实验
+# 历史：3.0.3 ACT4 PC 复现（已废弃）
 
-范围、证据和取舍见 [REPORT.md](REPORT.md)，Windows 真游戏步骤见 [WINDOWS.md](WINDOWS.md)。生产代码未改；需要另外取得固定 ACT4 历史仓库 `52a8893910c57ed420587c137472ffb008567b18`。该仓库私有，不随本目录复制其源码或游戏。
+此目录是 2026-11-04 的历史实验，不是 Gold Experience 7.0 的运行、安装或验收入口。当前 PC 能力见 [PC Runtime](../../docs/PC_RUNTIME.md)，当前支持范围见 [7.0 收口](../../docs/CLOSEOUT_7_0.md)。
 
-从当前工作区运行，`HISTORY_ROOT` 是已审历史仓库根目录（不是本实验目录）：
+旧实验以独立的 3.0.3 ACT4 代码 `52a8893910c57ed420587c137472ffb008567b18` 为输入。这里的 `verify.cjs` / `bind-owned.cjs` 仍通过显式 `HISTORY_ROOT` 加载那份旧代码；夹具和 helper 本身没有携带完整旧 Runtime。当前 7.0 代码或当前安装的 Skill 不能直接代替该历史依赖。
 
-```sh
-# 终端 1：只提供自建 fixture，不暴露工作区
-node experiments/act4-pc-20261104/server.cjs 18764
+原操作说明和结果原文保留在正式仓库的固定 [历史 README](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/experiments/act4-pc-20261104/README.md)、[历史报告](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/experiments/act4-pc-20261104/REPORT.md)。这些链接属于保留的正式仓库，不依赖将退役的旧私有远端。
 
-# 终端 2：须有已安装 Chrome，输出目录不得存在，其父目录须存在
-DOL_TUSK_CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
-  node experiments/act4-pc-20261104/verify.cjs HISTORY_ROOT artifacts/act4-pc-NEW
-```
+历史复现须单独审查匹配的原代码与环境；不得注册旧 Skill、连接当前 Store 或默认执行旧依赖安装。缺少原输入时说明不可复现，不换成当前实现凑结果。
 
-Node 26.13.0 / Chrome 156.0.8078.73 是本次输入，不代表已测试全部版本。历史依赖按锁安装到历史目录：`npm ci --ignore-scripts --no-audit --no-fund`，缓存完整时可加 `--offline`。原样 M2：在历史目录设置同一 `DOL_TUSK_CHROME`，运行 `node --experimental-sqlite experiments/tusk-act4/verify-m2.cjs artifacts/NEW-M2`；先运行其 `.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs` 确认入口。
-
-Codex 原生 UI 对照：新标签打开 `http://127.0.0.1:18764/?case=native`，进入工坊→制作一次→保存→重置→读取。确认 workshop/1。另开 `?case=decoy-native` 同标题标签，回到原页；刷新、读取、点击导航、再读取。每次用当前实际 URL/文档/AX 核对，不复用旧 AX 序号。页面状态 JSON 可直接对照可见数值。
-
-新 helper 仅接原 launcher 创建的 owned 浏览器，同一明确 HTTP origin；不会接日常 Profile，不会自动换页或结清任何 effect：
-
-```sh
-node experiments/act4-pc-20261104/bind-owned.cjs \
-  HISTORY_ROOT ABS_ORIGINAL_HOST_JSON EXACT_TARGET_ID EXACT_URL NEW_HOST_JSON
-```
-
-输出为**新** host.json，供原 ACT4 `--host chrome --host-file ABS_NEW_HOST_JSON` 使用。输入可从已有受控 host 的已审清单选择 target，不按标题猜选。重复 URL 的多个页面必须明确 ID；URL/target 不匹配时拒绝。重新绑定表示新文档观察/执行合同，不能把旧 GER Session pending 搬过来确认成功。
-
-`results.json` 是经过本轮核对的轻量结果；完整 Profile/SQLite/PNG/失败日志留 ignored artifacts。测试页持久化仅用 `act4-neutral-v1:<case>` 键，`reset` 不清保存值；独立 Profile 留存供审计。退出服务用该服务终端 Ctrl+C；verify 结束仅关闭自身浏览器，不删除 Profile 或 pending。
+`results.json` 与原中性夹具/helper 保留原样；它们是历史结果，不追认为当前平台通过。本目录通过 `export-ignore` 完整排除在发行包之外。整理范围与核验结论见[公开摘要](../../docs/handoff/legacy-act4-retirement-20261110/REVIEW.md)。本轮没有执行旧代码、删除或归档旧仓库。

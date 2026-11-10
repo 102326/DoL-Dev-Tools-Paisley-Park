@@ -1,0 +1,40 @@
+{
+  "format": "legacy-act4-retirement-public-summary-v1",
+  "date": "2026-11-10",
+  "formalBase": "8c5628fc2bd93cf6116e5cef3fe597315a2525f1",
+  "productVersion": "7.0.0",
+  "scope": "Historical reference cleanup; no Runtime or installation changes",
+  "validation": {
+    "historicalGitOfflineRestore": "verified; not a complete GitHub metadata backup",
+    "publicReview": "All introduced objects, complete changed files and commit metadata",
+    "productionAndSkillUnchanged": true,
+    "documentationLinksAndJsonChecked": true,
+    "packageExportSetAndBlobBytesChecked": true,
+    "zipCrcChecked": true,
+    "independentPackageEntrypoints": [
+      "resolver",
+      "help",
+      "version"
+    ],
+    "legacyRuntimeExecuted": false,
+    "storesOpened": false
+  },
+  "publication": {
+    "privateSourceOrBackupIncluded": false,
+    "rawLogsOrRuntimeDataIncluded": false,
+    "reviewExcludedFromDistributionArchive": true,
+    "gitHistoryReviewedSeparatelyFromArchive": true
+  },
+  "notValidatedThisTask": [
+    "Windows runtime",
+    "Android devices",
+    "Real DoL gameplay",
+    "Full gameplay regression"
+  ],
+  "boundaries": {
+    "mainMerge": "outside this task",
+    "pullRequestTagRelease": "outside this task",
+    "legacyRepositoryDeletionOrArchival": "separate decision",
+    "ci": "Check the actual maintenance commit; baseline results do not prove this branch"
+  }
+}

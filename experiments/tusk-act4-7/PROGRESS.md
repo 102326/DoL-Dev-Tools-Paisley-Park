@@ -13,7 +13,7 @@
 - 正式 6.1：`cfd76a75e6c28efbbdcf447b25679cd9f257ef54`。
 - 维护分支：`a29d5088107296843b048ef99b05784535d2b7bb`；保留 Node 26、分阶段诊断、版本查询和 Android 完整 URL/context 修复。
 - Weather Report：`91eb9b0500152e9d055f1424074698db3bf43560`；保留 TS source-find、生成 CJS、受控暂存及此前独立包经验。
-- 原 ACT4 MIT 历史：`52a8893910c57ed420587c137472ffb008567b18`，仅选取并适配 Chrome host/identity，不复活旧工作树或覆盖当前 GER。
+- 原 ACT4 MIT 历史：`52a8893910c57ed420587c137472ffb008567b18`，当时仅选取并适配 Chrome host/identity，不复活旧工作树或覆盖当前 GER。该3.0.3实验线已废弃，旧远端不是当前7.0依赖；历史复现须另行审查匹配原输入。
 
 已分批推送：`a3afe3236ae5f95be0448eae814e5f6cc57a317d`（基线及 PC 复核记录）、`1407c3aaa61021fcded65d9cccc91b6f814eb5ab`（源码上下文和 Android 准备）、`853bd56bcfc651bd98caa39301a9e8efc1861b95`（PC 入口）、`6bca3dc83d76c17eacf741288d5b0f48d5300a1a`（共享 Journey）。上述提交的 author/committer 均已核对为 Codex bot。未修改 main、PR、Tag 或 Release；包元数据仍为 6.1.0，不冒称已发布 7.0。
 
@@ -105,4 +105,4 @@ Windows Chrome、真实 DoL/Mod 交互与存档、正式 GER 的 Chrome 业务�
 
 基线盘点和 Mac 首批 PC/共享 Journey、源码上下文、Android 准备、独立包与 Skill 发现达到本轮 Scoped Done。**7.0 整体未达发布验收；下一批继续 GER/标准 Evidence 接线，Windows 负责已约定的真实平台与游戏验收。**
 
-保留用户未提交的私人维护文件。未上传 Profile、SQLite、截图、原始日志、凭据、游戏资源、SDK 或第三方工具归档。
+未上传 Profile、SQLite、截图、原始日志、凭据、游戏资源、SDK 或第三方工具归档。

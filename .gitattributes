@@ -77,3 +77,7 @@ tests/fixtures/typed-native-profile-baseline/*.cjs text eol=lf
 tests/fixtures/typed-native-street-baseline/*.cjs text eol=lf
 tests/fixtures/typed-domain-provider-baseline/*.cjs text eol=lf
 tests/fixtures/typed-native-goal-baseline/*.cjs text eol=lf
+
+# Retirement review is source-only and excluded from distribution archives.
+docs/handoff/legacy-act4-retirement-20261110 export-ignore
+docs/handoff/legacy-act4-retirement-20261110/** export-ignore

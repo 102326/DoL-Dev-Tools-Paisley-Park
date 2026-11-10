@@ -44,3 +44,10 @@ npm run test:release -- --plan
 ```
 
 当时要求 Node.js 22.12+、Python 3.10+；完整游戏集成与性能测试另需自行取得游戏资源和 Microsoft Edge，`--plan` 只列计划和缺少的资源。本轮未重新核对相邻项目命令，当前用法以该仓库的 [开发文档](https://github.com/102326/DoL-Game-UI/blob/main/docs/DEVELOPMENT.md) 为准。本工具包不自动下载游戏或安装浏览器。
+
+
+## 旧 ACT4 测试线（已废弃，非 7.0 架构）
+
+`102326/DoL-Dev-Tools-Paisley-Park-Tusk-ACT4-Test` 是基于 3.0.3 的历史实验，末端提交为 `52a8893910c57ed420587c137472ffb008567b18`；不是当前安装、Skill、Runtime 或验收入口。当前能力以 [7.0 收口](CLOSEOUT_7_0.md)和 [PC Runtime](PC_RUNTIME.md)为准。
+
+2026-11-10 已完成历史材料保留与离线恢复核验；这不代表保存了全部 GitHub 元数据。旧仓库处置另行决定。历史复现须单独审查匹配的代码与环境，不能把旧 Skill/Store 合同用于当前任务。旧复现实验和内部计划排除在发行包之外；必要的源码归属注释不构成运行依赖。
