@@ -1,4 +1,4 @@
-// Generated from resolve.cts by TypeScript 6.0.2; source-lf-sha256=a4ac05ee98b8c864e5cf9058085ca86c757f58f2e998689e9e6309e6b25291f5
+// Generated from resolve.cts by TypeScript 6.0.2; source-lf-sha256=8dcc07b4bf09efcb8f16a0b080da3d40ccec0745a51489d05e9fc8e82b6e7cf3
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateRoot = validateRoot;
@@ -77,7 +77,7 @@ function validateRoot(candidate) {
         return fail('RESOLVER_ROOT_UNAVAILABLE');
     }
     const metadata = json((0, node_path_1.join)(root, 'package.json'), 65536, 'RESOLVER_METADATA_INVALID');
-    if (!object(metadata) || metadata.name !== 'dol-dev-tools-paisley-park' || metadata.displayName !== 'DoL Dev Tools' && metadata.displayName !== 'DoL Dev Tools: Paisley Park' && metadata.displayName !== 'DoL Dev Tools — Gold Experience（黄金体验）' ||
+    if (!object(metadata) || metadata.name !== 'dol-dev-tools-paisley-park' || metadata.displayName !== 'DoL Dev Tools' && metadata.displayName !== 'DoL Dev Tools: Paisley Park' && metadata.displayName !== 'DoL Dev Tools — Gold Experience（黄金体验）' && metadata.displayName !== 'DoL Dev Tools — Gold Experience' ||
         typeof metadata.version !== 'string' || !metadata.version.trim() || metadata.version.length > 64)
         fail('RESOLVER_METADATA_INVALID');
     let cli;

@@ -1,6 +1,8 @@
 artifacts/
 backups/
 node_modules/
+.venv/
+tools/android-sdk/
 __pycache__/
 *.pyc
 .env

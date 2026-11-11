@@ -4,7 +4,7 @@ const resolver=require('../.agents/skills/dol-dev-tools-paisley-park/scripts/res
 function fixture(t){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'skill-resolver-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));const root=path.join(dir,'工具 with spaces'),skill=path.join(dir,'skill');fs.mkdirSync(path.join(root,'scripts'),{recursive:true});fs.mkdirSync(path.join(root,'docs'));fs.mkdirSync(skill);fs.writeFileSync(path.join(root,'scripts/dol-dev.cjs'),'// Synthetic entry, never executed\n');fs.writeFileSync(path.join(root,'docs/DIAGNOSTICS.md'),'fixture');fs.writeFileSync(path.join(root,'package.json'),JSON.stringify({name:'dol-dev-tools-paisley-park',displayName:'DoL Dev Tools',version:'fixture-1'}));return {dir,root,skill}}
 test('Gold Experience display name resolves while historical names remain compatible',t=>{
  const f=fixture(t);
- for(const displayName of ['DoL Dev Tools — Gold Experience（黄金体验）','DoL Dev Tools','DoL Dev Tools: Paisley Park']){
+ for(const displayName of ['DoL Dev Tools — Gold Experience','DoL Dev Tools — Gold Experience（黄金体验）','DoL Dev Tools','DoL Dev Tools: Paisley Park']){
   fs.writeFileSync(path.join(f.root,'package.json'),JSON.stringify({name:'dol-dev-tools-paisley-park',displayName,version:'7.0.0'}));
   assert.equal(resolver.validateRoot(f.root).name,displayName);
  }

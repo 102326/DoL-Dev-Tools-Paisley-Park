@@ -2,6 +2,8 @@
 
 Tools保存采集器、CLI和格式；Skill选择诊断/复现/开发路径，调用同一份Tools与目标项目自己的构建部署命令。仓库内Skill可直接使用，也可装入本机Codex Skill目录，不复制Runtime或第三方项目。
 
+7.1 工具链维护候选的源码版本为 `7.1.0-rc.1`，正式下载仍使用下方 7.0.0 Release。Android CLI、官方 Android Skills 与本项目 Skill 分别维护，见[工具链指南](TOOLCHAIN.md)。本地候选不自动覆盖全局 Skill 或正式 Tools 安装。
+
 ```powershell
 node scripts/dol-dev.cjs install-skill --out C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park
 node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs

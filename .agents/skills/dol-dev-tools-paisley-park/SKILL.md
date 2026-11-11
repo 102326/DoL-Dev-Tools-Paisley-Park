@@ -3,7 +3,7 @@ name: dol-dev-tools-paisley-park
 description: "Use DoL Dev Tools for live DoL Mod diagnosis, scoped fixes and verification, or authorized short gameplay goals with original-state checks. Uses owned PC Chrome, Android, WebView/CDP and local evidence; optional integrations enhance diagnosis and mapping."
 ---
 
-# DoL Dev Tools — Gold Experience（黄金体验）
+# DoL Dev Tools — Gold Experience
 
 Tools provide live-site observations and execution evidence. This Skill selects the cheapest sufficient task path; optional integrations interpret their own project. Soft & Wet, MapleBirch and ModHub are peers. Do not put collectors, another project's Runtime or a second runner inside this Skill.
 
@@ -22,9 +22,12 @@ Before the first toolkit CLI call in a task, run `node <this-skill-directory>/sc
 | A persistent business Goal, budget or interrupted effect | Existing shared GER request/propose/dispatch/resume | [GAMEPLAY](../../../docs/GAMEPLAY.md), [version boundaries](../../../docs/GAMEPLAY.md#版本与语义边界) and Agent task notes; [PROJECT_EXPERIMENTS](../../../docs/PROJECT_EXPERIMENTS.md) only for a scoped Recipe |
 | Historical Unknown; independent read/source work now | Continue the independent Debug/source task; keep dependent effects blocked | Common boundaries below; [GAMEPLAY](../../../docs/GAMEPLAY.md) before settling or dispatching dependent work |
 | Installation, wrong root, missing dependency, CLI error | Resolver, --version/--help, then the known prerequisite; no Goal | [SKILL_INSTALL](../../../docs/SKILL_INSTALL.md), [DIAGNOSTICS](../../../docs/DIAGNOSTICS.md) for actual device setup |
+| Native Android input, device mirroring or profiling | Discover the installed official CLI capability with --help; use the applicable official Android Skill | [Toolchain selection](../../../docs/TOOLCHAIN.md); Android tool provenance in WORKSHOP |
 | Mod/framework changes, compatibility or a similar past investigation | Current source/evidence, then relevant conditional experience | [Mod investigation knowledge](../../../docs/MOD_KNOWLEDGE.md); check current entry, versions, superseding evidence and unavailable sources before applying it. Historical learning does not authorize actions or settle Unknown. |
 
 Do not create a GER Goal merely for a read, CSS query or ordinary click. A source-only investigation need not restore a live App. A diagnosis can finish without manufacturing a patch/build. Use existing standard tools where sufficient; direct CDP, ADB, Playwright or project tests remain valid when cheaper or needed for precise identity/private assertions. These are task choices, not a mandatory pipeline.
+
+For native Android controls, evaluate the installed `android input` capability before implementing gestures yourself. Confirm the native accessibility target, explicit device and matching behavior; these selectors are not CSS or WebView DOM selectors. Continue using CDP for WebView DOM/CSS/Runtime and ADB for process/socket/forward evidence or missing native capabilities. Read current help when a Skill example differs from the executable. Help availability, an installed Skill and successful device execution are separate facts. `android device hub` is optional interactive mirroring, not an unattended selector or GER execution path. Use the official profiler Skill and `android profiler` only for an actual performance task. CLI/Skill updates require task scope; do not update during ordinary Evidence collection. See [toolchain guide](../../../docs/TOOLCHAIN.md) for discovery, versions and rollback.
 
 ## Common boundaries for every task
 
