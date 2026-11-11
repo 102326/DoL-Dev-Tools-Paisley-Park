@@ -18,7 +18,7 @@ A/B 的有限原型验收保留。C 已完成真实任务复盘，以及 2026-10
 
 ## 下一步：本地候选验货
 
-2026-10-14 按用户“继续下一步”推进版本与制品收口，源码标识为 `5.0.0-rc.1 — Paisley Park`。首次使用入口与候选公告已补，Node 412 项通过；Python 2 项通过、2 项缺可选依赖跳过，Skill/CLI 检查通过。包内生产 GER/Collector/Schema 未修改，B 的 Lab 不并入 Tools ZIP。固定源码与解压包检查结果按 [候选收口](CLOSEOUT_5_0_RC1.md) 的 manifest/validation 记录；不自动推送、发布或替换全局安装。
+2026-10-14 按用户“继续下一步”推进版本与制品收口，源码标识为 `5.0.0-rc.1 — Paisley Park`。首次使用入口与候选公告已补，Node 412 项通过；Python 2 项通过、2 项缺可选依赖跳过，Skill/CLI 检查通过。包内生产 GER/Collector/Schema 未修改，B 的 Lab 不并入 Tools ZIP。固定源码与解压包检查结果按 [候选收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/CLOSEOUT_5_0_RC1.md) 的 manifest/validation 记录；不自动推送、发布或替换全局安装。
 
 ## RC 后续：C-1/C-2 小范围增强
 
@@ -30,7 +30,7 @@ A/B 的有限原型验收保留。C 已完成真实任务复盘，以及 2026-10
 
 2026-10-14 回到主线后，将 C-1/C-2 和辅助工程规范收入 `5.0.0-rc.2` 本地候选。RC.1 固定包不重写；新候选使用明确导出清单，历史设计与旧公告保留在源码仓库，当前引用可追溯。离线回归需要的实验夹具不按目录名误删。公告按 PRP Technical Writing/Humanizer 整理，保留 A/B/C 支持限制和 Unknown。
 
-[新候选收口](CLOSEOUT_5_0_RC2.md)与随附 manifest/validation 区分源码、制品和实际检查；业务与设备证据复用，没有新增 C-EXT 或真实游戏实验。本轮仍不推送、发布或替换全局 4.0.1。
+[新候选收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/CLOSEOUT_5_0_RC2.md)与随附 manifest/validation 区分源码、制品和实际检查；业务与设备证据复用，没有新增 C-EXT 或真实游戏实验。本轮仍不推送、发布或替换全局 4.0.1。
 
 ## 正式包：5.0.0
 

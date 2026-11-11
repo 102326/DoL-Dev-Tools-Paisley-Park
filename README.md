@@ -4,7 +4,7 @@
 
 Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可以查看真实 Android / WebView 现场，也可以在独立 Chrome 中调查获准的本地页面，再接到源码、构建和复验。它可以独立使用，也可以由宿主 Agent 调用。
 
-**7.0.0** · [下载工具包](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/DoL-Dev-Tools-7.0.0.zip) · [安装与升级](docs/SKILL_INSTALL.md) · [本版更新](docs/RELEASE_7.0.0.md) · [支持范围](docs/CLOSEOUT_7_0.md)
+**7.0.0** · [下载工具包](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/DoL-Dev-Tools-7.0.0.zip) · [安装与升级](docs/SKILL_INSTALL.md) · [本版更新](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_7.0.0.md) · [支持范围](docs/CLOSEOUT_7_0.md)
 
 这是此前的 Paisley Park。旧 Skill 标识、启动命令和数据路径继续兼容，不需要改名或迁移已有账本。它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。
 

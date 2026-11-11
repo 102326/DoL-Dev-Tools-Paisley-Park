@@ -6,7 +6,7 @@
 
 ## Delivered
 
-本地正式包与 [更新说明](RELEASE_5.0.0.md)。生产 Runtime、Provider、Collector、Schema、测试和依赖没有修改；沿用 [导出清单与验货](RELEASE_PACKAGE.md) 的规则。普通诊断仍独立于可选 Integration，B Lab 仍由 UI 工程拥有。全局安装保留 4.0.1。
+本地正式包与 [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_5.0.0.md)。生产 Runtime、Provider、Collector、Schema、测试和依赖没有修改；沿用 [导出清单与验货](RELEASE_PACKAGE.md) 的规则。普通诊断仍独立于可选 Integration，B Lab 仍由 UI 工程拥有。全局安装保留 4.0.1。
 
 ## Validated
 

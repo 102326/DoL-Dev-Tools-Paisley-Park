@@ -1,6 +1,8 @@
 # Source history stays in Git; archives contain current usage and required test fixtures.
 .github/workflows/check.yml export-ignore
 docs/TOOLCHAIN_7_1.md export-ignore
+docs/RELEASE_[0-9]*.md export-ignore
+docs/CLOSEOUT_5_0_RC[12].md export-ignore
 docs/BITES_THE_DUST_4_0.md export-ignore
 docs/BLUEPRINT.md export-ignore
 docs/CAPABILITY_COVERAGE.md export-ignore

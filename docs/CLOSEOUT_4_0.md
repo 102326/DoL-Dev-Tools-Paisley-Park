@@ -1,6 +1,6 @@
 # DoL Dev Tools 4.0.0 — Bites the Dust 技术说明与收口
 
-产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 独立验货修订已在本地收口；用户随后明确授权更新 Skill 与上传 GitHub，本轮采用 4.0.1 发布，保留原 4.0.0 制品。见 [4.0.1 更新说明](RELEASE_4.0.1.md)与 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
+产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 独立验货修订已在本地收口；用户随后明确授权更新 Skill 与上传 GitHub，本轮采用 4.0.1 发布，保留原 4.0.0 制品。见 [4.0.1 更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_4.0.1.md)与 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
 
 ## Delivered
 

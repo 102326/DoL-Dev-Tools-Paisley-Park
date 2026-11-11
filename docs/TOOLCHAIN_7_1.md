@@ -48,6 +48,8 @@ Doctor 的 `android --no-metrics --version` 在更新前后都返回成功；帮
 
 ## Not validated / 当前限制
 
-本轮没有执行 Android 设备/App 操作、真实游戏业务、存档或 GER 历史恢复；input/profiler/hub 目前只有本机能力发现证据。真实 Android/CDP、更多 WebView/Mod 组合、Mac/Linux、ZIP 重装、Gold Experience 全局 Skill 更新和宿主热重载未新增验证。没有生成正式 ZIP、Tag 或 Release，本地源码提交不代表公开发行。
+上述结果为首次同步证据。后续最终候选复验将完整 Node、TypeScript 综合检查、Python 及 ZIP 隔离安装的实际结果保存在项目内 `artifacts/candidate-7.1.0-rc.1/validation.json`，以其中记录的固定提交与 ZIP 摘要为准；不能用首次同步的全量结果替代最终文件回归。
+
+本轮没有执行 Android 设备/App 操作、真实游戏业务、存档或 GER 历史恢复；input/profiler/hub 目前只有本机能力发现证据。真实 Android/CDP、更多 WebView/Mod 组合、Mac/Linux、Gold Experience 全局 Skill 更新和宿主热重载未新增验证。候选 ZIP 的准备与隔离验货不代表 Tag、Release 或公开发布。
 
 旧本地输入、缺失 Store 和历史 Unknown 不由本轮工具升级恢复。无证据表明需要修改 GER/SQLite 语义，本轮未改变其实现和锁定 XState 版本。
