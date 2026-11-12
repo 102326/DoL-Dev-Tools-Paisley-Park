@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-13",
+  "toolchainSourceCommit": "8028efa5aee043c965ed9f9a761367726e5aa41f",
+  "remoteBranch": "maintenance/toolchain-refresh-7.1",
+  "firstRemoteVerificationCommit": "8028efa5aee043c965ed9f9a761367726e5aa41f",
+  "candidate": {
+    "file": "DoL-Dev-Tools-7.1.0-rc.1.zip",
+    "sha256": "f9df530951acd1f476cef0c33985296b2dc9b5d7efe7e5b6fcc1bd60b5024238",
+    "bytes": 1221051
+  },
+  "evidence": "reused final Windows candidate validation; not new test runs",
+  "results": {
+    "sourceNode": {
+      "passed": 665,
+      "failed": 0,
+      "skipped": 2
+    },
+    "typescriptBuild": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "python": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 1
+    },
+    "packageRegression": {
+      "passed": 159,
+      "failed": 0,
+      "skipped": 2
+    }
+  },
+  "projectSkillSha256": "50fb551d27fa611cd65340469547ef74a95f96e716e7553bc69a6897f6362324",
+  "codexCli": "0.167.0-alpha.4.1",
+  "execFlagsConfirmedByHelp": [
+    "--json",
+    "--output-schema",
+    "--output-last-message",
+    "--ephemeral"
+  ],
+  "modelRoundsExecuted": 0,
+  "mac": {
+    "reportedCommit": "40a89d1bdadcb6c3373685df14fd0e8f96c93b99",
+    "reportedBranch": "maintenance/skill-intelligence-7.1-mac",
+    "source": "coordinator report; files not received",
+    "remoteBranchObserved": false,
+    "localObjectPresent": false,
+    "mergeAndOriginalAB": "blocked until the actual commit is transferred"
+  },
+  "notPerformed": [
+    "new model or Judge run",
+    "new case library or evaluation framework",
+    "Mac permission investigation or policy change",
+    "device/game/Store operation",
+    "global Skill replacement",
+    "main merge or release"
+  ],
+  "privateMaterialsUploaded": false
+}

@@ -53,3 +53,5 @@ Doctor 的 `android --no-metrics --version` 在更新前后都返回成功；帮
 本轮没有执行 Android 设备/App 操作、真实游戏业务、存档或 GER 历史恢复；input/profiler/hub 目前只有本机能力发现证据。真实 Android/CDP、更多 WebView/Mod 组合、Mac/Linux、Gold Experience 全局 Skill 更新和宿主热重载未新增验证。候选 ZIP 的准备与隔离验货不代表 Tag、Release 或公开发布。
 
 旧本地输入、缺失 Store 和历史 Unknown 不由本轮工具升级恢复。无证据表明需要修改 GER/SQLite 语义，本轮未改变其实现和锁定 XState 版本。
+
+2026-11-13 Windows 阶段同步与 Skill Intelligence 接续条件见[交接记录](handoff/7.1-windows/README.md)。该记录与本页只供源码交接，不进入候选 payload；候选包仍以其固定来源提交为准。
