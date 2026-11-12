@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "xSupported": {"type": "boolean"},
+          "ySupported": {"type": "boolean"},
+          "preferred": {"type": "string", "enum": ["X", "Y", "tie", "unclear"]},
+          "manualReview": {"type": "boolean"},
+          "reason": {"type": "string"}
+        },
+        "required": ["id", "xSupported", "ySupported", "preferred", "manualReview", "reason"],
+        "additionalProperties": false
+      }
+    },
+    "limitations": {"type": "string"}
+  },
+  "required": ["reviews", "limitations"],
+  "additionalProperties": false
+}

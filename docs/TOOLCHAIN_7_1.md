@@ -55,3 +55,5 @@ Doctor 的 `android --no-metrics --version` 在更新前后都返回成功；帮
 旧本地输入、缺失 Store 和历史 Unknown 不由本轮工具升级恢复。无证据表明需要修改 GER/SQLite 语义，本轮未改变其实现和锁定 XState 版本。
 
 2026-11-13 Windows 阶段同步与 Skill Intelligence 接续条件见[交接记录](handoff/7.1-windows/README.md)。该记录与本页只供源码交接，不进入候选 payload；候选包仍以其固定来源提交为准。
+
+后续已按新授权完成 Windows 独立情境评测和评分器检查，见[实际结果](../experiments/skill-intelligence-7.1/RESULTS.md)。主 Skill 未采用无优势证据的长稿，细节补入既有 Recipe；新增的真实工具探针被子 Codex 的进程启动接缝阻断，不计作 source-find 或真机通过。Mac 未取得不再阻塞 Windows 开发。

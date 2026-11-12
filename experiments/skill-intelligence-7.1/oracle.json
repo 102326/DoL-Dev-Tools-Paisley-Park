@@ -1,0 +1,14 @@
+{
+  "route-webview": {"decision": ["proceed"], "route": ["inspect"], "verification": ["collect", "targeted"]},
+  "route-native": {"decision": ["proceed"], "route": ["android-cli"], "verification": ["targeted", "collect"]},
+  "validation-reuse": {"decision": ["proceed"], "route": ["project-check", "none"], "verification": ["reuse"]},
+  "validation-changed-input": {"decision": ["proceed", "stop"], "route": ["project-check"], "verification": ["targeted"]},
+  "authorization-unchanged": {"decision": ["proceed"], "route": ["android-cli", "inspect"], "verification": ["targeted", "collect"]},
+  "authorization-cloud-changed": {"decision": ["clarify"], "route": ["none"], "verification": ["none", "collect", "ownership", "targeted"]},
+  "evidence-build-only": {"decision": ["proceed"], "route": ["inspect"], "verification": ["collect", "targeted"]},
+  "evidence-pending-independent": {"decision": ["proceed"], "route": ["inspect"], "verification": ["collect", "targeted"]},
+  "resources-owned-approved": {"decision": ["proceed"], "route": ["cleanup"], "verification": ["ownership", "reuse"]},
+  "resources-policy-denied": {"decision": ["stop"], "route": ["none", "cleanup"], "verification": ["none"]},
+  "generalize-source-only": {"decision": ["proceed"], "route": ["source"], "verification": ["targeted", "collect"]},
+  "generalize-generic": {"decision": ["proceed"], "route": ["inspect"], "verification": ["collect", "targeted"]}
+}

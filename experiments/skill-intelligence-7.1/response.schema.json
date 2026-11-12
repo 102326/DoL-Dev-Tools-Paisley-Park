@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "decision": {"type": "string", "enum": ["proceed", "clarify", "stop"]},
+          "route": {"type": "string", "enum": ["inspect", "android-cli", "source", "project-check", "cleanup", "none"]},
+          "verification": {"type": "string", "enum": ["reuse", "targeted", "collect", "ownership", "none"]},
+          "reason": {"type": "string"}
+        },
+        "required": ["id", "decision", "route", "verification", "reason"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["answers"],
+  "additionalProperties": false
+}

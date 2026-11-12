@@ -2,6 +2,9 @@
 .github/workflows/check.yml export-ignore
 docs/TOOLCHAIN_7_1.md export-ignore
 docs/handoff/7.1-windows export-ignore
+experiments/skill-intelligence-7.1 export-ignore
+# Unified diff blank context lines require their leading space.
+experiments/skill-intelligence-7.1/*.patch whitespace=-blank-at-eol
 docs/RELEASE_[0-9]*.md export-ignore
 docs/CLOSEOUT_5_0_RC[12].md export-ignore
 docs/BITES_THE_DUST_4_0.md export-ignore

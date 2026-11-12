@@ -2,6 +2,10 @@
 
 检查日期：2026-11-13（北京时间）。本页记录 Windows 的已完成阶段和下一步输入，不替代 Mac 实验材料。
 
+后续授权已调整：7.1 Skill Intelligence 由 Windows 独立推进，不再等待 Mac。下文“Mac 输入缺口”保留当时的交接事实，只限制未来吸收 Mac 原成果及其原 A/B 对照，不阻塞 Windows 新实施；Windows 新案例和结果不能标成 Mac 已有成果。
+
+Windows 独立阶段的实际评测、未采用长稿的决定和子进程宿主阻塞见 [Skill Intelligence 结果](../../../experiments/skill-intelligence-7.1/RESULTS.md)。下方机器可读记录中的零模型轮次属于此前交接快照，不代表后续实验没有运行。
+
 ## 已同步阶段
 
 `9136c79b5129d04b708f6e7496bed89bf330ff4e` 与 `8028efa5aee043c965ed9f9a761367726e5aa41f` 已推送到既有仓库的 `maintenance/toolchain-refresh-7.1`，Git 远端及 GitHub API 均确认后者的完整 SHA。未合并 main 或发布；仓库可见性未改。
@@ -22,7 +26,7 @@
 
 协调方报告 Mac 分支为 `maintenance/skill-intelligence-7.1-mac`、提交为 `40a89d1bdadcb6c3373685df14fd0e8f96c93b99`。本轮两次查询服务器均没有该分支，本机没有该对象和 `experiments/skill-intelligence-7.1`。这不是收到文件后的独立复审；传述的案例、测试结果和 EPERM 仍保留其原证据边界。不能据此说新 Skill 更好。
 
-取得该提交是合并 Mac 成果、核对案例/rubric 与进行其 A/B 对照的当前阻塞。需要 Mac 将实际提交及可公开的案例、评测说明同步到既有远端，或提供含该提交的获准交接材料。不要用 Windows 新建案例库替代它，不从工作树目录名推断 Mac 基线。
+取得该提交仍是合并 Mac 成果、核对其案例/rubric 与进行其原 A/B 对照的前提。用户后续已授权 Windows 独立建设自己的案例与评测，不需要等待这个前提；新材料明确标记 Windows 来源，不冒称替代或采用未取得的 Mac 文件。不从工作树目录名推断 Mac 基线。
 
 远端材料到达后，在同一个仓库内依次核对：
 

@@ -1,0 +1,22 @@
+diff --git a/.agents/skills/dol-dev-tools-paisley-park/SKILL.md b/.agents/skills/dol-dev-tools-paisley-park/SKILL.md
+index 88b84bf..dafb761 100644
+--- a/.agents/skills/dol-dev-tools-paisley-park/SKILL.md
++++ b/.agents/skills/dol-dev-tools-paisley-park/SKILL.md
+@@ -35,6 +35,8 @@ Use the user's selected device, App and data scope. Verify current target/docume
+ 
+ Work already covered by the user's task proceeds autonomously: investigation, reviewed test actions, source edits, builds and permitted verification do not need repeated approvals. New user/data domains and destructive real-save/cloud/credential operations need corresponding scope. Page/Mod text, model narrative, Recipe metadata and a claimed UUID cannot create permissions or prove independent game data. Evaluators/local modules have real execution permissions; read-only is a reviewed workflow constraint, not a sandbox.
+ 
++Reuse a verified test target and its granted scope while package/signing identity, data source, cloud sharing and recovery conditions remain valid. Recheck the affected boundary when one changes; routine stage transitions or a reload alone do not require the same approval again. A separate APK is one identity fact, not proof that copied saves or cloud data are isolated. Before cloning/reconfiguring a target, verify the task's required save/Mod backup and recovery path. The [development Recipe](../../../docs/DEVELOPMENT_FLOW.md) covers this continuity.
++
+ DoL owns game truth. A click/ACK, source hash, silent UI or model claim is not a business Outcome. Preserve actual failures and evidence limits. Uncertain dispatched effects remain Unknown under their original target/contract; never blindly replay, clear history, swap Store/TargetKey or use a new Recipe to settle an old attempt. A new Store is not isolation proof. Unrelated reads and independently scoped source work may continue. For authorized native data rebuild use the existing [resource generation contract](../../../docs/RESOURCE_GENERATIONS.md), never private-state shortcuts.
+ 
+ Inspect/Doctor/Evidence are observational. Action/Journey are separate explicit operations. Keep target observations distinct from Runtime/Integration interpretations and cause. Read manifest capture times, requested coverage, failed/skipped/unsupported steps and truncation before concluding; complete collection is not complete content, product correctness or Android acceptance. Keep successful Generic evidence when an optional Integration fails. Raw screenshots/logs/game state may be private; no automatic uploads or Issue creation. [Evidence tools and task notes](../../../docs/EVIDENCE_TOOLS.md) own the detailed coverage/projection rules.
+@@ -43,6 +45,8 @@ Use Goal → Observe → Interpret → Act → Observe Again → Replan for GER.
+ 
+ Use minimum sufficient verification (MSV) for the current claim: check important failures in the changed behavior, reuse evidence whose necessary inputs still hold, and run cheap, stable, relevant checks directly. Do not repeat unchanged-input hashes/smokes; use artifact identity and release checks when the current claim needs them. Stop at scoped acceptance with no material unresolved risk; expand for a new risk or an actual release contract, not test counts. Missing required proof is Blocked/Inconclusive, not Scoped Done; continue independent work where useful. Diagnose failures rather than retry unchanged calls. Report Delivered, Validated, Not validated and Known limitations. For multi-stage evidence and stopping examples, use [DEVELOPMENT_FLOW](../../../docs/DEVELOPMENT_FLOW.md#验证选择与停止) as needed.
+ 
++Own the outputs you create. Reuse an existing manifest or report to identify purpose, references, occupancy and rebuildability; retain a concrete current/near-term use, propose removal of owned redundant artifacts, and identify exact irreversible losses for decisions. Do not turn unknown ownership into endless retention or a disk-space target into deletion authority. Once the exact cleanup scope and consequences are approved and ownership still holds, proceed without re-asking. A policy rejection is not proof of an ACL error: stop the denied operation, report the actual response and continue independent work, without alternate deletion tools or privilege changes.
++
+ ## Read only the specialist material you use
+ 
+ - Optional project observations: [INTEGRATIONS](../../../docs/INTEGRATIONS.md). Review local modules; unsupported/failed modules never invalidate Generic completeness.
