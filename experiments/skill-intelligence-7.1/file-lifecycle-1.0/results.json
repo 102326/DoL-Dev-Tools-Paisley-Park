@@ -1,0 +1,85 @@
+{
+  "version": "file-lifecycle-1.0",
+  "scope": "real synthetic file-copy lifecycle, not Android App rebuild or installed Agent A/B",
+  "sourceCommit": "78c257903bf46ba89d2618023cc5d43e71b5c866",
+  "experimentScriptSha256": "6b8a05eb85a52949249798e15aa59c42017a6850ee725d9c8f396c504204b304",
+  "environment": {
+    "node": "v26.13.0",
+    "powershell": "7.6.9",
+    "platform": "Windows"
+  },
+  "source": "existing examples/workshop/index.html, build.cjs and deploy.cjs; exact reviewed files retained",
+  "sourceHashes": {
+    "index.html": "175c84ac25d026d9bcd355419fc9ead6b473a22a5ea261d895a90576db5b8077",
+    "build.cjs": "0d44a0455b23553809c2a2003aed31c0fbd49379011771d7918c19e162d65bbc",
+    "deploy.cjs": "b7b1cf5977579d33334019aebae08e1412b9bbe870a8c1d95bd76402798e2259"
+  },
+  "entry": "parent exec tool -> PowerShell 7 -> existing Workshop build/deploy scripts copied byte-for-byte",
+  "attempts": [
+    {
+      "status": "failed",
+      "cause": "Get-Command returned multiple Node executables; array treated as one command name",
+      "sideEffects": "two empty new run directories; no source copied and no delete executed",
+      "policyDenied": false,
+      "originalError": "retained in local parent tool transcript and clearly labelled local copy"
+    },
+    {
+      "status": "passed",
+      "fix": "select first actual Node application, same normal resolution as node --version; new run directory; no host/security setting changed"
+    }
+  ],
+  "observations": {
+    "buildDeployProcesses": 6,
+    "processExitCodes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "changedHtmlResult": {
+      "initialSha256": "175c84ac25d026d9bcd355419fc9ead6b473a22a5ea261d895a90576db5b8077",
+      "changedSha256": "878e05b5512ef586100c359039bb74c87cdbdfcb05ad8327df275873e88312c6",
+      "recoveredSha256": "175c84ac25d026d9bcd355419fc9ead6b473a22a5ea261d895a90576db5b8077"
+    },
+    "deletedGeneratedFileInstances": 10,
+    "uniqueDeletedRelativePaths": [
+      "working-copy/index.html",
+      "working-copy/build.cjs",
+      "working-copy/deploy.cjs",
+      "working-copy/dist/index.html",
+      "working-copy/deployed/index.html"
+    ],
+    "copyAbsentCheckpoints": 2,
+    "allPreDeleteFilesSingleLink": true,
+    "sourceScopeCounterexample": {
+      "result": "refused by experiment assertion before deletion",
+      "sourceUnchanged": true,
+      "hostToolDenial": false
+    },
+    "sourceAndRecoveryFilesRetained": 3,
+    "workingCopyRemains": false,
+    "recursiveDeletion": false
+  },
+  "authorityReuse": {
+    "basis": "current explicit user scope; only fresh owned synthetic outputs; no device, account/cloud API, game input or serving process",
+    "changedBoundary": "HTML bytes and derived output invalidated and rechecked; existing authority and unchanged provenance/scripts reused",
+    "repeatedUserConfirmationRequests": 0,
+    "confirmationEvidence": "this parent conversation; not independently measured child policy"
+  },
+  "notExecuted": [
+    "Android App/device/store/cloud operations",
+    "child Codex tool probe",
+    "new text/model A/B",
+    "global Skill replacement",
+    "production runtime changes"
+  ],
+  "limits": [
+    "file-level copy reconstruction only",
+    "not evidence of 7.1 improvement over 7.0",
+    "two old text label disputes and four prior human reviews not adjudicated",
+    "original child unified exec blocker not resolved or retried"
+  ],
+  "rawEvidence": "local ignored artifacts/skill-intelligence-7.1/file-lifecycle-1.0 only; no raw paths, report or private configuration uploaded"
+}
