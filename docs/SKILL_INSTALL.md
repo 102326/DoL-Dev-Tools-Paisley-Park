@@ -2,7 +2,7 @@
 
 Tools保存采集器、CLI和格式；Skill选择诊断/复现/开发路径，调用同一份Tools与目标项目自己的构建部署命令。仓库内Skill可直接使用，也可装入本机Codex Skill目录，不复制Runtime或第三方项目。
 
-当前源码/本地候选版本为 `7.1.0-rc.2`，状态见[当前版本说明](CURRENT_STATUS.md)。收到候选 ZIP 时先核对随附摘要和来源，在该包根目录运行 `--version`，应返回此候选版本；隔离安装的 Skill 也应解析到同一份包。正式下载仍为下方历史 7.0.0 Release，不把两份包的版本或验货混用。Android CLI、官方 Android Skills 与本项目 Skill 分别维护，见[工具链指南](TOOLCHAIN.md)。本轮不自动替换现用全局 Skill。
+当前版本为 **7.2.0**，状态见[当前版本说明](CURRENT_STATUS.md)。从 [7.2.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.2.0) 下载 `DoL-Dev-Tools-7.2.0.zip`，核对 SHA-256 后解压到新的稳定目录。在包根运行 `DoL-Dev.cmd --version`，应返回 `7.2.0`；安装后的 resolver 也应指向这份包。Android CLI、官方 Android Skills 与本项目 Skill 分别维护，见[工具链指南](TOOLCHAIN.md)。
 
 ```powershell
 node scripts/dol-dev.cjs install-skill --out C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park
@@ -10,6 +10,14 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 ```
 
 安装目标必须是尚不存在的`dol-dev-tools-paisley-park`目录。已有安装会拒绝覆盖；本命令不下载、删除或自动更新。安装内容为SKILL.md、位置解析器、显示名元数据agents/openai.yaml和本地tool-location.json；说明链接指向同一份Tools文档。工具包本体需要留在原位置；源码包不包含机器专属位置记录。
+
+## 从旧版升级
+
+保留旧 Tools 和原有 Store/执行记录。将旧 Skill 备份到宿主不会扫描的位置，使原安装目标为空，再从 7.2 包运行上方安装命令。安装器不会覆盖、删除或迁移旧安装；本次发布也不自动替换本机全局 Skill。
+
+不要只改旧 resolver 的 tool-location.json 来升级。部分旧 resolver 不识别新的英文显示名；使用 7.2 的完整安装器生成 Skill、resolver 和位置记录，再确认解析版本为 7.2.0、root 为新包目录。旧名称、Skill 标识及 Paisley-Park.cmd 仍兼容，名称变化不要求更换账本。
+
+Windows 也可用 `node scripts/dol-dev.cjs`；macOS/Linux 使用同一入口，但本轮没有新增这些平台的安装实测。宿主发现新 Skill 后再开始新任务；保留旧 Tools/Skill 可供选择回退。已有 Store 的数据兼容条件见本页后文，不能用降级写入试探恢复。
 
 解析器核对绝对路径、包名、版本、真实CLI位置和基础文档；这是位置检查，不证明代码可信。先检查来源，再执行。安装成功只证明文件已写入；宿主何时重新扫描取决于实际 Agent 环境。按宿主支持的方法刷新或开启新会话，确认其可发现 Skill 并调用正确版本。当前回合显式读取或 resolver 成功不能冒充宿主自动发现验收。
 
@@ -43,7 +51,7 @@ node tools/typescript/build.cjs --write-production
 
 ## 运行前提
 
-7.0 工具包与维护源码最低 Node.js 26.0.0，Windows 本轮使用26.13.0；已发布6.1.0工具包保持原Node22.12.0要求，不能用新分支要求改写旧包验收。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2。Node26提供内置SQLite；直接运行Gameplay CLI的现有示例仍使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，两个Windows launcher也保留该参数，不需修改系统配置。最低版本声明不是新的设备授权、Store迁移或自动环境安装。
+7.2 工具包与维护源码最低 Node.js 26.0.0，Windows 本轮使用26.13.0；已发布6.1.0工具包保持原Node22.12.0要求，不能用新分支要求改写旧包验收。普通诊断、help/version、Skill 安装和 resolver 不需要 XState/SQLite。Gameplay 另需在实际 Tools 根目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，安装锁定 XState 5.33.2。Node26提供内置SQLite；直接运行Gameplay CLI的现有示例仍使用 `node --experimental-sqlite scripts/dol-dev.cjs ...`，两个Windows launcher也保留该参数，不需修改系统配置。最低版本声明不是新的设备授权、Store迁移或自动环境安装。
 
 缺依赖拒绝不表示设备故障。只使用自有临时库做环境 smoke，不打开旧 Store 来测试是否加载成功。
 
@@ -68,40 +76,9 @@ node tools/typescript/build.cjs --write-production
 
 <a id="gold-experience-install"></a>
 
-## 历史：7.0.0 Gold Experience 安装
+## 历史安装参考
 
-从 [7.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0) 下载命名的工具ZIP，核对SHA-256与manifest，再解压到新的长期保留目录；旧Tools和Skill保留作回退。运行`DoL-Dev.cmd --version`应返回`7.0.0`，help首行以`DoL Dev Tools — Gold Experience（黄金体验） 7.0.0`开头。macOS/Linux使用`node scripts/dol-dev.cjs`；本轮本地结果只覆盖Windows。
-
-按本页顶部命令向空目标安装，再运行resolver，确认版本7.0.0和所选目录。内部包名、`dol-dev-tools-paisley-park` Skill标识、`Paisley-Park.cmd`与既有数据路径继续兼容，不要求重命名旧库或更换Store。新名称不等于旧未决已恢复。当前范围和限制见[7.0收口](CLOSEOUT_7_0.md)。
-
-## 历史：6.1.0 White Snake 安装与验货
-
-本节保留 `6.1.0 — White Snake` 的安装记录。从 [6.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 下载命名的工具 ZIP；保留原 [6.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.0.0) 安装及 Skill 作回退。Windows 实际验货范围见[补验记录](WINDOWS_6_1.md)。
-
-解压到新的长期保留目录。macOS在该目录运行 `node scripts/dol-dev.cjs --version` 和 `node scripts/dol-dev.cjs --help`；版本应为 `6.1.0`，help首行以 `DoL Dev Tools 6.1.0 — White Snake` 开头。Windows使用 `DoL-Dev.cmd` 或 `Paisley-Park.cmd`。Mac与Windows的实际结果分别记录，不互相代替。
-
-普通诊断无需npm依赖。Gameplay在该目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，仍锁定XState5.33.2。按本页现有命令向尚不存在的同名Skill目录安装，再执行resolver，确认版本6.1.0与本次解压根目录。先用隔离目录验货，不自动替换全局Skill。resolver通过只证明位置与安装完整性；宿主实际发现须在对应作用域另行验证。
-
-6.1保留知识入口、专业参考、定向配方和既有诊断路径；[行为保持案例](../examples/behavior-preservation/README.md)也随包提供，但固定CE源码须自行取得并审查，不捆绑原Mod或派生切片。Patch观测仍需审查并显式启用。安装与升级不迁移Store，不清理历史Unknown。范围与限制见 [6.1收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_6_1.md)；既有6.0证据见 [历史验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_6_0.md)。
-
-## 历史：5.1.0 安装与验货
-
-本文对应 `5.1.0 — Paisley Park`；正式 ZIP、SHA-256 与来源清单见 [5.1.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v5.1.0)。保留原 Tools 和 Skill，向新目录安装，不覆盖已有安装。
-
-核对 ZIP 的 SHA-256，解压到新的长期保留目录。`DoL-Dev.cmd --version` 应返回 `5.1.0`，help 首行应为 `DoL Dev Tools 5.1.0 — Paisley Park`。普通诊断不需 npm 依赖；Gameplay 在此目录运行 `npm ci --ignore-scripts --no-audit --no-fund`，保持锁定 XState 5.33.2。
-
-macOS在Tools根目录使用同一Node入口（安装目标同样必须不存在）：
-
-```sh
-node scripts/dol-dev.cjs --version
-node scripts/dol-dev.cjs --help
-node scripts/dol-dev.cjs install-skill --out "$PWD/isolated-agent/.agents/skills/dol-dev-tools-paisley-park"
-node "$PWD/isolated-agent/.agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs"
-```
-
-这只建立隔离安装；宿主还需从该项目或对应Skill作用域实际发现，见 [Mac宿主验货](MAINTENANCE_5_1.md#p6-独立包与真实宿主)和 [Windows新进程验货](WINDOWS_5_1.md#validated)。
-
-用本页现有安装命令向新的隔离 Skill 目录安装并运行 resolver，确认版本与 Tools 根目录；只有决定切换全局安装时才备份原 Skill，并向空的原目标安装。安装验货只使用自有临时 SQLite，不复制、迁移或清理旧 Store。5.0 未更改 4.0.1 的 GER/Unknown 合同。Source Link 与 Component Lab 的使用边界见 [5.0 入口](PAISLEY_PARK_5_0.md)。
+旧版安装实测保留在 [7.0 固定源码](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/SKILL_INSTALL.md)；需要旧包时使用对应 Release。Windows 的 NTFS/hard link、失败回滚及文件占用依据见 [5.1 平台参考](WINDOWS_5_1.md)，6.1 的边界见 [平台参考](WINDOWS_6_1.md)。这些旧版本命令和次数不是当前安装步骤。
 
 ## 解压包的依赖隔离检查
 
@@ -133,12 +110,4 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 
 移动Tools或恢复安装时，先核对新路径，再在当前进程设置`DOL_DEV_TOOLS_HOME`；它优先于安装记录和仓库相对位置。旧记录失效会停止，不扫描私有目录或自行下载替代包。搬迁后说明中的机器专属链接也可能过期，以解析结果中的docs为准；更新安装前保留旧目录，再向新的空目标安装。
 
-当前机器已实际安装，并由独立任务使用安装副本完成已有WebView前后Evidence的比较和本地报告；没有重新连接设备、上传或复制Tools。该证明覆盖显式使用与定位，不保证每个自然语言提示都会触发Skill，也不代替游戏业务验收。
-
-1.4已将原生和真实业务目标配方加入Skill路由，并保留证明边界。旧安装先移到独立本地备份，再向空目标安装；UTF-8模式quick_validate及resolver通过，定位1.4.0。原生/业务配方不是通用授权，不自动安装未知APK或修改另一项目的Runtime。
-
-1.4独立前向任务使用安装副本完成真实业务设置CSS的两次比较和重启后Evidence报告，三条CLI均complete/exit0。它将“采集完整”“CSS无差异”和“业务/存档正确”区分，未连接设备或把目录名当作重启证明。
-
-1.5安装已保留旧副本备份，UTF-8 quick_validate与resolve通过，定位1.5.0。新增“不重复造轮子”路由，优先复用可用android-cli/android-profiler、Chrome DevTools与目标项目既有流程；不把这些Skill装进Tools、不复制工具实现、不要求缺失时自动安装。独立前向验证使用已有trace与现有分析工具，结果见[VALIDATION](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/VALIDATION.md)。
-
-[1.5.2](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_1.5.2.md)将实战后的标准能力优先、点击失败诊断、范围收窄和直接探针/Journey边界纳入同一源码包。更新时保留旧Tools与Skill，将新包解压到新的稳定目录，再按上方既有安装命令生成指向新包的Skill；不是只改旧安装的文字。解析器版本、说明链接和生成指引应同时匹配新目录，避免重装回退。
+更早的 1.x 安装、宿主显式调用和配方记录留在[历史安装文档](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/SKILL_INSTALL.md)。它们不证明当前机器已安装本版本或宿主已热重载。

@@ -4,13 +4,13 @@
 
 Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可以查看真实 Android / WebView 现场，也可以在独立 Chrome 中调查获准的本地页面，再接到源码、构建和复验。它可以独立使用，也可以由宿主 Agent 调用。
 
-**当前源码/本地候选：7.1.0-rc.2** · [当前状态](docs/CURRENT_STATUS.md) · [安装与升级](docs/SKILL_INSTALL.md) · [工具链指南](docs/TOOLCHAIN.md)
+**版本：7.2.0** · [当前状态](docs/CURRENT_STATUS.md) · [安装与升级](docs/SKILL_INSTALL.md) · [工具链指南](docs/TOOLCHAIN.md)
 
-已公开的正式版仍为 [7.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0)。7.1 候选尚未公开发布；使用正式版时，以该 Release 随附版本、摘要和说明为准。
+从 [7.2.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.2.0) 下载工具 ZIP；校验文件和来源清单在同一页面。原 [7.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0) 保留。
 
 这是此前的 Paisley Park。旧 Skill 标识、启动命令和数据路径继续兼容，不需要改名或迁移已有账本。它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。
 
-7.1 同步官方 Android 工具与按需使用指引，保留现有 ADB/CDP 和 GER 合同。Windows Skill Intelligence 已建立有界评测；未证明长草稿更好，因此没有把它并入主 Skill。具体经验仍按需放在 Recipe 中。
+7.2 整理了 Android 工具选路、安装识别和开发接续：按问题选择官方 CLI、ADB 或 CDP；复用仍有效的测试授权；只重验变化的边界。普通启动和只读诊断按实际风险判断，完整备份不是一概前提。清数据、重建或写存档仍需对应授权和恢复条件。
 
 ## 它能帮你做什么
 
@@ -30,16 +30,16 @@ Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可
 
 ### 1. 解压并确认版本
 
-如果收到本地候选，核对随附的 SHA-256 和来源清单，解压 `DoL-Dev-Tools-7.1.0-rc.2.zip`。普通使用者可选择上方正式 7.0.0 Release；它与本地候选是不同制品。保留现用 Tools、Skill 和执行记录，确认新包可用后再切换。
+下载 `DoL-Dev-Tools-7.2.0.zip`，用 `SHA256SUMS.txt` 核对 SHA-256 后解压到新的长期保留目录。`artifact-manifest.json` 记录源码提交和包内文件，供需要追溯时查阅。保留现用 Tools、Skill 和执行记录，确认新包可用后再切换。
 
-当前源码和 7.1 候选要求 **Node.js 26.0.0+**。在实际 Tools 根目录运行：
+7.2 要求 **Node.js 26.0.0+**。在实际 Tools 根目录运行：
 
 ```powershell
 .\DoL-Dev.cmd --version
 .\DoL-Dev.cmd --help
 ```
 
-这个候选的版本输出应为 `7.1.0-rc.2`，help 首行以 `DoL Dev Tools — Gold Experience 7.1.0-rc.2` 开头。若使用正式 7.0.0 包，应按它自己的版本核对，不要求旧包返回候选版本。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
+版本输出应为 `7.2.0`，help 首行以 `DoL Dev Tools — Gold Experience 7.2.0` 开头。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
 
 ### 2. 连接已授权的 Android App
 
@@ -72,7 +72,7 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 npm ci --ignore-scripts --no-audit --no-fund
 ```
 
-安装器拒绝覆盖已有 Skill。先在隔离位置验货，决定切换现用安装时再按任务授权处理原 Skill；Tools 必须留在稳定位置。7.x 使用 Node26 内置 SQLite，Gameplay 示例及 Windows launcher 保留显式 `--experimental-sqlite` 参数。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
+安装器拒绝覆盖已有 Skill。从旧版升级时，保留旧 Tools，将旧 Skill 备份到宿主扫描范围外，再用新包向空的原目标安装；不要只改旧版的位置记录。Tools 必须留在稳定位置。7.x 使用 Node26 内置 SQLite，Gameplay 示例及 Windows launcher 保留显式 `--experimental-sqlite` 参数。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
 
 安装后按宿主支持的方法刷新或开启新会话，确认 Skill 确实被发现；文件安装和 resolver 成功不保证下一回合自动可用。发现后显式使用 `$dol-dev-tools-paisley-park`，告诉 Agent 工作区、设备、App、问题或目标，以及获准操作的数据范围。例如：
 
@@ -96,6 +96,13 @@ Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁。通用诊断不要
 
 Component Lab 由目标 UI 工程维护，不在 Tools ZIP 中。它用于组件开发与预览，不代表游戏内热替换、自动部署或业务验证。
 
+## 7.2 更新
+
+- Android 工具指南补齐 input、profiler 与 device hub 的选择；原生控件用原生能力，WebView 内部继续用 CDP。工具不会在普通采集中自动升级。
+- 安装解析器识别新的英文显示名，同时保留旧名称；发布包只有一份项目 Skill，历史公告和多余收口流水留在源码历史。
+- 开发 Recipe 说明如何接续有效授权、处理变化的目标，以及按准确范围清理可重建的自有产物。
+- 在 Windows 与现有 Android 测试 App 中核对实际工具入口和只读文档绑定，保留每项证据自己的适用范围。
+
 ## 继承的 7.0 能力
 
 7.0 将独立 PC Chrome 接入已有开发流程：准确选择页面，拒绝重载后的旧文档绑定，用同一套工具做诊断、复现、受支持业务操作和证据保存。持久业务仍使用 GER，不把普通点击补记成已结算动作。参见 [PC 使用说明](docs/PC_RUNTIME.md)。
@@ -108,9 +115,9 @@ Android 继续使用 Android CLI、ADB 和 CDP。Kotlin 设备探针只保留为
 
 ## 当前验证范围
 
-当前候选的范围和证据分层见[当前状态](docs/CURRENT_STATUS.md)，来源和包字节以随附 manifest 为准。7.0 已有 Windows Chrome、DoL 保存与导航、独立 Android 副本及源码查询等代表性证据，保留在 [7.0 验证基线](docs/CLOSEOUT_7_0.md)；这些历史结果不是 7.1 新增的真机验收。
+7.2 的范围与证据来源见[当前状态](docs/CURRENT_STATUS.md)。本轮在 Windows 核对工具链、独立解压包安装及文件副本重建/清理；真实平板完成 Doctor 和现有 App 的生产 WebView 只读绑定、DOM/环境观察。App 由用户打开，本轮未派发启动命令，也未执行重载、App 重建或存档/Mod 写入。7.0 的 Chrome、游戏业务及独立 Android 副本结果保留在[原验证基线](docs/CLOSEOUT_7_0.md)，不改称 7.2 新实测。
 
-Windows 使用 Node26.13.0，未在Windows重跑最低26.0.0；其它系统的既有记录不能代替本机结果。没有穷举全部游戏、存档、Mod、WebView 或设备，也未完成无人接管的完整 Android Mod 修复闭环。
+Windows 使用 Node 26.13.0，未在 Windows 重跑最低 26.0.0；Mac/Linux 本轮没有新增本机验证。Android CLI 输入、截图、性能采集不因帮助可用而视为本轮已通过。没有穷举全部游戏、存档、Mod、WebView 或设备，也未完成无人接管的完整 Android Mod 修复闭环。
 
 ## 已知限制
 

@@ -1,7 +1,7 @@
 {
   "name": "dol-dev-tools-paisley-park",
   "displayName": "DoL Dev Tools — Gold Experience",
-  "version": "7.1.0-rc.2",
+  "version": "7.2.0",
   "private": true,
   "license": "MIT",
   "engines": {
