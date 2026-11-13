@@ -6,7 +6,7 @@
 
 ## Delivered
 
-从 GitHub `test/paisley-park-5.1` 获取源码，在独立工作树 `E:/daima/DoL/experiments/Paisley-Park-5.1-Windows` 的 `test/paisley-park-5.1-windows` 分支验收，没有覆盖原工作区。基线为 `6f29ae4954ed9874e41ad4f9f7810f74900482a6`；Windows 修复提交为 **`7309e273ad22a773d10c232fd9068202437409d4`**。
+从 GitHub `test/paisley-park-5.1` 获取源码，在当时的独立 Windows 验收工作树的 `test/paisley-park-5.1-windows` 分支验收，没有覆盖原工作区。基线为 `6f29ae4954ed9874e41ad4f9f7810f74900482a6`；Windows 修复提交为 **`7309e273ad22a773d10c232fd9068202437409d4`**。
 
 本轮修复 Windows Node 22.12 下安装器误判文件归属的问题，新增身份差异回归和真实文件占用测试。生产修改仅在 `scripts/lib/install-skill.cjs`，没有修改 GER、SQLite schema、资源代次、回执、预算、Android 绑定或历史 Unknown。测试使用自有目录、合成数据和临时 SQLite；没有读取私人游戏数据。
 
