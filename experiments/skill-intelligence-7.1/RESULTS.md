@@ -1,5 +1,7 @@
 # Windows 首轮结果
 
+本页保留首轮 12 题的原始结论。正式 7.0 与当前 7.1 的五类隔离文本对照另见 [后续结果](isolation-1.0/RESULTS.md)；旧轮四项待人工复核未由该轮结案。
+
 本轮跑通了 Windows 的版本化情境评测，没有证明给主 Skill 增加长段落会更好。因此主 Skill 保持原文，具体的隔离接续与产物收口经验补到已存在的 [DEVELOPMENT_FLOW](../../docs/DEVELOPMENT_FLOW.md)。试验长稿以补丁保留供复核，没有热替换现用全局 Skill。
 
 ## 实际调用

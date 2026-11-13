@@ -2,6 +2,8 @@
 
 这是 Windows 独立建设的版本化评测，不使用或替代尚未取得的 Mac 案例。复用 `codex exec`、Node test 与现有 Tools，不增加 Runtime、Runner 服务或 Ledger。实验材料由 export-ignore 排除，模型调用不进入 CI。
 
+后续五类隔离情境与正式 7.0 / 当前 7.1 固定正文对照见 [isolation-1.0 结果](isolation-1.0/RESULTS.md)和[冻结协议](isolation-1.0/PROTOCOL.md)。下文保留首轮 12 题与未采用长稿的实验身份，两轮结果不能互相替代。
+
 ## 当前评什么
 
 `cases.json` 的 `windows-1.0` 包含 12 个受控“下一步判断”场景，六个维度各两题：工具路由、最小验证/复用、授权、证据、资源/停止、跨项目泛化。项目标签覆盖原版、第三方 Mod、Sticky Fingers 和原创作弊 Mod。事实来自用户反馈和既有工程合同的脱敏变体；题面不是恢复出的原始事故日志，也不是实际设备现场。
