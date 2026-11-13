@@ -1,16 +1,18 @@
 # DoL Dev Tools — 历史索引
 
+当前包的安装与验证入口见 [CURRENT_STATUS](CURRENT_STATUS.md)。下列交付记录保留原版本和证据边界，不是当前任务授权或新候选测试结果。
+
 7.0起采用名称 DoL Dev Tools — Gold Experience（黄金体验）；[当前范围](CLOSEOUT_7_0.md)与[更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_7.0.0.md)另列。2.0.0起曾采用产品名DoL Dev Tools: Paisley Park。以下为原DoL Dev Tools的历史交付与证据，保留当时版本、名称和验收边界；原始提案不因新品牌而改写。
 
 | 历史版本 | 记录 |
 | --- | --- |
-| 6.1.0 / v6.1.0 — White Snake | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_6.1.0.md)、[范围与验收](CLOSEOUT_6_1.md)、[Windows 补验](WINDOWS_6_1.md)；最终制品身份以Release四件套为准。 |
-| 6.0.0 / v6.0.0 — White Snake | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_6.0.0.md)、[验收记录](CLOSEOUT_6_0.md)；6.1的正式研发基线。 |
+| 6.1.0 / v6.1.0 — White Snake | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_6.1.0.md)、[范围与验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_6_1.md)、[Windows 补验](WINDOWS_6_1.md)；最终制品身份以Release四件套为准。 |
+| 6.0.0 / v6.0.0 — White Snake | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_6.0.0.md)、[验收记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_6_0.md)；6.1的正式研发基线。 |
 | 5.1.0 / v5.1.0 — Paisley Park | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_5.1.0.md)、[Windows 验收](WINDOWS_5_1.md)；6.0 的已发布研发基线。 |
-| 5.0.0 / v5.0.0 — Paisley Park | [范围与验收](CLOSEOUT_5_0.md)；Source Link / Lab / 研发接续的原始边界。 |
-| 4.0.1 / v4.0.1 — Bites the Dust | [验货修订说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_4.0.1.md)、[定向修复与验证](F1_F5_CLOSEOUT_4_0.md) |
+| 5.0.0 / v5.0.0 — Paisley Park | [范围与验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_5_0.md)；Source Link / Lab / 研发接续的原始边界。 |
+| 4.0.1 / v4.0.1 — Bites the Dust | [验货修订说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_4.0.1.md)、[定向修复与验证](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/F1_F5_CLOSEOUT_4_0.md) |
 | 4.0.0 / v4.0.0 — Bites the Dust | [更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)、[收口与兼容](CLOSEOUT_4_0.md) |
-| 3.0.3 / v3.0.3 | [实战诊断体验补丁](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.3.md)、[历史收口](CLOSEOUT_3_0_3.md) |
+| 3.0.3 / v3.0.3 | [实战诊断体验补丁](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.3.md)、[历史收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_3_0_3.md) |
 | 3.0.2 / v3.0.2 | [Gold Experience Requiem 发布说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.2.md)、[3.0.2 验收与限制](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_2.md) |
 | 3.0.1（公开 Release / tag 已删除） | [历史发布说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.1.md)、[S1/S2 代表性证明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0_1.md) |
 | 3.0.0（公开 Release / tag 已删除） | [原发布说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_3.0.0.md)、[Foundation A—D证明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/CLOSEOUT_3_0.md)、[撤版](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/WITHDRAWAL_3.0.0.md)、[新的研发方案](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/GOLD_EXPERIENCE_REAUDIT.md) |

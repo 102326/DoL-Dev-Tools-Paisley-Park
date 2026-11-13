@@ -8,6 +8,8 @@ Windows 的系统 Git 可能配置 `core.autocrlf=true`，导致归档文本与 
 
 7.1 候选进一步排除数字版本的历史发布公告与 5.0 RC 收口材料；当前说明中的相应引用指向已经公开的固定主线提交。仍有效的兼容说明和必要测试夹具继续保留。本地候选以实际 package 版本命名，附源码提交、逐文件清单、SHA-256 和单独的验货结果，不自动替换现用全局 Skill。
 
+RC.2 按实际用途继续区分历史材料：移出早期交付进展、冗余收口与首轮 Lab 接续流水，引用改为固定历史源码；保留 4.0 兼容约束、7.0 验证基线、5.1/6.1 平台证据、经验导航和当前功能指南，并在页首标明适用范围。旧版本文档不等于旧 Skill，Skill 数量和身份按实际 ZIP 与安装清单检查。具体分类留在源码交接记录，不把审查过程放进运行包。
+
 `experiments/gold-runtime` 中四个代码文件是现有离线回归的必要资源：`tests/game-goal.test.cjs` 使用 Receiver 检查旧拒绝回执不能结清后续已派发动作，实验测试还调用其 CLI。保留这些夹具以维持原测试入口，不将它们作为第二套正式 Runtime。生产执行仍来自 `scripts/lib/game-runtime.cjs`，实验 README 被排除。
 
 游戏、APK、node_modules、私人 Profile/Store、存档、截图、原始审计材料和临时输出不属于 payload。Component Lab 属于目标 UI 项目，辅助写作 Skills 单独安装，不捆入 Tools。

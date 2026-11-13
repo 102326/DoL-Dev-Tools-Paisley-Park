@@ -1,5 +1,7 @@
 # DoL Dev Tools 5.0 — Paisley Park
 
+> 功能沿革指南：Source Link 与 Component Lab 的接口及边界仍供按需使用；下文首轮组件、UI 分支和 5.0 验证是历史范围。当前包版本和运行前提见 [CURRENT_STATUS](CURRENT_STATUS.md)。
+
 本文对应 `5.0.0 — Paisley Park`，在 4.0.1 的 Android/CDP/ADB、Action/Journey、GER 与 Evidence 上改善研发接续。已发布版本与下载见 [Releases](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases)。
 
 ## 第一次使用
@@ -21,9 +23,9 @@ node integrations/soft-and-wet/source-link.cjs --root ABSOLUTE_UI_ROOT --index N
 
 ## B：目标项目拥有的 Component Lab
 
-Lab 复用真实 Vue 组件、样式和项目自己的 Vite，用于编辑与 HMR。它的源码、依赖、producer 和运行命令属于 UI 仓库，**不包含在 Tools ZIP 中**；无需为普通诊断安装 Vite 或 Playwright。现有 UI 2.5 Lab 测试分支不能整分支覆盖 UI 3.0；在目标版本薄接入，重新生成当前 index/clue。
+Lab 复用真实 Vue 组件、样式和项目自己的 Vite，用于编辑与 HMR。它的源码、依赖、producer 和运行命令属于 UI 仓库，**不包含在 Tools ZIP 中**；无需为普通诊断安装 Vite 或 Playwright。首轮 UI 2.5 Lab 分支是历史输入，不应整分支覆盖当前 UI；在目标工程版本薄接入，重新生成当前 index/clue。
 
-代表性 Windows 联合运行与可复用命令见 [A/B 记录](PAISLEY_PARK_5_0_WINDOWS_AB.md)。首轮只覆盖有限组件、内存回调和几何/HMR，不承诺原生购买、存档或全部组件。
+代表性 Windows 联合运行与可复用命令见 [A/B 记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/PAISLEY_PARK_5_0_WINDOWS_AB.md)。首轮只覆盖有限组件、内存回调和几何/HMR，不承诺原生购买、存档或全部组件。
 
 ## C：按需接续现场、源码与制品
 
@@ -35,4 +37,4 @@ Lab 复用真实 Vue 组件、样式和项目自己的 Vite，用于编辑与 HM
 
 A/B 的有限原型和 C 的代表性接续已按约定收口，证据分别注明平台与时段。5.0 未改变 GER/SQLite/Effect Ledger，没有追认或清理历史 Unknown。完整 Android Mod 修复、更多组件与设备、全部 Debug/GER 组合仍为 Not validated / Additional coverage，不自动扩大验收。C-EXT 未触发的外部工具研究不是运行前置条件。
 
-正式包的版本、安装与内容核验独立于这些已有证据；本地打包不代表公网发布、正式合并或全局 Skill 更新。具体检查与复用依据见 [5.0 收口](CLOSEOUT_5_0.md)。
+正式包的版本、安装与内容核验独立于这些已有证据；本地打包不代表公网发布、正式合并或全局 Skill 更新。具体检查与复用依据见 [5.0 收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_5_0.md)。

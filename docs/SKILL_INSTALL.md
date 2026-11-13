@@ -2,7 +2,7 @@
 
 Tools保存采集器、CLI和格式；Skill选择诊断/复现/开发路径，调用同一份Tools与目标项目自己的构建部署命令。仓库内Skill可直接使用，也可装入本机Codex Skill目录，不复制Runtime或第三方项目。
 
-7.1 工具链维护候选的源码版本为 `7.1.0-rc.1`，正式下载仍使用下方 7.0.0 Release。Android CLI、官方 Android Skills 与本项目 Skill 分别维护，见[工具链指南](TOOLCHAIN.md)。本地候选不自动覆盖全局 Skill 或正式 Tools 安装。
+当前源码/本地候选版本为 `7.1.0-rc.2`，状态见[当前版本说明](CURRENT_STATUS.md)。收到候选 ZIP 时先核对随附摘要和来源，在该包根目录运行 `--version`，应返回此候选版本；隔离安装的 Skill 也应解析到同一份包。正式下载仍为下方历史 7.0.0 Release，不把两份包的版本或验货混用。Android CLI、官方 Android Skills 与本项目 Skill 分别维护，见[工具链指南](TOOLCHAIN.md)。本轮不自动替换现用全局 Skill。
 
 ```powershell
 node scripts/dol-dev.cjs install-skill --out C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park
@@ -15,7 +15,7 @@ node C:/Users/YOUR_USER/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve
 
 <a id="resolver-maintenance"></a>
 
-## 7.0 resolver 诊断与维护
+## 当前 resolver 诊断与维护
 
 7.0 的 resolver 成功 JSON 字段保持不变。失败退出1，stderr提供固定代码、阶段及处理建议，不回显输入路径或原始异常：
 
@@ -68,7 +68,7 @@ node tools/typescript/build.cjs --write-production
 
 <a id="gold-experience-install"></a>
 
-## 7.0.0 Gold Experience 安装
+## 历史：7.0.0 Gold Experience 安装
 
 从 [7.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0) 下载命名的工具ZIP，核对SHA-256与manifest，再解压到新的长期保留目录；旧Tools和Skill保留作回退。运行`DoL-Dev.cmd --version`应返回`7.0.0`，help首行以`DoL Dev Tools — Gold Experience（黄金体验） 7.0.0`开头。macOS/Linux使用`node scripts/dol-dev.cjs`；本轮本地结果只覆盖Windows。
 
@@ -82,7 +82,7 @@ node tools/typescript/build.cjs --write-production
 
 普通诊断无需npm依赖。Gameplay在该目录执行 `npm ci --ignore-scripts --no-audit --no-fund`，仍锁定XState5.33.2。按本页现有命令向尚不存在的同名Skill目录安装，再执行resolver，确认版本6.1.0与本次解压根目录。先用隔离目录验货，不自动替换全局Skill。resolver通过只证明位置与安装完整性；宿主实际发现须在对应作用域另行验证。
 
-6.1保留知识入口、专业参考、定向配方和既有诊断路径；[行为保持案例](../examples/behavior-preservation/README.md)也随包提供，但固定CE源码须自行取得并审查，不捆绑原Mod或派生切片。Patch观测仍需审查并显式启用。安装与升级不迁移Store，不清理历史Unknown。范围与限制见 [6.1收口](CLOSEOUT_6_1.md)；既有6.0证据见 [历史验收](CLOSEOUT_6_0.md)。
+6.1保留知识入口、专业参考、定向配方和既有诊断路径；[行为保持案例](../examples/behavior-preservation/README.md)也随包提供，但固定CE源码须自行取得并审查，不捆绑原Mod或派生切片。Patch观测仍需审查并显式启用。安装与升级不迁移Store，不清理历史Unknown。范围与限制见 [6.1收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_6_1.md)；既有6.0证据见 [历史验收](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_6_0.md)。
 
 ## 历史：5.1.0 安装与验货
 
@@ -129,7 +129,7 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 
 升级不迁移旧私有 journal、不清空共享执行记录，也不自动结清结果未知的动作。使用 4.0 原生数据重建功能前，对 SQLite 执行记录做一致备份；一旦升级为 schema 3，3.0.3 不得继续写入同一 Store，也不得用它恢复 4.0 的新 Session。直接复制正在写入的 SQLite 主文件可能遗漏 WAL 数据，不能当成一致备份；可在所有写入者关闭后保留数据库及相关文件，或使用 SQLite 备份 API。没有验证过的自动降级或历史合并流程。详见 [技术兼容说明](CLOSEOUT_4_0.md)。
 
-旧 v3.0.0 Foundation 与[撤版记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/WITHDRAWAL_3.0.0.md)保留；3.0.3 [收口](CLOSEOUT_3_0_3.md)是历史依据，不代表 4.0 的新通过数。
+旧 v3.0.0 Foundation 与[撤版记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/WITHDRAWAL_3.0.0.md)保留；3.0.3 [收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_3_0_3.md)是历史依据，不代表 4.0 的新通过数。
 
 移动Tools或恢复安装时，先核对新路径，再在当前进程设置`DOL_DEV_TOOLS_HOME`；它优先于安装记录和仓库相对位置。旧记录失效会停止，不扫描私有目录或自行下载替代包。搬迁后说明中的机器专属链接也可能过期，以解析结果中的docs为准；更新安装前保留旧目录，再向新的空目标安装。
 

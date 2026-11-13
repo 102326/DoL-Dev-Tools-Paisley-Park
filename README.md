@@ -4,11 +4,13 @@
 
 Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可以查看真实 Android / WebView 现场，也可以在独立 Chrome 中调查获准的本地页面，再接到源码、构建和复验。它可以独立使用，也可以由宿主 Agent 调用。
 
-**7.0.0** · [下载工具包](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/download/v7.0.0/DoL-Dev-Tools-7.0.0.zip) · [安装与升级](docs/SKILL_INSTALL.md) · [本版更新](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_7.0.0.md) · [支持范围](docs/CLOSEOUT_7_0.md)
+**当前源码/本地候选：7.1.0-rc.2** · [当前状态](docs/CURRENT_STATUS.md) · [安装与升级](docs/SKILL_INSTALL.md) · [工具链指南](docs/TOOLCHAIN.md)
+
+已公开的正式版仍为 [7.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0)。7.1 候选尚未公开发布；使用正式版时，以该 Release 随附版本、摘要和说明为准。
 
 这是此前的 Paisley Park。旧 Skill 标识、启动命令和数据路径继续兼容，不需要改名或迁移已有账本。它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。
 
-当前源码分支正在开发 **7.1.0-rc.1**，已发布版本仍为上方的 7.0.0。7.1 同步官方 Android 工具与 Skill，保留现有 ADB/CDP 和 GER 合同；工具选择见[工具链指南](docs/TOOLCHAIN.md)。本地候选尚未发布，以下下载步骤仍对应正式 7.0.0。
+7.1 同步官方 Android 工具与按需使用指引，保留现有 ADB/CDP 和 GER 合同。Windows Skill Intelligence 已建立有界评测；未证明长草稿更好，因此没有把它并入主 Skill。具体经验仍按需放在 Recipe 中。
 
 ## 它能帮你做什么
 
@@ -28,16 +30,16 @@ Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可
 
 ### 1. 解压并确认版本
 
-从 [7.0.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0) 下载 `DoL-Dev-Tools-7.0.0.zip`，核对随附的 SHA-256 和来源清单，再解压到长期保留的新目录。保留旧 Tools、Skill 和执行记录，确认新版本可用后再切换。[6.1.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v6.1.0) 等历史版本继续保留。
+如果收到本地候选，核对随附的 SHA-256 和来源清单，解压 `DoL-Dev-Tools-7.1.0-rc.2.zip`。普通使用者可选择上方正式 7.0.0 Release；它与本地候选是不同制品。保留现用 Tools、Skill 和执行记录，确认新包可用后再切换。
 
-7.0 要求 **Node.js 26.0.0+**。本轮 Windows 使用26.13.0；旧6.1.0包仍按其原要求使用。在 Tools 根目录运行：
+当前源码和 7.1 候选要求 **Node.js 26.0.0+**。在实际 Tools 根目录运行：
 
 ```powershell
 .\DoL-Dev.cmd --version
 .\DoL-Dev.cmd --help
 ```
 
-版本输出应为 `7.0.0`，help 首行以 `DoL Dev Tools — Gold Experience（黄金体验） 7.0.0` 开头。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
+这个候选的版本输出应为 `7.1.0-rc.2`，help 首行以 `DoL Dev Tools — Gold Experience 7.1.0-rc.2` 开头。若使用正式 7.0.0 包，应按它自己的版本核对，不要求旧包返回候选版本。`Paisley-Park.cmd` 仍可使用；其它平台使用 `node scripts/dol-dev.cjs`。
 
 ### 2. 连接已授权的 Android App
 
@@ -70,7 +72,7 @@ node "$env:USERPROFILE/.codex/skills/dol-dev-tools-paisley-park/scripts/resolve.
 npm ci --ignore-scripts --no-audit --no-fund
 ```
 
-安装器拒绝覆盖已有 Skill。更新时先备份并移出旧安装，保留原 Tools，再向空目录安装；Tools 必须留在稳定位置。7.0使用Node26内置SQLite，Gameplay示例及Windows launcher保留显式`--experimental-sqlite`参数。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
+安装器拒绝覆盖已有 Skill。先在隔离位置验货，决定切换现用安装时再按任务授权处理原 Skill；Tools 必须留在稳定位置。7.x 使用 Node26 内置 SQLite，Gameplay 示例及 Windows launcher 保留显式 `--experimental-sqlite` 参数。详细步骤见 [安装指南](docs/SKILL_INSTALL.md)。
 
 安装后按宿主支持的方法刷新或开启新会话，确认 Skill 确实被发现；文件安装和 resolver 成功不保证下一回合自动可用。发现后显式使用 `$dol-dev-tools-paisley-park`，告诉 Agent 工作区、设备、App、问题或目标，以及获准操作的数据范围。例如：
 
@@ -94,7 +96,7 @@ Chrome Inspect/CDP 是 Agent 进入真实 WebView 的桥梁。通用诊断不要
 
 Component Lab 由目标 UI 工程维护，不在 Tools ZIP 中。它用于组件开发与预览，不代表游戏内热替换、自动部署或业务验证。
 
-## 7.0 有哪些变化
+## 继承的 7.0 能力
 
 7.0 将独立 PC Chrome 接入已有开发流程：准确选择页面，拒绝重载后的旧文档绑定，用同一套工具做诊断、复现、受支持业务操作和证据保存。持久业务仍使用 GER，不把普通点击补记成已结算动作。参见 [PC 使用说明](docs/PC_RUNTIME.md)。
 
@@ -106,7 +108,7 @@ Android 继续使用 Android CLI、ADB 和 CDP。Kotlin 设备探针只保留为
 
 ## 当前验证范围
 
-本版已有 Windows Chrome 代表性宿主验证、真实 DoL 保存与导航、独立 Android 测试副本的原生保存及原回执恢复，以及源码查询、Windows 文件占用和独立包安装检查。原始输入、固定提交、各轮实际结果和复用边界保留在 [7.0 收口](docs/CLOSEOUT_7_0.md)，正式包来源见随附 `artifact-manifest.json`，本轮验货结果在收口记录中保留。
+当前候选的范围和证据分层见[当前状态](docs/CURRENT_STATUS.md)，来源和包字节以随附 manifest 为准。7.0 已有 Windows Chrome、DoL 保存与导航、独立 Android 副本及源码查询等代表性证据，保留在 [7.0 验证基线](docs/CLOSEOUT_7_0.md)；这些历史结果不是 7.1 新增的真机验收。
 
 Windows 使用 Node26.13.0，未在Windows重跑最低26.0.0；其它系统的既有记录不能代替本机结果。没有穷举全部游戏、存档、Mod、WebView 或设备，也未完成无人接管的完整 Android Mod 修复闭环。
 
@@ -135,7 +137,7 @@ Integration 是经审查的本地代码，Worker 用于故障隔离，不是权�
 | 关联组件源码与预览 | [Source Link / Lab](docs/PAISLEY_PARK_5_0.md) |
 | 调查框架与相似历史问题 | [Mod知识](docs/MOD_KNOWLEDGE.md) · [框架注册与缓存](docs/MAPLEBIRCH.md) · [依赖与补丁](docs/MODHUB.md) |
 | 接入项目诊断或公共格式 | [Integration](docs/INTEGRATIONS.md) · [格式](docs/FORMATS.md) |
-| 查询验证与限制 | [7.0收口](docs/CLOSEOUT_7_0.md) · [历史索引](docs/HISTORY.md) |
+| 查询验证与限制 | [当前状态](docs/CURRENT_STATUS.md) · [7.0验证基线](docs/CLOSEOUT_7_0.md) · [历史索引](docs/HISTORY.md) |
 | 贡献与打包 | [项目规则](AGENTS.md) · [架构](docs/ARCHITECTURE.md) · [包清单](docs/RELEASE_PACKAGE.md) |
 
 ## 贡献与开发

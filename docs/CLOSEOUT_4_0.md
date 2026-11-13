@@ -1,6 +1,8 @@
 # DoL Dev Tools 4.0.0 — Bites the Dust 技术说明与收口
 
-产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 独立验货修订已在本地收口；用户随后明确授权更新 Skill 与上传 GitHub，本轮采用 4.0.1 发布，保留原 4.0.0 制品。见 [4.0.1 更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_4.0.1.md)与 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
+> 历史兼容参考：本页的交付、授权和验证数字属于 4.0。被当前指南引用的数据重建、旧记录等约束仍有用途；当前版本及验货见 [CURRENT_STATUS](CURRENT_STATUS.md)，本页不授予新操作或发布权限。
+
+产品名为 **DoL Dev Tools**，代号 **Bites the Dust**。本文保留 2026-10-11 将已审 RC 收口并在用户单独确认后发布的原记录。2026-10-12 独立验货修订已在本地收口；用户随后明确授权更新 Skill 与上传 GitHub，本轮采用 4.0.1 发布，保留原 4.0.0 制品。见 [4.0.1 更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/8c5628fc2bd93cf6116e5cef3fe597315a2525f1/docs/RELEASE_4.0.1.md)与 [F1–F5 定向收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/F1_F5_CLOSEOUT_4_0.md)。下方原记录的交付与验证范围保留，公开制品身份以随附 manifest 和 [Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v4.0.0) 为准。[面向使用者的更新说明](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/cf405fdf132468a8ca9dbb8a3a2c7efbf8e874b1/docs/RELEASE_4.0.0.md)与[安装指南](SKILL_INSTALL.md)为入口。
 
 ## Delivered
 
@@ -34,7 +36,7 @@ Recipe 是经过审核的本地 Node 脚本，拥有实际文件/网络权限，
 
 ## Validated：证据继承边界
 
-以下记录属于原 4.0 发布收口；2026-10-12 行为修订及新回归见 [F1–F5 定向收口](F1_F5_CLOSEOUT_4_0.md)。原发布阶段的元数据与文档不改变运行行为。独立 RC 审查固定源码 `3213bea663dcadf9fa01b7ed25da68ae94ebb776`，结论为预发布 Go、正式版 Conditional Go，无 Blocker/Must Fix。正式版本身份和包核验在本轮实际执行，记录于本地包旁 `validation.json`；下列是继承的有效证据，**不记为本轮新运行**：
+以下记录属于原 4.0 发布收口；2026-10-12 行为修订及新回归见 [F1–F5 定向收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/F1_F5_CLOSEOUT_4_0.md)。原发布阶段的元数据与文档不改变运行行为。独立 RC 审查固定源码 `3213bea663dcadf9fa01b7ed25da68ae94ebb776`，结论为预发布 Go、正式版 Conditional Go，无 Blocker/Must Fix。正式版本身份和包核验在本轮实际执行，记录于本地包旁 `validation.json`；下列是继承的有效证据，**不记为本轮新运行**：
 
 - `467f32e15d6929e13bf2d4bc5d9fcc0bae33a146` 完整 Node **393 passed / 0 failed / 0 skipped**，定向 window 56 passed；未改 Python，复用 **2 passed / 2 optional-dependency skips**。锁定 XState 5.33.2。
 - 实际 Android 17 / WebView 154.0.8037.58 / DoL 0.5.12.13：10 项真实 Document 重载检查、旧 client 拒绝、显式新绑定与自有 forward 清理；PID/target/URL 不变也不证明文档相同。

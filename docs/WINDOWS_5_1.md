@@ -1,5 +1,7 @@
 # Paisley Park 5.1 Windows 验收记录
 
+> 历史平台证据：本页保留 Windows 安装器、hard link 与文件占用的验证依据。旧目录、Node 版本和宿主发现结果属于 5.1，既不是当前部署位置，也不是本次运行；当前要求见 [CURRENT_STATUS](CURRENT_STATUS.md)。
+
 2026-10-15。本轮已完成约定的 Windows 验收，未发现剩余阻塞。范围是 5.1 安装器、CLI、独立包和选定 Codex 宿主，不包含设备或真实游戏测试。原 Mac 记录继续保留，未计入以下 Windows 结果。
 
 ## Delivered

@@ -1,5 +1,7 @@
 # Paisley Park 5.0：C 后续接续与证据导航
 
+> 经验与证据导航：本页保留 5.0 调查案例，供当前 Recipe 按需参考；旧进度、路径和采集状态不代表当前任务。当前版本见 [CURRENT_STATUS](CURRENT_STATUS.md)，通用做法见 [DEVELOPMENT_FLOW](DEVELOPMENT_FLOW.md)。
+
 2026-10-14，依据用户 C 后续/C-EXT V0.1。当前范围是复核现有真实摩擦，改善按需 Recipe 和已有证据引用；RC.1 完成口径保持不变。本页是结果与导航，不是新的研发计划、记录 Schema 或发布门禁。
 
 ## Delivered：C-1 的最小调整

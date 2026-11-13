@@ -7,6 +7,13 @@ experiments/skill-intelligence-7.1 export-ignore
 experiments/skill-intelligence-7.1/*.patch whitespace=-blank-at-eol
 docs/RELEASE_[0-9]*.md export-ignore
 docs/CLOSEOUT_5_0_RC[12].md export-ignore
+docs/CLOSEOUT_3_0_3.md export-ignore
+docs/CLOSEOUT_5_0.md export-ignore
+docs/CLOSEOUT_6_0.md export-ignore
+docs/CLOSEOUT_6_1.md export-ignore
+docs/F1_F5_CLOSEOUT_4_0.md export-ignore
+docs/PAISLEY_PARK_5_0_PROGRESS.md export-ignore
+docs/PAISLEY_PARK_5_0_WINDOWS_AB.md export-ignore
 docs/BITES_THE_DUST_4_0.md export-ignore
 docs/BLUEPRINT.md export-ignore
 docs/CAPABILITY_COVERAGE.md export-ignore

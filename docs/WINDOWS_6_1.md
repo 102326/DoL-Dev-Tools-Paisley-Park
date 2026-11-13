@@ -1,5 +1,7 @@
 # White Snake 6.1：Windows 验收
 
+> 历史平台证据：本页保留 6.1 Windows 与行为保持验证的原输入、结果和局限。旧路径及发布授权不适用于新的接续任务；当前安装和覆盖范围见 [CURRENT_STATUS](CURRENT_STATUS.md)。
+
 2026-10-16。本轮从 `test/paisley-park-6.1` 的 `a6c3295dd4f24dc7b8bdf68e100ebc8243f2d40b` 建立独立工作树，完成交接要求的 Windows 离线、原包验证和宿主发现。用户已授权验收无阻塞后直接发布 6.1；正式制品的最终提交与摘要以 Release 四件套为准。
 
 ## Delivered
@@ -35,6 +37,6 @@ Windows 10.0.26340 / PowerShell 7.6.7，Node 26.12.0、npm 11.20.0、Python 3.14
 
 ## Known limitations
 
-M3 仍是固定历史 Hook 与合成宿主的研究配方，不是可安装的 CE R1 修复或通用行为等价引擎。保留 Unknown、失败、许可与来源，不随 Tools 分发原包、派生切片或原始宿主事件。详细边界见[配方](../examples/behavior-preservation/README.md)与[6.1 收口](CLOSEOUT_6_1.md)。
+M3 仍是固定历史 Hook 与合成宿主的研究配方，不是可安装的 CE R1 修复或通用行为等价引擎。保留 Unknown、失败、许可与来源，不随 Tools 分发原包、派生切片或原始宿主事件。详细边界见[配方](../examples/behavior-preservation/README.md)与[6.1 收口](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/d85b7e275881b8c78ce66432b4e988511f748655/docs/CLOSEOUT_6_1.md)。
 
 **Windows 交接范围达到 Scoped Done。** 本轮无尚需修复的生产阻塞；其余覆盖不自动升级为发布前置条件。
