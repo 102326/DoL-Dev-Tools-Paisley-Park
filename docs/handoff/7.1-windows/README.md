@@ -2,6 +2,8 @@
 
 检查日期：2026-11-13（北京时间）。本页记录 Windows 的已完成阶段和下一步输入，不替代 Mac 实验材料。
 
+最新有界接续：[Android CLI 1.1.16919734 更新及兼容检查](ANDROID_CLI_16919734.md)。本机工具更新不改变 RC.2 候选身份；以下阶段记录保留各自的输入和验证范围。
+
 后续授权已调整：7.1 Skill Intelligence 由 Windows 独立推进，不再等待 Mac。下文“Mac 输入缺口”保留当时的交接事实，只限制未来吸收 Mac 原成果及其原 A/B 对照，不阻塞 Windows 新实施；Windows 新案例和结果不能标成 Mac 已有成果。
 
 Windows 独立阶段的实际评测、未采用长稿的决定和子进程宿主阻塞见 [Skill Intelligence 结果](../../../experiments/skill-intelligence-7.1/RESULTS.md)。下方机器可读记录中的零模型轮次属于此前交接快照，不代表后续实验没有运行。
