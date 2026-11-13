@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "candidateVersion": "7.1.0-rc.2",
+  "sourceCommit": "d22e6c992d7b92c586b731d386b081b65677814d",
+  "zip": {
+    "file": "DoL-Dev-Tools-7.1.0-rc.2.zip",
+    "sha256": "89719e753d8e9028f2574d49d11a66099aeedd0d105ba19cdfe2a168a6ba8666",
+    "bytes": 1198848
+  },
+  "fileCount": 419,
+  "skillCount": 1,
+  "previousCandidate": {
+    "version": "7.1.0-rc.1",
+    "sourceCommit": "8028efa5aee043c965ed9f9a761367726e5aa41f",
+    "sha256": "f9df530951acd1f476cef0c33985296b2dc9b5d7efe7e5b6fcc1bd60b5024238",
+    "preserved": true
+  },
+  "payloadChange": {
+    "removedHistoricalDocuments": [
+      "docs/CLOSEOUT_3_0_3.md",
+      "docs/CLOSEOUT_5_0.md",
+      "docs/CLOSEOUT_6_0.md",
+      "docs/CLOSEOUT_6_1.md",
+      "docs/F1_F5_CLOSEOUT_4_0.md",
+      "docs/PAISLEY_PARK_5_0_PROGRESS.md",
+      "docs/PAISLEY_PARK_5_0_WINDOWS_AB.md"
+    ],
+    "addedCurrentEntry": [
+      "docs/CURRENT_STATUS.md"
+    ],
+    "runtimeCodeBytesUnchanged": true
+  },
+  "actualChecks": {
+    "sourceEntry": {
+      "total": 19,
+      "passed": 18,
+      "failed": 0,
+      "skipped": 1
+    },
+    "packageEntry": {
+      "total": 19,
+      "passed": 18,
+      "failed": 0,
+      "skipped": 1
+    },
+    "skipReason": "unprivileged macOS permissions only",
+    "skillFormat": "passed",
+    "fileSetAndGitBlobBytes": "passed",
+    "relativeDocumentLinks": "passed",
+    "twoBuildsIdentical": true,
+    "isolatedSkillInstallAndResolution": true,
+    "candidateOwnXstate": true,
+    "sqliteCloseReopen": true,
+    "missingDependencyRefusalBeforeStoreCreation": true,
+    "globalSkillUnchanged": true
+  },
+  "reusedEvidence": [
+    {
+      "sourceCommit": "8028efa5aee043c965ed9f9a761367726e5aa41f",
+      "scope": "unchanged runtime code and contracts; earlier full Node/Python/type/representative host evidence under original identities; not rerun or counted as RC.2 runs"
+    }
+  ],
+  "remainingBlocker": {
+    "operation": "child Codex process launch for resolver",
+    "message": "registered Core launch requires an installed app",
+    "state": "previous probe not executed; not retried; not certified by package smoke"
+  },
+  "notRun": [
+    "full Node/Python/type suites again for this documentation-only delta",
+    "model A/B or Judge again",
+    "blocked child Codex tool probe retry",
+    "Android/WebView/game/save/old Unknown operations",
+    "global Skill replacement",
+    "main merge, Tag or Release"
+  ],
+  "publication": "candidate ZIP and raw evidence remain local; source and this sanitized summary only; no main merge, Tag or Release"
+}
