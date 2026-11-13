@@ -26,3 +26,25 @@ Windows 的系统 Git 可能配置 `core.autocrlf=true`，导致归档文本与 
 4. 运行受影响入口测试、隔离 Skill 安装/resolver 与自有 SQLite smoke；先关闭句柄，再清理自有文件。
 
 只整理文档和导出清单时，复用未失效的业务与设备证据；不把此前实机结果计为本轮新通过数。manifest 描述来源和字节，验货结果单独记录，公网发布另按实际授权执行。
+
+## 发布执行必须失败即停止
+
+PowerShell 的 `$ErrorActionPreference` 不能单独替代原生命令退出码检查。Python 断言、Node 测试或 Git/GitHub CLI 退出非零后，未显式检查的组合脚本仍可能执行下一条命令。每次原生命令返回后，立即保存并核对 `$LASTEXITCODE`；不能等另一个原生命令覆盖它。
+
+```powershell
+# 示意：替换为已经审查的检查入口与固定输入。
+& python -X utf8 REVIEWED_AUDIT.py FULL_COMMIT NEW_CANDIDATE
+$checkExit = $LASTEXITCODE
+if ($checkExit -ne 0) { throw "Candidate audit failed: $checkExit" }
+# 此处还须验证实际结果中的状态、源码提交及 ZIP 摘要。
+# 退出 0、结果文件存在或旧的 passed 标记都不能单独授权发布。
+```
+
+验货和远端写操作分开执行，不能在未经核实的检查后顺序拼上发布命令：
+
+1. 固定最终候选，核对实际 ZIP、隐私、清单、来源和安装；失败就保留候选及原错误，不推送后续发布阶段。
+2. 验证所需 CI 已完成且 success，head SHA 与该候选来源完全一致；未知、排队中或失败都不进入发布写操作。
+3. 只执行已授权的 main 合并、Tag、Release 和明确资产上传。逐项检查退出码及真实状态；前一步失败不执行依赖步骤。
+4. 发布后读回 Release/Tag/main 和资产字节。若一部分已完成，先核实实际状态，只补缺失部分，不重复创建、覆盖旧版或重写公开历史。
+
+更改源码或候选输入后，旧成功结果不能冒充新候选结果。文档之外的运行逻辑未变时可明确复用有效测试，但最终包内容、摘要及所需 CI 必须对应最终来源。后续规范补丁也不能悄悄移动已发布 Tag 或替换已验货资产。
