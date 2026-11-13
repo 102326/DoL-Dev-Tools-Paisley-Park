@@ -1,0 +1,81 @@
+{
+  "suiteVersion": "windows-isolation-1.0",
+  "evidenceType": "paired text scenario judgment, not installed Skill A/B or device workflow",
+  "baselineRef": "v7.0.0^{commit}",
+  "arms": {
+    "baseline": {
+      "commit": "1ff6e254bbd398c26360a25f60121942e8f98e2c",
+      "files": [
+        {
+          "path": ".agents/skills/dol-dev-tools-paisley-park/SKILL.md",
+          "sha256": "03038d7b54b87dd4c1f0a2b2200347e7fe36998d6f80b058aa75defb1e92ccd3",
+          "gitBlob": "a1d645ebd31d1f926cb687d6d182a8f75d9d9179"
+        },
+        {
+          "path": "docs/DEVELOPMENT_FLOW.md",
+          "sha256": "e01099f68f7ce8810532c5cdccb185b1e5bdbd94d2ae36a15b3aba23f43160aa",
+          "gitBlob": "ce45626095e34bdfe32e3dca9d8b2656799078b1"
+        }
+      ],
+      "promptSha256": "5d59c5940ca694afece535fd1a08d1c88fcc2edae2e0ea318fc82a463fccd7ea"
+    },
+    "candidate": {
+      "commit": "a701c02659c15af8b7223df32b512f84b2295711",
+      "files": [
+        {
+          "path": ".agents/skills/dol-dev-tools-paisley-park/SKILL.md",
+          "sha256": "3bc1fe1fa401363a2fae728c23b52375a35c49ece4e637aa546775525189a196",
+          "gitBlob": "b5abf788e8b485b3c742390315ec97719bbb5a55"
+        },
+        {
+          "path": "docs/DEVELOPMENT_FLOW.md",
+          "sha256": "3cdcbd025eae4b9bab34e8242495877df9bfe600ec619363bad8e839e7017c5d",
+          "gitBlob": "19088267bd90739ac6c0567983c4635114283ef3"
+        }
+      ],
+      "promptSha256": "98ab47ac482e839663c6c39bd843e9564c4d4ead9930abe061de5e2266287461"
+    }
+  },
+  "caseFiles": {
+    "cases.json": "308f14d25b1c93cf5dad1f7aa7ee42beb8c83ab4d32465c831feaf271a54959c",
+    "oracle.json": "dbb2c2a968b173a0e8d129101e0db3781ac7a7826dd333de7d0d61f72f0e7e80",
+    "rubric.json": "898375ee61f1b2ed9f22e5def98abdb63d298ec5a452454e4d4b4badd4304b89",
+    "../response.schema.json": "f754df6631938db874dcd9ae49b339eed16bcc299554931faf047ed769a490c6",
+    "../judge.schema.json": "e1903252caf6aefadcb3a32c21451e9d5e0cdc3ee47cedf47fa2c6e2894a2207"
+  },
+  "sharedFixtureSha256": "70185cb6a061b346fef1edd512179063e0e69c3bce6c599db5dbcd84a605d2b5",
+  "order": [
+    "candidate",
+    "baseline"
+  ],
+  "judgeMap": {
+    "X": "candidate",
+    "Y": "baseline"
+  },
+  "model": {
+    "configured": "gpt-6.1-sol",
+    "reasoningEffort": "high",
+    "serverResolvedRevision": "not independently inspected"
+  },
+  "budget": {
+    "invocationsPerArm": 1,
+    "wallTimeoutSeconds": 240,
+    "answerReasonMaxCharactersPrompt": 180,
+    "maxOutputTokens": "existing shared default; not independently controlled"
+  },
+  "cliVersion": "codex-cli 0.167.0-alpha.4.1",
+  "sharedContextLimit": "Both arms inherit current common repository/global instructions and tool discovery. Versioned packet text is controlled, historical installed environment and hidden host context are not reconstructed. No permission/config change or ignore-rules/user-config.",
+  "holdout": "Three new scenarios frozen before response inspection; no Skill/Recipe/prompt tuning or reruns for score; two anchors are previously seen. Model training contamination cannot be ruled out.",
+  "legacyResults": "windows-1.0 raw data, post-hoc labels and four pending human reviews remain unchanged.",
+  "sharedConfiguration": {
+    "sameLocalConfigFingerprintRequired": true,
+    "ancestorInstructionHashes": {
+      "global-agent": "1ba298fe15af2e3fb3eac26c5c1d9c4f06a2075838865c9e1c54fcd5bc0e90f2",
+      "workspace-agent": "42562e7f7d7c52ad0759b1e96c92e54546887a36c2ab471f6fbc7b576d9e7b96",
+      "project-agent": "d11cb4453a955c115bcd5e498274f2a9c8888ce02e768c9a445e3fb99632c765"
+    },
+    "rawConfiguration": "not published"
+  },
+  "frozenAt": "2026-11-13T17:54:59.552494+08:00",
+  "toolCatalogLimit": "Same host configuration/cwd and no tool calls requested; full server-injected tool catalog not independently captured."
+}

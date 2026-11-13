@@ -43,3 +43,23 @@ test('scenario answers and observed model/tool completion remain separate',()=>{
  const planning=trace(raw([configWarning,{type:'turn.completed'}]));assert.equal(planning.comparisonEligible,true);assert.equal(planning.configurationWarnings,1);assert.equal(planning.itemErrors,1);
  assert.throws(()=>trace('not JSON'));
 });
+
+test('isolation coverage adds only three missing categories and reuses two unchanged anchors',()=>{
+ const isolated=require('./isolation-1.0/cases.json'),rubric=require('./isolation-1.0/rubric.json'),expected=require('./isolation-1.0/oracle.json');
+ assert.equal(isolated.cases.length,5);assert.equal(isolated.newCaseIds.length,3);
+ for(const id of isolated.reusedCaseIds)assert.deepEqual(isolated.cases.find(c=>c.id===id),suite.cases.find(c=>c.id===id));
+ assert.deepEqual(isolated.cases.map(c=>c.id).sort(),Object.keys(expected).sort());
+ assert.deepEqual(Object.keys(rubric).sort(),Object.keys(expected).sort());
+ assert.equal(new Set(Object.values(rubric).map(r=>r.category)).size,5);
+ assert(Object.values(rubric).every(r=>r.accepted.length&&r.forbidden.length&&r.endCondition));
+});
+
+test('frozen isolation labels distinguish authorized rebuild, fresh identity and operation scope',()=>{
+ const expected=require('./isolation-1.0/oracle.json');
+ const value={answers:Object.entries(expected).map(([id,o])=>({id,...Object.fromEntries(Object.entries(o).map(([k,v])=>[k,v[0]])),reason:'Fixture labels only; semantic reasons require separate review.'}))};
+ assert.equal(grade(value,'windows-isolation-1.0').passed,5);
+ value.answers.find(a=>a.id==='isolation-rebuild-copy').decision='clarify';
+ value.answers.find(a=>a.id==='isolation-app-changed').verification='reuse';
+ value.answers.find(a=>a.id==='isolation-outside-scope').decision='proceed';
+ assert.equal(grade(value,'windows-isolation-1.0').passed,2);
+});

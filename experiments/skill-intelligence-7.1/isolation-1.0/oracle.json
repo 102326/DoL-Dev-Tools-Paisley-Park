@@ -1,0 +1,71 @@
+{
+  "authorization-unchanged": {
+    "decision": [
+      "proceed"
+    ],
+    "route": [
+      "android-cli",
+      "inspect"
+    ],
+    "verification": [
+      "targeted",
+      "collect"
+    ]
+  },
+  "authorization-cloud-changed": {
+    "decision": [
+      "clarify"
+    ],
+    "route": [
+      "none"
+    ],
+    "verification": [
+      "none",
+      "collect",
+      "ownership",
+      "targeted"
+    ]
+  },
+  "isolation-rebuild-copy": {
+    "decision": [
+      "proceed"
+    ],
+    "route": [
+      "android-cli",
+      "project-check"
+    ],
+    "verification": [
+      "ownership",
+      "targeted",
+      "collect"
+    ]
+  },
+  "isolation-app-changed": {
+    "decision": [
+      "proceed"
+    ],
+    "route": [
+      "inspect",
+      "project-check",
+      "android-cli"
+    ],
+    "verification": [
+      "ownership",
+      "collect",
+      "targeted"
+    ]
+  },
+  "isolation-outside-scope": {
+    "decision": [
+      "clarify",
+      "stop"
+    ],
+    "route": [
+      "none"
+    ],
+    "verification": [
+      "none",
+      "ownership"
+    ]
+  }
+}

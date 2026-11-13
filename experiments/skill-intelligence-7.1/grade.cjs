@@ -1,5 +1,5 @@
 'use strict';
-const fs=require('node:fs'),oracles={'windows-1.0':require('./oracle.v1.json'),'windows-1.1':require('./oracle.json')};
+const fs=require('node:fs'),oracles={'windows-1.0':require('./oracle.v1.json'),'windows-1.1':require('./oracle.json'),'windows-isolation-1.0':require('./isolation-1.0/oracle.json')};
 const fields=['id','decision','route','verification','reason'];
 const choices={decision:['proceed','clarify','stop'],route:['inspect','android-cli','source','project-check','cleanup','none'],verification:['reuse','targeted','collect','ownership','none']};
 function grade(value,gradingVersion='windows-1.1'){
