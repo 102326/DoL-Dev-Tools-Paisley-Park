@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-17",
+  "scope": "official 7.2.0 Release asset; independent Mac package installation only",
+  "sourceCommit": "a8b1dfa235c6ece17d10ef4a3f47c5f658832449",
+  "release": {
+    "tag": "v7.2.0",
+    "annotatedTagObject": "f10ac0c306dd654b4a0970194d5b71671bf5e3fa",
+    "assetName": "DoL-Dev-Tools-7.2.0.zip",
+    "sha256": "e76740b147557046bb0a07e208026ee51a22d981759b695875ec4d37a117881e",
+    "bytes": 1193824,
+    "files": 419,
+    "skills": 1
+  },
+  "environment": {
+    "system": "Darwin",
+    "macOS": "27.2.1",
+    "architecture": "arm64",
+    "node": "v26.13.0",
+    "npm": "11.20.0"
+  },
+  "archiveChecks": {
+    "checksumsMatch": true,
+    "crcValid": true,
+    "safePathsAndNoSymlinks": true,
+    "exactExportSet": true,
+    "allBytesMatchGitAndManifest": true,
+    "forbiddenPayloadFiles": [],
+    "dependencyDirectoryAbsent": true
+  },
+  "installation": {
+    "checks": [
+      {
+        "check": "source-resolver",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "cli-version",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "cli-help",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "xstate-absent",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "install-new",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "installed-resolver",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "existing-install-preserved",
+        "exitCode": 1,
+        "passed": true
+      },
+      {
+        "check": "relative-root",
+        "exitCode": 1,
+        "passed": true
+      },
+      {
+        "check": "missing-root",
+        "exitCode": 1,
+        "passed": true
+      },
+      {
+        "check": "wrong-package-root",
+        "exitCode": 1,
+        "passed": true
+      },
+      {
+        "check": "partial-install-rejected",
+        "exitCode": 1,
+        "passed": true
+      },
+      {
+        "check": "sqlite-before-dependencies",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "gameplay-missing-dependency",
+        "exitCode": 1,
+        "passed": true
+      },
+      {
+        "check": "stale-installed-location",
+        "exitCode": 1,
+        "passed": true
+      },
+      {
+        "check": "explicit-relocation-override",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "install-after-relocation",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "relocated-install-resolver",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "skill-alone-relocation",
+        "exitCode": 0,
+        "passed": true
+      },
+      {
+        "check": "relocated-cli-version",
+        "exitCode": 0,
+        "passed": true
+      }
+    ],
+    "count": 19,
+    "failed": 0,
+    "skipped": 0,
+    "installedManifestVerified": true,
+    "oldInstalledFilesPreserved": true,
+    "packageBytesUnchangedByMove": true,
+    "oldDocLinksNeedReinstall": true,
+    "freshInstalledDocLinksValid": true,
+    "noStagingResidue": true,
+    "missingDependencyStoreUnchanged": true,
+    "processEnvironmentOverridesRemoved": [
+      "DOL_DEV_TOOLS_HOME",
+      "NODE_PATH",
+      "NODE_OPTIONS"
+    ]
+  },
+  "gameplay": {
+    "runtimeSmoke": {
+      "xstateVersion": "5.33.2",
+      "xstateResolvesInsidePackage": true,
+      "createdAndCancelled": true,
+      "sqliteIntegrity": "ok",
+      "sessions": 1,
+      "effects": 0,
+      "allHandlesClosed": true
+    },
+    "newProcessCliReopen": {
+      "exitCode": 0,
+      "status": "cancelled",
+      "phase": "halted",
+      "pending": false,
+      "actions": 0,
+      "spent": 0
+    },
+    "packagePayloadUnchanged": true,
+    "walAndShmClosed": true
+  },
+  "packageRegression": {
+    "exitCode": 0,
+    "tests": 19,
+    "pass": 18,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 1,
+    "todo": 0,
+    "skippedNames": [
+      "ok 11 - Windows exclusive file handles preserve incomplete cleanup and occupied existing installations # SKIP"
+    ]
+  },
+  "documentTargets": {
+    "checkedLocalMarkdownTargets": 284,
+    "missing": [],
+    "excludedExampleOrNonstandardLinks": [],
+    "externalUrlsAndAnchorsNotChecked": true
+  },
+  "executionNotes": {
+    "helperErrorsCorrected": [
+      "export-ignore parent-directory handling",
+      "SQL fixture quoting",
+      "continuation helper __file__ and existing owned-directory handling",
+      "local-link scanner uppercase filename filter",
+      "npm requires distinct empty user and global config files"
+    ],
+    "initialDependencyFetch": {
+      "exitCode": 1,
+      "code": "ENOTFOUND",
+      "host": "registry.npmjs.org"
+    },
+    "authorizedTaskScopedNetworkFetch": {
+      "exitCode": 0,
+      "packagesAdded": 1,
+      "lifecycleScriptsEnabled": false,
+      "globalConfigChanged": false
+    }
+  },
+  "notValidated": [
+    "Codex automatic Skill discovery or current-session reload",
+    "host diagnostics or model/Agent A-B evaluation",
+    "Chrome/browser/CDP on Mac",
+    "Windows-specific behavior in this run",
+    "Android tools or real device/WebView",
+    "real game or game source or saves",
+    "minimum Node 26.0.0",
+    "external document URLs or anchor correctness",
+    "abnormal shutdown and full Gameplay business recovery beyond package smoke"
+  ],
+  "productionChanges": false,
+  "scopeVerdict": "pass; package acceptance complete and owned temporary products removed; remote synchronization reported in final handoff",
+  "cleanup": {
+    "ownedTemporaryRootRemoved": true,
+    "temporaryFilesRemoved": 1147,
+    "temporaryLogicalBytesRemoved": 7595381,
+    "downloadedZipCopiesRemoved": 1,
+    "zipBytesRemoved": 1193824,
+    "temporarySkillsAndSqliteAndNpmCacheRemoved": true,
+    "originalWorktreeHeadStatusAndUntrackedStatUnchanged": true,
+    "globalSkillOrConfigChanged": false
+  }
+}
