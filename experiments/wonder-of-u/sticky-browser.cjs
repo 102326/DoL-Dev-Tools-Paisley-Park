@@ -7,6 +7,8 @@ const { execFile } = require('node:child_process');
 const { load, serve } = require('../../scripts/lib/pc-http.cjs');
 const { launch } = require('../../scripts/lib/chrome-launch.cjs');
 const { connect } = require('../../scripts/lib/cdp.cjs');
+const { inspect, hostRecord } = require('./loaded-script.cjs');
+const { liveHandoff } = require('./fixtures/codex-live.cjs');
 const { compareHandoffs } = require('./fixtures/codex-handoff.cjs');
 const { digest, readStage } = require('./receipt.cjs');
 const exec = promisify(execFile);
@@ -17,9 +19,12 @@ const component = 'experiments/native-contract/startup-diagnostics.ts';
 const [root, dependencyRoot, chrome, out, portText, python = 'python3'] = process.argv.slice(2);
 const port = Number(portText);
 const fault = process.env.WONDER_DISPATCH_FAULT ?? 'timeout';
+const codex = process.env.WONDER_CODEX;
+const liveMode = process.env.WONDER_LIVE_CODEX;
 
 async function main() {
   assert(['timeout', 'disconnect'].includes(fault));
+  assert(!liveMode || ['legacy', 'receipt'].includes(liveMode) && codex && path.isAbsolute(codex));
   assert([root, dependencyRoot, chrome, out].every(value => typeof value === 'string' && path.isAbsolute(value)));
   fs.mkdirSync(out, { mode: 0o700 });
   const file = name => path.join(out, name);
@@ -122,6 +127,48 @@ async function main() {
     await run(cli, ['pc-bind', '--host-file', oldHost, '--target-id', browser.record.target.targetId, '--url', server.url, '--out', freshHost]);
     const resume = await receipt('status', 'candidate');
     assert.equal(resume.next, 'observe-original-target');
+    if (liveMode) {
+      const context = { operatorReply: results.operatorReply, expectedArchiveSha256: candidate.artifactSha256,
+        expectedScriptSha256: b.artifact.representative.comparableTextSha256,
+        oldEvidence: { archiveSha256: baseline.artifactSha256, observation: oldBehavior },
+        task: 'Verify on the original target that the new script loaded and closing the panel returns focus to its title.' };
+      let loaded = false;
+      results.liveHandoff = await liveHandoff({ codex, dir: file('live-operator'), mode: liveMode,
+        context: liveMode === 'receipt' ? { ...context, receipt: resume } : context,
+        operations: {
+          observe: async () => {
+            const observed = await command(cli, ['pc-observe', '--host-file', freshHost, '--out', file('live-observe'),
+              '--scope', '#sf-startup-diagnostics', '--probe', probe]);
+            const manifest = JSON.parse(fs.readFileSync(path.join(file('live-observe'), 'manifest.json'), 'utf8'));
+            assert.equal(manifest.status, 'observed');
+            assert(observed && target.loaderId !== browser.record.target.document.loaderId);
+            return { originalTarget: true, newDocument: true, oldEvidenceApplies: false };
+          },
+          'check-load': async () => {
+            const result = liveMode === 'receipt' ? await receipt('check-load', 'candidate', '--host', freshHost, '--script-path', '/release.js')
+              : await inspect(hostRecord(freshHost), '/release.js', context.expectedScriptSha256);
+            assert.equal(result.load ?? result.status, 'matched');
+            loaded = true;
+            return { load: 'matched', deployment: 'unknown' };
+          },
+          'check-behavior': async () => {
+            assert(loaded);
+            const state = await behavior(freshHost, 'live-behavior');
+            assert.deepEqual(state, { open: false, active: 'sf-startup-toggle' });
+            if (liveMode === 'receipt') {
+              const completed = await receipt('check-behavior', 'candidate', '--host', freshHost, '--evidence', file('live-behavior'),
+                '--probe', probe, '--expect', expected);
+              assert.equal(completed.next, 'complete');
+            } else assert.equal((await inspect(hostRecord(freshHost), '/release.js', context.expectedScriptSha256)).status, 'matched');
+            return { behavior: 'passed', deployment: 'unknown', observation: state };
+          },
+        },
+      });
+      assert(results.liveHandoff.complete, 'The fresh Codex session did not complete all live verification steps');
+      results.browser = browser.record.browserVersion;
+      results.passed = true;
+      return;
+    }
     if (process.env.WONDER_CODEX) {
       results.sessionComparison = await compareHandoffs({
         codex: process.env.WONDER_CODEX, out,
@@ -167,8 +214,7 @@ async function main() {
   } finally {
     cdp?.close();
     try { if (browser) await browser.stop(); results.browserClosed = true; }
-    finally { await server.close(); results.serverClosed = true; write('summary.json', results); }
+    finally { await server.close(); results.serverClosed = true; write('summary.json', results); console.log(JSON.stringify(results)); }
   }
-  console.log(JSON.stringify(results));
 }
 main().catch(error => { console.error(error.message); if (error.stderr) console.error(error.stderr); process.exitCode = 1; });
