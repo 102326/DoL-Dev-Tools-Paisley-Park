@@ -17,7 +17,7 @@ node scripts/dol-dev.cjs dev-receipt --help
 node "$CLI" dev-receipt prepare-handoff --receipt "$DIR" --recipe "$RECIPE" --host "$HOST" --probe "$PROBE" --expect "$EXPECTED"
 ```
 
-接班方可从回执目录的 `handoff.json` 读取 `start`，其中列出了本机工具及完整参数。通过主 Skill 的 resolver 也可定位 CLI。进入回执目录后执行以下命令。
+接班方先看回执目录中 `handoff.json` 的 `start`，其中有本次构建所用 CLI 的本机路径和参数。交接研究工作树时，注明其分支、提交和项目 resolver。从这棵工作树的根目录运行 `node .agents/skills/dol-dev-tools-paisley-park/scripts/resolve.cjs`，核对返回的 root、cli 和封存入口。研发树与正式安装可以显示相同版本号。如果解析失败，记录实际调用的 resolver 路径，先确认交接指定的是哪一份。定位后进入回执目录执行以下命令。
 
 ```sh
 node "$CLI" dev-receipt resume --receipt .
@@ -41,6 +41,8 @@ node "$CLI" dev-receipt resume --receipt .
 两个 `verify` 命令是只读操作。退出码 0 为匹配，2 为需要重建、失配或无法完成对照，先读 JSON 再决定下一步。命令错误退出 1。若回执是旧研究格式且没有可核对的原配方摘要，历史记录仍可读，明确比较时返回 `unknown`。
 
 `source: needs-rebuild` 可以与 `currentLoad: matched`、`behavior: passed` 同时出现。它表示当前源码和那次构建的输入字节不同，旧制品还在运行，历史行为仍通过。此时为新候选建立新回执；旧回执、旧文档及正在运行的制品照原样保留。HEAD 和 dirty 标记仅作来源信息，未纳入输入清单的 README、说明或 Evidence 不影响比较。配方不一致、输入缺失或无法安全读取时，源码结果为 `unknown`。
+
+人工复核时，从原配方的 `root` 取构建输入仓库，执行 `git -C "$SOURCE_ROOT" rev-parse HEAD`，对照 `build.json` 中的 `inputs.head` 和输入字节摘要。工具仓库、回执目录与构建输入可能位于不同 Git 根。需要证明磁盘上的 ZIP 仍是原包时，另对当前 ZIP 文件计算 SHA-256；页面中某个脚本的文本摘要只覆盖该脚本。
 
 ### 构建、派发与验证
 

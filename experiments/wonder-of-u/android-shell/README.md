@@ -66,11 +66,14 @@ Run-Native node (Join-Path $shellProject 'stage.cjs') $serial $live $python
 
 ```powershell
 $id = '<exact-live-page-id>'
-$captured = Run-Native node (Join-Path $shellProject 'observe.cjs') $serial $id $live $python
-$proof = ($captured -join "`n") | ConvertFrom-Json
-if ($proof.status -ne 'matched' -or $proof.cleanup -ne 'completed') { throw 'Owned document was not verified' }
-$proof | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $work 'live-first.json') -Encoding utf8NoBOM
+$record = Join-Path $shellProject 'record.cjs'
+Run-Native node $record (Join-Path $work 'live-first.json') matched $serial $id $live $python
+Run-Native node $record (Join-Path $work 'static-while-live.json') staged-bytes-differ $serial $id $static $python
 ```
+
+**设备窗口清单。** 先确认平板已由当前使用者释放，记录目标设备、Android 用户、包和获准测试 APK 的摘要。首次安装前确认包名空闲；接续已有安装时先核对其制品与隔离来源。选定已审核的 live/static ZIP 和可恢复方式，再按上面的步骤暂存、手动激活、发现目标。renderer 操作另需同一设备上无其他使用者且允许影响这个自有视图。把安装、激活和终止与只读采证分开执行。
+
+`record.cjs` 先独占创建本地证据文件，再调用现有观察器。输出路径已存在时退出 1，尚未访问设备；每次使用新的文件名。退出 0 表示本次结果符合所选预期。正例需要文档摘要和已完成的清理；上例的负对照检查当前活动制品与 static ZIP 字节不符，此时尚未比较 CDP 脚本。未知或非预期结果保存在 `result` 中，退出 2。异常中断留下的空文件或不完整记录不能作为完成证据。恢复后先查原 inbox、活动代次和已有证据，再决定下一步。
 
 记录的 ZIP 和成员摘要来自两侧。实载核对另向精确文档读取 `Debugger.getScriptSource`。只有脚本证据相同和绑定未变才报告 `matched`。壳的页面完成回调只表示其观察到的生命周期阶段。
 

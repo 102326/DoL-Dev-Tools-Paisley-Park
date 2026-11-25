@@ -7,6 +7,32 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { telemetry } = require('./observe.cjs');
 const { stage } = require('./stage.cjs');
+const { record } = require('./record.cjs');
+
+test('records exact expectations, preserves unknowns and reserves the output before observing', async t => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wonder-observation-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const cases = [
+    ['matched', { status: 'matched', cleanup: 'completed', documentSha256: 'a'.repeat(64) }, true],
+    ['matched', { status: 'unknown', reason: 'cleanup-unconfirmed', observedStatus: 'matched' }, false],
+    ['staged-bytes-differ', { status: 'mismatch', reason: 'staged-bytes-differ' }, true],
+    ['staged-bytes-differ', { status: 'unknown', reason: 'bound-cdp-unavailable' }, false],
+  ];
+  for (const [index, [expect, result, accepted]] of cases.entries()) {
+    const file = path.join(dir, index + '.json');
+    assert.equal((await record(file, expect, async () => result)).accepted, accepted);
+    assert.deepEqual(JSON.parse(fs.readFileSync(file)).result, result);
+  }
+  const failed = path.join(dir, 'failure.json');
+  await record(failed, 'matched', async () => { throw Error('private diagnostic'); });
+  const original = fs.readFileSync(failed);
+  assert.equal(JSON.parse(original).result.status, 'unknown');
+  assert(!original.includes('private diagnostic'));
+  let called = false;
+  await assert.rejects(record(failed, 'matched', async () => { called = true; }), { code: 'EEXIST' });
+  assert.equal(called, false);
+  assert.deepEqual(fs.readFileSync(failed), original);
+});
 
 test('retains stale segment attribution and reports callback drops apart from missed deadlines', () => {
   const sha = 'a'.repeat(64);
