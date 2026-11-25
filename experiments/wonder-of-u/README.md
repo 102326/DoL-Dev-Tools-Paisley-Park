@@ -68,3 +68,21 @@ collector 已改为每次导出创建独立新子目录，再执行导出并读�
 暂不新增产品能力的判断继续成立，现在增加了真实中性采集的使用依据。中性采集已使用 7.2；旧真实游戏采集脚本仍硬编码要求 7.0.0，本轮只读确认该约束仍在，未运行或验证其与 7.2 的兼容性。两条路径分别记录。
 
 固定游戏输入恢复及真实内容交接由加载器原对话推进，本调查不增加其流程要求、不占用设备或浏览器。正式 7.2 的 main、tag、Release 与资产保持不变。本次仅更新研究记录，无需重新打包。
+
+## 8.0 Wonder of U 研发接续（2026-11-25）
+
+正式研究从 7.2 接续。当前 Sticky Fingers 现用 collector 已要求 7.2.0。历史采集脚本的 7.0.0 约束仍属于各自入口。
+
+- [Mac 验证记录](MAC_VALIDATION.md)含 Sticky Fingers 的真实源码小修、研发回执、CDP 实载、两个 Codex 会话的接续对照和 Soft & Wet 中性验证。
+- [Windows / Android 接续](android-shell/README.md)含独立 Kotlin 壳、同平板容器与渲染对照、旧证据和 renderer 恢复验收。
+
+### 单人或跨会话打开研发回执
+
+在实验工作树运行 `node experiments/wonder-of-u/dev-receipt.cjs --help`。先确定构建输入、候选制品和原目标，再由操作者推进阶段。
+
+1. `build --receipt NEW_DIR --recipe LOCAL_JSON`。配方使用 `schemaVersion: 1`，包含项目根 `root`、本地 Node 构建器 `driver`、其 `args`、新 ZIP 路径 `artifact`、项目内相对 `inputs`、`python`、选定 `scriptMember` 和 `transformation`。构建器在项目根工作，并在 stdout 返回真实输入图的 `{"inputs":[...]}`。用 `utf8`、`utf8-strip-bom` 或已核对的 `utf8-inline-html`。配方是本地可执行配置，开始前核对其驱动和参数。
+2. `deploy-begin --receipt DIR --host PC_HOST --artifact ZIP --script-path /release.js`。先核对当前实载。已经匹配时直接进入行为阶段；新意图返回 `unknown` 并允许原操作者按配方派发一次。命令本身只观察与记录。实际派发流程明确确认新文档后，可用 `deploy-ack --receipt DIR --host FRESH_PC_HOST` 留证。
+3. 中断后先运行 `status --receipt DIR`。把原回执目录、目标绑定、制品和安全探针交给下一位操作者，绝对路径保留本机。对未决派发，先观察原 Profile、进程和目标，再用 7.2 `pc-bind` 明确选择新文档。用 `check-load --receipt DIR --host FRESH_PC_HOST --script-path /release.js` 比较实载；出现 unknown、mismatch 或错代时先处理实情，不补派发、不补写确认。
+4. 实载匹配后，用 7.2 `pc-observe` 或经批准的 `pc-action` 在同一文档生成含探针的 Evidence。用 `check-behavior --receipt DIR --host FRESH_PC_HOST --evidence NEW_EVIDENCE --probe PROBE_JS --expect EXPECTED_JSON` 核对。每次 Evidence 使用新目录，保留失配结果。
+
+除 URL 映射外，入口参数均使用绝对路径。回执和 Evidence 由操作者保留在本地，复跑较低成本的中性案例请用上面的两条测试入口。
