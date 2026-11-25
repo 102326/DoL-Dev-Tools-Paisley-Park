@@ -8,10 +8,11 @@ const { promisify } = require('node:util');
 const { performance } = require('node:perf_hooks');
 const exec = promisify(execFile);
 
-async function liveHandoff({ codex, dir, mode, context, operations }) {
+async function liveHandoff({ codex, dir, mode, context, operations, instructions, writableOut }) {
   fs.mkdirSync(dir, { mode: 0o700 });
   fs.copyFileSync(path.join(__dirname, 'handoff-probe.cjs'), path.join(dir, 'handoff-probe.cjs'), fs.constants.COPYFILE_EXCL);
   const prompt = [
+    ...(instructions ?? [
     'This is an owned neutral browser handoff. Continue from the supplied deploy handoff using live evidence.',
     'The browser is already running. You may invoke the following fixed commands from this work directory:',
     'node handoff-probe.cjs observe',
@@ -19,10 +20,11 @@ async function liveHandoff({ codex, dir, mode, context, operations }) {
     'node handoff-probe.cjs check-behavior',
     'Decide the order and run one at a time. Use each result to decide if you can continue. Stop on failure.',
     'Do not use other commands, inspect unrelated files, or retry a dispatch. Report loading, behavior and deploy acknowledgement separately.',
+    ]),
     JSON.stringify(context),
   ].join('\n');
   const start = performance.now();
-  const child = exec(codex, ['exec', '--ephemeral', '--skip-git-repo-check', '-s', 'workspace-write', '--json', prompt],
+  const child = exec(codex, ['exec', '--ephemeral', '--skip-git-repo-check', '-s', 'workspace-write', ...(writableOut ? ['--add-dir', writableOut] : []), '--json', prompt],
     { cwd: dir, timeout: 120000, maxBuffer: 1024 * 1024, windowsHide: true });
   child.child.stdin.end();
   let finished = false, output, processOk = false;

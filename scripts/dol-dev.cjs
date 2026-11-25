@@ -1,4 +1,4 @@
-// Generated from dol-dev.cts by TypeScript 6.0.2; source-lf-sha256=9d3991466ae67d7544a7746f65a955972485200a709da11dea4b19036a745500
+// Generated from dol-dev.cts by TypeScript 6.0.2; source-lf-sha256=871821b5d0061d442d308735a110c9a56168a467267972e7e492e4a2178249cf
 "use strict";
 const fs = require('node:fs');
 const path = require('node:path');
@@ -46,6 +46,9 @@ const help = `${displayName} ${version}${releaseName ? ' — ' + releaseName : '
   action | journey --file LOCAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     Optional: --authorization-file HOST_GRANTED_SCOPE_JSON --store ORIGINAL_SHARED_SQLITE
     data-reset clears scoped App data and records native generation proof; no Store/TargetKey substitution.
+  dev-receipt --help
+    Research branch development handoff: build, status, verify-source, verify-current and document-bound load/behavior checks.
+    See docs/DEV_RECEIPT.md. Use an explicit reviewed local recipe and an owned Chrome target.
   source-find --root REVIEWED_ABSOLUTE_SOURCE --file QUERY_JSON --out NEW_JSON [--revision REVIEWED_REF]
     Read-only source candidates: Passage/widget/text/selector/event/symbol/path; no device or Goal.
     Query schema: schemas/source-find-query-v1.schema.json. Partial results are written with exit code 2.
@@ -195,6 +198,10 @@ async function main(args = process.argv.slice(2)) {
         const options = parse(args, command === 'pc-observe' ? ['--host-file', '--out', '--scope', '--probe'] : ['--host-file', '--file', '--out', '--scope', '--probe', '--test-environment']);
         const report = await require('./lib/pc-session.cjs').capture(options, command === 'pc-action');
         console.log(JSON.stringify({ status: report.status, businessOutcome: report.businessOutcome, automaticReplay: false }));
+    }
+    else if (command === 'dev-receipt') {
+        const receipt = require('./lib/dev-receipt.cjs');
+        await receipt.run(args);
     }
     else if (command === 'source-find') {
         const options = parse(args, ['--root', '--file', '--out', '--revision']);

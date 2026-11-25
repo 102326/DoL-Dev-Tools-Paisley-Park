@@ -70,7 +70,7 @@ test('a failed CLI build has no verified artifact and cannot authorize dispatch'
   assert.equal(JSON.parse(failed.stderr).code, 'BUILDER_FAILED');
   assert(!failed.stderr.includes('private build output') && !failed.stderr.includes(root));
   assert.equal(JSON.parse(run('status').stdout).next, 'fix-build-and-start-new-receipt');
-  const dispatch = run('deploy-begin', '--host', path.join(root, 'never-opened.json'), '--artifact', artifact, '--script-path', '/release.js');
+  const dispatch = run('deploy-begin', '--recipe', recipe, '--host', path.join(root, 'never-opened.json'), '--artifact', artifact, '--script-path', '/release.js');
   assert.equal(JSON.parse(dispatch.stderr).code, 'BUILD_NOT_VERIFIED');
   assert(!fs.existsSync(path.join(dir, 'deployment-intent.json')));
 });

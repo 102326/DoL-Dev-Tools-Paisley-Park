@@ -10,7 +10,6 @@ const { connect } = require('../../scripts/lib/cdp.cjs');
 const { digest, readStage } = require('./receipt.cjs');
 const exec = promisify(execFile);
 const cli = path.resolve(__dirname, '../../scripts/dol-dev.cjs');
-const receiptCli = path.join(__dirname, 'dev-receipt.cjs');
 const driver = path.join(__dirname, 'fixtures/build-soft-wet.cjs');
 const [root, chrome, out, port, python = 'python3'] = process.argv.slice(2);
 const source = 'src/theme/acrylic.ts';
@@ -24,7 +23,7 @@ async function main() {
     return file(name);
   };
   const run = (entry, args) => exec(process.execPath, [entry, ...args], { timeout: 30000, maxBuffer: 1024 * 1024, windowsHide: true });
-  const receipt = async (op, name, ...args) => JSON.parse((await run(receiptCli, [op, '--receipt', file(name), ...args])).stdout);
+  const receipt = async (op, name, ...args) => JSON.parse((await run(cli, ['dev-receipt', op, '--receipt', file(name), ...args])).stdout);
   const query = write('query.json', { schemaVersion: 1, clues: [{ kind: 'text', value: 'function acrylicParameters' }] });
   await run(cli, ['source-find', '--root', root, '--file', query, '--out', file('location.json')]);
   const location = JSON.parse(fs.readFileSync(file('location.json'), 'utf8'));
@@ -71,7 +70,7 @@ async function main() {
     await waitFixture();
     await receipt('check-load', 'live', '--host', initial, '--script-path', '/release.js');
     await checkBehavior(initial, 'live', 'blur(22px)');
-    await receipt('deploy-begin', 'static', '--host', initial, '--artifact', file('static.zip'), '--script-path', '/release.js');
+    await receipt('deploy-begin', 'static', '--recipe', file('static.recipe.json'), '--host', initial, '--artifact', file('static.zip'), '--script-path', '/release.js');
     const staticBundle = bundleFor('static');
     const replacement = staticBundle.files.get('/release.js');
     assert.equal(digest(replacement.bytes), readStage(file('static'), 'build').artifact.representative.byteSha256);

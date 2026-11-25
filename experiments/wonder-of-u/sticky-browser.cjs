@@ -13,7 +13,6 @@ const { compareHandoffs } = require('./fixtures/codex-handoff.cjs');
 const { digest, readStage } = require('./receipt.cjs');
 const exec = promisify(execFile);
 const cli = path.resolve(__dirname, '../../scripts/dol-dev.cjs');
-const receiptCli = path.join(__dirname, 'dev-receipt.cjs');
 const driver = path.join(__dirname, 'fixtures/build-sticky.cjs');
 const component = 'experiments/native-contract/startup-diagnostics.ts';
 const [root, dependencyRoot, chrome, out, portText, python = 'python3'] = process.argv.slice(2);
@@ -21,9 +20,11 @@ const port = Number(portText);
 const fault = process.env.WONDER_DISPATCH_FAULT ?? 'timeout';
 const codex = process.env.WONDER_CODEX;
 const liveMode = process.env.WONDER_LIVE_CODEX;
+const twoRounds = process.env.WONDER_TWO_ROUNDS === '1';
 
 async function main() {
   assert(['timeout', 'disconnect'].includes(fault));
+  assert(!twoRounds || !liveMode && codex && path.isAbsolute(codex));
   assert(!liveMode || ['legacy', 'receipt'].includes(liveMode) && codex && path.isAbsolute(codex));
   assert([root, dependencyRoot, chrome, out].every(value => typeof value === 'string' && path.isAbsolute(value)));
   fs.mkdirSync(out, { mode: 0o700 });
@@ -31,7 +32,7 @@ async function main() {
   const write = (name, value) => { fs.writeFileSync(file(name), typeof value === 'string' ? value : JSON.stringify(value), { flag: 'wx', mode: 0o600 }); return file(name); };
   const run = (entry, args) => exec(process.execPath, [entry, ...args], { timeout: 30000, maxBuffer: 1024 * 1024, windowsHide: true });
   const command = async (entry, args) => JSON.parse((await run(entry, args)).stdout);
-  const receipt = (op, name, ...args) => command(receiptCli, [op, '--receipt', file(name), ...args]);
+  const receipt = (op, name, ...args) => command(cli, ['dev-receipt', op, '--receipt', file(name), ...args]);
   const expectError = async (code, name, op, ...args) => {
     await assert.rejects(receipt(op, name, ...args), error => {
       const result = JSON.parse(error.stderr);
@@ -87,12 +88,12 @@ async function main() {
     results.sameHeadBothDirtyDistinguished = true;
     await expectError('LOADED_ARTIFACT_MISMATCH', 'candidate', 'check-load', '--host', oldHost, '--script-path', '/release.js');
     await expectError('PREDEPLOY_OBSERVATION_UNKNOWN', 'candidate', 'deploy-begin',
-      '--host', oldHost, '--artifact', file('candidate.zip'), '--script-path', '/not-observed.js');
+      '--recipe', file('candidate.recipe.json'), '--host', oldHost, '--artifact', file('candidate.zip'), '--script-path', '/not-observed.js');
     assert(!readStage(file('candidate'), 'deployment-intent'));
     results.unknownMappingBlocked = true;
-    const begin = await receipt('deploy-begin', 'candidate', '--host', oldHost, '--artifact', file('candidate.zip'), '--script-path', '/release.js');
+    const begin = await receipt('deploy-begin', 'candidate', '--recipe', file('candidate.recipe.json'), '--host', oldHost, '--artifact', file('candidate.zip'), '--script-path', '/release.js');
     assert.equal(begin.deployment, 'unknown');
-    await expectError('DEPLOY_ALREADY_RECORDED', 'candidate', 'deploy-begin', '--host', oldHost, '--artifact', file('candidate.zip'), '--script-path', '/release.js');
+    await expectError('DEPLOY_ALREADY_RECORDED', 'candidate', 'deploy-begin', '--recipe', file('candidate.recipe.json'), '--host', oldHost, '--artifact', file('candidate.zip'), '--script-path', '/release.js');
     await expectError('NEW_DOCUMENT_REQUIRED', 'candidate', 'check-load', '--host', oldHost, '--script-path', '/release.js');
     cdp = await connect(browser.record.target.endpoint, 10000, () => {}, browser.record.target.targetId);
     const resource = load(html, write('candidate-resources.json', { schemaVersion: 1, resources: [{ urlPath: '/release.js', file: file('candidate.zip.bundle.js') }] })).files.get('/release.js');
@@ -169,9 +170,9 @@ async function main() {
       results.passed = true;
       return;
     }
-    if (process.env.WONDER_CODEX) {
+    if (codex && !twoRounds) {
       results.sessionComparison = await compareHandoffs({
-        codex: process.env.WONDER_CODEX, out,
+        codex, out,
         context: { stage: 'The reload request was issued once and its reply was not available to this operator. The original neutral target now has a new document. A completed focus capture exists for the previous document.',
           purpose: 'Verify the candidate is really loaded and focus returns to the diagnostics toggle after collapse.',
           expectedArchiveSha256: candidate.artifactSha256, expectedScriptSha256: b.artifact.representative.byteSha256,
@@ -205,10 +206,120 @@ async function main() {
     results.resume = { before: resume.next, after: complete.next, dispatchAcknowledgement: complete.deployment, load: complete.load, behavior: complete.behavior, candidateSha256: candidate.artifactSha256 };
     const duplicate = await receipt('build', 'same-candidate', '--recipe', recipe('same-candidate'));
     assert.equal(duplicate.artifactSha256, candidate.artifactSha256);
-    const skipped = await receipt('deploy-begin', 'same-candidate', '--host', freshHost, '--artifact', file('same-candidate.zip'), '--script-path', '/release.js');
+    const skipped = await receipt('deploy-begin', 'same-candidate', '--recipe', file('same-candidate.recipe.json'), '--host', freshHost, '--artifact', file('same-candidate.zip'), '--script-path', '/release.js');
     assert.equal(skipped.deployment, 'not-dispatched'); assert.equal(skipped.load, 'matched');
     assert(!readStage(file('same-candidate'), 'deployment-intent'));
     results.correctPackageNotRedeployed = true;
+    if (twoRounds) {
+      const firstRecipe = file('candidate.recipe.json');
+      const blockedRecipe = recipe('stale-no-intent');
+      await receipt('build', 'stale-no-intent', '--recipe', blockedRecipe);
+      const currentArgs = ['--recipe', firstRecipe, '--host', freshHost, '--script-path', '/release.js'];
+      const initiallyCurrent = await receipt('verify-current', 'candidate', ...currentArgs);
+      assert.equal(initiallyCurrent.source, 'matched');
+      assert.equal(initiallyCurrent.currentLoad, 'matched');
+      const historical = ['build', 'load', 'behavior'].map(stage => fs.readFileSync(path.join(file('candidate'), stage + '.json')));
+      const readme = path.join(root, 'README.md');
+      const readmeBefore = fs.readFileSync(readme);
+      try {
+        fs.appendFileSync(readme, '\nNeutral README comparison.\n');
+        assert.equal((await receipt('verify-current', 'candidate', ...currentArgs)).source, 'matched');
+      } finally { fs.writeFileSync(readme, readmeBefore); }
+      const refreshLine = "action('refresh', '刷新诊断', refresh);";
+      const firstSource = fs.readFileSync(source, 'utf8');
+      assert.equal(firstSource.split(refreshLine).length, 2);
+      fs.writeFileSync(source, firstSource.replace(refreshLine, "action('refresh', '刷新诊断', () => { refresh(); if (alive && reportRegion.dataset.stale === 'false') status.textContent += ' 已刷新。'; });"));
+      const partial = async (...args) => {
+        try { await receipt('verify-current', 'candidate', ...args); }
+        catch (error) { assert.equal(error.code, 2); return JSON.parse(error.stdout); }
+        assert.fail('Expected exit 2 from explicit verification');
+      };
+      const drift = await partial(...currentArgs);
+      assert.deepEqual([drift.source, drift.currentLoad, drift.behavior, drift.next],
+        ['needs-rebuild', 'matched', 'passed', 'build-current-source-in-new-receipt']);
+      const uncertain = source + '.comparison-hold';
+      assert(!fs.existsSync(uncertain));
+      fs.renameSync(source, uncertain);
+      try { assert.equal((await partial(...currentArgs)).source, 'unknown'); }
+      finally { fs.renameSync(uncertain, source); }
+      assert.equal((await cdp.send('Page.getFrameTree')).frameTree.frame.loaderId, target.loaderId);
+      assert.deepEqual(['build', 'load', 'behavior'].map(stage => fs.readFileSync(path.join(file('candidate'), stage + '.json'))), historical);
+
+      const secondRecipe = recipe('second');
+      const refresh = write('refresh-action.json', { type: 'web-click', selector: '#sf-startup-diagnostics [data-action=refresh]' });
+      const refreshProbe = write('refresh.probe.js', `({ announced: document.querySelector('#sf-startup-status').textContent.endsWith(' 已刷新。') })`);
+      const refreshExpected = write('refresh.expected.json', { announced: true });
+      const invocation = (operation, dir, ...args) => ['node', cli, 'dev-receipt', operation, '--receipt', dir, ...args].map(v => JSON.stringify(v)).join(' ');
+      const secondHost = file('binding-second.json');
+      const handoff = await liveHandoff({
+        codex, dir: file('round-two-operator'), mode: 'two-rounds', writableOut: out,
+        context: { historicalBehavior: 'passed', reasonForHandoff: 'The second reviewed source edit is present. The first document is still running.' },
+        instructions: [
+          'Own the continuation on this neutral fixture. Read the first receipt, confirm source drift and build the second candidate with the built Paisley Park CLI.',
+          invocation('status', file('candidate')),
+          invocation('verify-source', file('candidate'), '--recipe', firstRecipe) + ' (exit 2 means rebuild with the new recipe)',
+          invocation('build', file('second'), '--recipe', secondRecipe),
+          'Then run these owned browser operations in order. Each writes independent evidence through the same built CLI.',
+          'node handoff-probe.cjs observe',
+          'node handoff-probe.cjs check-load',
+          'node handoff-probe.cjs check-behavior',
+          'Check each result and stop if it fails. Never retry a deployment. Report whether the new refresh actually announced success.',
+        ],
+        operations: {
+          observe: async () => {
+            const second = readStage(file('second'), 'build');
+            assert.equal(second.inputs.head, b.inputs.head);
+            assert(second.inputs.dirty && second.inputs.sha256 !== b.inputs.sha256);
+            await expectError('BUILD_SOURCE_DRIFT', 'stale-no-intent', 'deploy-begin',
+              '--recipe', blockedRecipe, '--host', freshHost, '--script-path', '/release.js');
+            assert(!readStage(file('stale-no-intent'), 'deployment-intent'));
+            assert.equal(await cdp.evaluate(`document.querySelector('#sf-startup-status').textContent.endsWith(' 已刷新。')`), false);
+            const prep = await receipt('deploy-begin', 'second', '--recipe', secondRecipe, '--host', freshHost, '--script-path', '/release.js');
+            assert.equal(prep.deployment, 'unknown');
+            const resources = write('second-resources.json', { schemaVersion: 1, resources: [{ urlPath: '/release.js', file: file('second.zip.bundle.js') }] });
+            const next = load(html, resources).files.get('/release.js');
+            assert.equal(digest(next.bytes), second.artifact.representative.byteSha256);
+            bundle.files.set('/release.js', next);
+            await cdp.send('Page.reload', { ignoreCache: true });
+            const limit = Date.now() + 5000;
+            let ready = false;
+            while (Date.now() < limit) {
+              const frame = (await cdp.send('Page.getFrameTree')).frameTree.frame;
+              ready = frame.loaderId !== target.loaderId && frame.url === server.url &&
+                await cdp.evaluate(`!!document.querySelector('#sf-startup-toggle')`);
+              if (ready) break;
+              await new Promise(resolve => setTimeout(resolve, 30));
+            }
+            assert(ready);
+            await run(cli, ['pc-bind', '--host-file', freshHost, '--target-id', browser.record.target.targetId, '--url', server.url, '--out', secondHost]);
+            await receipt('deploy-ack', 'second', '--host', secondHost);
+            return { boundNewDocument: true, dispatchCount: 1 };
+          },
+          'check-load': async () => {
+            const verified = await receipt('check-load', 'second', '--host', secondHost);
+            assert.equal(verified.load, 'matched');
+            return { load: verified.load };
+          },
+          'check-behavior': async () => {
+            await command(cli, ['pc-action', '--host-file', secondHost, '--file', refresh, '--out', file('refresh-action-sample'),
+              '--scope', '#sf-startup-diagnostics', '--probe', refreshProbe, '--test-environment', 'yes']);
+            const final = await receipt('check-behavior', 'second', '--host', secondHost, '--evidence', file('refresh-action-sample'),
+              '--probe', refreshProbe, '--expect', refreshExpected);
+            assert.equal(final.next, 'complete');
+            return { announced: true, next: final.next };
+          },
+        },
+      });
+      assert(handoff.complete, 'Second-round Codex handoff did not finish');
+      const secondCurrent = await receipt('verify-current', 'second', '--recipe', secondRecipe, '--host', secondHost);
+      assert.deepEqual([secondCurrent.source, secondCurrent.currentLoad, secondCurrent.behavior], ['matched', 'matched', 'passed']);
+      results.secondRound = {
+        handoff, firstReceiptUnchanged: true, sameDocumentDuringDrift: true, unrelatedReadmeIgnored: true,
+        drift: { source: drift.source, currentLoad: drift.currentLoad, previousBehavior: drift.behavior },
+        unavailableInputWasUnknown: true, newBehavior: secondCurrent.behavior, candidateSha256: secondCurrent.artifactSha256,
+      };
+    }
+
     results.browser = browser.record.browserVersion;
     results.passed = true;
   } finally {

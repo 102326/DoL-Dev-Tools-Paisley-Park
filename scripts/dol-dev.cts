@@ -48,6 +48,9 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
   action | journey --file LOCAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     Optional: --authorization-file HOST_GRANTED_SCOPE_JSON --store ORIGINAL_SHARED_SQLITE
     data-reset clears scoped App data and records native generation proof; no Store/TargetKey substitution.
+  dev-receipt --help
+    Research branch development handoff: build, status, verify-source, verify-current and document-bound load/behavior checks.
+    See docs/DEV_RECEIPT.md. Use an explicit reviewed local recipe and an owned Chrome target.
   source-find --root REVIEWED_ABSOLUTE_SOURCE --file QUERY_JSON --out NEW_JSON [--revision REVIEWED_REF]
     Read-only source candidates: Passage/widget/text/selector/event/symbol/path; no device or Goal.
     Query schema: schemas/source-find-query-v1.schema.json. Partial results are written with exit code 2.
@@ -168,6 +171,9 @@ async function main(args:string[] = process.argv.slice(2)) {
   }else if(['pc-observe','pc-action'].includes(command)){
     const options=parse(args,command==='pc-observe'?['--host-file','--out','--scope','--probe']:['--host-file','--file','--out','--scope','--probe','--test-environment']);
     const report=await (require('./lib/pc-session.cjs') as typeof import('./lib/pc-session.cjs')).capture(options,command==='pc-action');console.log(JSON.stringify({status:report.status,businessOutcome:report.businessOutcome,automaticReplay:false}));
+  }else if(command==='dev-receipt'){
+    const receipt = require('./lib/dev-receipt.cjs') as { run(args:string[]):Promise<void> };
+    await receipt.run(args);
   }else if(command==='source-find'){
     const options=parse(args,['--root','--file','--out','--revision']);
     const {result,cleanup}=await (require('./lib/source-find-cli.cjs') as typeof import('./lib/source-find-cli.cjs')).run(options);
