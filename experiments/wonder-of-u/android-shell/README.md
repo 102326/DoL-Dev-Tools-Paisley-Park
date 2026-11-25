@@ -1,6 +1,6 @@
 # Wonder of U · Windows / Android 接续
 
-这是独立的 Kotlin 研发测试壳，包名为 `org.paisleypark.wondershell`。Mac 已验证两份中性制品的 Chrome 行为和 Node 接收端的合成数据。Windows 已通过 Gradle 构建 APK，并从成品核对包名、入口、SDK 级别和调试签名。设备上的 ADB 传输、换包、实载和 renderer 重建仍待验证。[Windows 构建记录](../WINDOWS_E46_HANDOFF.md#android-壳的本地构建)
+这是独立的 Kotlin 研发测试壳，包名为 `org.paisleypark.wondershell`。Mac 已验证两份中性制品的 Chrome 行为和 Node 接收端的合成数据。Windows 已构建并核验调试 APK。在一台 Android 17 平板上，已验证 ADB 传输、两份制品实载、一次宿主帧采样和受控 renderer 重建。[Windows 构建记录](../WINDOWS_E46_HANDOFF.md#android-壳的本地构建) · [平板实测与限制](DEVICE_HANDOFF.md)
 
 ## 宿主与前提
 

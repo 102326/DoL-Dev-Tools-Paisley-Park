@@ -60,13 +60,24 @@ test('requires a matching read-back before promoting the staged fixture', (t) =>
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wonder-stage-'));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const zip = path.join(dir, 'fixture.zip');
-  execFileSync(python, ['-c', 'import sys, zipfile\nwith zipfile.ZipFile(sys.argv[1], "x") as z:\n z.writestr("index.html", "<html></html>"); z.writestr("release.js", "void 0;")', zip]);
+  execFileSync(python, ['-c', `import sys, zipfile
+with zipfile.ZipFile(sys.argv[1], "x") as archive:
+    archive.writestr("index.html", "<html></html>")
+    archive.writestr("release.js", "void 0;")
+    archive.comment = bytes([26, 0, 255])`, zip]);
+  const original = fs.readFileSync(zip);
+  assert(original.includes(0x1a));
   let bytes;
   const calls = [];
   const adb = (_, args, options) => {
     calls.push(args[2] === 'shell' && args[3] === '-T' ? 'stdin' : args[2]);
     assert.deepEqual(args.slice(0, 2), ['-s', 'isolated-fixture']);
-    if (args[2] === 'shell' && args[3] === '-T') bytes = options.input;
+    if (args[2] === 'shell' && args[3] === '-T') {
+      assert.match(args[4], /set -C; base64 -d >/);
+      assert.match(options.input, /^[A-Za-z0-9+/]+=*\n$/);
+      bytes = Buffer.from(options.input, 'base64');
+      assert.deepEqual(bytes, original);
+    }
     if (args[2] === 'exec-out') return bytes;
     return Buffer.alloc(0);
   };

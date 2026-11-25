@@ -24,7 +24,8 @@ function stage(serial, zip, python, invoke = execFileSync) {
   const inbox = 'files/fixture-inbox.zip';
   try {
     // Remote shell text is fixed. Noclobber preserves a partial transfer from an earlier uncertain attempt.
-    adb(['shell', '-T', `run-as ${packageId} sh -c 'set -C; cat > ${partial}'`], bytes);
+    // Windows adb shell stdin may treat a ZIP's 0x1a as EOF. Decode inside the owned app before read-back.
+    adb(['shell', '-T', `run-as ${packageId} sh -c 'set -C; base64 -d > ${partial}'`], bytes.toString('base64') + '\n');
     if (digest(adb(['exec-out', 'run-as', packageId, 'cat', partial])) !== archive.sha256)
       throw Error('Transfer digest mismatch');
     adb(['shell', 'run-as', packageId, 'mv', partial, inbox]);
