@@ -251,7 +251,7 @@ function verificationNext(source, next) {
 async function main(argvInput) {
   const [command, ...argv] = argvInput;
   if (!command || command === '--help') {
-    console.log('Wonder of U research CLI (owned neutral targets only)');
+    console.log('Wonder of U research CLI for authorized builds and isolated local Chrome targets');
     for (const [name, fields] of Object.entries(commands)) {
       const option = field => `--${field} ${field === 'step' ? 'STEP_FROM_RESUME' : field === 'script-path' ? 'OWNED_URL_PATH' : 'ABS_PATH'}`;
       console.log(`  ${name} ${[...fields.map(option), ...(optional[name] ?? []).map(field => `[${option(field)}]`)].join(' ')}`);
