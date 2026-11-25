@@ -6,7 +6,7 @@
 
 只读调查、截图、CSS 或普通点击使用现有 Debug、Action/Journey、源码工具；需要持久目标、累计预算和未知副作用恢复时才使用 GER。Component Lab 用于真实组件的快速迭代，不证明游戏业务或正式包已加载。原任务只要求诊断时，可交付已证明的原因及未验证范围，不要求为了完成流程制造补丁或编译。
 
-Wonder of U 研究分支提供 [研发回执](DEV_RECEIPT.md)。在需要跨会话接续构建与部署时，从构建后的 CLI 运行 `dev-receipt --help`，用 `status` 读取历史进度，按需核对当前源码和已绑定文档。
+Wonder of U 研究分支提供 [研发回执](DEV_RECEIPT.md)。在需要跨会话接续构建与部署时，从构建后的 CLI 运行 `dev-receipt --help`，接手时在原回执目录运行 `dev-receipt resume --receipt .`，按实际发现继续。
 
 ## 跨步骤保持正确对象
 

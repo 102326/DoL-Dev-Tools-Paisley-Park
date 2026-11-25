@@ -53,3 +53,32 @@ CLI 漂移回归在旧入口缺少该能力时失败，生成正式入口后的�
 - Sticky 的两处源码修补发生在验收工作树。回执实验的历史证据归属于固定组件与中性页面。UI 的配方以保守构建清单覆盖正式打包输入，包括实际收入包内的文档。这组证据未覆盖未声明的新输入、外部依赖安装字节变化或采样之间编辑后还原。
 - 成对核对证明两个原 ZIP 的来源和绑定文档内的代表性脚本。UI 回合跑真实的设置组件，生命周期和设置证据属于此中性启动路径。真实 ModLoader 安装、早期脚本和补丁在实际游戏中的执行分别验收。
 - Windows 路径与文件系统、实际 Android APK/设备和真实游戏加载链留到家庭端。[独立 Android 接续](android-shell/README.md)记录测试壳、同平板指标和 renderer 重建的验收步骤。
+
+## 2026-11-25 · 从回执目录独立接手
+
+起点为 `c44012f8dcf206c35cc2ff1b98f3329bca4cd729`。当时 `status` 只能读取历史，原配方、绑定、探针和预期要从回执以外寻找。本轮围绕同机、受信任的任务目录增加 `prepare-handoff`、只读 `resume` 和显式 `continue`，实际命令与退出语义见[研发回执](../../docs/DEV_RECEIPT.md)。
+
+| 场景 | 实际观察 |
+| --- | --- |
+| Sticky Fingers，单个新会话只收到目录 | 交班方封存后移走外部配方、探针、预期文件，并使原文档过期。接班方从目录内 `handoff.json.start` 找到构建后的 CLI。沙箱内读到 `cdp-unavailable`，取得本机回环访问权限后读到 `document-changed`。按建议完成原 Tab 重绑、实载核对和标准 Evidence 采集。诊断入口存在，中性标记与预期相符。 |
+| Soft & Wet，第二个独立接手场景 | 隔离固定 UI checkout `f24a0dfb0d03f015993899c2eb9bf09d924e62ae`，经原 tooling/framework/package 入口重建成对 ZIP，沿用前期中性启动页。新会话从主 Skill 的 resolver 和回执目录进入，同样成功重绑、核对 Host/UI 两个角色和检查 UI 设置入口及 Host surface。首次沙箱诊断过于笼统，随后让成对结果保留各角色未确认原因。 |
+| 通过后再刷新 | 两个项目均转为 `inspect-replacement-document`。旧行为保留 `passed`，新文档无法继承该证明。关闭 Chrome 后独立包的状态检查仍可读到历史，只建议检查原目标。 |
+| 旧包、派发后未取得确认 | Sticky 原页面运行不同脚本。记录派发意图后只读入口要求观察原派发。夹具切换资源并刷新一次，恢复时重绑并得出实载匹配、行为通过；`deployment` 始终为 `unknown`，没有生成 ACK。 |
+| 构建及输入反例 | 真实非零驱动产生 `BUILDER_FAILED`，`resume` 指出 `driver`，三个继续步骤均受阻。不同配方被 `HANDOFF_RECIPE_MISMATCH` 拒绝。封存探针改变、历史通过使用不同预期、原目标不可达分别有诊断。驱动 stderr 和私人路径未进入这些诊断输出。 |
+
+运行环境为 macOS 27.2.1 arm64、Node 26.13.0、独立 Chrome 157。两条目录接手的回执均为 `not-dispatched`，初始正确包已在现场。每次有意使绑定过期只需一次显式重绑；这轮的摩擦来自原输入发现和回环访问诊断。没有做 MCP 保活或吞吐对照。
+
+可复跑入口如下。前置输入为本页前面记录的 `sticky-final`、`ui-pair-final` 中性任务目录。UI 使用固定 checkout 的独立副本，保留组件依赖并使用全新 dist 槽。运行前检查自有 Chrome、回环访问和本机端口 19185/19186。输出目录须尚不存在。
+
+```sh
+env WONDER_INDEPENDENT=yes node experiments/wonder-of-u/directory-handoff.cjs sticky "$STICKY_PREVIOUS" "$NEW_STICKY" "$CHROME"
+node experiments/wonder-of-u/directory-handoff.cjs ui "$UI_PREVIOUS" "$NEW_PAIR" "$CHROME" "$ISOLATED_UI_CHECKOUT"
+env WONDER_PENDING=yes node experiments/wonder-of-u/directory-handoff.cjs sticky "$STICKY_PREVIOUS" "$NEW_PENDING" "$CHROME"
+node --test tests/dev-receipt.test.cjs experiments/wonder-of-u/receipt.test.cjs
+node tools/typescript/build.cjs --check
+npm test
+```
+
+在前两个命令各自输出 READY 后，让独立会话打开回执目录并完成核验；夹具会在行为回执出现后另验替换文档。标准 Evidence、私有路径和浏览器记录保留本地。没有将截图或原始会话日志纳入源码。Sticky ZIP SHA-256 为 `acfb79a17d0159e048c22cc6f26cb5b80fefe6c7a80712a7dab9044d879ce28c`，UI 的 Host 和 UI ZIP 分别为 `977ca493629d1fd71ea47e04eae3b7ca7e1b9fdef6ba20a624fbe78993680369` 和 `3932a415a56d7f4564e1e51ace73bf7e7392843ed72be01dbf8fecf23d4c68ef`。
+
+定向测试 7 项通过；Node 全量 669 项，668 通过，1 项 Windows 独占文件句柄测试在 Mac 跳过。严格构建产物核对通过。用 Git 导出清单生成独立 ZIP，425 个文件，只有一个主 Skill；在无工具根目录覆盖的环境从包内默认 resolver 找到该包 CLI，调用帮助并核对两份已关闭浏览器的回执。5.1 的旧选路实验仍可从源码固定提交阅读。未变更全局安装。Windows、Kotlin APK、Android 实机和真实游戏加载仍需在对应环境验收。

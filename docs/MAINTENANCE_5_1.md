@@ -9,7 +9,7 @@
 | 工作包 | 实际交付 |
 |---|---|
 | P1 | GAMEPLAY 的三次无进展改为真实 routeHints 语义，不自动封路；Help 区分支持 seconds 的采集器；Node22 SQLite 示例补齐；安装后不再保证下一回合自动发现。保留冻结历史语境。 |
-| P2 | 主 Skill 从36111缩到8261字节，先选 Debug、Action/Journey、源码构建、GER、安装排障等路径。49段任务规则迁入现有权威文档，身份、授权、Evidence、Unknown 与恢复规则仍在。六个固定提示的静态前后评估见 [路由记录](SKILL_ROUTING_5_1.md)，不是成功率基准。 |
+| P2 | 主 Skill 从36111缩到8261字节，先选 Debug、Action/Journey、源码构建、GER、安装排障等路径。49段任务规则迁入现有权威文档，身份、授权、Evidence、Unknown 与恢复规则仍在。六个固定提示的静态前后评估见 [路由记录](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/blob/037a67d4de32b4cab3ebffed403223f13fc0dc52/docs/SKILL_ROUTING_5_1.md)，不是成功率基准。 |
 | P3 | 已知输入错误提供固定 code/stage/field/advice，未知错误不猜根因；timeout 不当成设备故障或撤销。新增安装缺源/失败/不完整分类。不泄漏原始异常、路径或参数，不自动重试副作用。 |
 | P4 | 必要源完整预读、同父目录隔离暂存、字节核验、exclusive mkdir/硬链接发布，SKILL.md 最后出现。新完整性清单由 resolver 验证，旧无清单安装兼容。按 inode/字节检查本轮文件，保留检查时已观察到的身份/内容变化；失败与中断可从新父目录重试。见 [安装合同](SKILL_INSTALL.md#安装失败与重试)。 |
 | P5 | 真实隔离 Chrome 证明 detect/collect 可跨导航和同 URL 刷新。现有结果声明顺序观察，未承诺单文档事务；补齐 [文档归属边界](INTEGRATIONS.md#顺序观察与文档归属)，没有制造不必要的新绑定层。新增可选择执行的浏览器夹具。 |

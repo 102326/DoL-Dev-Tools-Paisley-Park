@@ -48,6 +48,7 @@ const help = `${displayName} ${version}${releaseName ? ' — '+releaseName : ''}
   action | journey --file LOCAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     Optional: --authorization-file HOST_GRANTED_SCOPE_JSON --store ORIGINAL_SHARED_SQLITE
     data-reset clears scoped App data and records native generation proof; no Store/TargetKey substitution.
+  dev-receipt resume --receipt DIR  (read-only local development handoff)
   dev-receipt --help
     Research branch development handoff: build, status, verify-source, verify-current and document-bound load/behavior checks.
     See docs/DEV_RECEIPT.md. Use an explicit reviewed local recipe and an owned Chrome target.

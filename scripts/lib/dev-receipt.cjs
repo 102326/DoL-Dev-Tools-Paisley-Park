@@ -9,6 +9,9 @@ const { archiveIdentity, hostRecord, inspect } = require('./dev-receipt-load.cjs
 const now = () => new Date().toISOString();
 
 const commands = {
+  resume: ['receipt'],
+  'prepare-handoff': ['receipt', 'recipe', 'host', 'probe', 'expect'],
+  continue: ['receipt', 'step'],
   build: ['receipt', 'recipe'],
   status: ['receipt'],
   'verify-source': ['receipt', 'recipe'],
@@ -25,7 +28,7 @@ function dirAbsent(file) {
   try { fs.lstatSync(file); return false; } catch (error) { if (error.code === 'ENOENT') return true; throw error; }
 }
 
-const optional = { 'verify-current': ['script-path'], 'deploy-begin': ['artifact', 'script-path'], 'check-load': ['script-path'] };
+const optional = { 'prepare-handoff': ['script-path'], continue: ['evidence'], 'verify-current': ['script-path'], 'deploy-begin': ['artifact', 'script-path'], 'check-load': ['script-path'] };
 
 function recipe(file) {
   const bytes = readBytes(file, 65536);
@@ -90,7 +93,7 @@ function build(dir, recipeFile) {
     return state(dir);
   } catch (error) {
     const code = error.field ? error.code : 'BUILD_EVIDENCE_FAILED';
-    append(dir, 'build-failure', { status: 'failed', at: now(), code });
+    append(dir, 'build-failure', { status: 'failed', at: now(), code, ...(error.field ? { field: error.field, hint: error.hint } : {}) });
     if (error.field) throw error;
     throw failure(code, 'build', 'Verify the driver JSON and sealed ZIP in a new receipt.');
   }
@@ -137,6 +140,8 @@ function verifyArtifacts(built, args) {
 
 async function advance(command, args) {
   const dir = args.receipt;
+  if (['resume', 'continue', 'prepare-handoff'].includes(command))
+    return require('./dev-handoff.cjs').handoff(command, args, { mappings, compareSource, inspectBuild, advance });
   if (command === 'build') return build(dir, args.recipe);
   if (command === 'status') return state(dir);
   const built = readStage(dir, 'build');
@@ -231,7 +236,9 @@ async function advance(command, args) {
   required(actual.status === 'matched', 'LOADED_ARTIFACT_CHANGED', 'host', 'Reconfirm the loaded artifact before accepting behavior evidence.');
   const expectedBytes = readBytes(args.expect, 65536);
   const matched = isDeepStrictEqual(JSON.parse(observation.toString('utf8')), JSON.parse(expectedBytes.toString('utf8')));
-  append(dir, 'behavior', { ...identity, status: matched ? 'passed' : 'failed', at: now(), evidenceSha256: digest(manifestBytes),
+  const evidenceName = path.relative(dir, args.evidence);
+  append(dir, 'behavior', { ...identity,
+    ...(/^evidence-[0-9a-f-]{36}$/.test(evidenceName) ? { localEvidence: evidenceName } : {}), status: matched ? 'passed' : 'failed', at: now(), evidenceSha256: digest(manifestBytes),
     observationSha256: observationHash, expectationSha256: digest(expectedBytes), probeSha256: digest(probe) });
   required(matched, 'BEHAVIOR_MISMATCH', 'expect', 'Inspect the preserved evidence and expected behavior.');
   return state(dir);
@@ -246,9 +253,10 @@ async function main(argvInput) {
   if (!command || command === '--help') {
     console.log('Wonder of U research CLI (owned neutral targets only)');
     for (const [name, fields] of Object.entries(commands)) {
-      const option = field => `--${field} ${field === 'script-path' ? 'OWNED_URL_PATH' : 'ABS_PATH'}`;
+      const option = field => `--${field} ${field === 'step' ? 'STEP_FROM_RESUME' : field === 'script-path' ? 'OWNED_URL_PATH' : 'ABS_PATH'}`;
       console.log(`  ${name} ${[...fields.map(option), ...(optional[name] ?? []).map(field => `[${option(field)}]`)].join(' ')}`);
     }
+    console.log('Start in the receipt directory: resume --receipt . (read-only). Continue only with the step suggested by resume.');
     console.log('Verify operations exit 2 for drift, mismatch, or incomplete comparisons. Status is historical. See docs/DEV_RECEIPT.md.');
     return;
   }
@@ -257,7 +265,8 @@ async function main(argvInput) {
   let values;
   try { ({ values } = parseArgs({ args: argv, options: Object.fromEntries([...fields, ...(optional[command] ?? [])].map(k => [k, { type: 'string' }])) })); }
   catch { throw failure('RECEIPT_USAGE', 'options', 'Supply the exact fields listed in --help.'); }
-  for (const key of [...fields, ...Object.keys(values)]) required(key === 'script-path' ? typeof values[key] === 'string' : abs(values[key]),
+  if (values.receipt === '.') values.receipt = path.resolve('.');
+  for (const key of [...fields, ...Object.keys(values)]) required(['step', 'script-path'].includes(key) ? typeof values[key] === 'string' : abs(values[key]),
     'RECEIPT_USAGE', key, 'Use absolute paths except for the explicit same-origin script mapping.');
   const result = await advance(command, values);
   console.log(JSON.stringify(result, null, 2));

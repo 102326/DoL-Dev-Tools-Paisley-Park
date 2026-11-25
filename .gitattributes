@@ -2,6 +2,7 @@
 .github/workflows/check.yml export-ignore
 docs/TOOLCHAIN_7_1.md export-ignore
 docs/handoff/7.1-windows export-ignore
+docs/SKILL_ROUTING_5_1.md export-ignore
 experiments/skill-intelligence-7.1 export-ignore
 experiments/wonder-of-u export-ignore
 # Unified diff blank context lines require their leading space.

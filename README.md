@@ -6,6 +6,8 @@ Gold Experience 是面向 DoL Mod 作者和 Agent 的本地开发工具。你可
 
 **版本：7.2.0** · [当前状态](docs/CURRENT_STATUS.md) · [安装与升级](docs/SKILL_INSTALL.md) · [工具链指南](docs/TOOLCHAIN.md)
 
+本研究分支的 Wonder of U 研发接续入口是 `dev-receipt resume --receipt .`。从本地回执目录可查当前源码、原浏览器文档和下一步。[研发回执指南](docs/DEV_RECEIPT.md)
+
 从 [7.2.0 Release](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.2.0) 下载工具 ZIP；校验文件和来源清单在同一页面。原 [7.0.0](https://github.com/102326/DoL-Dev-Tools-Paisley-Park/releases/tag/v7.0.0) 保留。
 
 这是此前的 Paisley Park。旧 Skill 标识、启动命令和数据路径继续兼容，不需要改名或迁移已有账本。它不承诺自动修复所有 Mod、全平台兼容或完整自主游戏 Agent。

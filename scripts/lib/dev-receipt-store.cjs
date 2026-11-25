@@ -63,7 +63,7 @@ function snapshot(root, inputList) {
   if (!Array.isArray(inputList) || inputs.length < 1 || inputs.length !== inputList.length || inputs.length > 512)
     throw failure('BUILD_INPUTS_INVALID', 'inputs', 'List each reviewed build input once.');
   const env = Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.toUpperCase().startsWith('GIT_')));
-  const git = (args) => execFileSync('git', args, { cwd: root, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 10000 });
+  const git = (args) => execFileSync('git', ['--no-optional-locks', ...args], { cwd: root, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 10000 });
   const realRoot = fs.realpathSync(root);
   if (fs.realpathSync(git(['rev-parse', '--show-toplevel']).trim()) !== realRoot)
     throw failure('BUILD_ROOT_INVALID', 'root', 'Use the exact Git repository root.');
@@ -97,6 +97,7 @@ function state(dir) {
     schemaVersion: 1, build: built?.status ?? blocked?.status ?? 'unknown', artifactSha256: built?.artifact?.sha256 ?? null,
     deployment: ack?.status ?? (intent ? 'unknown' : 'not-dispatched'), load: loaded?.status ?? 'unverified',
     behavior: behavior?.status ?? 'unverified', automaticReplay: false,
+    ...(behavior?.localEvidence ? { localEvidence: behavior.localEvidence } : {}),
     ...(built?.artifact?.artifacts ? { artifacts: built.artifact.artifacts.map(item => ({
       role: item.role, sha256: item.sha256, memberSha256: item.representative.byteSha256,
     })) } : {}),

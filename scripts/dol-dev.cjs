@@ -1,4 +1,4 @@
-// Generated from dol-dev.cts by TypeScript 6.0.2; source-lf-sha256=871821b5d0061d442d308735a110c9a56168a467267972e7e492e4a2178249cf
+// Generated from dol-dev.cts by TypeScript 6.0.2; source-lf-sha256=8808ae1144c97fef8efdfadeaa7b1e9a227ca1f3092795d54f0dec9b04b7255d
 "use strict";
 const fs = require('node:fs');
 const path = require('node:path');
@@ -46,6 +46,7 @@ const help = `${displayName} ${version}${releaseName ? ' — ' + releaseName : '
   action | journey --file LOCAL_JSON --serial SERIAL --package PACKAGE --out NEW_DIR --test-environment yes
     Optional: --authorization-file HOST_GRANTED_SCOPE_JSON --store ORIGINAL_SHARED_SQLITE
     data-reset clears scoped App data and records native generation proof; no Store/TargetKey substitution.
+  dev-receipt resume --receipt DIR  (read-only local development handoff)
   dev-receipt --help
     Research branch development handoff: build, status, verify-source, verify-current and document-bound load/behavior checks.
     See docs/DEV_RECEIPT.md. Use an explicit reviewed local recipe and an owned Chrome target.
